@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: bativio-api
+  datasource:
+    url: ${DATABASE_URL:jdbc:h2:mem:bativio}
+    driver-class-name: ${DB_DRIVER:org.h2.Driver}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  h2:
+    console:
+      enabled: false
+
+server:
+  port: 8080
+
+jwt:
+  secret: ${JWT_SECRET:bativio-dev-secret-key-minimum-256-bits-pour-hmac-sha256}
+  access-expiration: 900000
+  refresh-expiration: 604800000
+
+logging:
+  level:
+    com.bativio: INFO
+    org.springframework.security: INFO

@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bativio
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME:bativio}
+    password: ${DB_PASSWORD:bativio}
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  h2:
+    console:
+      enabled: false
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data-dev.sql
+
+logging:
+  level:
+    com.bativio: DEBUG
+    org.springframework.security: DEBUG
