@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+
+# Build
+.next/
+out/
+build/
+dist/
+target/
+
+# Env
+.env
+.env.local
+.env*.local
+
+# Java
+*.jar
+*.war
+*.class
+*.log
+application-local.yml
+application-dev.yml
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+npm-debug.log*
+.vercel
+*.tsbuildinfo
+
+# Claude Code (cache, logs, projects data)
+.claude/
