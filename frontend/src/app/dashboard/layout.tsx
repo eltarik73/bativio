@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const navItems = [
+const navItems: { href: string; label: string; icon: string; badge?: string }[] = [
   { href: "/dashboard", label: "Tableau de bord", icon: "&#9776;" },
   { href: "/dashboard/profil", label: "Mon profil", icon: "&#128100;" },
   { href: "/dashboard/photos", label: "Mes photos", icon: "&#128247;" },
   { href: "/dashboard/devis", label: "Demandes de devis", icon: "&#128196;" },
+  { href: "/dashboard/facturation", label: "Facturation", icon: "&#128203;", badge: "Bient\u00f4t" },
   { href: "/dashboard/rdv", label: "Mes RDV", icon: "&#128197;" },
-  { href: "/dashboard/parametres", label: "Parametres", icon: "&#9881;" },
+  { href: "/dashboard/parametres", label: "Param\u00e8tres", icon: "&#9881;" },
 ];
 
 const mobileNav = [
@@ -43,6 +44,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             >
               <span dangerouslySetInnerHTML={{ __html: item.icon }} />
               {item.label}
+              {item.badge && <span style={{ marginLeft: "auto", fontSize: 9, fontWeight: 600, padding: "2px 7px", borderRadius: 10, background: "rgba(232,168,76,.12)", color: "#E8A84C" }}>{item.badge}</span>}
             </Link>
           ))}
         </nav>
