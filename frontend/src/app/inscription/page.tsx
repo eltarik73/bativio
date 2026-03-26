@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import { register } from "@/lib/auth";
 import { METIERS, VILLES } from "@/lib/constants";
 
-const STEPS = ["SIRET", "Identite", "Metier", "Zone", "Photos", "Apercu"];
+const STEPS = ["SIRET", "Informations", "M\u00e9tier", "Zone", "Photos"];
 
 export default function InscriptionPage() {
   const router = useRouter();
@@ -138,179 +138,122 @@ export default function InscriptionPage() {
 
   return (
     <><Navbar />
-    <main className="min-h-[80vh] flex flex-col items-center py-12 px-4">
-      {/* Progress */}
-      <div className="flex items-center gap-2 mb-12">
-        {STEPS.map((s, i) => (
-          <div key={s} className="flex items-center gap-2">
-            <div
-              className={`w-3 h-3 rounded-full transition-colors ${
-                i <= step ? "bg-terre" : "bg-black/10"
-              }`}
-            />
-            {i < STEPS.length - 1 && (
-              <div className={`w-8 h-0.5 ${i < step ? "bg-terre" : "bg-black/10"}`} />
-            )}
-          </div>
-        ))}
+    <main style={{ minHeight: "85vh", display: "flex", flexDirection: "column", alignItems: "center", padding: "40px 16px" }}>
+      {/* Stepper */}
+      <div>
+        <div className="stepper">
+          {STEPS.map((s, i) => (
+            <div key={s} style={{ display: "contents" }}>
+              <div className={`stepper-dot ${i < step ? "done" : i === step ? "active" : ""}`}>
+                {i < step && <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg>}
+              </div>
+              {i < STEPS.length - 1 && <div className={`stepper-line ${i < step ? "done" : ""}`} />}
+            </div>
+          ))}
+        </div>
+        <div className="stepper-labels">
+          {STEPS.map((s, i) => (
+            <span key={s} className={i === step ? "active" : ""}>{s}</span>
+          ))}
+        </div>
       </div>
 
-      <div className="bg-white rounded-[14px] border border-g100 p-8 max-w-lg w-full">
+      <div className="bv-card" style={{ maxWidth: 520, width: "100%", padding: 40, marginTop: 8 }}>
         {/* Step 1: SIRET */}
         {step === 0 && (
           <div>
-            <h2 className="font-display text-2xl font-bold text-anthracite mb-2">Votre SIRET</h2>
-            <p style={{ color: "var(--g500)", fontSize: 14, marginBottom: 20 }}>Nous r&eacute;cup&eacute;rons automatiquement vos informations depuis la base SIRENE</p>
-            <div style={{ display: "flex", gap: 8 }}>
-              <input
-                type="text"
-                maxLength={14}
-                value={form.siret}
-                onChange={(e) => { update("siret", e.target.value.replace(/\D/g, "")); setSiretFound(false); }}
-                placeholder="Entrez votre SIRET (14 chiffres)"
-                style={{ flex: 1, padding: "14px 16px", borderRadius: 10, border: "1px solid var(--g200)", fontSize: 16, letterSpacing: 1.5, textAlign: "center", fontFamily: "monospace", outline: "none" }}
-              />
-              <button
-                type="button"
-                onClick={handleSiretLookup}
-                disabled={form.siret.length !== 14 || siretLoading}
-                style={{ padding: "14px 20px", borderRadius: 10, background: form.siret.length === 14 ? "var(--terre)" : "var(--g200)", color: form.siret.length === 14 ? "#fff" : "var(--g400)", fontSize: 14, fontWeight: 600, whiteSpace: "nowrap", transition: "all .2s", cursor: form.siret.length === 14 ? "pointer" : "not-allowed" }}
-              >
-                {siretLoading ? "..." : "V\u00e9rifier"}
-              </button>
-            </div>
+            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 6 }}>Votre num&eacute;ro SIRET</h2>
+            <p className="bv-helper" style={{ marginBottom: 24 }}>Nous r&eacute;cup&eacute;rerons automatiquement vos informations</p>
+            <input
+              type="text"
+              maxLength={14}
+              value={form.siret}
+              onChange={(e) => { update("siret", e.target.value.replace(/\D/g, "")); setSiretFound(false); setError(""); }}
+              placeholder="Entrez vos 14 chiffres"
+              className="bv-input"
+              style={{ height: 56, fontSize: 18, textAlign: "center", letterSpacing: 2, fontFamily: "monospace" }}
+            />
             {siretFound && form.raisonSociale && (
-              <div style={{ marginTop: 16, padding: 16, background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 12 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
-                  <span style={{ color: "#16a34a", fontSize: 16 }}>&#10003;</span>
-                  <span style={{ fontWeight: 600, color: "#166534", fontSize: 14 }}>Entreprise trouv&eacute;e</span>
+              <div style={{ marginTop: 20, padding: 20, background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 14 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                  <span style={{ width: 24, height: 24, borderRadius: "50%", background: "#16a34a", color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700 }}>&#10003;</span>
+                  <span style={{ fontWeight: 600, color: "#166534", fontSize: 15 }}>Entreprise trouv&eacute;e</span>
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                  <div>
-                    <p style={{ fontSize: 11, color: "var(--g400)" }}>Raison sociale</p>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: "var(--anthracite)" }}>{form.raisonSociale}</p>
-                  </div>
-                  {form.adresse && (
-                    <div>
-                      <p style={{ fontSize: 11, color: "var(--g400)" }}>Adresse</p>
-                      <p style={{ fontSize: 13, color: "var(--g500)" }}>{form.adresse}</p>
-                    </div>
-                  )}
-                  {form.ville && (
-                    <div>
-                      <p style={{ fontSize: 11, color: "var(--g400)" }}>Ville</p>
-                      <p style={{ fontSize: 13, color: "var(--g500)" }}>{form.ville}</p>
-                    </div>
-                  )}
-                  {form.codeNaf && (
-                    <div>
-                      <p style={{ fontSize: 11, color: "var(--g400)" }}>Code NAF</p>
-                      <p style={{ fontSize: 13, color: "var(--g500)" }}>{form.codeNaf}</p>
-                    </div>
-                  )}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                  <div><p style={{ fontSize: 12, color: "#9B9590", marginBottom: 2 }}>Raison sociale</p><p style={{ fontSize: 15, fontWeight: 600, color: "#1C1C1E" }}>{form.raisonSociale}</p></div>
+                  {form.adresse && <div><p style={{ fontSize: 12, color: "#9B9590", marginBottom: 2 }}>Adresse</p><p style={{ fontSize: 14, color: "#6B6560" }}>{form.adresse}</p></div>}
+                  {form.ville && <div><p style={{ fontSize: 12, color: "#9B9590", marginBottom: 2 }}>Ville</p><p style={{ fontSize: 14, color: "#6B6560" }}>{form.ville}</p></div>}
+                  {form.codeNaf && <div><p style={{ fontSize: 12, color: "#9B9590", marginBottom: 2 }}>Code NAF</p><p style={{ fontSize: 14, color: "#6B6560" }}>{form.codeNaf}</p></div>}
                 </div>
               </div>
             )}
-            {error && <p style={{ color: "#dc2626", fontSize: 13, marginTop: 12 }}>{error}</p>}
+            {error && <p style={{ color: "#dc2626", fontSize: 14, marginTop: 14 }}>{error}</p>}
             <button
-              onClick={next}
-              disabled={form.siret.length !== 14}
-              style={{ width: "100%", marginTop: 20, padding: 14, borderRadius: 10, background: form.siret.length === 14 ? "var(--terre)" : "var(--g200)", color: form.siret.length === 14 ? "#fff" : "var(--g400)", fontSize: 15, fontWeight: 600, transition: "all .2s", cursor: form.siret.length === 14 ? "pointer" : "not-allowed" }}
+              type="button"
+              onClick={() => { if (!siretFound && form.siret.length === 14) { handleSiretLookup(); } else { next(); } }}
+              disabled={form.siret.length !== 14 || siretLoading}
+              className="bv-btn bv-btn-primary bv-btn-full"
+              style={{ marginTop: 24 }}
             >
-              Continuer
+              {siretLoading ? "V\u00e9rification..." : siretFound ? "Continuer" : "V\u00e9rifier et continuer"}
             </button>
+            <p style={{ textAlign: "center", marginTop: 16, fontSize: 13, color: "#9B9590" }}>Vous n&apos;avez pas de SIRET ? <a href="#" className="bv-link" style={{ fontSize: 13 }}>Contactez-nous</a></p>
           </div>
         )}
 
-        {/* Step 2: Identite */}
+        {/* Step 2: Informations */}
         {step === 1 && (
           <div>
-            <h2 className="font-display text-2xl font-bold text-anthracite mb-6">Vos informations</h2>
-            <div className="space-y-4">
+            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 24 }}>Vos informations</h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
               <div>
-                <label className="block text-sm font-medium text-anthracite mb-1">Nom d&apos;affichage</label>
-                <input
-                  type="text"
-                  value={form.nomAffichage}
-                  onChange={(e) => update("nomAffichage", e.target.value)}
-                  className="w-full px-4 py-[11px] rounded-lg border border-g200 bg-white text-anthracite text-[13px] focus:ring-2 focus:ring-terre/20 focus:border-terre outline-none transition"
-                />
+                <label className="bv-label">Nom d&apos;affichage</label>
+                <input type="text" value={form.nomAffichage} onChange={(e) => update("nomAffichage", e.target.value)} className="bv-input" readOnly={!!form.raisonSociale} placeholder="Nom de votre entreprise" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-anthracite mb-1">Email</label>
-                <input
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => update("email", e.target.value)}
-                  className="w-full px-4 py-[11px] rounded-lg border border-g200 bg-white text-anthracite text-[13px] focus:ring-2 focus:ring-terre/20 focus:border-terre outline-none transition"
-                />
+                <label className="bv-label">Email</label>
+                <input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} className="bv-input" placeholder="votre@email.fr" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-anthracite mb-1">Telephone</label>
-                <input
-                  type="tel"
-                  value={form.telephone}
-                  onChange={(e) => update("telephone", e.target.value)}
-                  className="w-full px-4 py-[11px] rounded-lg border border-g200 bg-white text-anthracite text-[13px] focus:ring-2 focus:ring-terre/20 focus:border-terre outline-none transition"
-                />
+                <label className="bv-label">T&eacute;l&eacute;phone</label>
+                <input type="tel" value={form.telephone} onChange={(e) => update("telephone", e.target.value)} className="bv-input" placeholder="06 12 34 56 78" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-anthracite mb-1">Mot de passe</label>
-                <input
-                  type="password"
-                  value={form.password}
-                  onChange={(e) => update("password", e.target.value)}
-                  className="w-full px-4 py-[11px] rounded-lg border border-g200 bg-white text-anthracite text-[13px] focus:ring-2 focus:ring-terre/20 focus:border-terre outline-none transition"
-                />
+                <label className="bv-label">Mot de passe</label>
+                <input type="password" value={form.password} onChange={(e) => update("password", e.target.value)} className="bv-input" placeholder="8 caract\u00e8res minimum" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-anthracite mb-1">Confirmer le mot de passe</label>
-                <input
-                  type="password"
-                  value={form.passwordConfirm}
-                  onChange={(e) => update("passwordConfirm", e.target.value)}
-                  className="w-full px-4 py-[11px] rounded-lg border border-g200 bg-white text-anthracite text-[13px] focus:ring-2 focus:ring-terre/20 focus:border-terre outline-none transition"
-                />
+                <label className="bv-label">Confirmer le mot de passe</label>
+                <input type="password" value={form.passwordConfirm} onChange={(e) => update("passwordConfirm", e.target.value)} className="bv-input" placeholder="Retapez votre mot de passe" />
+                {form.password && form.passwordConfirm && form.password !== form.passwordConfirm && <p style={{ color: "#dc2626", fontSize: 13, marginTop: 6 }}>Les mots de passe ne correspondent pas</p>}
               </div>
             </div>
-            <div className="mt-6 flex gap-3">
-              <button onClick={prev} className="px-6 py-3 border border-black/10 rounded-lg text-anthracite">Retour</button>
-              <button
-                onClick={next}
-                disabled={!form.email || !form.password || form.password !== form.passwordConfirm}
-                className="flex-1 py-3 bg-terre text-white rounded-lg font-medium hover:bg-terre-light transition-colors disabled:opacity-50"
-              >
-                Continuer
-              </button>
+            <div style={{ display: "flex", gap: 12, marginTop: 28 }}>
+              <button onClick={prev} className="bv-btn bv-btn-secondary" style={{ flex: "0 0 auto" }}>Retour</button>
+              <button onClick={next} disabled={!form.email || !form.password || form.password !== form.passwordConfirm} className="bv-btn bv-btn-primary" style={{ flex: 1 }}>Continuer</button>
             </div>
           </div>
         )}
 
-        {/* Step 3: Metier */}
+        {/* Step 3: M&eacute;tier */}
         {step === 2 && (
           <div>
-            <h2 className="font-display text-2xl font-bold text-anthracite mb-6">Votre metier</h2>
-            <div className="grid grid-cols-2 gap-3">
+            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 24 }}>Votre m&eacute;tier</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
               {METIERS.map((m) => (
                 <button
                   key={m.slug}
                   onClick={() => { update("metierId", m.slug); update("metierNom", m.nom); }}
-                  className={`p-4 rounded-xl text-center transition-colors border ${
-                    form.metierNom === m.nom
-                      ? "bg-terre text-white border-terre"
-                      : "bg-white border-black/10 hover:border-terre"
-                  }`}
+                  style={{ padding: 18, borderRadius: 14, textAlign: "center", border: form.metierNom === m.nom ? "2px solid #C4531A" : "1px solid #E0DDD8", background: form.metierNom === m.nom ? "rgba(196,83,26,.05)" : "#fff", cursor: "pointer", transition: "all .15s" }}
                 >
-                  <span className="text-2xl">{m.icone}</span>
-                  <p className="mt-1 text-sm font-medium">{m.nom}</p>
+                  <span style={{ fontSize: 28, display: "block" }}>{m.icone}</span>
+                  <p style={{ marginTop: 6, fontSize: 14, fontWeight: 600, color: form.metierNom === m.nom ? "#C4531A" : "#1C1C1E" }}>{m.nom}</p>
                 </button>
               ))}
             </div>
-            <div className="mt-6 flex gap-3">
-              <button onClick={prev} className="px-6 py-3 border border-black/10 rounded-lg text-anthracite">Retour</button>
-              <button onClick={next} className="flex-1 py-3 bg-terre text-white rounded-lg font-medium hover:bg-terre-light transition-colors">
-                Continuer
-              </button>
+            <div style={{ display: "flex", gap: 12, marginTop: 28 }}>
+              <button onClick={prev} className="bv-btn bv-btn-secondary">Retour</button>
+              <button onClick={next} className="bv-btn bv-btn-primary" style={{ flex: 1 }}>Continuer</button>
             </div>
           </div>
         )}
@@ -318,95 +261,59 @@ export default function InscriptionPage() {
         {/* Step 4: Zone */}
         {step === 3 && (
           <div>
-            <h2 className="font-display text-2xl font-bold text-anthracite mb-6">Zone d&apos;intervention</h2>
+            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 24 }}>Zone d&apos;intervention</h2>
             <div>
-              <label className="block text-sm font-medium text-anthracite mb-1">Ville</label>
-              <select
-                value={form.ville}
-                onChange={(e) => update("ville", e.target.value)}
-                className="w-full px-4 py-[11px] rounded-lg border border-g200 bg-white text-anthracite text-[13px] focus:ring-2 focus:ring-terre/20 focus:border-terre outline-none transition"
-              >
-                <option value="">Selectionnez votre ville</option>
-                {VILLES.map((v) => (
-                  <option key={v.slug} value={v.nom}>{v.nom}</option>
-                ))}
+              <label className="bv-label">Ville principale</label>
+              <select value={form.ville} onChange={(e) => update("ville", e.target.value)} className="bv-input" style={{ cursor: "pointer" }}>
+                <option value="">S&eacute;lectionnez votre ville</option>
+                {VILLES.map((v) => <option key={v.slug} value={v.nom}>{v.nom}</option>)}
               </select>
             </div>
-            <div className="mt-6">
-              <label className="block text-sm font-medium text-anthracite mb-2">
-                Rayon d&apos;intervention : <span className="text-terre font-bold">{form.zoneRayonKm} km</span>
+            <div style={{ marginTop: 24 }}>
+              <label className="bv-label">
+                Rayon d&apos;intervention : <span style={{ color: "#C4531A" }}>{form.zoneRayonKm} km</span>
               </label>
-              <input
-                type="range"
-                min={5}
-                max={80}
-                value={form.zoneRayonKm}
-                onChange={(e) => update("zoneRayonKm", parseInt(e.target.value))}
-                className="w-full accent-terre"
-              />
-              <div className="flex justify-between text-xs text-anthracite/40 mt-1">
-                <span>5 km</span>
-                <span>80 km</span>
+              <input type="range" min={5} max={80} value={form.zoneRayonKm} onChange={(e) => update("zoneRayonKm", parseInt(e.target.value))} style={{ width: "100%", accentColor: "#C4531A", marginTop: 8 }} />
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#9B9590", marginTop: 4 }}>
+                <span>5 km</span><span>80 km</span>
               </div>
             </div>
-            <div className="mt-6 flex gap-3">
-              <button onClick={prev} className="px-6 py-3 border border-black/10 rounded-lg text-anthracite">Retour</button>
-              <button onClick={next} className="flex-1 py-3 bg-terre text-white rounded-lg font-medium hover:bg-terre-light transition-colors">
-                Continuer
-              </button>
+            <div style={{ display: "flex", gap: 12, marginTop: 28 }}>
+              <button onClick={prev} className="bv-btn bv-btn-secondary">Retour</button>
+              <button onClick={next} className="bv-btn bv-btn-primary" style={{ flex: 1 }}>Continuer</button>
             </div>
           </div>
         )}
 
-        {/* Step 5: Photos */}
+        {/* Step 5: Photos — dernier step, publie */}
         {step === 4 && (
           <div>
-            <h2 className="font-display text-2xl font-bold text-anthracite mb-2">Vos photos</h2>
-            <p className="text-anthracite/60 text-sm mb-6">Ajoutez des photos de vos realisations (optionnel)</p>
-            <div className="border-2 border-dashed border-black/10 rounded-xl p-12 text-center">
-              <p className="text-4xl mb-3">&#128247;</p>
-              <p className="text-anthracite/50 text-sm">Glissez vos photos ici ou</p>
-              <button className="mt-2 px-4 py-2 bg-creme rounded-lg text-sm text-anthracite/70 hover:bg-terre/10 transition-colors">
-                Choisir des photos
-              </button>
+            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 6 }}>Vos photos</h2>
+            <p className="bv-helper" style={{ marginBottom: 24 }}>Ajoutez des photos de vos r&eacute;alisations (facultatif)</p>
+            <div className="photo-upload-zone" style={{ padding: 32 }}>
+              <div style={{ fontSize: 36, marginBottom: 8 }}>&#128247;</div>
+              <p style={{ fontSize: 14, color: "#6B6560" }}>Glissez vos photos ici ou <span className="bv-link">parcourir</span></p>
+              <p style={{ fontSize: 12, color: "#9B9590", marginTop: 4 }}>JPG, PNG ou WebP &middot; max 10 Mo</p>
             </div>
-            <div className="mt-6 flex gap-3">
-              <button onClick={prev} className="px-6 py-3 border border-black/10 rounded-lg text-anthracite">Retour</button>
-              <button onClick={next} className="flex-1 py-3 bg-terre text-white rounded-lg font-medium hover:bg-terre-light transition-colors">
-                {form.ville ? "Continuer" : "Passer"}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Step 6: Apercu */}
-        {step === 5 && (
-          <div>
-            <h2 className="font-display text-2xl font-bold text-anthracite mb-6">Apercu de votre page</h2>
-            <div className="bg-creme rounded-xl p-6">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-14 h-14 rounded-full bg-terre/10 flex items-center justify-center text-terre font-display font-bold text-xl">
-                  {form.nomAffichage.charAt(0).toUpperCase()}
+            {/* Aper&ccedil;u */}
+            <div style={{ marginTop: 24, padding: 20, background: "#F7F5F2", borderRadius: 14 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                <div style={{ width: 48, height: 48, borderRadius: "50%", background: "rgba(196,83,26,.1)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Fraunces',serif", fontSize: 20, fontWeight: 700, color: "#C4531A" }}>
+                  {form.nomAffichage ? form.nomAffichage.charAt(0).toUpperCase() : "?"}
                 </div>
                 <div>
-                  <h3 className="font-display text-xl font-bold">{form.nomAffichage || "Votre entreprise"}</h3>
-                  <p className="text-sm text-anthracite/60">
-                    {form.metierNom || "Votre metier"} {form.ville ? `a ${form.ville}` : ""}
-                  </p>
+                  <p style={{ fontFamily: "'Fraunces',serif", fontSize: 17, fontWeight: 700, color: "#1C1C1E" }}>{form.nomAffichage || "Votre entreprise"}</p>
+                  <p style={{ fontSize: 13, color: "#9B9590" }}>{form.metierNom || "Votre m\u00e9tier"}{form.ville ? ` \u00e0 ${form.ville}` : ""}</p>
                 </div>
               </div>
-              <p className="text-xs text-anthracite/40 mt-2">
-                URL : bativio.fr/{(form.ville || "ville").toLowerCase()}/{form.nomAffichage.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "") || "votre-slug"}
+              <p style={{ fontSize: 12, color: "#C5C0B9", marginTop: 10 }}>
+                bativio.fr/{(form.ville || "ville").toLowerCase()}/{form.nomAffichage.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "") || "votre-slug"}
               </p>
             </div>
-            {error && <p className="text-red-600 text-sm mt-4">{error}</p>}
-            <div className="mt-6 flex gap-3">
-              <button onClick={prev} className="px-6 py-3 border border-black/10 rounded-lg text-anthracite">Retour</button>
-              <button
-                onClick={handleSubmit}
-                disabled={loading}
-                className="flex-1 py-3 bg-terre text-white rounded-lg font-medium hover:bg-terre-light transition-colors disabled:opacity-50"
-              >
+            {error && <p style={{ color: "#dc2626", fontSize: 14, marginTop: 14 }}>{error}</p>}
+            <div style={{ display: "flex", gap: 12, marginTop: 28 }}>
+              <button onClick={prev} className="bv-btn bv-btn-secondary">Retour</button>
+              <button onClick={handleSubmit} disabled={loading} className="bv-btn bv-btn-primary" style={{ flex: 1 }}>
                 {loading ? "Publication..." : "Publier ma page"}
               </button>
             </div>

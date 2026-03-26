@@ -10,6 +10,7 @@ export default function ConnexionPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [magicSent, setMagicSent] = useState(false);
@@ -20,11 +21,7 @@ export default function ConnexionPage() {
     setError("");
     try {
       const data = await login(email, password);
-      if (data.artisan) {
-        router.push("/dashboard");
-      } else {
-        router.push("/admin");
-      }
+      router.push(data.artisan ? "/dashboard" : "/admin");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur de connexion");
     } finally {
@@ -33,10 +30,7 @@ export default function ConnexionPage() {
   };
 
   const handleMagicLink = async () => {
-    if (!email) {
-      setError("Entrez votre email");
-      return;
-    }
+    if (!email) { setError("Entrez votre email"); return; }
     setLoading(true);
     setError("");
     try {
@@ -52,11 +46,12 @@ export default function ConnexionPage() {
   if (magicSent) {
     return (
       <><Navbar />
-      <main className="flex items-center justify-center min-h-[80vh]">
-        <div className="bg-white rounded-[14px] border border-g100 p-8 max-w-md w-full mx-4 text-center">
-          <p className="font-display text-2xl font-bold text-anthracite">Lien envoye !</p>
-          <p className="mt-3 text-g500 text-sm">
-            Si un compte existe avec cet email, un lien de connexion a ete envoye. Verifiez votre boite mail.
+      <main style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "85vh", padding: 16 }}>
+        <div className="bv-card bv-card-form" style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>&#9993;</div>
+          <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 8 }}>Lien envoy&eacute; !</h1>
+          <p style={{ fontSize: 15, color: "#9B9590", lineHeight: 1.6 }}>
+            Si un compte existe avec cet email, un lien de connexion a &eacute;t&eacute; envoy&eacute;. V&eacute;rifiez votre bo&icirc;te mail.
           </p>
         </div>
       </main></>
@@ -65,65 +60,44 @@ export default function ConnexionPage() {
 
   return (
     <><Navbar />
-    <main className="flex items-center justify-center min-h-[80vh]">
-      <div className="bg-white rounded-[14px] border border-g100 p-8 max-w-md w-full mx-4">
-        <div className="text-center mb-8">
-          <h1 className="font-display text-[28px] font-bold text-terre tracking-[-0.5px]">Bativio</h1>
-          <p className="mt-2 text-g500 text-sm">Connectez-vous a votre espace</p>
+    <main style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "85vh", padding: 16 }}>
+      <div className="bv-card" style={{ maxWidth: 420, width: "100%", padding: 40 }}>
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "#C4531A", letterSpacing: -0.5 }}>Bativio</h1>
+          <p style={{ marginTop: 8, fontSize: 15, color: "#9B9590" }}>Connectez-vous &agrave; votre espace</p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-anthracite mb-1">Email</label>
-            <input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-[11px] rounded-lg border border-g200 bg-white text-anthracite text-[13px] focus:ring-2 focus:ring-terre/20 focus:border-terre outline-none transition"
-            />
+            <label htmlFor="email" className="bv-label">Email</label>
+            <input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="bv-input" placeholder="votre@email.fr" />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-anthracite mb-1">Mot de passe</label>
-            <input
-              id="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-[11px] rounded-lg border border-g200 bg-white text-anthracite text-[13px] focus:ring-2 focus:ring-terre/20 focus:border-terre outline-none transition"
-            />
+            <label htmlFor="password" className="bv-label">Mot de passe</label>
+            <div style={{ position: "relative" }}>
+              <input id="password" type={showPw ? "text" : "password"} required value={password} onChange={(e) => setPassword(e.target.value)} className="bv-input" placeholder="Votre mot de passe" style={{ paddingRight: 48 }} />
+              <button type="button" onClick={() => setShowPw(!showPw)} style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#9B9590", fontSize: 13 }}>
+                {showPw ? "Masquer" : "Voir"}
+              </button>
+            </div>
           </div>
-          {error && <p className="text-red-600 text-sm">{error}</p>}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-terre text-white rounded-lg font-medium hover:bg-terre-light transition-colors disabled:opacity-50"
-          >
+
+          {error && <p style={{ color: "#dc2626", fontSize: 14 }}>{error}</p>}
+
+          <button type="submit" disabled={loading} className="bv-btn bv-btn-primary bv-btn-full">
             {loading ? "Connexion..." : "Se connecter"}
           </button>
         </form>
 
-        <div className="my-6 flex items-center gap-3">
-          <div className="flex-1 h-px bg-g100" />
-          <span className="text-xs text-g400">ou</span>
-          <div className="flex-1 h-px bg-g100" />
-        </div>
+        <div className="bv-separator"><span>ou</span></div>
 
-        <button
-          onClick={handleMagicLink}
-          disabled={loading}
-          className="w-full py-3 border border-g200 text-g500 rounded-lg font-semibold text-sm hover:bg-anthracite hover:text-white hover:border-anthracite transition-all disabled:opacity-50"
-        >
+        <button onClick={handleMagicLink} disabled={loading} className="bv-btn bv-btn-secondary bv-btn-full">
           Recevoir un magic link
         </button>
 
-        <p className="mt-6 text-center text-sm text-g400">
+        <p style={{ marginTop: 24, textAlign: "center", fontSize: 14, color: "#9B9590" }}>
           Pas encore inscrit ?{" "}
-          <Link href="/inscription" className="text-terre font-medium hover:underline">
-            Creer mon espace
-          </Link>
+          <Link href="/inscription" className="bv-link">Cr&eacute;er mon espace</Link>
         </p>
       </div>
     </main></>

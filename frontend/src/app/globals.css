@@ -244,4 +244,47 @@ a{text-decoration:none;color:inherit}button{font-family:'Karla',sans-serif;curso
   .artisan-stat .n{font-size:28px}
 }
 
+/* ═══ FORMS & INPUTS — Planity/Doctolib standard ═══ */
+.bv-label{display:block;font-size:14px;font-weight:600;color:#1C1C1E;margin-bottom:6px}
+.bv-input{width:100%;height:48px;padding:0 16px;border:1px solid #E0DDD8;border-radius:12px;font-family:'Karla',sans-serif;font-size:15px;color:#1C1C1E;background:#fff;outline:none;transition:all .2s}
+.bv-input::placeholder{color:#C5C0B9;font-size:14px}
+.bv-input:hover{border-color:#C5C0B9}
+.bv-input:focus{border-color:#C4531A;box-shadow:0 0 0 3px rgba(196,83,26,.1)}
+.bv-input[readonly]{background:#F7F5F2;color:#6B6560}
+.bv-textarea{width:100%;min-height:120px;padding:14px 16px;border:1px solid #E0DDD8;border-radius:12px;font-family:'Karla',sans-serif;font-size:15px;color:#1C1C1E;background:#fff;outline:none;resize:vertical;transition:all .2s}
+.bv-textarea::placeholder{color:#C5C0B9;font-size:14px}
+.bv-textarea:hover{border-color:#C5C0B9}
+.bv-textarea:focus{border-color:#C4531A;box-shadow:0 0 0 3px rgba(196,83,26,.1)}
+.bv-btn{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 28px;border:none;border-radius:10px;font-family:'Karla',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s}
+.bv-btn:active{transform:scale(.98)}
+.bv-btn-primary{background:#C4531A;color:#fff}.bv-btn-primary:hover{background:#D4733A}
+.bv-btn-primary:disabled{background:#C5C0B9;cursor:not-allowed}
+.bv-btn-secondary{background:transparent;border:1.5px solid #E0DDD8;color:#1C1C1E}.bv-btn-secondary:hover{border-color:#C5C0B9;background:#F7F5F2}
+.bv-btn-full{width:100%}
+.bv-card{background:#fff;border:1px solid #EDEBE7;border-radius:16px;padding:32px;box-shadow:0 1px 3px rgba(28,28,30,.04)}
+.bv-card-form{max-width:480px;width:100%;margin:0 auto;padding:40px}
+.bv-separator{display:flex;align-items:center;gap:16px;margin:28px 0}
+.bv-separator::before,.bv-separator::after{content:'';flex:1;height:1px;background:#EDEBE7}
+.bv-separator span{font-size:13px;color:#9B9590;white-space:nowrap}
+.bv-link{color:#C4531A;font-weight:600;transition:color .2s}.bv-link:hover{color:#D4733A}
+.bv-helper{font-size:13px;color:#9B9590;margin-top:4px}
+
+/* ═══ STEPPER ═══ */
+.stepper{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:40px}
+.stepper-dot{width:12px;height:12px;border-radius:50%;border:2px solid #E0DDD8;background:transparent;display:flex;align-items:center;justify-content:center;transition:all .25s;flex-shrink:0}
+.stepper-dot.active{border-color:#C4531A;background:#C4531A}
+.stepper-dot.done{border-color:#C4531A;background:#C4531A}
+.stepper-dot svg{width:8px;height:8px;stroke:#fff;stroke-width:3;fill:none}
+.stepper-line{width:32px;height:2px;background:#E0DDD8;transition:background .25s}
+.stepper-line.done{background:#C4531A}
+.stepper-labels{display:flex;justify-content:center;gap:28px;margin-top:8px}
+.stepper-labels span{font-size:11px;color:#9B9590;text-align:center;min-width:50px}
+.stepper-labels span.active{color:#C4531A;font-weight:600}
+
+@media(max-width:768px){
+  .bv-card-form{padding:28px 20px}
+  .stepper-labels{gap:12px}
+  .stepper-labels span{font-size:10px;min-width:40px}
+}
+
 ::selection{background-color:rgba(196,83,26,.2)}

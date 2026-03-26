@@ -3,12 +3,7 @@
 import { useState, useRef } from "react";
 
 export default function DevisForm({ slug }: { slug: string }) {
-  const [form, setForm] = useState({
-    nomClient: "",
-    telephoneClient: "",
-    emailClient: "",
-    descriptionBesoin: "",
-  });
+  const [form, setForm] = useState({ nomClient: "", telephoneClient: "", emailClient: "", descriptionBesoin: "" });
   const [photos, setPhotos] = useState<{ file: File; preview: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -17,18 +12,12 @@ export default function DevisForm({ slug }: { slug: string }) {
 
   const handleFiles = (files: FileList | null) => {
     if (!files) return;
-    const newPhotos = Array.from(files)
-      .filter((f) => f.type.startsWith("image/") && f.size <= 10 * 1024 * 1024)
-      .slice(0, 5 - photos.length)
-      .map((file) => ({ file, preview: URL.createObjectURL(file) }));
+    const newPhotos = Array.from(files).filter((f) => f.type.startsWith("image/") && f.size <= 10 * 1024 * 1024).slice(0, 5 - photos.length).map((file) => ({ file, preview: URL.createObjectURL(file) }));
     setPhotos((prev) => [...prev, ...newPhotos].slice(0, 5));
   };
 
   const removePhoto = (idx: number) => {
-    setPhotos((prev) => {
-      URL.revokeObjectURL(prev[idx].preview);
-      return prev.filter((_, i) => i !== idx);
-    });
+    setPhotos((prev) => { URL.revokeObjectURL(prev[idx].preview); return prev.filter((_, i) => i !== idx); });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,20 +25,13 @@ export default function DevisForm({ slug }: { slug: string }) {
     setLoading(true);
     setError("");
     try {
-      // En prod, on enverrait les photos via multipart/form-data
-      // Pour le moment, on envoie juste le formulaire texte
       const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
-      const res = await fetch(`${API_URL}/public/artisans/${slug}/devis`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+      const res = await fetch(`${API_URL}/public/artisans/${slug}/devis`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
       const json = await res.json();
       if (!json.success) throw new Error(json.error);
       setSuccess(true);
-    } catch (err) {
-      // Si le backend n'est pas dispo, on simule le succes pour la demo
-      setSuccess(true);
+    } catch {
+      setSuccess(true); // demo mode
     } finally {
       setLoading(false);
     }
@@ -58,89 +40,38 @@ export default function DevisForm({ slug }: { slug: string }) {
   if (success) {
     return (
       <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 14, padding: 28, textAlign: "center" }}>
-        <div style={{ fontSize: 40, marginBottom: 12 }}>&#10003;</div>
-        <p style={{ fontFamily: "'Fraunces', serif", fontSize: 20, fontWeight: 700, color: "#166534" }}>Demande envoy&eacute;e !</p>
-        <p style={{ color: "#15803d", marginTop: 8, fontSize: 14 }}>
-          L&apos;artisan reviendra vers vous tr&egrave;s rapidement.
-          {photos.length > 0 && ` ${photos.length} photo${photos.length > 1 ? "s" : ""} jointe${photos.length > 1 ? "s" : ""}.`}
-        </p>
+        <div style={{ width: 48, height: 48, borderRadius: "50%", background: "#16a34a", color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 22, marginBottom: 14 }}>&#10003;</div>
+        <p style={{ fontFamily: "'Fraunces',serif", fontSize: 20, fontWeight: 700, color: "#166534" }}>Demande envoy&eacute;e !</p>
+        <p style={{ color: "#15803d", marginTop: 8, fontSize: 15 }}>L&apos;artisan reviendra vers vous tr&egrave;s rapidement.</p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <div>
-        <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "var(--anthracite)", marginBottom: 5 }}>Nom *</label>
-        <input
-          type="text"
-          required
-          value={form.nomClient}
-          onChange={(e) => setForm({ ...form, nomClient: e.target.value })}
-          style={{ width: "100%", padding: "12px 16px", borderRadius: 10, border: "1px solid var(--g200)", background: "var(--blanc)", color: "var(--anthracite)", fontSize: 14, outline: "none", fontFamily: "'Karla', sans-serif" }}
-          placeholder="Votre nom"
-        />
+        <label className="bv-label">Nom *</label>
+        <input type="text" required value={form.nomClient} onChange={(e) => setForm({ ...form, nomClient: e.target.value })} className="bv-input" placeholder="Votre nom" />
       </div>
       <div>
-        <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "var(--anthracite)", marginBottom: 5 }}>T&eacute;l&eacute;phone *</label>
-        <input
-          type="tel"
-          required
-          value={form.telephoneClient}
-          onChange={(e) => setForm({ ...form, telephoneClient: e.target.value })}
-          style={{ width: "100%", padding: "12px 16px", borderRadius: 10, border: "1px solid var(--g200)", background: "var(--blanc)", color: "var(--anthracite)", fontSize: 14, outline: "none", fontFamily: "'Karla', sans-serif" }}
-          placeholder="06 12 34 56 78"
-        />
+        <label className="bv-label">T&eacute;l&eacute;phone *</label>
+        <input type="tel" required value={form.telephoneClient} onChange={(e) => setForm({ ...form, telephoneClient: e.target.value })} className="bv-input" placeholder="06 12 34 56 78" />
       </div>
       <div>
-        <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "var(--anthracite)", marginBottom: 5 }}>Email</label>
-        <input
-          type="email"
-          value={form.emailClient}
-          onChange={(e) => setForm({ ...form, emailClient: e.target.value })}
-          style={{ width: "100%", padding: "12px 16px", borderRadius: 10, border: "1px solid var(--g200)", background: "var(--blanc)", color: "var(--anthracite)", fontSize: 14, outline: "none", fontFamily: "'Karla', sans-serif" }}
-          placeholder="votre@email.fr"
-        />
+        <label className="bv-label">Email</label>
+        <input type="email" value={form.emailClient} onChange={(e) => setForm({ ...form, emailClient: e.target.value })} className="bv-input" placeholder="votre@email.fr" />
       </div>
       <div>
-        <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "var(--anthracite)", marginBottom: 5 }}>D&eacute;crivez votre besoin *</label>
-        <textarea
-          required
-          rows={3}
-          value={form.descriptionBesoin}
-          onChange={(e) => setForm({ ...form, descriptionBesoin: e.target.value })}
-          style={{ width: "100%", padding: "12px 16px", borderRadius: 10, border: "1px solid var(--g200)", background: "var(--blanc)", color: "var(--anthracite)", fontSize: 14, outline: "none", resize: "none", fontFamily: "'Karla', sans-serif" }}
-          placeholder="D&eacute;crivez vos travaux, la surface, le mat&eacute;riel souhait&eacute;..."
-        />
+        <label className="bv-label">D&eacute;crivez votre besoin *</label>
+        <textarea required rows={4} value={form.descriptionBesoin} onChange={(e) => setForm({ ...form, descriptionBesoin: e.target.value })} className="bv-textarea" placeholder="D&eacute;crivez vos travaux, la surface, le mat&eacute;riel souhait&eacute;..." />
       </div>
-
-      {/* Photo upload */}
       <div>
-        <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: "var(--anthracite)", marginBottom: 5 }}>
-          Photos <span style={{ color: "var(--g400)", fontWeight: 400 }}>(facultatif, max 5)</span>
-        </label>
-        <div
-          className={`photo-upload-zone ${photos.length > 0 ? "has-files" : ""}`}
-          onClick={() => fileRef.current?.click()}
-          onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = "var(--terre)"; }}
-          onDragLeave={(e) => { e.currentTarget.style.borderColor = ""; }}
-          onDrop={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = ""; handleFiles(e.dataTransfer.files); }}
-        >
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/*"
-            multiple
-            style={{ display: "none" }}
-            onChange={(e) => handleFiles(e.target.files)}
-          />
-          <div style={{ fontSize: 28, marginBottom: 6 }}>&#128247;</div>
-          <p style={{ fontSize: 13, color: "var(--g500)" }}>
-            Glissez vos photos ici ou <span style={{ color: "var(--terre)", fontWeight: 600 }}>parcourir</span>
-          </p>
-          <p style={{ fontSize: 11, color: "var(--g400)", marginTop: 2 }}>
-            JPG, PNG ou WebP &middot; max 10 Mo par photo
-          </p>
+        <label className="bv-label">Photos <span style={{ color: "#9B9590", fontWeight: 400 }}>(facultatif, max 5)</span></label>
+        <div className={`photo-upload-zone ${photos.length > 0 ? "has-files" : ""}`} onClick={() => fileRef.current?.click()} onDragOver={(e) => { e.preventDefault(); }} onDrop={(e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); }}>
+          <input ref={fileRef} type="file" accept="image/*" multiple style={{ display: "none" }} onChange={(e) => handleFiles(e.target.files)} />
+          <div style={{ fontSize: 28, marginBottom: 4 }}>&#128247;</div>
+          <p style={{ fontSize: 14, color: "#6B6560" }}>Glissez vos photos ici ou <span className="bv-link">parcourir</span></p>
+          <p style={{ fontSize: 12, color: "#9B9590", marginTop: 2 }}>JPG, PNG, WebP &middot; max 10 Mo</p>
         </div>
         {photos.length > 0 && (
           <div className="photo-preview">
@@ -154,25 +85,8 @@ export default function DevisForm({ slug }: { slug: string }) {
           </div>
         )}
       </div>
-
-      {error && <p style={{ color: "#dc2626", fontSize: 13 }}>{error}</p>}
-
-      <button
-        type="submit"
-        disabled={loading}
-        style={{
-          width: "100%",
-          padding: 14,
-          background: loading ? "var(--g300)" : "var(--terre)",
-          color: "var(--blanc)",
-          borderRadius: 10,
-          fontSize: 15,
-          fontWeight: 600,
-          fontFamily: "'Karla', sans-serif",
-          transition: "all .2s",
-          cursor: loading ? "not-allowed" : "pointer",
-        }}
-      >
+      {error && <p style={{ color: "#dc2626", fontSize: 14 }}>{error}</p>}
+      <button type="submit" disabled={loading} className="bv-btn bv-btn-primary bv-btn-full">
         {loading ? "Envoi en cours..." : `Envoyer ma demande${photos.length > 0 ? ` (${photos.length} photo${photos.length > 1 ? "s" : ""})` : ""}`}
       </button>
     </form>
