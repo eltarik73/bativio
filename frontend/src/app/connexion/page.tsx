@@ -67,7 +67,7 @@ export default function ConnexionPage() {
           <p style={{ marginTop: 8, fontSize: 15, color: "#9B9590" }}>Connectez-vous &agrave; votre espace</p>
         </div>
 
-        <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+        <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 24 }}>
           <div>
             <label htmlFor="email" className="bv-label">Email</label>
             <input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="bv-input" placeholder="votre@email.fr" />
