@@ -60,7 +60,7 @@ a{text-decoration:none;color:inherit}button{font-family:'Karla',sans-serif;curso
 
 /* ═══ GRID ═══ */
 .grid-wrap{padding:20px 28px 56px;max-width:1264px;margin:0 auto}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:16px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
 
 /* ═══ CARD CONCEPT E ═══ */
 .card{display:flex;border-radius:14px;overflow:hidden;background:var(--blanc);border:1px solid var(--g100);cursor:pointer;transition:all .35s cubic-bezier(.22,1,.36,1);min-height:160px}
@@ -140,7 +140,7 @@ a{text-decoration:none;color:inherit}button{font-family:'Karla',sans-serif;curso
 
 /* ═══ RESPONSIVE ═══ */
 @media(max-width:1024px){.pricing-inner{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:860px){.grid{grid-template-columns:1fr}}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
 @media(max-width:768px){
   .nav{padding:0 16px;height:52px}
   .hero{padding:28px 16px 36px}
@@ -168,5 +168,69 @@ a{text-decoration:none;color:inherit}button{font-family:'Karla',sans-serif;curso
 .card:nth-child(7){animation-delay:.36s}
 .card:nth-child(8){animation-delay:.42s}
 @media(prefers-reduced-motion:reduce){.card{animation:none}}
+
+/* ═══ ARTISAN DETAIL PAGE ═══ */
+.artisan-hero{background:var(--anthracite);position:relative;overflow:hidden}
+.artisan-hero-bg{position:absolute;inset:0;opacity:.15}
+.artisan-hero-bg img{width:100%;height:100%;object-fit:cover}
+.artisan-hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(28,28,30,.6),rgba(28,28,30,.85),var(--anthracite))}
+.artisan-hero-inner{position:relative;z-index:1;max-width:800px;margin:0 auto;padding:48px 28px 56px}
+.artisan-rating-chip{display:inline-flex;align-items:center;gap:5px;background:var(--or);color:var(--anthracite);padding:5px 12px;border-radius:20px;font-family:'Fraunces',serif;font-size:14px;font-weight:700}
+.artisan-rating-chip svg{width:14px;height:14px;fill:var(--anthracite)}
+.artisan-hero h1{font-family:'Fraunces',serif;font-size:clamp(30px,5vw,52px);font-weight:700;color:var(--blanc);line-height:1.1;letter-spacing:-.5px;margin-top:12px}
+.artisan-hero .subtitle{font-size:16px;color:rgba(255,255,255,.45);margin-top:6px}
+.artisan-hero .cta-row{display:flex;gap:10px;margin-top:28px;flex-wrap:wrap}
+.artisan-hero .cta-primary{padding:12px 28px;background:var(--terre);color:var(--blanc);border-radius:10px;font-size:14px;font-weight:600;transition:all .2s;text-align:center}
+.artisan-hero .cta-primary:hover{background:var(--terre-h);transform:translateY(-2px)}
+.artisan-hero .cta-secondary{padding:12px 28px;border:1px solid rgba(255,255,255,.2);color:var(--blanc);border-radius:10px;font-size:14px;font-weight:600;transition:all .2s;text-align:center}
+.artisan-hero .cta-secondary:hover{background:rgba(255,255,255,.08)}
+
+.artisan-badges{background:#2C2C2E;padding:14px 28px}
+.artisan-badges-inner{max-width:800px;margin:0 auto;display:flex;gap:8px;overflow-x:auto}
+.artisan-badges-inner span{background:rgba(255,255,255,.85);backdrop-filter:blur(12px);color:var(--anthracite);font-size:12px;font-weight:500;padding:6px 14px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+
+.artisan-section{padding:48px 28px;max-width:800px;margin:0 auto}
+.artisan-section .sep{width:40px;height:2px;background:var(--terre);margin-bottom:14px}
+.artisan-section h2{font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--anthracite);margin-bottom:16px}
+
+.artisan-stats{display:flex;gap:32px;justify-content:center;padding:12px 0}
+.artisan-stat{text-align:center}
+.artisan-stat .n{font-family:'Fraunces',serif;font-size:28px;font-weight:700;color:var(--terre)}
+.artisan-stat .l{font-size:11px;color:var(--g400);margin-top:2px}
+
+.service-card{border-radius:14px;padding:20px;transition:all .2s}
+.service-card.featured{background:var(--anthracite);color:var(--blanc)}
+.service-card.normal{background:var(--g50);border:1px solid var(--g100)}
+.service-card h3{font-family:'Fraunces',serif;font-size:15px;font-weight:700;margin-bottom:6px}
+.service-card .desc{font-size:12px;line-height:1.5;opacity:.65}
+.service-card .price{font-size:12px;font-weight:600;margin-top:8px}
+.service-card.featured .price{color:var(--or)}
+.service-card.normal .price{color:var(--terre)}
+
+.zone-chip{display:inline-block;padding:7px 14px;background:var(--blanc);border:1px solid var(--g100);border-radius:20px;font-size:12px;color:var(--g500);margin:3px}
+
+.devis-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.devis-form-wrap{background:var(--blanc);border:1px solid var(--g100);border-radius:14px;padding:28px}
+.devis-contact-wrap{background:var(--anthracite);border-radius:14px;padding:28px;color:var(--blanc)}
+.devis-contact-wrap .label{font-size:11px;color:rgba(255,255,255,.35);margin-bottom:2px}
+.devis-contact-wrap .value{font-size:15px;font-weight:500}
+.devis-contact-wrap .value a:hover{color:var(--or)}
+
+.artisan-cta-mobile{position:fixed;bottom:0;left:0;right:0;z-index:100;display:none;gap:8px;padding:10px 16px;background:rgba(255,255,255,.92);backdrop-filter:blur(20px);border-top:1px solid var(--g100)}
+.artisan-cta-mobile a{flex:1;padding:12px;border-radius:8px;font-size:13px;font-weight:600;text-align:center;transition:all .2s}
+.artisan-cta-mobile .call{background:var(--anthracite);color:var(--blanc)}
+.artisan-cta-mobile .devis{background:var(--terre);color:var(--blanc)}
+
+.artisan-footer-siret{padding:14px;text-align:center;background:var(--g50);font-size:10px;color:var(--g400)}
+
+@media(max-width:768px){
+  .artisan-hero-inner{padding:32px 16px 40px}
+  .artisan-badges{padding:10px 16px}
+  .artisan-section{padding:32px 16px}
+  .devis-grid{grid-template-columns:1fr}
+  .artisan-cta-mobile{display:flex}
+  .artisan-stats{gap:20px}
+  .artisan-stat .n{font-size:24px}
+}
 
 ::selection{background-color:rgba(196,83,26,.2)}
