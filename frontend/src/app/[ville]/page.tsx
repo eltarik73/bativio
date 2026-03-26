@@ -37,7 +37,7 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
           <div className="absolute -bottom-[100px] -left-[60px] w-[340px] h-[340px] rounded-full bg-[rgba(232,168,76,.04)]" />
           <div className="max-w-[680px] mx-auto text-center relative z-[1]">
             <h1 className="font-display text-[clamp(26px,4vw,38px)] font-bold text-white leading-[1.15] tracking-[-0.5px] mb-2">
-              Artisans du batiment a <em className="not-italic text-or">{ville?.nom || villeSlug}</em>
+              Artisans du b&acirc;timent &agrave; <em className="not-italic text-or">{ville?.nom || villeSlug}</em>
             </h1>
             <p className="text-sm text-white/40">
               {artisans.length} artisan{artisans.length > 1 ? "s" : ""} disponible{artisans.length > 1 ? "s" : ""}
@@ -53,7 +53,7 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
           <section className="px-7 py-12 max-md:px-4 border-t border-g100">
             <div className="max-w-[800px] mx-auto">
               <h2 className="font-display text-lg font-bold text-anthracite mb-3">
-                Artisans du batiment a {ville.nom}
+                Artisans du b&acirc;timent &agrave; {ville.nom}
               </h2>
               <p className="text-[13px] text-g500 leading-relaxed">{ville.contenuSeo}</p>
             </div>

@@ -39,10 +39,10 @@ export default function Home() {
         <div className="absolute -bottom-[100px] -left-[60px] w-[340px] h-[340px] rounded-full bg-[rgba(232,168,76,.04)]" />
         <div className="max-w-[680px] mx-auto text-center relative z-[1]">
           <h1 className="font-display text-[clamp(26px,4vw,38px)] font-bold text-white leading-[1.15] tracking-[-0.5px] mb-2">
-            Trouvez votre <em className="not-italic text-or">artisan</em> en Rhone-Alpes
+            Trouvez votre <em className="not-italic text-or">artisan</em> en Rh&ocirc;ne-Alpes
           </h1>
           <p className="text-sm text-white/40 mb-6">
-            Profils verifies &middot; Avis clients &middot; Devis gratuit &middot; Zero commission
+            Profils v&eacute;rifi&eacute;s &middot; Avis clients &middot; Devis gratuit &middot; Z&eacute;ro commission
           </p>
           <div className="flex gap-[6px] bg-white/[.07] border border-white/[.08] rounded-xl p-[5px] max-w-[580px] mx-auto max-md:flex-col">
             <select
@@ -57,7 +57,7 @@ export default function Home() {
             </select>
             <input
               type="text"
-              placeholder="Plombier, electricien, renovation..."
+              placeholder="Plombier, &eacute;lectricien, r&eacute;novation..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="flex-1 px-[14px] py-[11px] rounded-lg font-body text-[13px] bg-white text-anthracite outline-none border-none min-w-0"
@@ -126,19 +126,19 @@ export default function Home() {
         <div className="absolute inset-0 bg-[repeating-linear-gradient(120deg,transparent,transparent_60px,rgba(255,255,255,.008)_60px,rgba(255,255,255,.008)_120px)] pointer-events-none" />
         <div className="max-w-[600px] mx-auto relative z-[1]">
           <div className="inline-flex items-center gap-[5px] bg-[rgba(232,168,76,.1)] text-or text-xs font-semibold px-[14px] py-[5px] rounded-[20px] mb-4">
-            &#10022; Zero commission — Abonnement fixe
+            &#10022; Z&eacute;ro commission &mdash; Abonnement fixe
           </div>
           <h2 className="font-display text-[clamp(22px,3.5vw,32px)] font-bold text-white mb-2 leading-[1.2]">
-            Vous etes <em className="not-italic text-or">artisan</em> ?
+            Vous &ecirc;tes <em className="not-italic text-or">artisan</em> ?
           </h2>
           <p className="text-sm text-white/40 mb-5">
-            Creez votre page pro en 3 minutes. Soyez visible aupres de milliers de clients.
+            Cr&eacute;ez votre page pro en 3 minutes. Soyez visible aupr&egrave;s de milliers de clients.
           </p>
           <button
             onClick={(e) => { e.stopPropagation(); setPricingOpen(!pricingOpen); }}
             className="inline-flex items-center gap-2 bg-terre text-white text-sm font-semibold px-7 py-3 rounded-[10px] transition-all hover:bg-terre-light hover:-translate-y-[2px]"
           >
-            {pricingOpen ? "Masquer les offres" : "Decouvrir les offres"}
+            {pricingOpen ? "Masquer les offres" : "D\u00e9couvrir les offres"}
             <svg className={`w-4 h-4 transition-transform duration-300 ${pricingOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" /></svg>
           </button>
         </div>
@@ -196,7 +196,7 @@ export default function Home() {
           })}
         </div>
         <div className="text-center px-7 pb-8 text-xs text-white/25 bg-[#18181a]">
-          Pas de commission. Pas de cout par devis. Pas de frais caches. <strong className="text-white/40">Jamais.</strong>
+          Pas de commission. Pas de co&ucirc;t par devis. Pas de frais cach&eacute;s. <strong className="text-white/40">Jamais.</strong>
         </div>
       </div>
     </main>
