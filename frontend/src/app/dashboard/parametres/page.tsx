@@ -3,7 +3,7 @@
 export default function ParametresPage() {
   return (
     <div>
-      <h1 className="font-display text-2xl font-bold text-anthracite mb-6">Parametres</h1>
+      <h1 className="font-display text-2xl font-bold text-anthracite mb-6">Param&egrave;tres</h1>
 
       <div className="space-y-6">
         <div className="bg-white rounded-[14px] p-6 border border-g100">

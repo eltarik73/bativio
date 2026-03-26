@@ -30,7 +30,7 @@ export default function PhotosPage() {
 
       <div className="text-center py-12">
         <p className="text-g300">Vous n&apos;avez pas encore de photos</p>
-        <p className="text-anthracite/30 text-sm mt-1">Ajoutez des photos de vos realisations pour attirer plus de clients</p>
+        <p className="text-anthracite/30 text-sm mt-1">Ajoutez des photos de vos r&eacute;alisations pour attirer plus de clients</p>
       </div>
     </div>
   );

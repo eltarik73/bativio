@@ -32,7 +32,7 @@ export default function ProfilPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-anthracite mb-1">Telephone</label>
+              <label className="block text-sm font-medium text-anthracite mb-1">T&eacute;l&eacute;phone</label>
               <input
                 type="tel"
                 value={form.telephone}
