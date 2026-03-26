@@ -61,7 +61,7 @@ export default function Home() {
             </select>
             <input
               type="text"
-              placeholder="Plombier, \u00e9lectricien, r\u00e9novation\u2026"
+              placeholder="Plombier, électricien, rénovation..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
