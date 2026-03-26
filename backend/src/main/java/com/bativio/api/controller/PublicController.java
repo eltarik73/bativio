@@ -8,6 +8,7 @@ import com.bativio.api.entity.Metier;
 import com.bativio.api.entity.Ville;
 import com.bativio.api.exception.ResourceNotFoundException;
 import com.bativio.api.repository.*;
+import com.bativio.api.service.SiretService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -24,13 +25,22 @@ public class PublicController {
     private final VilleRepository villeRepository;
     private final MetierRepository metierRepository;
     private final BadgeSystemeRepository badgeSystemeRepository;
+    private final SiretService siretService;
 
     public PublicController(ArtisanRepository artisanRepository, VilleRepository villeRepository,
-                            MetierRepository metierRepository, BadgeSystemeRepository badgeSystemeRepository) {
+                            MetierRepository metierRepository, BadgeSystemeRepository badgeSystemeRepository,
+                            SiretService siretService) {
         this.artisanRepository = artisanRepository;
         this.villeRepository = villeRepository;
         this.metierRepository = metierRepository;
         this.badgeSystemeRepository = badgeSystemeRepository;
+        this.siretService = siretService;
+    }
+
+    @GetMapping("/siret/{siret}")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> lookupSiret(@PathVariable String siret) {
+        Map<String, Object> data = siretService.lookupSiret(siret);
+        return ResponseEntity.ok(ApiResponse.ok(data));
     }
 
     @GetMapping("/artisans")

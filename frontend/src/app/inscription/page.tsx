@@ -17,6 +17,9 @@ export default function InscriptionPage() {
   const [form, setForm] = useState({
     siret: "",
     raisonSociale: "",
+    adresse: "",
+    codePostal: "",
+    codeNaf: "",
     email: "",
     telephone: "",
     password: "",
@@ -27,6 +30,8 @@ export default function InscriptionPage() {
     ville: "",
     zoneRayonKm: 25,
   });
+  const [siretLoading, setSiretLoading] = useState(false);
+  const [siretFound, setSiretFound] = useState(false);
 
   const update = (field: string, value: string | number) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -38,13 +43,74 @@ export default function InscriptionPage() {
   };
   const prev = () => setStep((s) => Math.max(s - 1, 0));
 
-  const handleSiretBlur = () => {
-    if (form.siret.length === 14) {
-      // Mock Pappers
-      update("raisonSociale", "Entreprise " + form.siret.slice(0, 4));
-      if (!form.nomAffichage) {
-        update("nomAffichage", "Entreprise " + form.siret.slice(0, 4));
+  const handleSiretLookup = async () => {
+    if (form.siret.length !== 14) return;
+    setSiretLoading(true);
+    setError("");
+    setSiretFound(false);
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+      const res = await fetch(`${API_URL}/public/siret/${form.siret}`);
+      const json = await res.json();
+      if (json.success && json.data) {
+        const d = json.data;
+        setForm((prev) => ({
+          ...prev,
+          raisonSociale: d.raisonSociale || "",
+          adresse: d.adresse || "",
+          codePostal: d.codePostal || "",
+          ville: d.ville || prev.ville,
+          codeNaf: d.codeNaf || "",
+          nomAffichage: prev.nomAffichage || d.raisonSociale || "",
+        }));
+        setSiretFound(true);
+      } else {
+        // Fallback: appel direct API DINUM depuis le frontend
+        const dinumRes = await fetch(`https://recherche-entreprises.api.gouv.fr/search?q=${form.siret}`);
+        const dinumJson = await dinumRes.json();
+        if (dinumJson.results && dinumJson.results.length > 0) {
+          const e = dinumJson.results[0];
+          const s = e.siege || {};
+          setForm((prev) => ({
+            ...prev,
+            raisonSociale: e.nom_complet || "",
+            adresse: s.geo_adresse || s.adresse || "",
+            codePostal: s.code_postal || "",
+            ville: s.libelle_commune || prev.ville,
+            codeNaf: s.activite_principale || "",
+            nomAffichage: prev.nomAffichage || e.nom_complet || "",
+          }));
+          setSiretFound(true);
+        } else {
+          setError("SIRET introuvable. V\u00e9rifiez le num\u00e9ro.");
+        }
       }
+    } catch {
+      // Fallback direct API DINUM
+      try {
+        const dinumRes = await fetch(`https://recherche-entreprises.api.gouv.fr/search?q=${form.siret}`);
+        const dinumJson = await dinumRes.json();
+        if (dinumJson.results && dinumJson.results.length > 0) {
+          const e = dinumJson.results[0];
+          const s = e.siege || {};
+          setForm((prev) => ({
+            ...prev,
+            raisonSociale: e.nom_complet || "",
+            adresse: s.geo_adresse || s.adresse || "",
+            codePostal: s.code_postal || "",
+            ville: s.libelle_commune || prev.ville,
+            codeNaf: s.activite_principale || "",
+            nomAffichage: prev.nomAffichage || e.nom_complet || "",
+          }));
+          setSiretFound(true);
+        } else {
+          setError("SIRET introuvable. V\u00e9rifiez le num\u00e9ro.");
+        }
+      } catch {
+        setError("Impossible de v\u00e9rifier le SIRET. R\u00e9essayez.");
+      }
+    } finally {
+      setSiretLoading(false);
     }
   };
 
@@ -94,26 +160,62 @@ export default function InscriptionPage() {
         {step === 0 && (
           <div>
             <h2 className="font-display text-2xl font-bold text-anthracite mb-2">Votre SIRET</h2>
-            <p className="text-anthracite/60 text-sm mb-6">Nous recupererons automatiquement vos informations</p>
-            <input
-              type="text"
-              maxLength={14}
-              value={form.siret}
-              onChange={(e) => update("siret", e.target.value.replace(/\D/g, ""))}
-              onBlur={handleSiretBlur}
-              placeholder="12345678901234"
-              className="w-full px-4 py-3 rounded-lg border border-black/10 text-lg tracking-wider text-center font-mono focus:ring-2 focus:ring-terre/30 focus:border-terre outline-none"
-            />
-            {form.raisonSociale && (
-              <div className="mt-4 p-4 bg-creme rounded-lg">
-                <p className="text-sm text-anthracite/60">Raison sociale</p>
-                <p className="font-medium">{form.raisonSociale}</p>
+            <p style={{ color: "var(--g500)", fontSize: 14, marginBottom: 20 }}>Nous r&eacute;cup&eacute;rons automatiquement vos informations depuis la base SIRENE</p>
+            <div style={{ display: "flex", gap: 8 }}>
+              <input
+                type="text"
+                maxLength={14}
+                value={form.siret}
+                onChange={(e) => { update("siret", e.target.value.replace(/\D/g, "")); setSiretFound(false); }}
+                placeholder="Entrez votre SIRET (14 chiffres)"
+                style={{ flex: 1, padding: "14px 16px", borderRadius: 10, border: "1px solid var(--g200)", fontSize: 16, letterSpacing: 1.5, textAlign: "center", fontFamily: "monospace", outline: "none" }}
+              />
+              <button
+                type="button"
+                onClick={handleSiretLookup}
+                disabled={form.siret.length !== 14 || siretLoading}
+                style={{ padding: "14px 20px", borderRadius: 10, background: form.siret.length === 14 ? "var(--terre)" : "var(--g200)", color: form.siret.length === 14 ? "#fff" : "var(--g400)", fontSize: 14, fontWeight: 600, whiteSpace: "nowrap", transition: "all .2s", cursor: form.siret.length === 14 ? "pointer" : "not-allowed" }}
+              >
+                {siretLoading ? "..." : "V\u00e9rifier"}
+              </button>
+            </div>
+            {siretFound && form.raisonSociale && (
+              <div style={{ marginTop: 16, padding: 16, background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}>
+                  <span style={{ color: "#16a34a", fontSize: 16 }}>&#10003;</span>
+                  <span style={{ fontWeight: 600, color: "#166534", fontSize: 14 }}>Entreprise trouv&eacute;e</span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                  <div>
+                    <p style={{ fontSize: 11, color: "var(--g400)" }}>Raison sociale</p>
+                    <p style={{ fontSize: 14, fontWeight: 600, color: "var(--anthracite)" }}>{form.raisonSociale}</p>
+                  </div>
+                  {form.adresse && (
+                    <div>
+                      <p style={{ fontSize: 11, color: "var(--g400)" }}>Adresse</p>
+                      <p style={{ fontSize: 13, color: "var(--g500)" }}>{form.adresse}</p>
+                    </div>
+                  )}
+                  {form.ville && (
+                    <div>
+                      <p style={{ fontSize: 11, color: "var(--g400)" }}>Ville</p>
+                      <p style={{ fontSize: 13, color: "var(--g500)" }}>{form.ville}</p>
+                    </div>
+                  )}
+                  {form.codeNaf && (
+                    <div>
+                      <p style={{ fontSize: 11, color: "var(--g400)" }}>Code NAF</p>
+                      <p style={{ fontSize: 13, color: "var(--g500)" }}>{form.codeNaf}</p>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
+            {error && <p style={{ color: "#dc2626", fontSize: 13, marginTop: 12 }}>{error}</p>}
             <button
               onClick={next}
               disabled={form.siret.length !== 14}
-              className="w-full mt-6 py-3 bg-terre text-white rounded-lg font-medium hover:bg-terre-light transition-colors disabled:opacity-50"
+              style={{ width: "100%", marginTop: 20, padding: 14, borderRadius: 10, background: form.siret.length === 14 ? "var(--terre)" : "var(--g200)", color: form.siret.length === 14 ? "#fff" : "var(--g400)", fontSize: 15, fontWeight: 600, transition: "all .2s", cursor: form.siret.length === 14 ? "pointer" : "not-allowed" }}
             >
               Continuer
             </button>
