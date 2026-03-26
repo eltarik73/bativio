@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bativio — Créez votre espace artisan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--terre:#C4531A;--terre-h:#D4733A;--terre-10:rgba(196,83,26,.08);--anthracite:#1C1C1E;--or:#E8A84C;--creme:#FAF8F5;--blanc:#FFFFFF;--g50:#F7F5F2;--g100:#EDEBE7;--g200:#E0DDD8;--g300:#C5C0B9;--g400:#9B9590;--g500:#6B6560;--green:#22c55e}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px}
+body{font-family:'Karla',sans-serif;color:var(--anthracite);background:var(--creme);min-height:100vh;display:flex;flex-direction:column}
+.nav{height:56px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;background:rgba(250,248,245,.94);backdrop-filter:blur(20px);border-bottom:1px solid rgba(28,28,30,.04)}
+.nav-logo{font-family:'Fraunces',serif;font-size:21px;font-weight:700;color:var(--terre);text-decoration:none}
+.nav-link{font-size:13px;color:var(--g400);text-decoration:none;transition:color .2s}.nav-link:hover{color:var(--anthracite)}
+.page{flex:1;display:flex;flex-direction:column;align-items:center;padding:40px 20px 60px}
+.stepper{display:flex;align-items:center;margin-bottom:48px}
+.step{display:flex;flex-direction:column;align-items:center;gap:10px}
+.step-dot{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:15px;font-weight:700;transition:all .4s cubic-bezier(.22,1,.36,1)}
+.step-dot.future{background:var(--blanc);border:2px solid var(--g200);color:var(--g300)}
+.step-dot.active{background:var(--terre);border:2px solid var(--terre);color:var(--blanc);box-shadow:0 0 0 6px var(--terre-10)}
+.step-dot.done{background:var(--terre);border:2px solid var(--terre);color:var(--blanc)}
+.step-dot.done svg{width:18px;height:18px}
+.step-label{font-size:12px;font-weight:600;letter-spacing:.3px;color:var(--g300);transition:color .3s}
+.step-label.active{color:var(--terre)}.step-label.done{color:var(--terre)}
+.step-line{width:64px;height:2px;background:var(--g200);margin:0 -4px;margin-bottom:28px;transition:background .4s}
+.step-line.done{background:var(--terre)}
+.card{background:var(--blanc);border-radius:20px;border:1px solid var(--g100);box-shadow:0 4px 32px rgba(28,28,30,.06);width:100%;max-width:520px;overflow:hidden;position:relative}
+.card-inner{padding:44px 40px}
+.step-content{display:none;animation:fadeSlide .4s ease-out}
+.step-content.active{display:block}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.card-title{font-family:'Fraunces',serif;font-size:26px;font-weight:700;color:var(--anthracite);margin-bottom:6px;line-height:1.2}
+.card-subtitle{font-size:15px;color:var(--g400);line-height:1.5;margin-bottom:32px}
+.field{margin-bottom:24px}.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--anthracite);margin-bottom:8px;letter-spacing:.2px}
+.field label .opt{font-weight:400;color:var(--g300)}
+.field input,.field textarea,.field select{width:100%;height:48px;padding:0 16px;border:1.5px solid var(--g200);border-radius:12px;font-family:'Karla',sans-serif;font-size:15px;color:var(--anthracite);background:var(--blanc);outline:none;transition:all .2s}
+.field textarea{height:auto;min-height:100px;padding:14px 16px;resize:vertical}
+.field select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%239B9590' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}
+.field input:hover,.field textarea:hover,.field select:hover{border-color:var(--g300)}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--terre);box-shadow:0 0 0 3px var(--terre-10)}
+.field input::placeholder,.field textarea::placeholder{color:var(--g300);font-size:14px}
+.field input.ro{background:var(--g50);color:var(--g500);cursor:default}
+.siret-input{height:64px!important;font-size:22px!important;text-align:center;letter-spacing:3px;font-weight:500;border-width:2px!important;border-radius:14px!important}
+.siret-input:focus{border-color:var(--terre)!important;box-shadow:0 0 0 4px var(--terre-10)!important}
+.btn{width:100%;height:52px;border:none;border-radius:12px;font-family:'Karla',sans-serif;font-size:16px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-p{background:var(--terre);color:var(--blanc)}.btn-p:hover{background:var(--terre-h)}.btn-p:active{transform:scale(.98)}
+.btn-p:disabled{background:var(--g200);color:var(--g400);cursor:not-allowed}.btn-p:disabled:hover{background:var(--g200)}
+.btn-o{background:transparent;border:1.5px solid var(--g200);color:var(--anthracite)}.btn-o:hover{border-color:var(--g300);background:rgba(0,0,0,.02)}
+.btn-row{display:flex;gap:12px;margin-top:32px}.btn-row .btn{flex:1}
+.help{display:block;text-align:center;margin-top:20px;font-size:13px;color:var(--g400)}.help a{color:var(--terre);font-weight:500;text-decoration:none}.help a:hover{text-decoration:underline}
+.progress{height:4px;background:var(--terre);border-radius:2px;position:absolute;top:0;left:0;transition:width .5s cubic-bezier(.22,1,.36,1)}
+.mg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:8px}
+.mc{padding:16px 12px;border-radius:12px;border:1.5px solid var(--g200);text-align:center;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:8px;background:var(--blanc)}
+.mc:hover{border-color:var(--g300);background:var(--g50)}.mc.sel{border-color:var(--terre);background:var(--terre-10)}
+.mc .ico{font-size:24px}.mc .nm{font-size:12px;font-weight:600;color:var(--anthracite)}.mc.sel .nm{color:var(--terre)}
+.zp{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.zpl{padding:8px 16px;border-radius:20px;border:1.5px solid var(--g200);font-size:13px;font-weight:500;color:var(--g500);cursor:pointer;transition:all .2s;background:var(--blanc)}
+.zpl:hover{border-color:var(--g300)}.zpl.sel{border-color:var(--terre);background:var(--terre-10);color:var(--terre)}
+.uz{border:2px dashed var(--g200);border-radius:14px;padding:32px;text-align:center;cursor:pointer;transition:all .2s;background:var(--g50)}
+.uz:hover{border-color:var(--terre);background:var(--terre-10)}
+.uzi{width:40px;height:40px;margin:0 auto 12px;background:var(--blanc);border-radius:10px;display:flex;align-items:center;justify-content:center;border:1px solid var(--g100)}
+.uzi svg{width:20px;height:20px;stroke:var(--g400)}
+.uzt{font-size:14px;color:var(--g500)}.uzt strong{color:var(--terre);font-weight:600}
+.uzh{font-size:12px;color:var(--g300);margin-top:4px}
+@media(max-width:580px){.card-inner{padding:28px 20px}.card-title{font-size:22px}.stepper{gap:0;margin-bottom:32px}.step-line{width:32px}.step-dot{width:32px;height:32px;font-size:13px}.mg{grid-template-columns:repeat(2,1fr)}.btn-row{flex-direction:column-reverse}}
+</style>
+</head>
+<body>
+<nav class="nav"><a href="/" class="nav-logo">Bativio</a><a href="/connexion" class="nav-link">Déjà inscrit ? Se connecter</a></nav>
+<main class="page">
+<div class="stepper" id="stepper">
+  <div class="step"><div class="step-dot active" id="d0">1</div><div class="step-label active" id="l0">SIREN</div></div>
+  <div class="step-line" id="ln0"></div>
+  <div class="step"><div class="step-dot future" id="d1">2</div><div class="step-label" id="l1">Infos</div></div>
+  <div class="step-line" id="ln1"></div>
+  <div class="step"><div class="step-dot future" id="d2">3</div><div class="step-label" id="l2">Métier</div></div>
+  <div class="step-line" id="ln2"></div>
+  <div class="step"><div class="step-dot future" id="d3">4</div><div class="step-label" id="l3">Zone</div></div>
+  <div class="step-line" id="ln3"></div>
+  <div class="step"><div class="step-dot future" id="d4">5</div><div class="step-label" id="l4">Photos</div></div>
+</div>
+<div class="card">
+  <div class="progress" id="pb" style="width:20%"></div>
+  <div class="card-inner">
+    <div class="step-content active" id="s0">
+      <div class="card-title">Votre SIREN ou SIRET</div>
+      <div class="card-subtitle">Nous récupérerons automatiquement les informations de votre entreprise.</div>
+      <div class="field"><input type="text" class="siret-input" id="si" placeholder="123 456 789" maxlength="19" oninput="fmtS(this);chkS()"></div>
+      <button class="btn btn-p" id="sb" disabled onclick="go(1)">Vérifier et continuer <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      <div class="help">Vous n'avez pas de SIREN/SIRET ? <a href="#">Contactez-nous</a></div>
+    </div>
+    <div class="step-content" id="s1">
+      <div class="card-title">Vos informations</div>
+      <div class="card-subtitle">Vérifiez et complétez les informations de votre entreprise.</div>
+      <div class="field"><label>Raison sociale</label><input type="text" class="ro" value="Martin Plomberie SARL" readonly></div>
+      <div class="field"><label>Nom d'affichage</label><input type="text" value="Martin Plomberie" placeholder="Le nom visible par vos clients"></div>
+      <div class="field"><label>Email professionnel</label><input type="email" placeholder="contact@martin-plomberie.fr"></div>
+      <div class="field"><label>Téléphone</label><input type="tel" placeholder="04 79 12 34 56"></div>
+      <div class="field"><label>Mot de passe</label><input type="password" placeholder="8 caractères minimum"></div>
+      <div class="btn-row">
+        <button class="btn btn-o" onclick="go(0)"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Retour</button>
+        <button class="btn btn-p" onclick="go(2)">Continuer <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+    <div class="step-content" id="s2">
+      <div class="card-title">Votre métier</div>
+      <div class="card-subtitle">Sélectionnez votre activité principale.</div>
+      <div class="mg">
+        <div class="mc" onclick="selM(this)"><div class="ico">🔧</div><div class="nm">Plombier</div></div>
+        <div class="mc" onclick="selM(this)"><div class="ico">⚡</div><div class="nm">Électricien</div></div>
+        <div class="mc" onclick="selM(this)"><div class="ico">🎨</div><div class="nm">Peintre</div></div>
+        <div class="mc" onclick="selM(this)"><div class="ico">🧱</div><div class="nm">Maçon</div></div>
+        <div class="mc" onclick="selM(this)"><div class="ico">🔲</div><div class="nm">Carreleur</div></div>
+        <div class="mc" onclick="selM(this)"><div class="ico">🪚</div><div class="nm">Menuisier</div></div>
+        <div class="mc" onclick="selM(this)"><div class="ico">🏠</div><div class="nm">Couvreur</div></div>
+        <div class="mc" onclick="selM(this)"><div class="ico">🔥</div><div class="nm">Chauffagiste</div></div>
+        <div class="mc" onclick="selM(this)"><div class="ico">🔑</div><div class="nm">Serrurier</div></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-o" onclick="go(1)"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Retour</button>
+        <button class="btn btn-p" onclick="go(3)">Continuer <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+    <div class="step-content" id="s3">
+      <div class="card-title">Zone d'intervention</div>
+      <div class="card-subtitle">Où intervenez-vous ?</div>
+      <div class="field"><label>Rayon d'intervention</label>
+        <select><option>10 km autour de mon adresse</option><option>25 km autour de mon adresse</option><option>50 km autour de mon adresse</option><option>Toute la Savoie (73)</option></select>
+      </div>
+      <div class="field"><label>Communes principales <span class="opt">(optionnel)</span></label>
+        <div class="zp">
+          <div class="zpl sel" onclick="this.classList.toggle('sel')">Chambéry</div>
+          <div class="zpl sel" onclick="this.classList.toggle('sel')">Cognin</div>
+          <div class="zpl" onclick="this.classList.toggle('sel')">La Motte-Servolex</div>
+          <div class="zpl" onclick="this.classList.toggle('sel')">Bissy</div>
+          <div class="zpl" onclick="this.classList.toggle('sel')">Bassens</div>
+          <div class="zpl" onclick="this.classList.toggle('sel')">Aix-les-Bains</div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-o" onclick="go(2)"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Retour</button>
+        <button class="btn btn-p" onclick="go(4)">Continuer <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+    <div class="step-content" id="s4">
+      <div class="card-title">Vos réalisations</div>
+      <div class="card-subtitle">Ajoutez des photos de vos chantiers pour convaincre vos futurs clients.</div>
+      <div class="uz">
+        <div class="uzi"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 16V4m0 0l-4 4m4-4l4 4M4 14v4a2 2 0 002 2h12a2 2 0 002-2v-4"/></svg></div>
+        <div class="uzt">Glissez vos photos ici ou <strong>parcourir</strong></div>
+        <div class="uzh">JPG, PNG ou WebP · max 10 Mo · jusqu'à 3 photos (Gratuit)</div>
+      </div>
+      <div class="btn-row" style="margin-top:28px">
+        <button class="btn btn-o" onclick="go(3)"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Retour</button>
+        <button class="btn btn-p" onclick="alert('Inscription terminée !')">Créer mon espace <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></button>
+      </div>
+      <div class="help" style="margin-top:16px">Vous pourrez ajouter plus de photos plus tard.</div>
+    </div>
+  </div>
+</div>
+</main>
+<script>
+let cur=0;
+function go(s){
+  document.getElementById('s'+cur).classList.remove('active');
+  document.getElementById('s'+s).classList.add('active');
+  for(let i=0;i<5;i++){
+    const d=document.getElementById('d'+i),l=document.getElementById('l'+i);
+    d.className='step-dot '+(i<s?'done':i===s?'active':'future');
+    l.className='step-label '+(i<s?'done':i===s?'active':'');
+    d.innerHTML=i<s?'<svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>':(i+1);
+    if(i<4)document.getElementById('ln'+i).className='step-line '+(i<s?'done':'');
+  }
+  document.getElementById('pb').style.width=((s+1)*20)+'%';
+  cur=s;window.scrollTo({top:0,behavior:'smooth'});
+}
+function fmtS(el){let v=el.value.replace(/\D/g,'');if(v.length>14)v=v.slice(0,14);if(v.length<=9)el.value=v.replace(/(\d{3})(?=\d)/g,'$1 ').trim();else el.value=v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,5})/,'$1 $2 $3 $4').trim();}
+function chkS(){const v=document.getElementById('si').value.replace(/\s/g,'');document.getElementById('sb').disabled=!(v.length===9||v.length===14);}
+function selM(el){document.querySelectorAll('.mc').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');}
+</script>
+</body>
+</html>
