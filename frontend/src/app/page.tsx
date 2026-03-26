@@ -1,20 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import ArtisanCard from "@/components/ArtisanCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { MOCK_ARTISANS, MOCK_METIERS } from "@/lib/mock-data";
-import { VILLES, PLANS } from "@/lib/constants";
+import { VILLES } from "@/lib/constants";
 
-const CHECK = <svg className="w-[13px] h-[13px] text-or flex-shrink-0 mt-[1px]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg>;
+const PLANS_DATA = [
+  { name: "Gratuit", price: "0\u20AC", per: "", desc: "Pour d\u00e9marrer et tester", pop: false, btn: "ghost",
+    feats: ["Fiche sur l\u2019annuaire", "Formulaire de devis", "3 photos max", "2 badges"] },
+  { name: "Essentiel", price: "19\u20AC", per: "/mois", desc: "Visible et joignable", pop: false, btn: "ghost",
+    feats: ["10 photos + avant/apr\u00e8s", "Badges illimit\u00e9s", "Agenda + RDV en ligne", "SMS rappel + relance 20min", "R\u00e9ception factures PA"] },
+  { name: "Pro", price: "49\u20AC", per: "/mois", desc: "Vitrine compl\u00e8te + facturation", pop: true, btn: "fill",
+    feats: ["<strong>URL perso (site vitrine)</strong>", "Photos illimit\u00e9es", "QR Code + bouton Google", "Mini-CRM clients", "Transmission PA", "Export comptable"] },
+  { name: "Pro+", price: "79\u20AC", per: "/mois", desc: "Augment\u00e9 par l\u2019IA", pop: false, btn: "ghost",
+    feats: ["<strong>Agent IA r\u00e9pondeur</strong>", "<strong>Devis IA automatique</strong>", "Cr\u00e9ation factures", "Support d\u00e9di\u00e9"] },
+];
 
 export default function Home() {
   const [villeFilter, setVilleFilter] = useState("");
   const [metierFilter, setMetierFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [pricingOpen, setPricingOpen] = useState(false);
+  const ppRef = useRef<HTMLDivElement>(null);
 
   const filtered = MOCK_ARTISANS.filter((a) => {
     const vs = a.ville.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
@@ -30,177 +40,102 @@ export default function Home() {
     return true;
   });
 
+  const togglePricing = () => {
+    const next = !pricingOpen;
+    setPricingOpen(next);
+    if (next) setTimeout(() => ppRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 80);
+  };
+
   return (
     <>
-    <Navbar />
-    <main>
-      <section className="bg-anthracite px-7 pt-10 pb-12 max-md:px-4 max-md:pt-7 max-md:pb-9 relative overflow-hidden">
-        <div className="absolute -top-[120px] -right-[80px] w-[400px] h-[400px] rounded-full bg-[rgba(196,83,26,.06)]" />
-        <div className="absolute -bottom-[100px] -left-[60px] w-[340px] h-[340px] rounded-full bg-[rgba(232,168,76,.04)]" />
-        <div className="max-w-[680px] mx-auto text-center relative z-[1]">
-          <h1 className="font-display text-[clamp(26px,4vw,38px)] font-bold text-white leading-[1.15] tracking-[-0.5px] mb-2">
-            Trouvez votre <em className="not-italic text-or">artisan</em> en Rh&ocirc;ne-Alpes
-          </h1>
-          <p className="text-sm text-white/40 mb-6">
-            Profils v&eacute;rifi&eacute;s &middot; Avis clients &middot; Devis gratuit &middot; Z&eacute;ro commission
-          </p>
-          <div className="flex gap-[6px] bg-white/[.07] border border-white/[.08] rounded-xl p-[5px] max-w-[580px] mx-auto max-md:flex-col">
-            <select
-              value={villeFilter}
-              onChange={(e) => setVilleFilter(e.target.value)}
-              className="flex-1 max-w-[170px] max-md:max-w-full px-[14px] py-[11px] rounded-lg font-body text-[13px] bg-white text-g500 outline-none border-none cursor-pointer"
-            >
+      <Navbar />
+
+      <section className="hero">
+        <div className="hero-inner">
+          <h1>Trouvez votre <em>artisan</em> en Rh&ocirc;ne-Alpes</h1>
+          <p className="hero-sub">Profils v&eacute;rifi&eacute;s &middot; Avis clients &middot; Devis gratuit &middot; Z&eacute;ro commission</p>
+          <div className="search-bar">
+            <select value={villeFilter} onChange={(e) => setVilleFilter(e.target.value)}>
               <option value="">Toutes les villes</option>
-              {VILLES.map((v) => (
-                <option key={v.slug} value={v.slug}>{v.nom}</option>
-              ))}
+              {VILLES.map((v) => <option key={v.slug} value={v.slug}>{v.nom}</option>)}
             </select>
             <input
               type="text"
-              placeholder="Plombier, &eacute;lectricien, r&eacute;novation..."
+              placeholder="Plombier, \u00e9lectricien, r\u00e9novation\u2026"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 px-[14px] py-[11px] rounded-lg font-body text-[13px] bg-white text-anthracite outline-none border-none min-w-0"
             />
-            <button className="bg-terre text-white px-[22px] py-[11px] rounded-lg text-[13px] font-semibold transition-all hover:bg-terre-light whitespace-nowrap flex items-center gap-[6px]">
-              <svg className="w-[15px] h-[15px]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+            <button className="search-btn">
+              <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
               Rechercher
             </button>
           </div>
         </div>
       </section>
 
-      {/* Filters */}
-      <div className="px-7 py-3 bg-white border-b border-g100 sticky top-14 max-md:top-[52px] z-[90] max-md:px-4 max-md:py-[10px]">
-        <div className="max-w-[1200px] mx-auto flex items-center gap-[6px] overflow-x-auto hide-scroll">
-          <button
-            onClick={() => setMetierFilter("all")}
-            className={`px-[14px] py-[7px] rounded-[20px] text-xs font-medium border whitespace-nowrap transition-all duration-150 ${
-              metierFilter === "all"
-                ? "bg-anthracite text-white border-anthracite"
-                : "border-g200 text-g500 hover:border-g300 hover:text-anthracite bg-transparent"
-            }`}
-          >
-            Tous
-          </button>
+      <div className="filters">
+        <div className="filters-inner hide-scroll">
+          <button className={`pill ${metierFilter === "all" ? "active" : ""}`} onClick={() => setMetierFilter("all")}>Tous</button>
           {MOCK_METIERS.map((m) => (
-            <button
-              key={m.slug}
-              onClick={() => setMetierFilter(m.slug)}
-              className={`px-[14px] py-[7px] rounded-[20px] text-xs font-medium border whitespace-nowrap transition-all duration-150 ${
-                metierFilter === m.slug
-                  ? "bg-anthracite text-white border-anthracite"
-                  : "border-g200 text-g500 hover:border-g300 hover:text-anthracite bg-transparent"
-              }`}
-            >
-              {m.nom}
-            </button>
+            <button key={m.slug} className={`pill ${metierFilter === m.slug ? "active" : ""}`} onClick={() => setMetierFilter(m.slug)}>{m.nom}</button>
           ))}
-          <span className="ml-auto text-xs text-g400 whitespace-nowrap font-medium">
-            {filtered.length} artisan{filtered.length > 1 ? "s" : ""}
-          </span>
+          <span className="result-count">{filtered.length} artisan{filtered.length > 1 ? "s" : ""}</span>
         </div>
       </div>
 
-      {/* Grid */}
-      <div className="px-7 pt-5 pb-14 max-w-[1264px] mx-auto max-md:px-4 max-md:pt-4 max-md:pb-10">
-        {filtered.length > 0 ? (
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(420px,1fr))] max-[860px]:grid-cols-1 gap-4">
-            {filtered.map((a) => (
-              <ArtisanCard key={a.id} artisan={a} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-14">
-            <h3 className="font-display text-lg mb-[6px]">Aucun artisan trouve</h3>
-            <p className="text-[13px] text-g400">Essayez avec d&apos;autres criteres.</p>
-          </div>
-        )}
+      <div className="grid-wrap">
+        <div className="grid">
+          {filtered.length > 0 ? (
+            filtered.map((a) => <ArtisanCard key={a.id} artisan={a} />)
+          ) : (
+            <div className="empty">
+              <h3>Aucun artisan trouv&eacute;</h3>
+              <p>Essayez avec d&apos;autres crit&egrave;res.</p>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Artisan Banner */}
-      <section
-        className="bg-anthracite px-7 py-12 max-md:px-4 max-md:py-9 text-center relative overflow-hidden cursor-pointer transition-colors hover:bg-[#252527]"
-        onClick={() => setPricingOpen(!pricingOpen)}
-      >
-        <div className="absolute inset-0 bg-[repeating-linear-gradient(120deg,transparent,transparent_60px,rgba(255,255,255,.008)_60px,rgba(255,255,255,.008)_120px)] pointer-events-none" />
-        <div className="max-w-[600px] mx-auto relative z-[1]">
-          <div className="inline-flex items-center gap-[5px] bg-[rgba(232,168,76,.1)] text-or text-xs font-semibold px-[14px] py-[5px] rounded-[20px] mb-4">
-            &#10022; Z&eacute;ro commission &mdash; Abonnement fixe
-          </div>
-          <h2 className="font-display text-[clamp(22px,3.5vw,32px)] font-bold text-white mb-2 leading-[1.2]">
-            Vous &ecirc;tes <em className="not-italic text-or">artisan</em> ?
-          </h2>
-          <p className="text-sm text-white/40 mb-5">
-            Cr&eacute;ez votre page pro en 3 minutes. Soyez visible aupr&egrave;s de milliers de clients.
-          </p>
-          <button
-            onClick={(e) => { e.stopPropagation(); setPricingOpen(!pricingOpen); }}
-            className="inline-flex items-center gap-2 bg-terre text-white text-sm font-semibold px-7 py-3 rounded-[10px] transition-all hover:bg-terre-light hover:-translate-y-[2px]"
-          >
+      <section className="artisan-banner" onClick={togglePricing}>
+        <div className="artisan-inner">
+          <div className="zero-chip">&#10022; Z&eacute;ro commission &mdash; Abonnement fixe</div>
+          <h2>Vous &ecirc;tes <em>artisan</em> ?</h2>
+          <p>Cr&eacute;ez votre page pro en 3 minutes. Soyez visible aupr&egrave;s de milliers de clients.</p>
+          <button className={`toggle-btn ${pricingOpen ? "open" : ""}`} onClick={(e) => { e.stopPropagation(); togglePricing(); }}>
             {pricingOpen ? "Masquer les offres" : "D\u00e9couvrir les offres"}
-            <svg className={`w-4 h-4 transition-transform duration-300 ${pricingOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" /></svg>
+            <svg fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" /></svg>
           </button>
         </div>
       </section>
 
-      {/* Pricing Panel */}
-      <div
-        className={`overflow-hidden transition-[max-height] duration-500 ease-[cubic-bezier(.22,1,.36,1)] bg-[#18181a] ${
-          pricingOpen ? "max-h-[1200px]" : "max-h-0"
-        }`}
-      >
-        <div className="max-w-[1080px] mx-auto px-7 pt-2 pb-10 grid grid-cols-4 gap-3 max-[1024px]:grid-cols-2 max-md:grid-cols-1 max-md:max-w-[340px] max-md:px-4">
-          {PLANS.map((plan) => {
-            const isPop = "populaire" in plan && plan.populaire;
-            return (
-              <div
-                key={plan.id}
-                className={`bg-white/[.03] border rounded-[14px] px-[18px] py-6 flex flex-col transition-all hover:bg-white/[.05] hover:border-white/10 ${
-                  isPop ? "border-2 border-terre bg-[rgba(196,83,26,.05)] relative" : "border-white/[.06]"
-                }`}
-              >
-                {isPop && (
-                  <div className="absolute -top-[10px] left-1/2 -translate-x-1/2 bg-terre text-white text-[9px] font-semibold px-3 py-[3px] rounded-[20px] whitespace-nowrap uppercase tracking-[0.5px]">
-                    Le + populaire
-                  </div>
-                )}
-                <div className="font-display text-[17px] font-semibold text-white">{plan.nom}</div>
-                <div className="flex items-baseline gap-[2px] mt-[6px] mb-[3px]">
-                  <span className="font-display text-[30px] font-bold text-white">
-                    {plan.prix === 0 ? "0\u20AC" : `${plan.prix}\u20AC`}
-                  </span>
-                  {plan.prix > 0 && <span className="text-xs text-white/35">/mois</span>}
-                </div>
-                <div className="text-[11px] text-white/30 mb-4 leading-[1.4]">{plan.description}</div>
-                <ul className="flex-1 mb-[18px] space-y-0">
-                  {plan.features.map((f) => (
-                    <li key={f} className="text-[11px] py-[3px] flex items-start gap-[5px] text-white/50">
-                      {CHECK}
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="/inscription"
-                  className={`block text-center py-[10px] rounded-lg text-xs font-semibold transition-all ${
-                    isPop
-                      ? "bg-terre text-white hover:bg-terre-light"
-                      : "border border-white/[.12] text-white/60 hover:border-white/25 hover:text-white"
-                  }`}
-                >
-                  {plan.prix === 0 ? "Commencer" : "Choisir"}
-                </Link>
-              </div>
-            );
-          })}
+      <div ref={ppRef} className={`pricing-panel ${pricingOpen ? "open" : ""}`}>
+        <div className="pricing-inner">
+          {PLANS_DATA.map((p) => (
+            <div key={p.name} className={`plan ${p.pop ? "pop" : ""}`}>
+              {p.pop && <div className="plan-badge">Le + populaire</div>}
+              <div className="plan-name">{p.name}</div>
+              <div className="plan-price"><span className="n">{p.price}</span>{p.per && <span className="p">{p.per}</span>}</div>
+              <div className="plan-desc">{p.desc}</div>
+              <ul className="plan-feat">
+                {p.feats.map((f) => (
+                  <li key={f}>
+                    <svg fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg>
+                    <span dangerouslySetInnerHTML={{ __html: f }} />
+                  </li>
+                ))}
+              </ul>
+              <Link href="/inscription" className={`plan-btn ${p.btn}`}>
+                {p.price === "0\u20AC" ? "Commencer" : "Choisir"}
+              </Link>
+            </div>
+          ))}
         </div>
-        <div className="text-center px-7 pb-8 text-xs text-white/25 bg-[#18181a]">
-          Pas de commission. Pas de co&ucirc;t par devis. Pas de frais cach&eacute;s. <strong className="text-white/40">Jamais.</strong>
+        <div className="pricing-note">
+          Pas de commission. Pas de co&ucirc;t par devis. Pas de frais cach&eacute;s. <strong style={{ color: "rgba(255,255,255,.4)" }}>Jamais.</strong>
         </div>
       </div>
-    </main>
-    <Footer />
+
+      <Footer />
     </>
   );
 }
