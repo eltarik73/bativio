@@ -14,7 +14,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
 
   return (
-    <div className="flex min-h-screen bg-creme">
+    <div className="flex min-h-screen bg-g50">
       <aside className="hidden md:flex flex-col w-64 bg-anthracite text-white p-6">
         <Link href="/admin" className="font-display text-xl font-bold text-or mb-8">
           Bativio Admin
@@ -37,8 +37,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </nav>
       </aside>
       <div className="flex-1">
-        <header className="bg-white border-b border-black/5 px-6 py-4">
-          <p className="text-sm text-anthracite/50">Administration Bativio</p>
+        <header className="bg-white border-b border-g100 px-6 py-4">
+          <p className="text-sm text-g400">Administration Bativio</p>
         </header>
         <main className="p-4 md:p-8">{children}</main>
       </div>

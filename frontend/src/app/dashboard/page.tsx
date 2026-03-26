@@ -26,7 +26,7 @@ export default function DashboardPage() {
   return (
     <div>
       {/* Profile completion */}
-      <div className="bg-white rounded-xl p-6 mb-6 shadow-sm">
+      <div className="bg-white rounded-[14px] border border-g100 p-6 mb-6">
         <div className="flex items-center gap-4">
           <div className="relative w-16 h-16">
             <svg className="w-16 h-16 -rotate-90">
@@ -40,7 +40,7 @@ export default function DashboardPage() {
           </div>
           <div>
             <h2 className="font-display text-lg font-bold text-anthracite">Profil presque complet</h2>
-            <p className="text-sm text-anthracite/50">Ajoutez des photos pour atteindre 100%</p>
+            <p className="text-sm text-g400">Ajoutez des photos pour atteindre 100%</p>
           </div>
         </div>
       </div>
@@ -48,15 +48,15 @@ export default function DashboardPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {stats.map((s) => (
-          <div key={s.label} className="bg-white rounded-xl p-5 shadow-sm">
+          <div key={s.label} className="bg-white rounded-[14px] border border-g100 p-5">
             <p className={`font-display text-3xl font-bold ${s.color}`}>{s.value}</p>
-            <p className="text-xs text-anthracite/50 mt-1">{s.label}</p>
+            <p className="text-xs text-g400 mt-1">{s.label}</p>
           </div>
         ))}
       </div>
 
       {/* Recent devis */}
-      <div className="bg-white rounded-xl p-6 shadow-sm mb-6">
+      <div className="bg-white rounded-[14px] border border-g100 p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-display text-lg font-bold text-anthracite">Dernieres demandes</h2>
           <Link href="/dashboard/devis" className="text-sm text-terre hover:underline">Voir tout</Link>
@@ -67,7 +67,7 @@ export default function DashboardPage() {
               <div className={`w-2 h-2 rounded-full ${statutColors[d.statut]}`} />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-anthracite truncate">{d.nom}</p>
-                <p className="text-xs text-anthracite/50 truncate">{d.description}</p>
+                <p className="text-xs text-g400 truncate">{d.description}</p>
               </div>
               <span className="text-xs text-anthracite/40 whitespace-nowrap">{d.date}</span>
             </div>
@@ -86,7 +86,7 @@ export default function DashboardPage() {
           <Link
             key={a.label}
             href={a.href}
-            className="bg-white rounded-xl p-5 shadow-sm text-center card-hover"
+            className="bg-white rounded-[14px] border border-g100 p-5 text-center hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(28,28,30,.08)] transition-all duration-300"
           >
             <span className="text-2xl" dangerouslySetInnerHTML={{ __html: a.icon }} />
             <p className="mt-2 text-sm text-anthracite/70">{a.label}</p>

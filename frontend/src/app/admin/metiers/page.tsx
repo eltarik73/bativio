@@ -12,22 +12,22 @@ export default function AdminMetiersPage() {
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white rounded-[14px] border border-g100 overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-black/5">
-              <th className="text-left px-6 py-3 text-xs font-medium text-anthracite/50 uppercase">Icone</th>
-              <th className="text-left px-6 py-3 text-xs font-medium text-anthracite/50 uppercase">Nom</th>
-              <th className="text-left px-6 py-3 text-xs font-medium text-anthracite/50 uppercase">Slug</th>
+            <tr className="border-b border-g100">
+              <th className="text-left px-6 py-3 text-xs font-medium text-g400 uppercase">Icone</th>
+              <th className="text-left px-6 py-3 text-xs font-medium text-g400 uppercase">Nom</th>
+              <th className="text-left px-6 py-3 text-xs font-medium text-g400 uppercase">Slug</th>
               <th className="px-6 py-3"></th>
             </tr>
           </thead>
           <tbody>
             {METIERS.map((m) => (
-              <tr key={m.slug} className="border-b border-black/5 last:border-0">
+              <tr key={m.slug} className="border-b border-g100 last:border-0">
                 <td className="px-6 py-4 text-2xl">{m.icone}</td>
                 <td className="px-6 py-4 text-sm font-medium text-anthracite">{m.nom}</td>
-                <td className="px-6 py-4 text-sm text-anthracite/40 font-mono">{m.slug}</td>
+                <td className="px-6 py-4 text-sm text-g300 font-mono">{m.slug}</td>
                 <td className="px-6 py-4">
                   <button className="text-xs text-terre hover:underline">Modifier</button>
                 </td>

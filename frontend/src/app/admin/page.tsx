@@ -19,23 +19,23 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {stats.map((s) => (
-          <div key={s.label} className="bg-white rounded-xl p-5 shadow-sm">
+          <div key={s.label} className="bg-white rounded-[14px] p-5 border border-g100">
             <p className={`font-display text-3xl font-bold ${s.color}`}>{s.value}</p>
-            <p className="text-xs text-anthracite/50 mt-1">{s.label}</p>
+            <p className="text-xs text-g400 mt-1">{s.label}</p>
           </div>
         ))}
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl p-6 shadow-sm">
+        <div className="bg-white rounded-[14px] p-6 border border-g100">
           <h2 className="font-display text-lg font-bold text-anthracite mb-4">Repartition par plan</h2>
           <div className="space-y-3">
             {planData.map((p) => (
               <div key={p.plan} className="flex items-center gap-3">
                 <div className={`w-3 h-3 rounded-full ${p.color}`} />
-                <span className="text-sm text-anthracite/70 flex-1">{p.plan}</span>
+                <span className="text-sm text-g500 flex-1">{p.plan}</span>
                 <span className="text-sm font-medium">{p.count}</span>
-                <div className="w-24 h-2 bg-creme rounded-full overflow-hidden">
+                <div className="w-24 h-2 bg-g50 rounded-full overflow-hidden">
                   <div className={`h-full ${p.color} rounded-full`} style={{ width: `${(p.count / 5) * 100}%` }} />
                 </div>
               </div>
@@ -43,7 +43,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl p-6 shadow-sm">
+        <div className="bg-white rounded-[14px] p-6 border border-g100">
           <h2 className="font-display text-lg font-bold text-anthracite mb-4">Repartition par ville</h2>
           <div className="space-y-3">
             {[
@@ -54,7 +54,7 @@ export default function AdminDashboard() {
               { ville: "Valence", count: 0 },
             ].map((v) => (
               <div key={v.ville} className="flex items-center gap-3">
-                <span className="text-sm text-anthracite/70 flex-1">{v.ville}</span>
+                <span className="text-sm text-g500 flex-1">{v.ville}</span>
                 <span className="text-sm font-medium">{v.count}</span>
               </div>
             ))}

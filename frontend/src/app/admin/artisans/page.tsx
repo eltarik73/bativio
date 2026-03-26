@@ -23,30 +23,30 @@ export default function AdminArtisansPage() {
         <input
           type="text"
           placeholder="Rechercher..."
-          className="px-4 py-2 rounded-lg border border-black/10 text-sm focus:ring-2 focus:ring-terre/30 focus:border-terre outline-none"
+          className="px-4 py-2 rounded-lg border border-g200 text-sm focus:ring-2 focus:ring-terre/30 focus:border-terre outline-none"
         />
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white rounded-[14px] border border-g100 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-black/5">
-                <th className="text-left px-6 py-3 text-xs font-medium text-anthracite/50 uppercase">Nom</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-anthracite/50 uppercase">Email</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-anthracite/50 uppercase">Ville</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-anthracite/50 uppercase">Plan</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-anthracite/50 uppercase">Statut</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-anthracite/50 uppercase">Inscrit le</th>
+              <tr className="border-b border-g100">
+                <th className="text-left px-6 py-3 text-xs font-medium text-g400 uppercase">Nom</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-g400 uppercase">Email</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-g400 uppercase">Ville</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-g400 uppercase">Plan</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-g400 uppercase">Statut</th>
+                <th className="text-left px-6 py-3 text-xs font-medium text-g400 uppercase">Inscrit le</th>
                 <th className="px-6 py-3"></th>
               </tr>
             </thead>
             <tbody>
               {artisans.map((a) => (
-                <tr key={a.id} className="border-b border-black/5 last:border-0">
+                <tr key={a.id} className="border-b border-g100 last:border-0">
                   <td className="px-6 py-4 text-sm font-medium text-anthracite">{a.nom}</td>
-                  <td className="px-6 py-4 text-sm text-anthracite/60">{a.email}</td>
-                  <td className="px-6 py-4 text-sm text-anthracite/60">{a.ville}</td>
+                  <td className="px-6 py-4 text-sm text-g500">{a.email}</td>
+                  <td className="px-6 py-4 text-sm text-g500">{a.ville}</td>
                   <td className="px-6 py-4">
                     <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${planBadge[a.plan]}`}>
                       {a.plan.replace("_", " ")}
@@ -54,9 +54,9 @@ export default function AdminArtisansPage() {
                   </td>
                   <td className="px-6 py-4">
                     <span className={`w-2 h-2 inline-block rounded-full ${a.actif ? "bg-green-500" : "bg-red-500"}`} />
-                    <span className="ml-2 text-sm text-anthracite/60">{a.actif ? "Actif" : "Inactif"}</span>
+                    <span className="ml-2 text-sm text-g500">{a.actif ? "Actif" : "Inactif"}</span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-anthracite/40">{a.date}</td>
+                  <td className="px-6 py-4 text-sm text-g300">{a.date}</td>
                   <td className="px-6 py-4">
                     <button className="text-xs text-terre hover:underline">Actions</button>
                   </td>

@@ -30,7 +30,7 @@ export default function DevisPage() {
             key={s}
             onClick={() => setFilter(s)}
             className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-              filter === s ? "bg-terre text-white" : "bg-white border border-black/10 text-anthracite/60 hover:border-terre"
+              filter === s ? "bg-terre text-white" : "bg-white border border-g200 text-g500 hover:border-terre"
             }`}
           >
             {s === "TOUS" ? "Tous" : s.charAt(0) + s.slice(1).toLowerCase()}
@@ -41,27 +41,27 @@ export default function DevisPage() {
       {filtered.length > 0 ? (
         <div className="space-y-4">
           {filtered.map((d) => (
-            <div key={d.id} className="bg-white rounded-xl p-6 shadow-sm">
+            <div key={d.id} className="bg-white rounded-[14px] p-6 border border-g100">
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <h3 className="font-medium text-anthracite">{d.nomClient}</h3>
-                  <p className="text-xs text-anthracite/40 mt-0.5">{d.date}</p>
+                  <p className="text-xs text-g300 mt-0.5">{d.date}</p>
                 </div>
                 <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statutColors[d.statut]}`}>
                   {d.statut}
                 </span>
               </div>
-              <p className="text-sm text-anthracite/70 mb-3">{d.descriptionBesoin}</p>
+              <p className="text-sm text-g500 mb-3">{d.descriptionBesoin}</p>
               <div className="flex items-center gap-4 text-sm">
                 <a href={`tel:${d.telephoneClient.replace(/\s/g, "")}`} className="text-terre hover:underline">
                   {d.telephoneClient}
                 </a>
                 {d.emailClient && (
-                  <span className="text-anthracite/50">{d.emailClient}</span>
+                  <span className="text-g400">{d.emailClient}</span>
                 )}
               </div>
               <div className="mt-4 flex gap-2">
-                <button className="px-3 py-1.5 text-xs bg-creme rounded-lg text-anthracite/60 hover:bg-terre/10 transition-colors">
+                <button className="px-3 py-1.5 text-xs bg-g50 rounded-lg text-g500 hover:bg-terre/10 transition-colors">
                   Marquer comme vu
                 </button>
                 <button className="px-3 py-1.5 text-xs bg-terre/10 rounded-lg text-terre hover:bg-terre/20 transition-colors">
@@ -73,7 +73,7 @@ export default function DevisPage() {
         </div>
       ) : (
         <div className="text-center py-12">
-          <p className="text-anthracite/40">Aucune demande de devis pour le moment</p>
+          <p className="text-g300">Aucune demande de devis pour le moment</p>
         </div>
       )}
     </div>
