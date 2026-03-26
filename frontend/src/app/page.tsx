@@ -1,138 +1,206 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
-import { PLANS, VILLES } from "@/lib/constants";
+import ArtisanCard from "@/components/ArtisanCard";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { MOCK_ARTISANS, MOCK_METIERS } from "@/lib/mock-data";
+import { VILLES, PLANS } from "@/lib/constants";
+
+const CHECK = <svg className="w-[13px] h-[13px] text-or flex-shrink-0 mt-[1px]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg>;
 
 export default function Home() {
+  const [villeFilter, setVilleFilter] = useState("");
+  const [metierFilter, setMetierFilter] = useState("all");
+  const [search, setSearch] = useState("");
+  const [pricingOpen, setPricingOpen] = useState(false);
+
+  const filtered = MOCK_ARTISANS.filter((a) => {
+    const vs = a.ville.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
+    if (villeFilter && vs !== villeFilter) return false;
+    if (metierFilter !== "all") {
+      const ms = a.metierNom.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
+      if (ms !== metierFilter) return false;
+    }
+    if (search) {
+      const q = search.toLowerCase();
+      if (!a.nomAffichage.toLowerCase().includes(q) && !a.metierNom.toLowerCase().includes(q) && !a.description.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+
   return (
+    <>
+    <Navbar />
     <main>
-      {/* Hero */}
-      <section className="bg-creme py-20 md:py-32">
-        <div className="max-w-5xl mx-auto px-4 text-center">
-          <h1 className="font-display text-4xl md:text-7xl font-bold text-anthracite tracking-tight leading-tight">
-            Trouvez l&apos;artisan ideal<br className="hidden md:block" /> pres de chez vous
+      <section className="bg-anthracite px-7 pt-10 pb-12 max-md:px-4 max-md:pt-7 max-md:pb-9 relative overflow-hidden">
+        <div className="absolute -top-[120px] -right-[80px] w-[400px] h-[400px] rounded-full bg-[rgba(196,83,26,.06)]" />
+        <div className="absolute -bottom-[100px] -left-[60px] w-[340px] h-[340px] rounded-full bg-[rgba(232,168,76,.04)]" />
+        <div className="max-w-[680px] mx-auto text-center relative z-[1]">
+          <h1 className="font-display text-[clamp(26px,4vw,38px)] font-bold text-white leading-[1.15] tracking-[-0.5px] mb-2">
+            Trouvez votre <em className="not-italic text-or">artisan</em> en Rhone-Alpes
           </h1>
-          <p className="mt-6 text-lg md:text-xl text-anthracite/70 max-w-2xl mx-auto">
-            Plombier, electricien, peintre, macon... Comparez les artisans de votre ville, consultez les avis et demandez un devis. Zero commission.
+          <p className="text-sm text-white/40 mb-6">
+            Profils verifies &middot; Avis clients &middot; Devis gratuit &middot; Zero commission
           </p>
-          <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
-            {VILLES.map((v) => (
-              <Link
-                key={v.slug}
-                href={`/${v.slug}`}
-                className="px-5 py-2.5 bg-white rounded-lg border border-black/10 text-anthracite font-medium text-sm hover:border-terre hover:text-terre transition-colors"
-              >
-                {v.nom}
-              </Link>
+          <div className="flex gap-[6px] bg-white/[.07] border border-white/[.08] rounded-xl p-[5px] max-w-[580px] mx-auto max-md:flex-col">
+            <select
+              value={villeFilter}
+              onChange={(e) => setVilleFilter(e.target.value)}
+              className="flex-1 max-w-[170px] max-md:max-w-full px-[14px] py-[11px] rounded-lg font-body text-[13px] bg-white text-g500 outline-none border-none cursor-pointer"
+            >
+              <option value="">Toutes les villes</option>
+              {VILLES.map((v) => (
+                <option key={v.slug} value={v.slug}>{v.nom}</option>
+              ))}
+            </select>
+            <input
+              type="text"
+              placeholder="Plombier, electricien, renovation..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="flex-1 px-[14px] py-[11px] rounded-lg font-body text-[13px] bg-white text-anthracite outline-none border-none min-w-0"
+            />
+            <button className="bg-terre text-white px-[22px] py-[11px] rounded-lg text-[13px] font-semibold transition-all hover:bg-terre-light whitespace-nowrap flex items-center gap-[6px]">
+              <svg className="w-[15px] h-[15px]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+              Rechercher
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Filters */}
+      <div className="px-7 py-3 bg-white border-b border-g100 sticky top-14 max-md:top-[52px] z-[90] max-md:px-4 max-md:py-[10px]">
+        <div className="max-w-[1200px] mx-auto flex items-center gap-[6px] overflow-x-auto hide-scroll">
+          <button
+            onClick={() => setMetierFilter("all")}
+            className={`px-[14px] py-[7px] rounded-[20px] text-xs font-medium border whitespace-nowrap transition-all duration-150 ${
+              metierFilter === "all"
+                ? "bg-anthracite text-white border-anthracite"
+                : "border-g200 text-g500 hover:border-g300 hover:text-anthracite bg-transparent"
+            }`}
+          >
+            Tous
+          </button>
+          {MOCK_METIERS.map((m) => (
+            <button
+              key={m.slug}
+              onClick={() => setMetierFilter(m.slug)}
+              className={`px-[14px] py-[7px] rounded-[20px] text-xs font-medium border whitespace-nowrap transition-all duration-150 ${
+                metierFilter === m.slug
+                  ? "bg-anthracite text-white border-anthracite"
+                  : "border-g200 text-g500 hover:border-g300 hover:text-anthracite bg-transparent"
+              }`}
+            >
+              {m.nom}
+            </button>
+          ))}
+          <span className="ml-auto text-xs text-g400 whitespace-nowrap font-medium">
+            {filtered.length} artisan{filtered.length > 1 ? "s" : ""}
+          </span>
+        </div>
+      </div>
+
+      {/* Grid */}
+      <div className="px-7 pt-5 pb-14 max-w-[1264px] mx-auto max-md:px-4 max-md:pt-4 max-md:pb-10">
+        {filtered.length > 0 ? (
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(420px,1fr))] max-[860px]:grid-cols-1 gap-4">
+            {filtered.map((a) => (
+              <ArtisanCard key={a.id} artisan={a} />
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Comment ca marche */}
-      <section className="py-20 bg-white">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <div className="w-10 h-0.5 bg-terre mx-auto mb-4" />
-            <h2 className="font-display text-3xl font-bold text-anthracite">Comment ca marche</h2>
+        ) : (
+          <div className="text-center py-14">
+            <h3 className="font-display text-lg mb-[6px]">Aucun artisan trouve</h3>
+            <p className="text-[13px] text-g400">Essayez avec d&apos;autres criteres.</p>
           </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { num: "1", title: "Recherchez", desc: "Trouvez des artisans qualifies dans votre ville par metier." },
-              { num: "2", title: "Comparez", desc: "Consultez les profils, avis et qualifications pour faire le bon choix." },
-              { num: "3", title: "Contactez", desc: "Demandez un devis gratuit directement depuis la plateforme." },
-            ].map((step) => (
-              <div key={step.num} className="text-center">
-                <div className="w-12 h-12 rounded-full bg-terre/10 flex items-center justify-center text-terre font-display font-bold text-xl mx-auto">
-                  {step.num}
-                </div>
-                <h3 className="mt-4 font-display text-xl font-bold text-anthracite">{step.title}</h3>
-                <p className="mt-2 text-anthracite/60 text-sm">{step.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+        )}
+      </div>
 
-      {/* Zero commission */}
-      <section className="py-20 bg-anthracite text-white">
-        <div className="max-w-5xl mx-auto px-4 text-center">
-          <p className="font-display text-7xl md:text-9xl font-bold text-or">0%</p>
-          <h2 className="mt-4 font-display text-3xl font-bold">Zero commission</h2>
-          <p className="mt-4 text-white/70 max-w-lg mx-auto">
-            Vos revenus restent vos revenus. Abonnement fixe, transparent, sans surprise. Pas de commission sur vos devis ni vos chantiers.
+      {/* Artisan Banner */}
+      <section
+        className="bg-anthracite px-7 py-12 max-md:px-4 max-md:py-9 text-center relative overflow-hidden cursor-pointer transition-colors hover:bg-[#252527]"
+        onClick={() => setPricingOpen(!pricingOpen)}
+      >
+        <div className="absolute inset-0 bg-[repeating-linear-gradient(120deg,transparent,transparent_60px,rgba(255,255,255,.008)_60px,rgba(255,255,255,.008)_120px)] pointer-events-none" />
+        <div className="max-w-[600px] mx-auto relative z-[1]">
+          <div className="inline-flex items-center gap-[5px] bg-[rgba(232,168,76,.1)] text-or text-xs font-semibold px-[14px] py-[5px] rounded-[20px] mb-4">
+            &#10022; Zero commission — Abonnement fixe
+          </div>
+          <h2 className="font-display text-[clamp(22px,3.5vw,32px)] font-bold text-white mb-2 leading-[1.2]">
+            Vous etes <em className="not-italic text-or">artisan</em> ?
+          </h2>
+          <p className="text-sm text-white/40 mb-5">
+            Creez votre page pro en 3 minutes. Soyez visible aupres de milliers de clients.
           </p>
+          <button
+            onClick={(e) => { e.stopPropagation(); setPricingOpen(!pricingOpen); }}
+            className="inline-flex items-center gap-2 bg-terre text-white text-sm font-semibold px-7 py-3 rounded-[10px] transition-all hover:bg-terre-light hover:-translate-y-[2px]"
+          >
+            {pricingOpen ? "Masquer les offres" : "Decouvrir les offres"}
+            <svg className={`w-4 h-4 transition-transform duration-300 ${pricingOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" /></svg>
+          </button>
         </div>
       </section>
 
-      {/* Pricing */}
-      <section className="py-20 bg-creme">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <div className="w-10 h-0.5 bg-terre mx-auto mb-4" />
-            <h2 className="font-display text-3xl font-bold text-anthracite">Nos offres</h2>
-            <p className="mt-2 text-anthracite/60">Un plan adapte a chaque artisan</p>
-          </div>
-          <div className="grid md:grid-cols-4 gap-6">
-            {PLANS.map((plan) => (
+      {/* Pricing Panel */}
+      <div
+        className={`overflow-hidden transition-[max-height] duration-500 ease-[cubic-bezier(.22,1,.36,1)] bg-[#18181a] ${
+          pricingOpen ? "max-h-[1200px]" : "max-h-0"
+        }`}
+      >
+        <div className="max-w-[1080px] mx-auto px-7 pt-2 pb-10 grid grid-cols-4 gap-3 max-[1024px]:grid-cols-2 max-md:grid-cols-1 max-md:max-w-[340px] max-md:px-4">
+          {PLANS.map((plan) => {
+            const isPop = "populaire" in plan && plan.populaire;
+            return (
               <div
                 key={plan.id}
-                className={`bg-white rounded-xl p-6 shadow-sm border ${
-                  "populaire" in plan && plan.populaire ? "border-terre ring-2 ring-terre/20" : "border-black/5"
-                } relative`}
+                className={`bg-white/[.03] border rounded-[14px] px-[18px] py-6 flex flex-col transition-all hover:bg-white/[.05] hover:border-white/10 ${
+                  isPop ? "border-2 border-terre bg-[rgba(196,83,26,.05)] relative" : "border-white/[.06]"
+                }`}
               >
-                {"populaire" in plan && plan.populaire && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-terre text-white text-xs font-medium px-3 py-1 rounded-full">
+                {isPop && (
+                  <div className="absolute -top-[10px] left-1/2 -translate-x-1/2 bg-terre text-white text-[9px] font-semibold px-3 py-[3px] rounded-[20px] whitespace-nowrap uppercase tracking-[0.5px]">
                     Le + populaire
                   </div>
                 )}
-                <h3 className="font-display text-xl font-bold text-anthracite">{plan.nom}</h3>
-                <div className="mt-2">
-                  <span className="font-display text-4xl font-bold text-anthracite">
-                    {plan.prix === 0 ? "Gratuit" : `${plan.prix}\u20AC`}
+                <div className="font-display text-[17px] font-semibold text-white">{plan.nom}</div>
+                <div className="flex items-baseline gap-[2px] mt-[6px] mb-[3px]">
+                  <span className="font-display text-[30px] font-bold text-white">
+                    {plan.prix === 0 ? "0\u20AC" : `${plan.prix}\u20AC`}
                   </span>
-                  {plan.prix > 0 && <span className="text-anthracite/50 text-sm">/mois</span>}
+                  {plan.prix > 0 && <span className="text-xs text-white/35">/mois</span>}
                 </div>
-                <p className="mt-2 text-sm text-anthracite/60">{plan.description}</p>
-                <ul className="mt-4 space-y-2">
+                <div className="text-[11px] text-white/30 mb-4 leading-[1.4]">{plan.description}</div>
+                <ul className="flex-1 mb-[18px] space-y-0">
                   {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-sm">
-                      <span className="text-terre mt-0.5">&#10003;</span>
-                      <span className="text-anthracite/70">{f}</span>
+                    <li key={f} className="text-[11px] py-[3px] flex items-start gap-[5px] text-white/50">
+                      {CHECK}
+                      <span>{f}</span>
                     </li>
                   ))}
                 </ul>
                 <Link
                   href="/inscription"
-                  className={`mt-6 block text-center py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                    "populaire" in plan && plan.populaire
+                  className={`block text-center py-[10px] rounded-lg text-xs font-semibold transition-all ${
+                    isPop
                       ? "bg-terre text-white hover:bg-terre-light"
-                      : "border border-anthracite/20 text-anthracite hover:bg-anthracite hover:text-white"
+                      : "border border-white/[.12] text-white/60 hover:border-white/25 hover:text-white"
                   }`}
                 >
-                  {plan.prix === 0 ? "Commencer gratuitement" : "Choisir ce plan"}
+                  {plan.prix === 0 ? "Commencer" : "Choisir"}
                 </Link>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-20 bg-white">
-        <div className="max-w-3xl mx-auto px-4 text-center">
-          <h2 className="font-display text-3xl font-bold text-anthracite">
-            Vous etes artisan ?
-          </h2>
-          <p className="mt-4 text-anthracite/60">
-            Rejoignez Bativio gratuitement et rendez-vous visible aupres de milliers de clients potentiels dans votre ville.
-          </p>
-          <Link
-            href="/inscription"
-            className="mt-8 inline-block px-8 py-3.5 bg-terre text-white rounded-lg font-medium hover:bg-terre-light transition-colors"
-          >
-            Inscription gratuite
-          </Link>
+        <div className="text-center px-7 pb-8 text-xs text-white/25 bg-[#18181a]">
+          Pas de commission. Pas de cout par devis. Pas de frais caches. <strong className="text-white/40">Jamais.</strong>
         </div>
-      </section>
+      </div>
     </main>
+    <Footer />
+    </>
   );
 }

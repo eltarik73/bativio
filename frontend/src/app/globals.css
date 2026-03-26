@@ -9,6 +9,13 @@
   --color-or: #E8A84C;
   --color-creme: #FAF8F5;
   --color-blanc: #FFFFFF;
+  --color-g50: #F7F5F2;
+  --color-g100: #EDEBE7;
+  --color-g200: #E0DDD8;
+  --color-g300: #C5C0B9;
+  --color-g400: #9B9590;
+  --color-g500: #6B6560;
+  --color-green: #22c55e;
 
   --font-display: "Fraunces", serif;
   --font-body: "Karla", sans-serif;
@@ -19,10 +26,14 @@
   --foreground: #1C1C1E;
 }
 
-* {
-  box-sizing: border-box;
+*, *::before, *::after {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -31,31 +42,46 @@ body {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
 }
 
-.frosted {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+a {
+  text-decoration: none;
+  color: inherit;
 }
 
-.card-hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+.hide-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scroll::-webkit-scrollbar {
+  display: none;
 }
 
-.card-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+/* Card animation */
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
+
+.card-animate {
+  animation: cardIn .4s ease-out both;
+}
+.card-animate:nth-child(2) { animation-delay: .06s; }
+.card-animate:nth-child(3) { animation-delay: .12s; }
+.card-animate:nth-child(4) { animation-delay: .18s; }
+.card-animate:nth-child(5) { animation-delay: .24s; }
+.card-animate:nth-child(6) { animation-delay: .3s; }
+.card-animate:nth-child(7) { animation-delay: .36s; }
+.card-animate:nth-child(8) { animation-delay: .42s; }
 
 @media (prefers-reduced-motion: reduce) {
-  .card-hover:hover {
-    transform: none;
-    box-shadow: none;
+  .card-animate {
+    animation: none;
   }
   * {
     animation-duration: 0.01ms !important;

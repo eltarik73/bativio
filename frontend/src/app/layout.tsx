@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Fraunces, Karla } from "next/font/google";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -19,11 +17,11 @@ const karla = Karla({
 
 export const metadata: Metadata = {
   title: {
-    default: "Bativio -- La plateforme des artisans du batiment",
+    default: "Bativio -- Artisans du batiment en Rhone-Alpes",
     template: "%s | Bativio",
   },
   description:
-    "Trouvez les meilleurs artisans du batiment pres de chez vous. Plombier, electricien, peintre, macon... Comparez, contactez, zero commission.",
+    "Trouvez votre artisan du batiment en Rhone-Alpes. Profils verifies, avis clients, devis gratuit. Zero commission.",
   metadataBase: new URL("https://bativio.fr"),
   openGraph: {
     type: "website",
@@ -40,9 +38,7 @@ export default function RootLayout({
   return (
     <html lang="fr" className={`${fraunces.variable} ${karla.variable}`}>
       <body className="min-h-screen flex flex-col bg-creme text-anthracite font-body antialiased">
-        <Navbar />
-        <div className="flex-1">{children}</div>
-        <Footer />
+        {children}
       </body>
     </html>
   );
