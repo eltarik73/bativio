@@ -205,7 +205,7 @@ export default function InscriptionPage() {
         {step === 1 && (
           <div>
             <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 24 }}>Vos informations</h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
               <div>
                 <label className="bv-label">Nom d&apos;affichage</label>
                 <input type="text" value={form.nomAffichage} onChange={(e) => update("nomAffichage", e.target.value)} className="bv-input" readOnly={!!form.raisonSociale} placeholder="Nom de votre entreprise" />

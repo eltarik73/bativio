@@ -61,7 +61,7 @@ export default function ConnexionPage() {
   return (
     <><Navbar />
     <main style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "85vh", padding: 16 }}>
-      <div className="bv-card" style={{ maxWidth: 420, width: "100%", padding: 40 }}>
+      <div className="bv-card" style={{ maxWidth: 440, width: "100%", padding: 40 }}>
         <div style={{ textAlign: "center", marginBottom: 32 }}>
           <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "#C4531A", letterSpacing: -0.5 }}>Bativio</h1>
           <p style={{ marginTop: 8, fontSize: 15, color: "#9B9590" }}>Connectez-vous &agrave; votre espace</p>
