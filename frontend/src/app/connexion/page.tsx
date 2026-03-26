@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Navbar from "@/components/Navbar";
 import { login, sendMagicLink } from "@/lib/auth";
 
 export default function ConnexionPage() {
@@ -50,23 +51,25 @@ export default function ConnexionPage() {
 
   if (magicSent) {
     return (
+      <><Navbar />
       <main className="flex items-center justify-center min-h-[80vh]">
-        <div className="bg-white rounded-xl shadow-sm p-8 max-w-md w-full mx-4 text-center">
+        <div className="bg-white rounded-[14px] border border-g100 p-8 max-w-md w-full mx-4 text-center">
           <p className="font-display text-2xl font-bold text-anthracite">Lien envoye !</p>
-          <p className="mt-3 text-anthracite/60 text-sm">
+          <p className="mt-3 text-g500 text-sm">
             Si un compte existe avec cet email, un lien de connexion a ete envoye. Verifiez votre boite mail.
           </p>
         </div>
-      </main>
+      </main></>
     );
   }
 
   return (
+    <><Navbar />
     <main className="flex items-center justify-center min-h-[80vh]">
-      <div className="bg-white rounded-xl shadow-sm p-8 max-w-md w-full mx-4">
+      <div className="bg-white rounded-[14px] border border-g100 p-8 max-w-md w-full mx-4">
         <div className="text-center mb-8">
-          <h1 className="font-display text-3xl font-bold text-terre">Bativio</h1>
-          <p className="mt-2 text-anthracite/60 text-sm">Connectez-vous a votre espace</p>
+          <h1 className="font-display text-[28px] font-bold text-terre tracking-[-0.5px]">Bativio</h1>
+          <p className="mt-2 text-g500 text-sm">Connectez-vous a votre espace</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
@@ -78,7 +81,7 @@ export default function ConnexionPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg border border-black/10 bg-white text-anthracite focus:ring-2 focus:ring-terre/30 focus:border-terre outline-none transition"
+              className="w-full px-4 py-[11px] rounded-lg border border-g200 bg-white text-anthracite text-[13px] focus:ring-2 focus:ring-terre/20 focus:border-terre outline-none transition"
             />
           </div>
           <div>
@@ -89,7 +92,7 @@ export default function ConnexionPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg border border-black/10 bg-white text-anthracite focus:ring-2 focus:ring-terre/30 focus:border-terre outline-none transition"
+              className="w-full px-4 py-[11px] rounded-lg border border-g200 bg-white text-anthracite text-[13px] focus:ring-2 focus:ring-terre/20 focus:border-terre outline-none transition"
             />
           </div>
           {error && <p className="text-red-600 text-sm">{error}</p>}
@@ -103,26 +106,26 @@ export default function ConnexionPage() {
         </form>
 
         <div className="my-6 flex items-center gap-3">
-          <div className="flex-1 h-px bg-black/10" />
-          <span className="text-xs text-anthracite/40">ou</span>
-          <div className="flex-1 h-px bg-black/10" />
+          <div className="flex-1 h-px bg-g100" />
+          <span className="text-xs text-g400">ou</span>
+          <div className="flex-1 h-px bg-g100" />
         </div>
 
         <button
           onClick={handleMagicLink}
           disabled={loading}
-          className="w-full py-3 border border-anthracite/20 text-anthracite rounded-lg font-medium hover:bg-anthracite hover:text-white transition-colors disabled:opacity-50"
+          className="w-full py-3 border border-g200 text-g500 rounded-lg font-semibold text-sm hover:bg-anthracite hover:text-white hover:border-anthracite transition-all disabled:opacity-50"
         >
           Recevoir un magic link
         </button>
 
-        <p className="mt-6 text-center text-sm text-anthracite/50">
+        <p className="mt-6 text-center text-sm text-g400">
           Pas encore inscrit ?{" "}
           <Link href="/inscription" className="text-terre font-medium hover:underline">
             Creer mon espace
           </Link>
         </p>
       </div>
-    </main>
+    </main></>
   );
 }

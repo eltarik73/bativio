@@ -48,7 +48,7 @@ export default function DevisForm({ slug }: { slug: string }) {
           required
           value={form.nomClient}
           onChange={(e) => setForm({ ...form, nomClient: e.target.value })}
-          className="w-full px-4 py-2.5 rounded-lg border border-black/10 bg-white text-anthracite focus:ring-2 focus:ring-terre/30 focus:border-terre outline-none transition"
+          className="w-full px-4 py-[11px] rounded-lg border border-g200 bg-white text-anthracite text-[13px] focus:ring-2 focus:ring-terre/20 focus:border-terre outline-none transition"
           placeholder="Votre nom"
         />
       </div>
@@ -60,7 +60,7 @@ export default function DevisForm({ slug }: { slug: string }) {
           required
           value={form.telephoneClient}
           onChange={(e) => setForm({ ...form, telephoneClient: e.target.value })}
-          className="w-full px-4 py-2.5 rounded-lg border border-black/10 bg-white text-anthracite focus:ring-2 focus:ring-terre/30 focus:border-terre outline-none transition"
+          className="w-full px-4 py-[11px] rounded-lg border border-g200 bg-white text-anthracite text-[13px] focus:ring-2 focus:ring-terre/20 focus:border-terre outline-none transition"
           placeholder="06 12 34 56 78"
         />
       </div>
@@ -71,7 +71,7 @@ export default function DevisForm({ slug }: { slug: string }) {
           type="email"
           value={form.emailClient}
           onChange={(e) => setForm({ ...form, emailClient: e.target.value })}
-          className="w-full px-4 py-2.5 rounded-lg border border-black/10 bg-white text-anthracite focus:ring-2 focus:ring-terre/30 focus:border-terre outline-none transition"
+          className="w-full px-4 py-[11px] rounded-lg border border-g200 bg-white text-anthracite text-[13px] focus:ring-2 focus:ring-terre/20 focus:border-terre outline-none transition"
           placeholder="votre@email.fr"
         />
       </div>
@@ -83,7 +83,7 @@ export default function DevisForm({ slug }: { slug: string }) {
           rows={3}
           value={form.descriptionBesoin}
           onChange={(e) => setForm({ ...form, descriptionBesoin: e.target.value })}
-          className="w-full px-4 py-2.5 rounded-lg border border-black/10 bg-white text-anthracite focus:ring-2 focus:ring-terre/30 focus:border-terre outline-none transition resize-none"
+          className="w-full px-4 py-[11px] rounded-lg border border-g200 bg-white text-anthracite text-[13px] focus:ring-2 focus:ring-terre/20 focus:border-terre outline-none transition resize-none"
           placeholder="Decrivez vos travaux..."
         />
       </div>

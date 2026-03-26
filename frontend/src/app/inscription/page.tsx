@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Navbar from "@/components/Navbar";
 import { register } from "@/lib/auth";
 import { METIERS, VILLES } from "@/lib/constants";
 
@@ -70,6 +71,7 @@ export default function InscriptionPage() {
   };
 
   return (
+    <><Navbar />
     <main className="min-h-[80vh] flex flex-col items-center py-12 px-4">
       {/* Progress */}
       <div className="flex items-center gap-2 mb-12">
@@ -87,7 +89,7 @@ export default function InscriptionPage() {
         ))}
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm p-8 max-w-lg w-full">
+      <div className="bg-white rounded-[14px] border border-g100 p-8 max-w-lg w-full">
         {/* Step 1: SIRET */}
         {step === 0 && (
           <div>
@@ -129,7 +131,7 @@ export default function InscriptionPage() {
                   type="text"
                   value={form.nomAffichage}
                   onChange={(e) => update("nomAffichage", e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg border border-black/10 focus:ring-2 focus:ring-terre/30 focus:border-terre outline-none"
+                  className="w-full px-4 py-[11px] rounded-lg border border-g200 bg-white text-anthracite text-[13px] focus:ring-2 focus:ring-terre/20 focus:border-terre outline-none transition"
                 />
               </div>
               <div>
@@ -138,7 +140,7 @@ export default function InscriptionPage() {
                   type="email"
                   value={form.email}
                   onChange={(e) => update("email", e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg border border-black/10 focus:ring-2 focus:ring-terre/30 focus:border-terre outline-none"
+                  className="w-full px-4 py-[11px] rounded-lg border border-g200 bg-white text-anthracite text-[13px] focus:ring-2 focus:ring-terre/20 focus:border-terre outline-none transition"
                 />
               </div>
               <div>
@@ -147,7 +149,7 @@ export default function InscriptionPage() {
                   type="tel"
                   value={form.telephone}
                   onChange={(e) => update("telephone", e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg border border-black/10 focus:ring-2 focus:ring-terre/30 focus:border-terre outline-none"
+                  className="w-full px-4 py-[11px] rounded-lg border border-g200 bg-white text-anthracite text-[13px] focus:ring-2 focus:ring-terre/20 focus:border-terre outline-none transition"
                 />
               </div>
               <div>
@@ -156,7 +158,7 @@ export default function InscriptionPage() {
                   type="password"
                   value={form.password}
                   onChange={(e) => update("password", e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg border border-black/10 focus:ring-2 focus:ring-terre/30 focus:border-terre outline-none"
+                  className="w-full px-4 py-[11px] rounded-lg border border-g200 bg-white text-anthracite text-[13px] focus:ring-2 focus:ring-terre/20 focus:border-terre outline-none transition"
                 />
               </div>
               <div>
@@ -165,7 +167,7 @@ export default function InscriptionPage() {
                   type="password"
                   value={form.passwordConfirm}
                   onChange={(e) => update("passwordConfirm", e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-lg border border-black/10 focus:ring-2 focus:ring-terre/30 focus:border-terre outline-none"
+                  className="w-full px-4 py-[11px] rounded-lg border border-g200 bg-white text-anthracite text-[13px] focus:ring-2 focus:ring-terre/20 focus:border-terre outline-none transition"
                 />
               </div>
             </div>
@@ -220,7 +222,7 @@ export default function InscriptionPage() {
               <select
                 value={form.ville}
                 onChange={(e) => update("ville", e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg border border-black/10 focus:ring-2 focus:ring-terre/30 focus:border-terre outline-none"
+                className="w-full px-4 py-[11px] rounded-lg border border-g200 bg-white text-anthracite text-[13px] focus:ring-2 focus:ring-terre/20 focus:border-terre outline-none transition"
               >
                 <option value="">Selectionnez votre ville</option>
                 {VILLES.map((v) => (
@@ -309,6 +311,6 @@ export default function InscriptionPage() {
           </div>
         )}
       </div>
-    </main>
+    </main></>
   );
 }
