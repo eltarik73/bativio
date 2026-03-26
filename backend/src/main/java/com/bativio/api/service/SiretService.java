@@ -30,8 +30,8 @@ public class SiretService {
     public Map<String, Object> lookupSiret(String siret) {
         try {
             String cleanSiret = siret.replaceAll("\\s", "");
-            if (cleanSiret.length() != 14) {
-                throw new IllegalArgumentException("Le SIRET doit contenir 14 chiffres");
+            if (cleanSiret.length() != 9 && cleanSiret.length() != 14) {
+                throw new IllegalArgumentException("Entrez un SIREN (9 chiffres) ou un SIRET (14 chiffres) valide");
             }
 
             HttpRequest request = HttpRequest.newBuilder()

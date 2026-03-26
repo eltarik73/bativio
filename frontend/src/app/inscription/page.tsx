@@ -44,7 +44,7 @@ export default function InscriptionPage() {
   const prev = () => setStep((s) => Math.max(s - 1, 0));
 
   const handleSiretLookup = async () => {
-    if (form.siret.length !== 14) return;
+    if (form.siret.length !== 9 && form.siret.length !== 14) return;
     setSiretLoading(true);
     setError("");
     setSiretFound(false);
@@ -82,7 +82,7 @@ export default function InscriptionPage() {
           }));
           setSiretFound(true);
         } else {
-          setError("SIRET introuvable. V\u00e9rifiez le num\u00e9ro.");
+          setError("SIREN/SIRET introuvable. V\u00e9rifiez le num\u00e9ro.");
         }
       }
     } catch {
@@ -104,7 +104,7 @@ export default function InscriptionPage() {
           }));
           setSiretFound(true);
         } else {
-          setError("SIRET introuvable. V\u00e9rifiez le num\u00e9ro.");
+          setError("SIREN/SIRET introuvable. V\u00e9rifiez le num\u00e9ro.");
         }
       } catch {
         setError("Impossible de v\u00e9rifier le SIRET. R\u00e9essayez.");
@@ -162,14 +162,14 @@ export default function InscriptionPage() {
         {/* Step 1: SIRET */}
         {step === 0 && (
           <div>
-            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 6 }}>Votre num&eacute;ro SIRET</h2>
-            <p className="bv-helper" style={{ marginBottom: 24 }}>Nous r&eacute;cup&eacute;rerons automatiquement vos informations</p>
+            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 6 }}>Votre SIREN ou SIRET</h2>
+            <p className="bv-helper" style={{ marginBottom: 24 }}>Entrez votre SIREN (9 chiffres) ou SIRET (14 chiffres). Nous r&eacute;cup&eacute;rerons automatiquement vos informations.</p>
             <input
               type="text"
-              maxLength={14}
-              value={form.siret}
-              onChange={(e) => { update("siret", e.target.value.replace(/\D/g, "")); setSiretFound(false); setError(""); }}
-              placeholder="Entrez vos 14 chiffres"
+              maxLength={19}
+              value={form.siret.replace(/(\d{3})(?=\d)/g, "$1 ").trim()}
+              onChange={(e) => { const raw = e.target.value.replace(/\D/g, "").slice(0, 14); update("siret", raw); setSiretFound(false); setError(""); }}
+              placeholder="123 456 789 ou 123 456 789 01234"
               className="bv-input"
               style={{ height: 56, fontSize: 18, textAlign: "center", letterSpacing: 2, fontFamily: "monospace" }}
             />
@@ -190,14 +190,14 @@ export default function InscriptionPage() {
             {error && <p style={{ color: "#dc2626", fontSize: 14, marginTop: 14 }}>{error}</p>}
             <button
               type="button"
-              onClick={() => { if (!siretFound && form.siret.length === 14) { handleSiretLookup(); } else { next(); } }}
-              disabled={form.siret.length !== 14 || siretLoading}
+              onClick={() => { if (!siretFound && (form.siret.length === 9 || form.siret.length === 14)) { handleSiretLookup(); } else { next(); } }}
+              disabled={(form.siret.length !== 9 && form.siret.length !== 14) || siretLoading}
               className="bv-btn bv-btn-primary bv-btn-full"
               style={{ marginTop: 24 }}
             >
               {siretLoading ? "V\u00e9rification..." : siretFound ? "Continuer" : "V\u00e9rifier et continuer"}
             </button>
-            <p style={{ textAlign: "center", marginTop: 16, fontSize: 13, color: "#9B9590" }}>Vous n&apos;avez pas de SIRET ? <a href="#" className="bv-link" style={{ fontSize: 13 }}>Contactez-nous</a></p>
+            <p style={{ textAlign: "center", marginTop: 16, fontSize: 13, color: "#9B9590" }}>Vous n&apos;avez pas de SIREN/SIRET ? <a href="#" className="bv-link" style={{ fontSize: 13 }}>Contactez-nous</a></p>
           </div>
         )}
 
