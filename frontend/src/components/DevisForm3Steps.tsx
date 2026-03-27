@@ -47,9 +47,19 @@ export default function DevisForm3Steps({ slug, artisanName, ville }: { slug: st
     setLoading(true);
     try {
       const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
-      await fetch(`${API}/public/artisans/${slug}/devis`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nomClient: nom, telephoneClient: tel, emailClient: email, descriptionBesoin: `[${METIERS.find((m) => m.id === metier)?.name} - ${subOpt}] ${delai}. ${desc}` }) });
-    } catch { /* demo */ }
-    setTimeout(() => { setStep(3); setLoading(false); }, 1200);
+      const res = await fetch(`${API}/public/artisans/${slug}/devis`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nomClient: nom, telephoneClient: tel, emailClient: email, descriptionBesoin: `[${METIERS.find((m) => m.id === metier)?.name} - ${subOpt}] ${delai}. ${desc}` }),
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error);
+      setStep(3);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Erreur lors de l'envoi");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const sub = SUB[metier] || SUB.autre;

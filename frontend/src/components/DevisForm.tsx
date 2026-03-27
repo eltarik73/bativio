@@ -26,8 +26,9 @@ export default function DevisForm({ slug }: { slug: string }) {
       const json = await res.json();
       if (!json.success) throw new Error(json.error);
       setSuccess(true);
-    } catch { setSuccess(true); }
-    finally { setLoading(false); }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur lors de l'envoi. R\u00e9essayez.");
+    } finally { setLoading(false); }
   };
 
   if (success) {
