@@ -15,10 +15,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/public")
+@Transactional(readOnly = true)
 public class PublicController {
 
     private final ArtisanRepository artisanRepository;
