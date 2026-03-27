@@ -42,13 +42,13 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
               En ligne
             </span>
           </div>
-          <p style={{ fontSize: 18, color: "rgba(255,255,255,.45)", marginTop: 8 }}>{a.metierNom} &agrave; {a.ville}</p>
+          <p style={{ fontSize: 18, color: "rgba(255,255,255,.45)", marginTop: 8 }}>{a.metierNom || "Artisan"} &agrave; {a.ville || "Chamb\u00e9ry"}</p>
           {a.experienceAnnees && (
             <p style={{ fontSize: 14, color: "rgba(255,255,255,.35)", marginTop: 4 }}>{a.experienceAnnees} ans d&apos;exp&eacute;rience</p>
           )}
-          {a.badgesNoms.length > 0 && (
+          {(a.badgesNoms||[]).length > 0 && (
             <div style={{ display: "flex", gap: 8, marginTop: 16, flexWrap: "wrap" }}>
-              {a.badgesNoms.map((b) => (
+              {(a.badgesNoms||[]).map((b) => (
                 <span key={b} style={{ background: "rgba(255,255,255,.15)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,.2)", color: "#fff", padding: "6px 14px", borderRadius: 8, fontSize: 13, fontWeight: 500 }}>{b}</span>
               ))}
             </div>
@@ -95,7 +95,7 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
         <div style={{ maxWidth: 880, margin: "0 auto" }}>
           <div style={{ width: 44, height: 2, background: primary, marginBottom: 16 }} />
           <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 16 }}>Pr&eacute;sentation</h2>
-          <p style={{ fontSize: 15, color: "#6B6560", lineHeight: 1.7 }}>{a.description}</p>
+          <p style={{ fontSize: 15, color: "#6B6560", lineHeight: 1.7 }}>{a.description || "Artisan professionnel. Contactez-moi pour un devis gratuit."}</p>
         </div>
       </section>
 

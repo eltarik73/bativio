@@ -8,7 +8,7 @@ const TODAY = new Date().getDay() || 7; // 1=lundi..7=dimanche
 
 export default function ContactCard({ a }: { a: ArtisanPublic }) {
   const [horOpen, setHorOpen] = useState(false);
-  const initials = a.nomAffichage.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+  const initials = (a.nomAffichage || "?").split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 
   return (
     <div className="contact-card">
@@ -54,7 +54,7 @@ export default function ContactCard({ a }: { a: ArtisanPublic }) {
           </div>
           {horOpen && (
             <div style={{ paddingBottom: 8 }}>
-              {a.horaires.map((h) => (
+              {(a.horaires||[]).map((h) => (
                 <div key={h.jourSemaine} className="horaire-row" style={h.jourSemaine === TODAY ? { fontWeight: 600, color: "#1C1C1E" } : {}}>
                   <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
                     {h.jourSemaine === TODAY && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#C4531A" }} />}
