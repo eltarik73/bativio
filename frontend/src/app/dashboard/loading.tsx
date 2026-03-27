@@ -1,24 +1,31 @@
 export default function DashboardLoading() {
   return (
-    <div className="space-y-6">
-      <div className="bg-white rounded-[14px] p-6 border border-g100 animate-pulse">
-        <div className="h-16 bg-g50 rounded-lg" />
+    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+      {/* Header skeleton */}
+      <div><div className="skeleton" style={{ width: 180, height: 28, marginBottom: 8 }} /><div className="skeleton" style={{ width: 140, height: 16 }} /></div>
+      {/* Completion bar */}
+      <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #EDEBE7", padding: "20px 24px", display: "flex", alignItems: "center", gap: 20 }}>
+        <div className="skeleton" style={{ width: 56, height: 56, borderRadius: "50%" }} />
+        <div style={{ flex: 1 }}><div className="skeleton" style={{ width: 200, height: 16, marginBottom: 8 }} /><div className="skeleton" style={{ width: 280, height: 12 }} /></div>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {/* Stats */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="bg-white rounded-[14px] p-5 border border-g100 animate-pulse">
-            <div className="h-8 bg-g50 rounded w-16 mb-2" />
-            <div className="h-3 bg-g50 rounded w-24" />
+          <div key={i} style={{ background: "#fff", borderRadius: 14, border: "1px solid #EDEBE7", padding: 20 }}>
+            <div className="skeleton" style={{ width: 60, height: 32, marginBottom: 8 }} />
+            <div className="skeleton" style={{ width: 100, height: 12 }} />
           </div>
         ))}
       </div>
-      <div className="bg-white rounded-[14px] p-6 border border-g100 animate-pulse">
-        <div className="h-4 bg-g50 rounded w-40 mb-4" />
-        <div className="space-y-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-12 bg-g50 rounded-lg" />
-          ))}
-        </div>
+      {/* Demandes */}
+      <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #EDEBE7" }}>
+        <div style={{ padding: "16px 20px" }}><div className="skeleton" style={{ width: 160, height: 18 }} /></div>
+        {[1, 2, 3].map((i) => (
+          <div key={i} style={{ padding: "14px 20px", borderTop: "1px solid #F7F5F2", display: "flex", gap: 12 }}>
+            <div className="skeleton" style={{ width: 8, height: 8, borderRadius: "50%", marginTop: 6 }} />
+            <div style={{ flex: 1 }}><div className="skeleton" style={{ width: 140, height: 14, marginBottom: 6 }} /><div className="skeleton" style={{ width: "80%", height: 12 }} /></div>
+          </div>
+        ))}
       </div>
     </div>
   );

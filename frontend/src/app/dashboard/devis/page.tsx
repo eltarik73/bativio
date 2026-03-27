@@ -2,78 +2,79 @@
 
 import { useState } from "react";
 
-const statutColors: Record<string, string> = {
-  NOUVEAU: "bg-terre text-white",
-  VU: "bg-or text-white",
-  REPONDU: "bg-green-500 text-white",
-  ARCHIVE: "bg-gray-400 text-white",
-};
+const C: React.CSSProperties = { background: "#fff", borderRadius: 14, border: "1px solid #EDEBE7", overflow: "hidden" };
+
+const DOT: Record<string, string> = { NOUVEAU: "#C4531A", VU: "#E8A84C", REPONDU: "#22c55e", ARCHIVE: "#C5C0B9" };
+const LABEL: Record<string, string> = { NOUVEAU: "Nouveau", VU: "En attente", REPONDU: "Trait\u00e9", ARCHIVE: "Archiv\u00e9" };
 
 const mockDevis = [
-  { id: "1", nomClient: "Sophie Martin", telephoneClient: "06 12 34 56 78", emailClient: "sophie@mail.fr", descriptionBesoin: "Fuite sous evier cuisine, eau qui coule en permanence", statut: "NOUVEAU", date: "25 mars 2026" },
-  { id: "2", nomClient: "Pierre Durand", telephoneClient: "06 23 45 67 89", emailClient: "", descriptionBesoin: "Renovation complete salle de bains, douche italienne + double vasque", statut: "VU", date: "24 mars 2026" },
-  { id: "3", nomClient: "Marie Leroy", telephoneClient: "06 34 56 78 90", emailClient: "marie.l@mail.fr", descriptionBesoin: "Remplacement chauffe-eau electrique par thermodynamique", statut: "REPONDU", date: "22 mars 2026" },
+  { id: "1", nom: "Sophie Martin", tel: "06 12 34 56 78", email: "sophie@mail.fr", desc: "Fuite sous \u00e9vier cuisine, eau qui coule en permanence. Urgence.", statut: "NOUVEAU", date: "Il y a 15 min" },
+  { id: "2", nom: "Pierre Durand", tel: "06 23 45 67 89", email: "", desc: "R\u00e9novation compl\u00e8te salle de bains, douche italienne + double vasque", statut: "VU", date: "Hier" },
+  { id: "3", nom: "Marie Leroy", tel: "06 34 56 78 90", email: "marie.l@mail.fr", desc: "Remplacement chauffe-eau \u00e9lectrique par thermodynamique", statut: "REPONDU", date: "22 mars" },
+  { id: "4", nom: "Thomas Bernard", tel: "06 45 67 89 01", email: "t.bernard@mail.fr", desc: "Installation radiateurs salle de s\u00e9jour, 3 unit\u00e9s", statut: "ARCHIVE", date: "18 mars" },
 ];
 
 export default function DevisPage() {
   const [filter, setFilter] = useState("TOUS");
-
   const filtered = filter === "TOUS" ? mockDevis : mockDevis.filter((d) => d.statut === filter);
 
-  return (
-    <div>
-      <h1 className="font-display text-2xl font-bold text-anthracite mb-6">Demandes de devis</h1>
+  const pills = ["TOUS", "NOUVEAU", "VU", "REPONDU", "ARCHIVE"];
 
-      <div className="flex gap-2 overflow-x-auto pb-4 mb-6">
-        {["TOUS", "NOUVEAU", "VU", "REPONDU", "ARCHIVE"].map((s) => (
-          <button
-            key={s}
-            onClick={() => setFilter(s)}
-            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-              filter === s ? "bg-terre text-white" : "bg-white border border-g200 text-g500 hover:border-terre"
-            }`}
-          >
-            {s === "TOUS" ? "Tous" : s.charAt(0) + s.slice(1).toLowerCase()}
+  return (
+    <div style={{ maxWidth: 800, margin: "0 auto" }}>
+      <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 20 }}>Demandes de devis</h1>
+
+      {/* Filters */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 24, overflowX: "auto" }} className="hide-scroll">
+        {pills.map((s) => (
+          <button key={s} onClick={() => setFilter(s)} style={{
+            padding: "8px 18px", borderRadius: 20, fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap", transition: "all .15s", border: "none",
+            background: filter === s ? "#1C1C1E" : "#fff",
+            color: filter === s ? "#fff" : "#6B6560",
+            ...(filter !== s ? { border: "1.5px solid #E0DDD8" } : {}),
+          }}>
+            {s === "TOUS" ? "Tous" : LABEL[s] || s}
+            {s === "NOUVEAU" && <span style={{ marginLeft: 6, width: 6, height: 6, borderRadius: "50%", background: "#C4531A", display: "inline-block" }} />}
           </button>
         ))}
       </div>
 
+      {/* List */}
       {filtered.length > 0 ? (
-        <div className="space-y-4">
-          {filtered.map((d) => (
-            <div key={d.id} className="bg-white rounded-[14px] p-6 border border-g100">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <h3 className="font-medium text-anthracite">{d.nomClient}</h3>
-                  <p className="text-xs text-g300 mt-0.5">{d.date}</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {filtered.map((d) => {
+            const isNew = d.statut === "NOUVEAU";
+            return (
+              <div key={d.id} style={{ ...C, padding: "20px 24px", transition: "all .25s cubic-bezier(.22,1,.36,1)", cursor: "pointer", ...(isNew ? { borderColor: "#C4531A", borderWidth: "1.5px" } : {}) }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
+                  {/* Dot + info */}
+                  <span style={{ width: 10, height: 10, borderRadius: "50%", background: DOT[d.statut], flexShrink: 0, marginTop: 6, ...(isNew ? { animation: "pulse 1.5s infinite" } : {}) }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                      <span style={{ fontSize: 15, fontWeight: 700, color: "#1C1C1E" }}>{d.nom}</span>
+                      {isNew && <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 4, background: "rgba(196,83,26,.08)", color: "#C4531A" }}>Nouveau !</span>}
+                      <span style={{ fontSize: 12, color: "#C5C0B9", marginLeft: "auto", flexShrink: 0 }}>{d.date}</span>
+                    </div>
+                    <p style={{ fontSize: 13, color: "#6B6560", lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{d.desc}</p>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 12 }}>
+                      <a href={`tel:${d.tel.replace(/\s/g, "")}`} style={{ height: 36, padding: "0 16px", borderRadius: 8, background: "#C4531A", color: "#fff", fontSize: 13, fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 6, textDecoration: "none", transition: "all .15s" }}>
+                        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 013 5.18 2 2 0 015 3h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" /></svg>
+                        Appeler
+                      </a>
+                      <span style={{ fontSize: 13, color: "#9B9590" }}>{d.tel}</span>
+                      {d.email && <span style={{ fontSize: 13, color: "#9B9590" }}>&middot; {d.email}</span>}
+                    </div>
+                  </div>
                 </div>
-                <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statutColors[d.statut]}`}>
-                  {d.statut}
-                </span>
               </div>
-              <p className="text-sm text-g500 mb-3">{d.descriptionBesoin}</p>
-              <div className="flex items-center gap-4 text-sm">
-                <a href={`tel:${d.telephoneClient.replace(/\s/g, "")}`} className="text-terre hover:underline">
-                  {d.telephoneClient}
-                </a>
-                {d.emailClient && (
-                  <span className="text-g400">{d.emailClient}</span>
-                )}
-              </div>
-              <div className="mt-4 flex gap-2">
-                <button className="px-3 py-1.5 text-xs bg-g50 rounded-lg text-g500 hover:bg-terre/10 transition-colors">
-                  Marquer comme vu
-                </button>
-                <button className="px-3 py-1.5 text-xs bg-terre/10 rounded-lg text-terre hover:bg-terre/20 transition-colors">
-                  Marquer comme repondu
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
-        <div className="text-center py-12">
-          <p className="text-g300">Aucune demande de devis pour le moment</p>
+        <div style={{ textAlign: "center", padding: "56px 20px" }}>
+          <svg width="56" height="56" fill="none" stroke="#E0DDD8" strokeWidth="1" viewBox="0 0 24 24" style={{ margin: "0 auto 16px" }}><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><path d="M14 2v6h6" /></svg>
+          <p style={{ fontSize: 15, color: "#9B9590" }}>Aucune demande de devis</p>
+          <p style={{ fontSize: 13, color: "#C5C0B9", marginTop: 4 }}>Les nouvelles demandes appara&icirc;tront ici.</p>
         </div>
       )}
     </div>

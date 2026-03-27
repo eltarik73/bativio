@@ -331,4 +331,11 @@ a{text-decoration:none;color:inherit}button{font-family:'Karla',sans-serif;curso
   .btn-row{flex-direction:column-reverse}
 }
 
+/* ═══ PULSE ANIMATION ═══ */
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* ═══ SKELETON SHIMMER ═══ */
+@keyframes shimmer{0%{background-position:-200px 0}100%{background-position:200px 0}}
+.skeleton{background:linear-gradient(90deg,#EDEBE7 25%,#F7F5F2 50%,#EDEBE7 75%);background-size:400px 100%;animation:shimmer 1.5s ease-in-out infinite;border-radius:8px}
+
 ::selection{background-color:rgba(196,83,26,.2)}
