@@ -17,6 +17,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: `${t.nom} \u00e0 Chamb\u00e9ry | Devis gratuit`,
     description: `Trouvez un artisan qualifi\u00e9 pour votre ${t.nom.toLowerCase()} \u00e0 Chamb\u00e9ry. Profils v\u00e9rifi\u00e9s, avis clients, devis gratuit sous 24h. Z\u00e9ro commission.`,
+    alternates: { canonical: `/travaux/${slug}` },
+    openGraph: {
+      title: `${t.nom} \u00e0 Chamb\u00e9ry | Bativio`,
+      description: `Devis gratuit pour votre ${t.nom.toLowerCase()}. Z\u00e9ro commission.`,
+      url: `https://bativio.fr/travaux/${slug}`,
+      images: [{ url: t.photo, width: 600, height: 400, alt: t.nom }],
+    },
   };
 }
 

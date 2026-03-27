@@ -19,6 +19,13 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
   return {
     title: `Artisans du b\u00e2timent \u00e0 ${nom}`,
     description: `Trouvez les meilleurs artisans du b\u00e2timent \u00e0 ${nom}. Plombier, \u00e9lectricien, peintre, ma\u00e7on... Devis gratuit, z\u00e9ro commission.`,
+    alternates: { canonical: `/${villeSlug}` },
+    openGraph: {
+      title: `Artisans du b\u00e2timent \u00e0 ${nom} | Bativio`,
+      description: `Trouvez les meilleurs artisans \u00e0 ${nom}. Devis gratuit, z\u00e9ro commission.`,
+      url: `https://bativio.fr/${villeSlug}`,
+      images: [{ url: "https://bativio.fr/og-image.png", width: 1200, height: 630 }],
+    },
   };
 }
 

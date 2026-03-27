@@ -17,15 +17,21 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ ville: string; slug: string }> }): Promise<Metadata> {
-  const { slug } = await params;
+  const { ville: villeParam, slug } = await params;
   const a = MOCK_ARTISANS.find((x) => x.slug === slug);
+  const slugParam = villeParam;
   if (!a) return { title: "Artisan introuvable" };
+  const ms = a.metierNom.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
+  const img = METIER_PHOTOS[ms] || METIER_PHOTOS.plombier;
   return {
     title: `${a.nomAffichage} \u2014 ${a.metierNom} \u00e0 ${a.ville}`,
     description: `${a.nomAffichage}, ${a.metierNom.toLowerCase()} \u00e0 ${a.ville}. ${a.description} Devis gratuit. \u2605 ${a.noteMoyenne}/5 (${a.nombreAvis} avis).`,
+    alternates: { canonical: `/${slugParam}/${a.slug}` },
     openGraph: {
       title: `${a.nomAffichage} \u2014 ${a.metierNom} \u00e0 ${a.ville}`,
       description: `Devis gratuit \u00b7 \u2605 ${a.noteMoyenne}/5 \u00b7 ${a.experienceAnnees || ""} ans d'exp\u00e9rience`,
+      url: `https://bativio.fr/${slugParam}/${a.slug}`,
+      images: [{ url: img, width: 400, height: 400, alt: a.nomAffichage }],
     },
   };
 }
@@ -68,9 +74,14 @@ export default async function ArtisanPage({ params }: { params: Promise<{ ville:
         "@context": "https://schema.org", "@type": "LocalBusiness",
         name: a.nomAffichage, description: a.description, telephone: a.telephone,
         url: `https://bativio.fr/${villeSlug}/${a.slug}`,
-        address: { "@type": "PostalAddress", addressLocality: a.ville, postalCode: a.codePostal, addressCountry: "FR" },
+        image: photo,
+        address: { "@type": "PostalAddress", streetAddress: a.adresse, addressLocality: a.ville, postalCode: a.codePostal, addressCountry: "FR" },
+        geo: { "@type": "GeoCoordinates", latitude: 45.5646, longitude: 5.9178 },
+        areaServed: { "@type": "GeoCircle", geoMidpoint: { "@type": "GeoCoordinates", latitude: 45.5646, longitude: 5.9178 }, geoRadius: `${a.zoneRayonKm || 25}000` },
         aggregateRating: { "@type": "AggregateRating", ratingValue: a.noteMoyenne, reviewCount: a.nombreAvis, bestRating: 5 },
         priceRange: "$$",
+        ...(a.horaires && a.horaires.length > 0 ? { openingHoursSpecification: a.horaires.filter((h) => h.ouvert).map((h) => ({ "@type": "OpeningHoursSpecification", dayOfWeek: ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][h.jourSemaine], opens: h.heureOuverture, closes: h.heureFermeture })) } : {}),
+        ...(a.services && a.services.length > 0 ? { hasOfferCatalog: { "@type": "OfferCatalog", name: "Services", itemListElement: a.services.map((s) => ({ "@type": "Offer", name: s.titre, description: s.description, ...(s.prixIndicatif ? { price: s.prixIndicatif } : {}) })) } } : {}),
       }) }} />
     </>
   );

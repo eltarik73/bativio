@@ -186,6 +186,12 @@ export default function Home() {
       </div>
 
       <Footer />
+
+      {/* JSON-LD WebSite + Organization */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([
+        { "@context": "https://schema.org", "@type": "WebSite", name: "Bativio", url: "https://bativio.fr", potentialAction: { "@type": "SearchAction", target: "https://bativio.fr/?search={search_term_string}", "query-input": "required name=search_term_string" } },
+        { "@context": "https://schema.org", "@type": "Organization", name: "Bativio", url: "https://bativio.fr", logo: "https://bativio.fr/og-image.png", description: "La plateforme des artisans du b\u00e2timent en Rh\u00f4ne-Alpes. Z\u00e9ro commission.", areaServed: { "@type": "State", name: "Rh\u00f4ne-Alpes" } }
+      ]) }} />
     </>
   );
 }

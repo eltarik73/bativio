@@ -1,29 +1,16 @@
 import { MetadataRoute } from "next";
 import { VILLES } from "@/lib/constants";
 import { MOCK_ARTISANS } from "@/lib/mock-data";
+import { TRAVAUX } from "@/lib/travaux-data";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://bativio.fr";
 
   const staticPages: MetadataRoute.Sitemap = [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/inscription`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.5,
-    },
-    {
-      url: `${baseUrl}/connexion`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.3,
-    },
+    { url: baseUrl, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
+    { url: `${baseUrl}/rejoindre`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
+    { url: `${baseUrl}/inscription`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
+    { url: `${baseUrl}/connexion`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
   ];
 
   const villePages: MetadataRoute.Sitemap = VILLES.map((v) => ({
@@ -33,7 +20,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  const artisanPages: MetadataRoute.Sitemap = MOCK_ARTISANS.map((a) => {
+  const artisanPages: MetadataRoute.Sitemap = MOCK_ARTISANS.filter((a) => a.ville && a.slug).map((a) => {
     const villeSlug = a.ville.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
     return {
       url: `${baseUrl}/${villeSlug}/${a.slug}`,
@@ -43,5 +30,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     };
   });
 
-  return [...staticPages, ...villePages, ...artisanPages];
+  const travauxPages: MetadataRoute.Sitemap = TRAVAUX.map((t) => ({
+    url: `${baseUrl}/travaux/${t.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
+
+  return [...staticPages, ...villePages, ...artisanPages, ...travauxPages];
 }
