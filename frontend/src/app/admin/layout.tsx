@@ -7,7 +7,10 @@ const navItems = [
   { href: "/admin", label: "Dashboard", icon: "&#128202;" },
   { href: "/admin/artisans", label: "Artisans", icon: "&#128100;" },
   { href: "/admin/villes", label: "Villes", icon: "&#127961;" },
-  { href: "/admin/metiers", label: "Metiers", icon: "&#128295;" },
+  { href: "/admin/metiers", label: "M\u00e9tiers", icon: "&#128295;" },
+  { href: "/admin/seo", label: "Contenu SEO", icon: "&#128196;" },
+  { href: "/admin/abonnements", label: "Abonnements", icon: "&#128179;" },
+  { href: "/admin/statistiques", label: "Statistiques", icon: "&#128200;" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
