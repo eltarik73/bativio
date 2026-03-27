@@ -1,15 +1,37 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 const S = { card: { background: "#fff", borderRadius: 14, border: "1px solid #EDEBE7", overflow: "hidden" } as React.CSSProperties };
 
 const stats = [
-  { label: "Vues ce mois", value: "124", icon: '<svg width="20" height="20" fill="none" stroke="#E0DDD8" stroke-width="1.5" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' },
-  { label: "Demandes de devis", value: "8", icon: '<svg width="20" height="20" fill="none" stroke="#E0DDD8" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>' },
-  { label: "RDV ce mois", value: "3", icon: '<svg width="20" height="20" fill="none" stroke="#E0DDD8" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>' },
-  { label: "Note moyenne", value: "4.8", icon: '<svg width="20" height="20" fill="#E8A84C" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>', color: "#E8A84C" },
+  { label: "Vues ce mois", value: "124", trend: "+12%", up: true, icon: '<svg width="20" height="20" fill="none" stroke="#E0DDD8" stroke-width="1.5" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' },
+  { label: "Demandes de devis", value: "8", trend: "+33%", up: true, icon: '<svg width="20" height="20" fill="none" stroke="#E0DDD8" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>' },
+  { label: "RDV ce mois", value: "3", trend: "-25%", up: false, icon: '<svg width="20" height="20" fill="none" stroke="#E0DDD8" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>' },
+  { label: "Note moyenne", value: "4.8", trend: "+0.2", up: true, icon: '<svg width="20" height="20" fill="#E8A84C" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>', color: "#E8A84C" },
 ];
+
+const completionItems = [
+  { label: "Informations", done: true, href: "/dashboard/profil" },
+  { label: "M\u00e9tier", done: true, href: "/dashboard/profil" },
+  { label: "Photos", done: false, href: "/dashboard/photos" },
+  { label: "Description", done: false, href: "/dashboard/profil" },
+];
+
+function getGreeting(): string {
+  const h = new Date().getHours();
+  if (h < 12) return "Bon matin";
+  if (h < 18) return "Bon apr\u00e8s-midi";
+  return "Bonne soir\u00e9e";
+}
+
+function getFormattedDate(): string {
+  const now = new Date();
+  const days = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+  const months = ["janvier", "f\u00e9vrier", "mars", "avril", "mai", "juin", "juillet", "ao\u00fbt", "septembre", "octobre", "novembre", "d\u00e9cembre"];
+  return `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+}
 
 const devis = [
   { id: "1", nom: "Sophie Martin", date: "Il y a 2h", color: "#C4531A", desc: "Fuite sous \u00e9vier cuisine" },
@@ -18,28 +40,48 @@ const devis = [
 ];
 
 export default function DashboardPage() {
+  const [greeting, setGreeting] = useState("Bonjour");
+  const [dateStr, setDateStr] = useState("");
+
+  useEffect(() => {
+    setGreeting(getGreeting());
+    setDateStr(getFormattedDate());
+  }, []);
+
   return (
     <div>
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E" }}>Bonjour !</h1>
+        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E" }}>{greeting}, Martin !</h1>
         <p style={{ fontSize: 15, color: "#9B9590", marginTop: 2 }}>Martin Plomberie</p>
+        {dateStr && <p style={{ fontSize: 13, color: "#C5C0B9", marginTop: 4 }}>{dateStr}</p>}
       </div>
 
       {/* Completion */}
-      <div style={{ ...S.card, padding: "20px 24px", display: "flex", alignItems: "center", gap: 20, marginBottom: 24 }}>
-        <div style={{ position: "relative", width: 56, height: 56, flexShrink: 0 }}>
-          <svg width="56" height="56" style={{ transform: "rotate(-90deg)" }}>
-            <circle cx="28" cy="28" r="24" fill="none" stroke="#EDEBE7" strokeWidth="4" />
-            <circle cx="28" cy="28" r="24" fill="none" stroke="#C4531A" strokeWidth="4" strokeDasharray={`${85 * 1.508} 151`} strokeLinecap="round" />
-          </svg>
-          <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, color: "#C4531A" }}>85%</span>
+      <div style={{ ...S.card, padding: "20px 24px", marginBottom: 24 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+          <div style={{ position: "relative", width: 56, height: 56, flexShrink: 0 }}>
+            <svg width="56" height="56" style={{ transform: "rotate(-90deg)" }}>
+              <circle cx="28" cy="28" r="24" fill="none" stroke="#EDEBE7" strokeWidth="4" />
+              <circle cx="28" cy="28" r="24" fill="none" stroke="#C4531A" strokeWidth="4" strokeDasharray={`${85 * 1.508} 151`} strokeLinecap="round" />
+            </svg>
+            <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, color: "#C4531A" }}>85%</span>
+          </div>
+          <div style={{ flex: 1 }}>
+            <p style={{ fontSize: 15, fontWeight: 700, color: "#1C1C1E" }}>Profil presque complet</p>
+            <p style={{ fontSize: 13, color: "#9B9590", marginTop: 2 }}>Ajoutez des photos pour atteindre 100%</p>
+          </div>
+          <Link href="/dashboard/photos" style={{ height: 36, padding: "0 16px", borderRadius: 8, border: "1.5px solid #E0DDD8", display: "inline-flex", alignItems: "center", fontSize: 13, fontWeight: 600, color: "#C4531A", textDecoration: "none", transition: "all .15s" }}>Compl&eacute;ter</Link>
         </div>
-        <div style={{ flex: 1 }}>
-          <p style={{ fontSize: 15, fontWeight: 700, color: "#1C1C1E" }}>Profil presque complet</p>
-          <p style={{ fontSize: 13, color: "#9B9590", marginTop: 2 }}>Ajoutez des photos pour atteindre 100%</p>
+        {/* Checklist */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 16, paddingTop: 16, borderTop: "1px solid #F7F5F2" }}>
+          {completionItems.map((item) => (
+            <Link key={item.label} href={item.href} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 14px", borderRadius: 8, fontSize: 13, fontWeight: 500, textDecoration: "none", transition: "all .15s", background: item.done ? "rgba(34,197,94,.06)" : "rgba(155,149,144,.06)", color: item.done ? "#16a34a" : "#9B9590" }}>
+              <span style={{ fontSize: 14, lineHeight: 1 }}>{item.done ? "\u2713" : "\u25CB"}</span>
+              {item.label}
+            </Link>
+          ))}
         </div>
-        <Link href="/dashboard/photos" style={{ height: 36, padding: "0 16px", borderRadius: 8, border: "1.5px solid #E0DDD8", display: "inline-flex", alignItems: "center", fontSize: 13, fontWeight: 600, color: "#C4531A", textDecoration: "none", transition: "all .15s" }}>Compl&eacute;ter</Link>
       </div>
 
       {/* Stats */}
@@ -51,6 +93,15 @@ export default function DashboardPage() {
               <span dangerouslySetInnerHTML={{ __html: s.icon }} style={{ display: "flex" }} />
             </div>
             <p style={{ fontSize: 13, color: "#9B9590", marginTop: 6 }}>{s.label}</p>
+            <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 8 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: s.up ? "#16a34a" : "#dc2626", display: "flex", alignItems: "center", gap: 2 }}>
+                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{ transform: s.up ? "none" : "rotate(180deg)" }}>
+                  <path d="M18 15l-6-6-6 6" />
+                </svg>
+                {s.trend}
+              </span>
+              <span style={{ fontSize: 11, color: "#C5C0B9" }}>vs mois dernier</span>
+            </div>
           </div>
         ))}
       </div>

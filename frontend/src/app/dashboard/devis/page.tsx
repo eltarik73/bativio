@@ -20,9 +20,35 @@ export default function DevisPage() {
 
   const pills = ["TOUS", "NOUVEAU", "VU", "REPONDU", "ARCHIVE"];
 
+  const avgMinutes = 134; // 2h14 mock
+  const avgHours = Math.floor(avgMinutes / 60);
+  const avgMins = avgMinutes % 60;
+  const gaugeColor = avgMinutes < 120 ? "#16a34a" : avgMinutes <= 360 ? "#E8A84C" : "#dc2626";
+  const gaugeLabel = avgMinutes < 120 ? "Excellent" : avgMinutes <= 360 ? "Correct" : "A am\u00e9liorer";
+  const gaugePercent = Math.min(100, (avgMinutes / 480) * 100);
+
   return (
     <div style={{ maxWidth: 800, margin: "0 auto" }}>
       <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 20 }}>Demandes de devis</h1>
+
+      {/* Response time indicator */}
+      <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #EDEBE7", padding: "20px 24px", marginBottom: 24 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <svg width="20" height="20" fill="none" stroke={gaugeColor} strokeWidth="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+            <span style={{ fontSize: 15, fontWeight: 700, color: "#1C1C1E" }}>Votre temps de r&eacute;ponse moyen : <span style={{ color: gaugeColor }}>{avgHours}h{String(avgMins).padStart(2, "0")}</span></span>
+          </div>
+          <span style={{ fontSize: 12, fontWeight: 600, padding: "4px 10px", borderRadius: 6, background: `${gaugeColor}1A`, color: gaugeColor }}>{gaugeLabel}</span>
+        </div>
+        <div style={{ width: "100%", height: 6, borderRadius: 3, background: "#EDEBE7", overflow: "hidden" }}>
+          <div style={{ width: `${gaugePercent}%`, height: "100%", borderRadius: 3, background: gaugeColor, transition: "width .6s ease" }} />
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
+          <span style={{ fontSize: 11, color: "#16a34a" }}>&lt; 2h</span>
+          <span style={{ fontSize: 11, color: "#E8A84C" }}>2-6h</span>
+          <span style={{ fontSize: 11, color: "#dc2626" }}>&gt; 6h</span>
+        </div>
+      </div>
 
       {/* Filters */}
       <div style={{ display: "flex", gap: 8, marginBottom: 24, overflowX: "auto" }} className="hide-scroll">
