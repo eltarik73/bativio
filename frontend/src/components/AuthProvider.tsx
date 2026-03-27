@@ -14,7 +14,13 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const [isAuth, setIsAuth] = useState(false);
 
   useEffect(() => {
-    initAuth().then((ok) => { setIsAuth(ok); setLoading(false); });
+    try {
+      initAuth()
+        .then((ok) => { setIsAuth(ok); setLoading(false); })
+        .catch(() => { setIsAuth(false); setLoading(false); });
+    } catch {
+      setIsAuth(false); setLoading(false);
+    }
   }, []);
 
   return <AuthContext.Provider value={{ isAuth, loading }}>{children}</AuthContext.Provider>;

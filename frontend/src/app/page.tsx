@@ -41,15 +41,16 @@ export default function Home() {
   }, []);
 
   const filtered = allArtisans.filter((a) => {
-    const vs = a.ville.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
+    if (!a.ville || !a.metierNom) return false;
+    const vs = (a.ville || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
     if (villeFilter && vs !== villeFilter) return false;
     if (metierFilter !== "all") {
-      const ms = a.metierNom.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
+      const ms = (a.metierNom || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
       if (ms !== metierFilter) return false;
     }
     if (search) {
       const q = search.toLowerCase();
-      if (!a.nomAffichage.toLowerCase().includes(q) && !a.metierNom.toLowerCase().includes(q) && !a.description.toLowerCase().includes(q)) return false;
+      if (!(a.nomAffichage || "").toLowerCase().includes(q) && !(a.metierNom || "").toLowerCase().includes(q) && !(a.description || "").toLowerCase().includes(q)) return false;
     }
     return true;
   });
