@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bativio — Démo formulaire de devis</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,800&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--terre:#C4531A;--terre-h:#D4733A;--anthracite:#1C1C1E;--or:#E8A84C;--creme:#FAF8F5;--blanc:#FFFFFF;--g50:#F7F5F2;--g100:#EDEBE7;--g200:#E0DDD8;--g300:#C5C0B9;--g400:#9B9590;--g500:#6B6560;--green:#16a34a;--green-bg:rgba(22,163,74,.06)}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Karla',sans-serif;background:var(--creme);color:var(--anthracite);min-height:100vh}
+
+.nav{background:rgba(250,248,245,.94);backdrop-filter:blur(20px);border-bottom:1px solid rgba(28,28,30,.04);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-family:'Fraunces',serif;font-size:21px;font-weight:700;color:var(--terre)}
+
+/* BREADCRUMB */
+.breadcrumb{max-width:1040px;margin:20px auto 0;padding:0 28px;font-size:13px;color:var(--g400)}
+.breadcrumb a{color:var(--g400);text-decoration:none}.breadcrumb a:hover{color:var(--terre)}
+.breadcrumb span{color:var(--anthracite);font-weight:500}
+
+/* LAYOUT */
+.layout{max-width:1040px;margin:20px auto 60px;padding:0 28px;display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start}
+
+/* DEVIS CARD */
+.devis-card{background:var(--blanc);border-radius:20px;border:1.5px solid var(--g100);box-shadow:0 4px 32px rgba(28,28,30,.06);padding:36px;position:relative;overflow:hidden}
+.devis-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--terre),var(--or))}
+
+.devis-header{margin-bottom:24px}
+.devis-title{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.devis-title svg{width:24px;height:24px;stroke:var(--terre);fill:none;stroke-width:2}
+.devis-title h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700}
+.devis-subtitle{font-size:14px;color:var(--g400);margin-bottom:16px}
+.devis-badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.devis-badge{font-size:12px;font-weight:500;padding:5px 12px;border-radius:6px}
+.devis-badge.green{background:var(--green-bg);color:var(--green)}
+.devis-badge.gray{background:var(--g50);color:var(--g500)}
+.devis-sep{height:1px;background:var(--g100)}
+
+/* STEPPER MINI */
+.mini-stepper{position:absolute;top:20px;right:36px;display:flex;gap:6px;align-items:center}
+.mini-dot{width:8px;height:8px;border-radius:50%;background:var(--g200);transition:all .2s}
+.mini-dot.active{background:var(--terre);width:20px;border-radius:4px}
+.mini-dot.done{background:var(--terre)}
+
+/* STEP */
+.step{display:none}
+.step.active{display:block;animation:slideIn .3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+
+.step-title{font-size:16px;font-weight:700;margin:24px 0 16px}
+
+/* METIER GRID */
+.metier-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.metier-btn{padding:14px 8px;border-radius:12px;border:1.5px solid var(--g200);background:var(--blanc);cursor:pointer;text-align:center;transition:all .15s}
+.metier-btn:hover{border-color:var(--g300);background:var(--g50)}
+.metier-btn.selected{border-color:var(--terre);background:rgba(196,83,26,.03)}
+.metier-btn .emoji{font-size:24px;display:block;margin-bottom:4px}
+.metier-btn .name{font-size:12px;font-weight:600;color:var(--anthracite)}
+
+/* SUB-OPTIONS */
+.sub-options{margin-bottom:20px}
+.sub-label{font-size:14px;font-weight:600;margin-bottom:10px}
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill-opt{padding:8px 16px;border-radius:8px;border:1.5px solid var(--g200);font-size:13px;font-weight:500;color:var(--g500);cursor:pointer;background:var(--blanc);transition:all .15s}
+.pill-opt:hover{border-color:var(--g300);color:var(--anthracite)}
+.pill-opt.selected{border-color:var(--terre);color:var(--terre);background:rgba(196,83,26,.03)}
+
+/* FORM FIELDS */
+.field{margin-bottom:20px}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--anthracite)}
+.field label .req{color:var(--terre)}
+.field label .opt{color:var(--g400);font-weight:400}
+.input-wrap{position:relative}
+.input-wrap svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;stroke:var(--g300);fill:none;stroke-width:1.5}
+.input-icon{width:100%;height:48px;border:1.5px solid var(--g200);border-radius:12px;padding:0 16px 0 42px;font-family:'Karla',sans-serif;font-size:15px;color:var(--anthracite);outline:none;transition:all .2s}
+.input-icon:focus{border-color:var(--terre);box-shadow:0 0 0 3px rgba(196,83,26,.08)}
+.input-icon::placeholder{color:var(--g300)}
+.input-plain{width:100%;height:48px;border:1.5px solid var(--g200);border-radius:12px;padding:0 16px;font-family:'Karla',sans-serif;font-size:15px;color:var(--anthracite);outline:none;transition:all .2s}
+.input-plain:focus{border-color:var(--terre);box-shadow:0 0 0 3px rgba(196,83,26,.08)}
+.input-plain::placeholder{color:var(--g300)}
+.input-suffix{position:relative}
+.input-suffix span{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--g400)}
+textarea.input-plain{height:auto;min-height:100px;padding:14px 16px;resize:vertical}
+
+/* PHOTO DROP */
+.photo-drop{border:2px dashed var(--g200);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--g50)}
+.photo-drop:hover{border-color:var(--terre);background:rgba(196,83,26,.02)}
+.photo-drop-text{font-size:13px;color:var(--g400)}
+.photo-drop-text b{color:var(--terre)}
+.photo-drop-sub{font-size:11px;color:var(--g300);margin-top:4px}
+
+/* BUTTONS */
+.btn-row{display:flex;gap:12px;margin-top:28px}
+.btn-back{height:48px;padding:0 24px;border-radius:10px;border:1.5px solid var(--g200);background:transparent;font-size:14px;font-weight:600;color:var(--anthracite);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px}
+.btn-back:hover{border-color:var(--g300);background:rgba(0,0,0,.02)}
+.btn-next{flex:1;height:48px;border-radius:10px;border:none;background:var(--terre);color:var(--blanc);font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-next:hover{background:var(--terre-h)}
+.btn-submit{width:100%;height:56px;border-radius:12px;border:none;background:var(--terre);color:var(--blanc);font-size:17px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:28px}
+.btn-submit:hover{background:var(--terre-h);transform:translateY(-1px)}
+.btn-submit svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2}
+
+/* CHECKBOX */
+.checkbox-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+.checkbox-row input[type="checkbox"]{width:18px;height:18px;accent-color:var(--terre);margin-top:1px;flex-shrink:0}
+.checkbox-row label{font-size:13px;color:var(--g500);cursor:pointer}
+
+/* LEGAL */
+.legal{font-size:11px;color:var(--g300);margin-top:16px;text-align:center;line-height:1.5}
+
+/* CONFIRMATION */
+.confirmation{text-align:center;padding:40px 20px}
+.conf-icon{width:64px;height:64px;border-radius:50%;background:var(--green-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+.conf-icon svg{width:32px;height:32px;stroke:var(--green);fill:none;stroke-width:2.5}
+.conf-title{font-family:'Fraunces',serif;font-size:24px;font-weight:700;margin-bottom:8px}
+.conf-sub{font-size:15px;color:var(--g500);margin-bottom:24px}
+.conf-recap{background:var(--g50);border-radius:12px;padding:20px;text-align:left;margin-bottom:24px}
+.conf-recap-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px}
+.conf-recap-row .label{color:var(--g400)}
+.conf-recap-row .val{font-weight:600}
+.conf-note{font-size:13px;color:var(--g400);margin-bottom:24px}
+.conf-btn{display:inline-flex;align-items:center;gap:6px;background:var(--g50);border:1.5px solid var(--g200);border-radius:10px;padding:10px 24px;font-size:14px;font-weight:600;color:var(--anthracite);cursor:pointer;text-decoration:none;transition:all .2s}
+.conf-btn:hover{border-color:var(--terre);color:var(--terre)}
+
+/* CONTACT CARD */
+.contact-card{background:var(--blanc);border-radius:20px;border:1.5px solid var(--g100);box-shadow:0 4px 32px rgba(28,28,30,.06);padding:28px;position:sticky;top:80px}
+
+.contact-header{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.contact-avatar{width:56px;height:56px;border-radius:50%;background:var(--terre);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:700;font-size:18px;color:var(--blanc);flex-shrink:0;position:relative}
+.contact-online{position:absolute;bottom:1px;right:1px;width:13px;height:13px;border-radius:50%;background:var(--green);border:2.5px solid var(--blanc)}
+.contact-name{font-family:'Fraunces',serif;font-size:17px;font-weight:700}
+.contact-metier{font-size:13px;color:var(--g400);margin-top:1px}
+.contact-rating{display:flex;align-items:center;gap:4px;margin-top:4px;font-size:13px}
+.contact-rating svg{width:14px;height:14px;fill:var(--or)}
+.contact-rating strong{font-weight:700}
+.contact-rating span{color:var(--g400)}
+
+.contact-sep{height:1px;background:var(--g100);margin:16px 0}
+
+.contact-row{display:flex;align-items:flex-start;gap:12px;padding:12px 0}
+.contact-row-icon{width:20px;height:20px;stroke:var(--g400);fill:none;stroke-width:1.5;flex-shrink:0;margin-top:2px}
+.contact-row-label{font-size:12px;color:var(--g400);margin-bottom:2px}
+.contact-row-value{font-size:14px;font-weight:600;color:var(--anthracite)}
+.contact-row-value a{color:var(--anthracite);text-decoration:none}
+.contact-row-value a:hover{color:var(--terre)}
+
+.contact-badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.contact-badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px}
+.contact-badge.green{background:var(--green-bg);color:var(--green)}
+.contact-badge.terre{background:rgba(196,83,26,.06);color:var(--terre)}
+
+.contact-btn-call{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:44px;border-radius:10px;border:1.5px solid var(--terre);background:transparent;color:var(--terre);font-size:14px;font-weight:600;cursor:pointer;margin-top:20px;transition:all .2s}
+.contact-btn-call:hover{background:rgba(196,83,26,.03)}
+.contact-btn-call svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+
+/* HORAIRES ACCORDEON */
+.horaires-toggle{display:flex;align-items:center;justify-content:space-between;padding:12px 0;cursor:pointer;font-size:13px;font-weight:600;color:var(--g500)}
+.horaires-toggle svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;transition:transform .2s}
+.horaires-toggle.open svg{transform:rotate(180deg)}
+.horaires-list{display:none;padding-bottom:8px}
+.horaires-list.show{display:block}
+.horaire-row{display:flex;justify-content:space-between;padding:4px 0;font-size:12px;color:var(--g500)}
+.horaire-row.today{font-weight:600;color:var(--anthracite)}
+.horaire-row.today::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--terre);margin-right:6px;align-self:center}
+.horaire-row .ferme{color:var(--terre)}
+
+@media(max-width:860px){
+  .layout{grid-template-columns:1fr;gap:20px}
+  .contact-card{position:static}
+  .metier-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-logo">Bativio</a>
+</nav>
+
+<div class="breadcrumb">
+  <a href="/">Accueil</a> › <a href="/chambery">Chambéry</a> › <span>Martin Plomberie</span> › Demander un devis
+</div>
+
+<div class="layout">
+
+  <!-- FORMULAIRE DE DEVIS -->
+  <div class="devis-card">
+    <div class="mini-stepper">
+      <div class="mini-dot active" id="md0"></div>
+      <div class="mini-dot" id="md1"></div>
+      <div class="mini-dot" id="md2"></div>
+    </div>
+
+    <div class="devis-header">
+      <div class="devis-title">
+        <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h8M8 14h5"/></svg>
+        <h2>Demander un devis gratuit</h2>
+      </div>
+      <div class="devis-subtitle">Décrivez votre projet, l'artisan vous répond sous 24h</div>
+      <div class="devis-badges">
+        <span class="devis-badge green">⚡ Réponse sous 24h</span>
+        <span class="devis-badge gray">🔒 Gratuit et sans engagement</span>
+        <span class="devis-badge gray">✓ Données protégées</span>
+      </div>
+      <div class="devis-sep"></div>
+    </div>
+
+    <!-- ÉTAPE 1 -->
+    <div class="step active" id="step0">
+      <div class="step-title">Quel type de travaux ?</div>
+      <div class="metier-grid" id="metierGrid">
+        <div class="metier-btn selected" onclick="selMetier(this,'plomberie')"><span class="emoji">🔧</span><span class="name">Plomberie</span></div>
+        <div class="metier-btn" onclick="selMetier(this,'electricite')"><span class="emoji">⚡</span><span class="name">Électricité</span></div>
+        <div class="metier-btn" onclick="selMetier(this,'peinture')"><span class="emoji">🎨</span><span class="name">Peinture</span></div>
+        <div class="metier-btn" onclick="selMetier(this,'maconnerie')"><span class="emoji">🧱</span><span class="name">Maçonnerie</span></div>
+        <div class="metier-btn" onclick="selMetier(this,'carrelage')"><span class="emoji">🔲</span><span class="name">Carrelage</span></div>
+        <div class="metier-btn" onclick="selMetier(this,'toiture')"><span class="emoji">🏠</span><span class="name">Toiture</span></div>
+        <div class="metier-btn" onclick="selMetier(this,'chauffage')"><span class="emoji">🔥</span><span class="name">Chauffage</span></div>
+        <div class="metier-btn" onclick="selMetier(this,'menuiserie')"><span class="emoji">🪚</span><span class="name">Menuiserie</span></div>
+        <div class="metier-btn" onclick="selMetier(this,'autre')"><span class="emoji">🏗️</span><span class="name">Autre</span></div>
+      </div>
+
+      <div class="sub-options" id="subOptions">
+        <div class="sub-label">Quel type d'intervention ?</div>
+        <div class="pills" id="subPills">
+          <div class="pill-opt selected" onclick="selPill(this)">Fuite / Dépannage</div>
+          <div class="pill-opt" onclick="selPill(this)">Rénovation salle de bain</div>
+          <div class="pill-opt" onclick="selPill(this)">Installation chauffage</div>
+          <div class="pill-opt" onclick="selPill(this)">Chauffe-eau</div>
+          <div class="pill-opt" onclick="selPill(this)">Autre</div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-next" onclick="goStep(1)">Continuer →</button>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 2 -->
+    <div class="step" id="step1">
+      <div class="step-title">Donnez plus de détails</div>
+      
+      <div class="field">
+        <label>Surface approximative <span class="opt">(facultatif)</span></label>
+        <div class="input-suffix">
+          <input type="number" class="input-plain" placeholder="Ex : 15" style="padding-right:40px">
+          <span>m²</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Quel est votre délai ?</label>
+        <div class="pills">
+          <div class="pill-opt" onclick="selPill(this)">Urgent (&lt; 48h)</div>
+          <div class="pill-opt selected" onclick="selPill(this)">Sous 2 semaines</div>
+          <div class="pill-opt" onclick="selPill(this)">Sous 1 mois</div>
+          <div class="pill-opt" onclick="selPill(this)">Pas pressé</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Détaillez votre besoin <span class="opt">(recommandé)</span></label>
+        <textarea class="input-plain" placeholder="Précisez votre projet : matériaux souhaités, état actuel, contraintes particulières..."></textarea>
+      </div>
+
+      <div class="field">
+        <label>Photos <span class="opt">(facultatif · max 5)</span></label>
+        <div class="photo-drop">
+          <div class="photo-drop-text">📷 Glissez vos photos ici ou <b>parcourir</b></div>
+          <div class="photo-drop-sub">JPG, PNG ou WebP · max 10 Mo par photo</div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-back" onclick="goStep(0)">← Retour</button>
+        <button class="btn-next" onclick="goStep(2)">Continuer →</button>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 3 -->
+    <div class="step" id="step2">
+      <div class="step-title">Comment vous contacter ?</div>
+
+      <div class="field">
+        <label>Nom <span class="req">*</span></label>
+        <div class="input-wrap">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+          <input type="text" class="input-icon" placeholder="Votre nom complet">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Téléphone <span class="req">*</span></label>
+        <div class="input-wrap">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.12.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0122 16.92z"/></svg>
+          <input type="tel" class="input-icon" placeholder="06 12 34 56 78">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Email</label>
+        <div class="input-wrap">
+          <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13 2 4"/></svg>
+          <input type="email" class="input-icon" placeholder="votre@email.fr">
+        </div>
+      </div>
+
+      <div style="margin-top:20px">
+        <div class="checkbox-row">
+          <input type="checkbox" id="cb1" checked>
+          <label for="cb1">J'accepte d'être contacté par cet artisan concernant ma demande</label>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="cb2">
+          <label for="cb2">J'accepte les <a href="#" style="color:var(--terre)">conditions générales</a> de Bativio</label>
+        </div>
+      </div>
+
+      <button class="btn-submit" onclick="submitDevis()">
+        Envoyer ma demande
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <div class="legal">🔒 Vos données sont protégées et ne sont partagées qu'avec cet artisan.<br>Gratuit et sans engagement.</div>
+    </div>
+
+    <!-- CONFIRMATION -->
+    <div class="step" id="step3">
+      <div class="confirmation">
+        <div class="conf-icon"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="conf-title">Demande envoyée !</div>
+        <div class="conf-sub">Martin Plomberie va vous contacter sous 24h.</div>
+        <div class="conf-recap">
+          <div class="conf-recap-row"><span class="label">Type de travaux</span><span class="val">Plomberie — Fuite / Dépannage</span></div>
+          <div class="conf-recap-row"><span class="label">Délai</span><span class="val">Sous 2 semaines</span></div>
+          <div class="conf-recap-row"><span class="label">Artisan</span><span class="val">Martin Plomberie · Chambéry</span></div>
+        </div>
+        <div class="conf-note">📩 Un email et un SMS de confirmation vous ont été envoyés.</div>
+        <a href="/" class="conf-btn">← Retour à l'accueil</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FICHE CONTACT -->
+  <div class="contact-card">
+    <div class="contact-header">
+      <div class="contact-avatar">MP<div class="contact-online"></div></div>
+      <div>
+        <div class="contact-name">Martin Plomberie</div>
+        <div class="contact-metier">Plombier · Chambéry</div>
+        <div class="contact-rating">
+          <svg viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <strong>4.8</strong> <span>(47 avis)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-sep"></div>
+
+    <div class="contact-row">
+      <svg class="contact-row-icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.12.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0122 16.92z"/></svg>
+      <div>
+        <div class="contact-row-label">Téléphone</div>
+        <div class="contact-row-value"><a href="tel:0479123456">04 79 12 34 56</a></div>
+      </div>
+    </div>
+
+    <div class="contact-row">
+      <svg class="contact-row-icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <div>
+        <div class="contact-row-label">Adresse</div>
+        <div class="contact-row-value">Chambéry, 73000</div>
+      </div>
+    </div>
+
+    <div class="contact-row">
+      <svg class="contact-row-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      <div>
+        <div class="contact-row-label">Zone d'intervention</div>
+        <div class="contact-row-value">25 km autour de Chambéry</div>
+      </div>
+    </div>
+
+    <!-- HORAIRES -->
+    <div class="horaires-toggle" onclick="toggleHoraires(this)">
+      Horaires d'ouverture
+      <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="horaires-list" id="horairesList">
+      <div class="horaire-row"><span>Lundi</span><span>08:00 - 18:00</span></div>
+      <div class="horaire-row"><span>Mardi</span><span>08:00 - 18:00</span></div>
+      <div class="horaire-row"><span>Mercredi</span><span>08:00 - 18:00</span></div>
+      <div class="horaire-row today"><span>Jeudi</span><span>08:00 - 18:00</span></div>
+      <div class="horaire-row"><span>Vendredi</span><span>08:00 - 18:00</span></div>
+      <div class="horaire-row"><span>Samedi</span><span>09:00 - 12:00</span></div>
+      <div class="horaire-row"><span>Dimanche</span><span class="ferme">Fermé</span></div>
+    </div>
+
+    <div class="contact-sep"></div>
+
+    <div class="contact-badges">
+      <span class="contact-badge green">✓ Profil vérifié</span>
+      <span class="contact-badge green">✓ Assurance décennale</span>
+      <span class="contact-badge terre">RGE</span>
+      <span class="contact-badge terre">Qualibat</span>
+    </div>
+
+    <button class="contact-btn-call" onclick="window.location='tel:0479123456'">
+      <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.12.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0122 16.92z"/></svg>
+      Appeler
+    </button>
+  </div>
+
+</div>
+
+<script>
+const SUB_OPTIONS = {
+  plomberie: { label: "Quel type d'intervention ?", options: ["Fuite / Dépannage","Rénovation salle de bain","Installation chauffage","Chauffe-eau","Autre"] },
+  electricite: { label: "Quel type de travaux ?", options: ["Mise aux normes","Nouveau tableau","Prises / Interrupteurs","Domotique","Autre"] },
+  peinture: { label: "Quel type de surface ?", options: ["Peinture intérieure","Peinture extérieure / Façade","Papier peint","Autre"] },
+  maconnerie: { label: "Quel type de travaux ?", options: ["Construction mur","Extension","Rénovation façade","Terrassement","Autre"] },
+  carrelage: { label: "Quelle pièce ?", options: ["Salle de bain","Cuisine","Sol intérieur","Terrasse","Autre"] },
+  toiture: { label: "Quel type d'intervention ?", options: ["Rénovation toiture","Réparation fuite","Démoussage","Isolation","Autre"] },
+  chauffage: { label: "Quel type d'équipement ?", options: ["Pompe à chaleur","Chaudière gaz","Radiateurs","Plancher chauffant","Autre"] },
+  menuiserie: { label: "Quel type de travaux ?", options: ["Pose de parquet","Meuble sur mesure","Pose cuisine","Portail","Autre"] },
+  autre: { label: "Décrivez votre besoin", options: ["Rénovation complète","Aménagement combles","Multi-travaux","Autre"] }
+};
+
+let currentStep = 0;
+
+function selMetier(el, id) {
+  document.querySelectorAll('.metier-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  const sub = SUB_OPTIONS[id];
+  if (sub) {
+    document.getElementById('subOptions').innerHTML = `
+      <div class="sub-label">${sub.label}</div>
+      <div class="pills">${sub.options.map((o,i) => `<div class="pill-opt${i===0?' selected':''}" onclick="selPill(this)">${o}</div>`).join('')}</div>
+    `;
+  }
+}
+
+function selPill(el) {
+  el.parentElement.querySelectorAll('.pill-opt').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function goStep(n) {
+  document.getElementById('step' + currentStep).classList.remove('active');
+  document.getElementById('step' + n).classList.add('active');
+  for (let i = 0; i < 3; i++) {
+    const d = document.getElementById('md' + i);
+    if (i < n) { d.className = 'mini-dot done'; }
+    else if (i === n) { d.className = 'mini-dot active'; }
+    else { d.className = 'mini-dot'; }
+  }
+  currentStep = n;
+}
+
+function submitDevis() {
+  const btn = document.querySelector('.btn-submit');
+  btn.innerHTML = '<span style="display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .6s linear infinite"></span> Envoi en cours...';
+  btn.style.pointerEvents = 'none';
+  setTimeout(() => {
+    document.getElementById('step2').classList.remove('active');
+    document.getElementById('step3').classList.add('active');
+    document.querySelector('.mini-stepper').style.display = 'none';
+  }, 1500);
+}
+
+function toggleHoraires(el) {
+  el.classList.toggle('open');
+  document.getElementById('horairesList').classList.toggle('show');
+}
+
+const style = document.createElement('style');
+style.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
+document.head.appendChild(style);
+</script>
+</body>
+</html>
