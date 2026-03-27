@@ -338,4 +338,92 @@ a{text-decoration:none;color:inherit}button{font-family:'Karla',sans-serif;curso
 @keyframes shimmer{0%{background-position:-200px 0}100%{background-position:200px 0}}
 .skeleton{background:linear-gradient(90deg,#EDEBE7 25%,#F7F5F2 50%,#EDEBE7 75%);background-size:400px 100%;animation:shimmer 1.5s ease-in-out infinite;border-radius:8px}
 
+/* ═══ DEVIS 3 ETAPES — copie exacte HTML reference ═══ */
+.devis-layout{max-width:1040px;margin:20px auto 60px;padding:0 28px;display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start}
+.devis-card{background:#fff;border-radius:20px;border:1.5px solid #EDEBE7;box-shadow:0 4px 32px rgba(28,28,30,.06);padding:36px;position:relative;overflow:hidden}
+.devis-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#C4531A,#E8A84C)}
+.devis-header{margin-bottom:24px}
+.devis-title{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.devis-title svg{width:24px;height:24px;stroke:#C4531A;fill:none;stroke-width:2}
+.devis-title h2{font-family:'Fraunces',serif;font-size:22px;font-weight:700}
+.devis-subtitle{font-size:14px;color:#9B9590;margin-bottom:16px}
+.devis-badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.devis-badge{font-size:12px;font-weight:500;padding:5px 12px;border-radius:6px}
+.devis-badge.green{background:rgba(22,163,74,.06);color:#16a34a}
+.devis-badge.gray{background:#F7F5F2;color:#6B6560}
+.devis-sep{height:1px;background:#EDEBE7}
+.mini-stepper{position:absolute;top:20px;right:36px;display:flex;gap:6px;align-items:center}
+.mini-dot{width:8px;height:8px;border-radius:50%;background:#E0DDD8;transition:all .2s}
+.mini-dot.active{background:#C4531A;width:20px;border-radius:4px}
+.mini-dot.done{background:#C4531A}
+.devis-step{display:none}.devis-step.active{display:block;animation:slideIn .3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+.devis-step-title{font-size:16px;font-weight:700;margin:24px 0 16px}
+.metier-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.metier-btn{padding:14px 8px;border-radius:12px;border:1.5px solid #E0DDD8;background:#fff;cursor:pointer;text-align:center;transition:all .15s}
+.metier-btn:hover{border-color:#C5C0B9;background:#F7F5F2}
+.metier-btn.selected{border-color:#C4531A;background:rgba(196,83,26,.03)}
+.metier-btn .emoji{font-size:24px;display:block;margin-bottom:4px}
+.metier-btn .name{font-size:12px;font-weight:600;color:#1C1C1E}
+.sub-label{font-size:14px;font-weight:600;margin-bottom:10px}
+.pills-devis{display:flex;flex-wrap:wrap;gap:8px}
+.pill-opt{padding:8px 16px;border-radius:8px;border:1.5px solid #E0DDD8;font-size:13px;font-weight:500;color:#6B6560;cursor:pointer;background:#fff;transition:all .15s}
+.pill-opt:hover{border-color:#C5C0B9;color:#1C1C1E}
+.pill-opt.selected{border-color:#C4531A;color:#C4531A;background:rgba(196,83,26,.03)}
+.input-wrap{position:relative}
+.input-wrap svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;stroke:#C5C0B9;fill:none;stroke-width:1.5}
+.input-icon{width:100%;height:48px;border:1.5px solid #E0DDD8;border-radius:12px;padding:0 16px 0 42px;font-family:'Karla',sans-serif;font-size:15px;color:#1C1C1E;outline:none;transition:all .2s}
+.input-icon:focus{border-color:#C4531A;box-shadow:0 0 0 3px rgba(196,83,26,.08)}
+.input-icon::placeholder{color:#C5C0B9}
+.btn-row-devis{display:flex;gap:12px;margin-top:28px}
+.btn-back{height:48px;padding:0 24px;border-radius:10px;border:1.5px solid #E0DDD8;background:transparent;font-size:14px;font-weight:600;color:#1C1C1E;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;font-family:'Karla',sans-serif}
+.btn-back:hover{border-color:#C5C0B9;background:rgba(0,0,0,.02)}
+.btn-next-devis{flex:1;height:48px;border-radius:10px;border:none;background:#C4531A;color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;font-family:'Karla',sans-serif}
+.btn-next-devis:hover{background:#D4733A}
+.btn-submit-devis{width:100%;height:56px;border-radius:12px;border:none;background:#C4531A;color:#fff;font-size:17px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:28px;font-family:'Karla',sans-serif}
+.btn-submit-devis:hover{background:#D4733A;transform:translateY(-1px)}
+.checkbox-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+.checkbox-row input[type="checkbox"]{width:18px;height:18px;accent-color:#C4531A;margin-top:1px;flex-shrink:0}
+.checkbox-row label{font-size:13px;color:#6B6560;cursor:pointer}
+.devis-legal{font-size:11px;color:#C5C0B9;margin-top:16px;text-align:center;line-height:1.5}
+.confirmation{text-align:center;padding:40px 20px}
+.conf-icon{width:64px;height:64px;border-radius:50%;background:rgba(22,163,74,.06);display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+.conf-icon svg{width:32px;height:32px;stroke:#16a34a;fill:none;stroke-width:2.5}
+.conf-title{font-family:'Fraunces',serif;font-size:24px;font-weight:700;margin-bottom:8px}
+.conf-sub{font-size:15px;color:#6B6560;margin-bottom:24px}
+.conf-recap{background:#F7F5F2;border-radius:12px;padding:20px;text-align:left;margin-bottom:24px}
+.conf-recap-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px}
+.conf-recap-row .label{color:#9B9590}
+.conf-recap-row .val{font-weight:600}
+
+/* CONTACT CARD */
+.contact-card{background:#fff;border-radius:20px;border:1.5px solid #EDEBE7;box-shadow:0 4px 32px rgba(28,28,30,.06);padding:28px;position:sticky;top:80px}
+.contact-header{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.contact-avatar{width:56px;height:56px;border-radius:50%;background:#C4531A;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:700;font-size:18px;color:#fff;flex-shrink:0;position:relative}
+.contact-online{position:absolute;bottom:1px;right:1px;width:13px;height:13px;border-radius:50%;background:#16a34a;border:2.5px solid #fff}
+.contact-name{font-family:'Fraunces',serif;font-size:17px;font-weight:700}
+.contact-metier{font-size:13px;color:#9B9590;margin-top:1px}
+.contact-rating{display:flex;align-items:center;gap:4px;margin-top:4px;font-size:13px}
+.contact-rating svg{width:14px;height:14px;fill:#E8A84C}
+.contact-rating span{color:#9B9590}
+.contact-sep{height:1px;background:#EDEBE7;margin:16px 0}
+.contact-row{display:flex;align-items:flex-start;gap:12px;padding:12px 0}
+.contact-row-icon{width:20px;height:20px;stroke:#9B9590;fill:none;stroke-width:1.5;flex-shrink:0;margin-top:2px}
+.contact-row-label{font-size:12px;color:#9B9590;margin-bottom:2px}
+.contact-row-value{font-size:14px;font-weight:600;color:#1C1C1E}
+.contact-row-value a{color:#1C1C1E;text-decoration:none}.contact-row-value a:hover{color:#C4531A}
+.contact-badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.contact-badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px}
+.contact-badge.green{background:rgba(22,163,74,.06);color:#16a34a}
+.contact-badge.terre{background:rgba(196,83,26,.06);color:#C4531A}
+.contact-btn-call{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:44px;border-radius:10px;border:1.5px solid #C4531A;background:transparent;color:#C4531A;font-size:14px;font-weight:600;cursor:pointer;margin-top:20px;transition:all .2s;font-family:'Karla',sans-serif}
+.contact-btn-call:hover{background:rgba(196,83,26,.03)}
+.contact-btn-call svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+.horaires-toggle{display:flex;align-items:center;justify-content:space-between;padding:12px 0;cursor:pointer;font-size:13px;font-weight:600;color:#6B6560}
+.horaires-toggle svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;transition:transform .2s}
+.horaire-row{display:flex;justify-content:space-between;padding:4px 0;font-size:12px;color:#6B6560}
+
+@media(max-width:860px){.devis-layout{grid-template-columns:1fr;gap:20px}.contact-card{position:static}.metier-grid{grid-template-columns:repeat(2,1fr)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
 ::selection{background-color:rgba(196,83,26,.2)}

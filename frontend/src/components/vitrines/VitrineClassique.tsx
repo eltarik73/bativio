@@ -1,5 +1,6 @@
 import type { ArtisanPublic } from "@/lib/api";
-import DevisForm from "@/components/DevisForm";
+import DevisForm3Steps from "@/components/DevisForm3Steps";
+import ContactCard from "@/components/ContactCard";
 import PhotoGallery from "@/components/vitrines/PhotoGallery";
 import type { PhotoLayoutType } from "@/lib/vitrine-config";
 
@@ -103,10 +104,11 @@ export default function VitrineClassique({ a, photo, primary, accent }: { a: Art
         </section>
       )}
 
-      {/* Devis */}
-      <section id="devis" style={{ background: "#fff", padding: "48px 32px" }}>
-        <div style={{ maxWidth: 560, margin: "0 auto", background: "#fff", border: "1.5px solid #EDEBE7", borderRadius: 20, padding: 36, boxShadow: "0 8px 40px rgba(28,28,30,.08)" }}>
-          <DevisForm slug={a.slug} />
+      {/* Devis 3 etapes + Contact card — layout 60/40 */}
+      <section id="devis" style={{ background: "#FAF8F5", padding: "32px 0 60px" }}>
+        <div className="devis-layout">
+          <DevisForm3Steps slug={a.slug} artisanName={a.nomAffichage} ville={a.ville} />
+          <ContactCard a={a} />
         </div>
       </section>
 
