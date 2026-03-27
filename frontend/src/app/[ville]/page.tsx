@@ -3,6 +3,8 @@ import ArtisanCard from "@/components/ArtisanCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { MOCK_VILLES, MOCK_ARTISANS, MOCK_METIERS } from "@/lib/mock-data";
+import { getVille, getMetiers } from "@/lib/api";
+import type { ArtisanPublic, MetierData } from "@/lib/api";
 import { VILLES } from "@/lib/constants";
 import VilleClient from "./VilleClient";
 
@@ -15,17 +17,30 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
   const ville = MOCK_VILLES.find((v) => v.slug === villeSlug);
   const nom = ville?.nom || villeSlug;
   return {
-    title: `Artisans du batiment a ${nom}`,
-    description: `Trouvez les meilleurs artisans du batiment a ${nom}. Plombier, electricien, peintre, macon... Devis gratuit, zero commission.`,
+    title: `Artisans du b\u00e2timent \u00e0 ${nom}`,
+    description: `Trouvez les meilleurs artisans du b\u00e2timent \u00e0 ${nom}. Plombier, \u00e9lectricien, peintre, ma\u00e7on... Devis gratuit, z\u00e9ro commission.`,
   };
 }
 
 export default async function VillePage({ params }: { params: Promise<{ ville: string }> }) {
   const { ville: villeSlug } = await params;
-  const ville = MOCK_VILLES.find((v) => v.slug === villeSlug);
-  const artisans = MOCK_ARTISANS.filter(
+
+  // Essayer le backend, fallback mock
+  let ville = MOCK_VILLES.find((v) => v.slug === villeSlug);
+  let artisans: ArtisanPublic[] = MOCK_ARTISANS.filter(
     (a) => a.ville.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "") === villeSlug
   );
+  let metiers: MetierData[] = MOCK_METIERS;
+
+  try {
+    const [villeData, metiersData] = await Promise.all([getVille(villeSlug), getMetiers()]);
+    if (villeData) {
+      ville = { id: "", nom: villeData.nom || ville?.nom || villeSlug, slug: villeSlug, codePostal: ville?.codePostal || "", departement: ville?.departement || "", contenuSeo: villeData.contenuSeo || ville?.contenuSeo || "", nombreArtisans: (villeData as { artisans?: ArtisanPublic[] }).artisans?.length || 0 };
+      const apiArtisans = (villeData as { artisans?: ArtisanPublic[] }).artisans;
+      if (apiArtisans && apiArtisans.length > 0) artisans = apiArtisans;
+    }
+    if (metiersData && metiersData.length > 0) metiers = metiersData;
+  } catch { /* fallback mock */ }
 
   return (
     <>
@@ -46,7 +61,7 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
         </section>
 
         {/* Filters + Grid (client) */}
-        <VilleClient artisans={artisans} villeSlug={villeSlug} metiers={MOCK_METIERS} />
+        <VilleClient artisans={artisans} villeSlug={villeSlug} metiers={metiers} />
 
         {/* SEO content */}
         {ville?.contenuSeo && (

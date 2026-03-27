@@ -10,6 +10,30 @@ export function getAccessToken() {
   return accessToken;
 }
 
+// Restaurer la session au chargement de la page
+export async function initAuth(): Promise<boolean> {
+  if (typeof window === "undefined") return false;
+  const refreshToken = localStorage.getItem("bativio_refresh");
+  if (!refreshToken) return false;
+  try {
+    const res = await fetch(`${API_URL}/auth/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refreshToken }),
+    });
+    const json = await res.json();
+    if (json.success) {
+      accessToken = json.data.accessToken;
+      localStorage.setItem("bativio_refresh", json.data.refreshToken);
+      return true;
+    }
+    localStorage.removeItem("bativio_refresh");
+    return false;
+  } catch {
+    return false;
+  }
+}
+
 export async function authFetch<T>(path: string, options?: RequestInit): Promise<T> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",

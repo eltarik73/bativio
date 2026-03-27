@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Karla } from "next/font/google";
+import AuthProvider from "@/components/AuthProvider";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -38,7 +39,7 @@ export default function RootLayout({
   return (
     <html lang="fr" className={`${fraunces.variable} ${karla.variable}`}>
       <body className="min-h-screen flex flex-col bg-creme text-anthracite font-body antialiased">
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

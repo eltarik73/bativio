@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import ArtisanCard from "@/components/ArtisanCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { MOCK_ARTISANS, MOCK_METIERS } from "@/lib/mock-data";
+import { getArtisans, getMetiers } from "@/lib/api";
+import type { ArtisanPublic, MetierData } from "@/lib/api";
 import { VILLES } from "@/lib/constants";
 
 const PLANS_DATA = [
@@ -25,8 +27,20 @@ export default function Home() {
   const [search, setSearch] = useState("");
   const [pricingOpen, setPricingOpen] = useState(false);
   const ppRef = useRef<HTMLDivElement>(null);
+  const [allArtisans, setAllArtisans] = useState<ArtisanPublic[]>(MOCK_ARTISANS);
+  const [allMetiers, setAllMetiers] = useState<MetierData[]>(MOCK_METIERS);
 
-  const filtered = MOCK_ARTISANS.filter((a) => {
+  // Charger les vrais artisans depuis le backend
+  useEffect(() => {
+    getArtisans({ size: 100 })
+      .then((page) => { if (page.content && page.content.length > 0) setAllArtisans(page.content); })
+      .catch(() => {}); // fallback mock
+    getMetiers()
+      .then((m) => { if (m && m.length > 0) setAllMetiers(m); })
+      .catch(() => {});
+  }, []);
+
+  const filtered = allArtisans.filter((a) => {
     const vs = a.ville.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
     if (villeFilter && vs !== villeFilter) return false;
     if (metierFilter !== "all") {
@@ -76,7 +90,7 @@ export default function Home() {
       <div className="filters">
         <div className="filters-inner hide-scroll">
           <button className={`pill ${metierFilter === "all" ? "active" : ""}`} onClick={() => setMetierFilter("all")}>Tous</button>
-          {MOCK_METIERS.map((m) => (
+          {allMetiers.map((m) => (
             <button key={m.slug} className={`pill ${metierFilter === m.slug ? "active" : ""}`} onClick={() => setMetierFilter(m.slug)}>{m.nom}</button>
           ))}
           <span className="result-count">{filtered.length} artisan{filtered.length > 1 ? "s" : ""}</span>
