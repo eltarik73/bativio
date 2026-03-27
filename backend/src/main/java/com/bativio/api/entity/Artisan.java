@@ -69,6 +69,12 @@ public class Artisan {
     private String stripeCustomerId;
     private String stripeSubscriptionId;
     private int profilCompletion = 0;
+
+    // Vitrine personnalisable (Pro/Pro+)
+    private String templateId = "classique";
+    private String colorPrimary = "#C4531A";
+    private String colorAccent = "#E8A84C";
+    private String photoLayout = "grid";
     private boolean actif = true;
     private boolean visible = true;
 
@@ -164,6 +170,14 @@ public class Artisan {
     public void setStripeSubscriptionId(String stripeSubscriptionId) { this.stripeSubscriptionId = stripeSubscriptionId; }
     public int getProfilCompletion() { return profilCompletion; }
     public void setProfilCompletion(int profilCompletion) { this.profilCompletion = profilCompletion; }
+    public String getTemplateId() { return templateId; }
+    public void setTemplateId(String templateId) { this.templateId = templateId; }
+    public String getColorPrimary() { return colorPrimary; }
+    public void setColorPrimary(String colorPrimary) { this.colorPrimary = colorPrimary; }
+    public String getColorAccent() { return colorAccent; }
+    public void setColorAccent(String colorAccent) { this.colorAccent = colorAccent; }
+    public String getPhotoLayout() { return photoLayout; }
+    public void setPhotoLayout(String photoLayout) { this.photoLayout = photoLayout; }
     public boolean isActif() { return actif; }
     public void setActif(boolean actif) { this.actif = actif; }
     public boolean isVisible() { return visible; }

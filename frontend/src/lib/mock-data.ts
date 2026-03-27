@@ -27,6 +27,7 @@ export const MOCK_ARTISANS: ArtisanPublic[] = [
     ville: "Chamb\u00e9ry", noteMoyenne: 4.8, nombreAvis: 47,
     description: "Plombier-chauffagiste depuis 15 ans. D\u00e9pannage urgent, r\u00e9novation salle de bain, installation chauffage.",
     telephone: "04 79 12 34 56", adresse: "Chamb\u00e9ry", codePostal: "73000", zoneRayonKm: 25, experienceAnnees: 15, plan: "PRO",
+    templateId: "classique", colorPrimary: "#C4531A", colorAccent: "#E8A84C", photoLayout: "grid",
     badgesNoms: ["RGE", "Qualibat"],
     services: [
       { id: "s1", titre: "D\u00e9pannage", description: "Intervention rapide pour fuites, canalisations bouch\u00e9es.", prixIndicatif: "\u00c0 partir de 80\u20AC", ordre: 0 },

@@ -36,6 +36,10 @@ export interface ArtisanPublic {
   photos: PhotoData[];
   horaires: HoraireData[];
   zones: string[];
+  templateId?: string;
+  colorPrimary?: string;
+  colorAccent?: string;
+  photoLayout?: string;
 }
 
 export interface ServiceData {
