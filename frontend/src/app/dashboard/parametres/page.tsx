@@ -1,65 +1,204 @@
 "use client";
 
+import { useState } from "react";
+
 export default function ParametresPage() {
+  const [copied, setCopied] = useState(false);
+
+  // TODO: remplacer par les données de l'artisan connecté
+  const email = "jp.martin@email.com";
+  const plan = "PRO";
+  const slug = "martin-plomberie";
+  const ville = "chambery";
+  const url = `bativio.fr/${ville}/${slug}`;
+
+  const copyUrl = () => {
+    navigator.clipboard.writeText(`https://${url}`);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const CARD: React.CSSProperties = {
+    background: "#fff",
+    borderRadius: 16,
+    border: "1.5px solid #EDEBE7",
+    padding: 28,
+    marginBottom: 20,
+  };
+
+  const features = [
+    "URL perso (vitrine complète)",
+    "Photos illimitées",
+    "QR Code vitrine",
+    "Mini-CRM clients",
+    "Support prioritaire",
+  ];
+
   return (
-    <div>
-      <h1 className="font-display text-2xl font-bold text-anthracite mb-6">Param&egrave;tres</h1>
+    <div style={{ maxWidth: 700, padding: 32, margin: "0 auto" }}>
+      <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 26, fontWeight: 700, color: "#1C1C1E", marginBottom: 28 }}>
+        Paramètres
+      </h1>
 
-      <div className="space-y-6">
-        <div className="bg-white rounded-[14px] p-6 border border-g100">
-          <h2 className="font-display text-lg font-bold text-anthracite mb-4">Compte</h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-anthracite mb-1">Email</label>
-              <input
-                type="email"
-                defaultValue="jp.martin@email.com"
-                className="w-full px-4 py-2.5 rounded-lg border border-g200 bg-g50 text-g500"
-                readOnly
-              />
+      {/* --- Compte --- */}
+      <div style={CARD}>
+        <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 20 }}>
+          Compte
+        </h2>
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "#9B9590", marginBottom: 6 }}>Email</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#1C1C1E" }}>{email}</div>
+        </div>
+        <button
+          style={{
+            border: "1.5px solid #C4531A",
+            color: "#C4531A",
+            background: "transparent",
+            height: 40,
+            borderRadius: 8,
+            padding: "0 20px",
+            fontSize: 13,
+            fontWeight: 600,
+            cursor: "pointer",
+          }}
+        >
+          Modifier le mot de passe
+        </button>
+      </div>
+
+      {/* --- Abonnement --- */}
+      <div style={CARD}>
+        <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 20 }}>
+          Abonnement
+        </h2>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+          <span
+            style={{
+              background: "rgba(196,83,26,.06)",
+              color: "#C4531A",
+              padding: "6px 14px",
+              borderRadius: 8,
+              fontSize: 13,
+              fontWeight: 600,
+            }}
+          >
+            Plan {plan === "PRO" ? "Pro" : plan === "ESSENTIEL" ? "Essentiel" : plan === "PRO_PLUS" ? "Pro+" : "Gratuit"}
+          </span>
+          <span style={{ fontSize: 15, color: "#9B9590" }}>
+            {plan === "PRO" ? "49" : plan === "ESSENTIEL" ? "19" : plan === "PRO_PLUS" ? "79" : "0"} EUR/mois
+          </span>
+        </div>
+        <div style={{ marginBottom: 20 }}>
+          {features.map((f) => (
+            <div key={f} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0" }}>
+              <span style={{ color: "#16a34a", fontSize: 16 }}>&#10003;</span>
+              <span style={{ fontSize: 14, color: "#6B6560" }}>{f}</span>
             </div>
-            <button className="text-sm text-terre hover:underline">Modifier le mot de passe</button>
-          </div>
+          ))}
         </div>
+        <button
+          style={{
+            border: "1.5px solid #E0DDD8",
+            color: "#1C1C1E",
+            background: "transparent",
+            height: 40,
+            borderRadius: 8,
+            padding: "0 20px",
+            fontSize: 13,
+            fontWeight: 600,
+            cursor: "pointer",
+          }}
+        >
+          Changer de plan
+        </button>
+      </div>
 
-        <div className="bg-white rounded-[14px] p-6 border border-g100">
-          <h2 className="font-display text-lg font-bold text-anthracite mb-4">Abonnement</h2>
-          <div className="flex items-center gap-3 mb-4">
-            <span className="px-3 py-1 bg-terre/10 text-terre rounded-full text-sm font-medium">Plan Pro</span>
-            <span className="text-sm text-g400">49 EUR/mois</span>
-          </div>
-          <ul className="space-y-1 text-sm text-g500 mb-4">
-            <li>&#10003; URL perso (vitrine complete)</li>
-            <li>&#10003; Photos illimitees</li>
-            <li>&#10003; QR Code vitrine</li>
-            <li>&#10003; Mini-CRM clients</li>
-            <li>&#10003; Support prioritaire</li>
-          </ul>
-          <button className="px-4 py-2 border border-anthracite/20 rounded-lg text-sm text-anthracite hover:bg-anthracite hover:text-white transition-colors">
-            Changer de plan
+      {/* --- Ma page --- */}
+      <div style={CARD}>
+        <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 20 }}>
+          Ma page
+        </h2>
+        <div
+          style={{
+            background: "#F7F5F2",
+            borderRadius: 10,
+            padding: "14px 16px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 12,
+          }}
+        >
+          <span style={{ fontSize: 14, fontFamily: "monospace", color: "#1C1C1E" }}>{url}</span>
+          <button
+            onClick={copyUrl}
+            style={{
+              background: "#C4531A",
+              color: "#fff",
+              padding: "6px 14px",
+              borderRadius: 6,
+              fontSize: 12,
+              fontWeight: 600,
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            {copied ? "Copié !" : "Copier"}
           </button>
         </div>
-
-        <div className="bg-white rounded-[14px] p-6 border border-g100">
-          <h2 className="font-display text-lg font-bold text-anthracite mb-4">Ma page</h2>
-          <div className="flex items-center gap-2 p-3 bg-g50 rounded-lg mb-4">
-            <code className="text-sm text-anthracite flex-1">bativio.fr/chambery/martin-plomberie</code>
-            <button className="px-3 py-1 bg-terre/10 text-terre rounded text-xs font-medium hover:bg-terre/20 transition-colors">
-              Copier
-            </button>
-          </div>
-          <p className="text-xs text-g300">QR Code disponible avec le plan Pro</p>
-        </div>
-
-        <div className="bg-white rounded-[14px] p-6 border border-g100 border border-red-100">
-          <h2 className="font-display text-lg font-bold text-red-600 mb-2">Zone de danger</h2>
-          <p className="text-sm text-g400 mb-4">
-            La desactivation masquera votre page de l&apos;annuaire. Vous pourrez la reactiver a tout moment.
-          </p>
-          <button className="px-4 py-2 border border-red-300 text-red-600 rounded-lg text-sm hover:bg-red-50 transition-colors">
-            Desactiver mon compte
+        {plan === "PRO" || plan === "PRO_PLUS" ? (
+          <button
+            style={{
+              border: "1.5px solid #C4531A",
+              color: "#C4531A",
+              background: "transparent",
+              height: 40,
+              borderRadius: 8,
+              padding: "0 20px",
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: "pointer",
+              marginTop: 8,
+            }}
+          >
+            Télécharger mon QR Code
           </button>
-        </div>
+        ) : (
+          <p style={{ fontSize: 12, color: "#9B9590" }}>QR Code disponible avec le plan Pro</p>
+        )}
+      </div>
+
+      {/* --- Zone de danger --- */}
+      <div
+        style={{
+          background: "rgba(220,38,38,.02)",
+          borderRadius: 16,
+          border: "1.5px solid rgba(220,38,38,.15)",
+          padding: 28,
+          marginBottom: 20,
+        }}
+      >
+        <h2 style={{ fontSize: 16, fontWeight: 700, color: "#DC2626", marginBottom: 10 }}>
+          Zone de danger
+        </h2>
+        <p style={{ fontSize: 13, color: "#6B6560", lineHeight: 1.6, marginBottom: 16 }}>
+          La désactivation masquera votre page de l&apos;annuaire. Vous pourrez la réactiver à tout moment.
+        </p>
+        <button
+          style={{
+            border: "1.5px solid #DC2626",
+            color: "#DC2626",
+            background: "transparent",
+            height: 40,
+            borderRadius: 8,
+            padding: "0 20px",
+            fontSize: 13,
+            fontWeight: 600,
+            cursor: "pointer",
+          }}
+        >
+          Désactiver mon compte
+        </button>
       </div>
     </div>
   );
