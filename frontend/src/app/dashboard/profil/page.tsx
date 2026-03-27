@@ -2,104 +2,65 @@
 
 import { useState } from "react";
 
+const C: React.CSSProperties = { background: "#fff", borderRadius: 14, border: "1px solid #EDEBE7", padding: 28, marginBottom: 20 };
+
 export default function ProfilPage() {
   const [form, setForm] = useState({
-    nomAffichage: "Martin Plomberie",
-    description: "Plombier a Chambery depuis 15 ans, specialise en renovation de salles de bains.",
-    telephone: "04 79 12 34 56",
-    adresse: "Chambery",
-    codePostal: "73000",
-    experienceAnnees: "15",
+    nomAffichage: "Martin Plomberie", description: "Plombier \u00e0 Chamb\u00e9ry depuis 15 ans, sp\u00e9cialis\u00e9 en r\u00e9novation de salles de bains.",
+    telephone: "04 79 12 34 56", adresse: "Chamb\u00e9ry", codePostal: "73000", experienceAnnees: "15",
   });
-
-  const update = (field: string, value: string) => setForm((p) => ({ ...p, [field]: value }));
+  const u = (f: string, v: string) => setForm((p) => ({ ...p, [f]: v }));
 
   return (
-    <div>
-      <h1 className="font-display text-2xl font-bold text-anthracite mb-6">Mon profil</h1>
+    <div style={{ maxWidth: 800, margin: "0 auto" }}>
+      <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 24 }}>Mon profil</h1>
 
-      <div className="space-y-6">
-        <div className="bg-white rounded-[14px] p-6 border border-g100">
-          <h2 className="font-display text-lg font-bold text-anthracite mb-4">Informations</h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-anthracite mb-1">Nom d&apos;affichage</label>
-              <input
-                type="text"
-                value={form.nomAffichage}
-                onChange={(e) => update("nomAffichage", e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg border border-g200 focus:ring-2 focus:ring-terre/30 focus:border-terre outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-anthracite mb-1">T&eacute;l&eacute;phone</label>
-              <input
-                type="tel"
-                value={form.telephone}
-                onChange={(e) => update("telephone", e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg border border-g200 focus:ring-2 focus:ring-terre/30 focus:border-terre outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-anthracite mb-1">Adresse</label>
-              <input
-                type="text"
-                value={form.adresse}
-                onChange={(e) => update("adresse", e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg border border-g200 focus:ring-2 focus:ring-terre/30 focus:border-terre outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-anthracite mb-1">Experience (annees)</label>
-              <input
-                type="number"
-                value={form.experienceAnnees}
-                onChange={(e) => update("experienceAnnees", e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg border border-g200 focus:ring-2 focus:ring-terre/30 focus:border-terre outline-none"
-              />
-            </div>
-          </div>
+      {/* Informations */}
+      <div style={C}>
+        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 20 }}>Informations</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+          <div className="field"><label className="bv-label">Nom d&apos;affichage</label><input className="bv-input" value={form.nomAffichage} onChange={(e) => u("nomAffichage", e.target.value)} /></div>
+          <div className="field"><label className="bv-label">T&eacute;l&eacute;phone</label><input className="bv-input" value={form.telephone} onChange={(e) => u("telephone", e.target.value)} /></div>
+          <div className="field"><label className="bv-label">Adresse</label><input className="bv-input" value={form.adresse} onChange={(e) => u("adresse", e.target.value)} /></div>
+          <div className="field"><label className="bv-label">Exp&eacute;rience (ann&eacute;es)</label><input className="bv-input" type="number" value={form.experienceAnnees} onChange={(e) => u("experienceAnnees", e.target.value)} /></div>
         </div>
-
-        <div className="bg-white rounded-[14px] p-6 border border-g100">
-          <h2 className="font-display text-lg font-bold text-anthracite mb-4">Description</h2>
-          <textarea
-            rows={4}
-            value={form.description}
-            onChange={(e) => update("description", e.target.value)}
-            className="w-full px-4 py-2.5 rounded-lg border border-g200 focus:ring-2 focus:ring-terre/30 focus:border-terre outline-none resize-none"
-          />
-        </div>
-
-        <div className="bg-white rounded-[14px] p-6 border border-g100">
-          <h2 className="font-display text-lg font-bold text-anthracite mb-4">Badges</h2>
-          <div className="flex flex-wrap gap-2 mb-4">
-            {["RGE", "Qualibat", "Assurance decennale"].map((b) => (
-              <span key={b} className="frosted px-3 py-1.5 rounded-full text-sm text-anthracite border border-g100">
-                {b}
-              </span>
-            ))}
-          </div>
-          <button className="text-sm text-terre hover:underline">+ Ajouter un badge</button>
-        </div>
-
-        <div className="bg-white rounded-[14px] p-6 border border-g100">
-          <h2 className="font-display text-lg font-bold text-anthracite mb-4">Services</h2>
-          <div className="space-y-3 mb-4">
-            {["Depannage plomberie", "Renovation salle de bains", "Installation chauffage"].map((s) => (
-              <div key={s} className="flex items-center justify-between p-3 bg-g50 rounded-lg">
-                <span className="text-sm font-medium">{s}</span>
-                <button className="text-xs text-red-500">Supprimer</button>
-              </div>
-            ))}
-          </div>
-          <button className="text-sm text-terre hover:underline">+ Ajouter un service</button>
-        </div>
-
-        <button className="w-full md:w-auto px-8 py-3 bg-terre text-white rounded-lg font-medium hover:bg-terre-light transition-colors">
-          Enregistrer les modifications
-        </button>
       </div>
+
+      {/* Description */}
+      <div style={C}>
+        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 20 }}>Description</h2>
+        <textarea className="bv-textarea" value={form.description} onChange={(e) => u("description", e.target.value)} maxLength={500} />
+        <p style={{ textAlign: "right", fontSize: 12, color: "#C5C0B9", marginTop: 6 }}>{form.description.length} / 500</p>
+      </div>
+
+      {/* Badges */}
+      <div style={C}>
+        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 16 }}>Badges et certifications</h2>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
+          {["RGE", "Qualibat", "Assurance d\u00e9cennale"].map((b) => (
+            <span key={b} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 14px", borderRadius: 8, background: "rgba(196,83,26,.06)", color: "#C4531A", fontSize: 13, fontWeight: 500 }}>
+              {b}
+              <button style={{ background: "none", border: "none", cursor: "pointer", color: "#C5C0B9", fontSize: 16, lineHeight: 1, padding: 0 }}>&times;</button>
+            </span>
+          ))}
+        </div>
+        <button style={{ height: 36, padding: "0 16px", borderRadius: 8, border: "1.5px solid #E0DDD8", background: "transparent", fontSize: 13, fontWeight: 600, color: "#C4531A", cursor: "pointer" }}>+ Ajouter un badge</button>
+      </div>
+
+      {/* Services */}
+      <div style={C}>
+        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 16 }}>Services</h2>
+        {["D\u00e9pannage plomberie", "R\u00e9novation salle de bains", "Installation chauffage"].map((s) => (
+          <div key={s} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: "1px solid #F7F5F2" }}>
+            <span style={{ fontSize: 14, fontWeight: 600, color: "#1C1C1E" }}>{s}</span>
+            <button style={{ background: "none", border: "none", fontSize: 12, color: "#C4531A", cursor: "pointer", fontWeight: 500 }}>Supprimer</button>
+          </div>
+        ))}
+        <button style={{ marginTop: 16, height: 36, padding: "0 16px", borderRadius: 8, border: "1.5px solid #E0DDD8", background: "transparent", fontSize: 13, fontWeight: 600, color: "#C4531A", cursor: "pointer" }}>+ Ajouter un service</button>
+      </div>
+
+      {/* Save */}
+      <button className="bv-btn bv-btn-primary" style={{ width: "100%", marginTop: 12 }}>Enregistrer les modifications</button>
     </div>
   );
 }

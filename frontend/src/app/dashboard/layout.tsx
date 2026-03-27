@@ -3,81 +3,61 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const navItems: { href: string; label: string; icon: string; badge?: string }[] = [
-  { href: "/dashboard", label: "Tableau de bord", icon: "&#9776;" },
-  { href: "/dashboard/profil", label: "Mon profil", icon: "&#128100;" },
-  { href: "/dashboard/photos", label: "Mes photos", icon: "&#128247;" },
-  { href: "/dashboard/devis", label: "Demandes de devis", icon: "&#128196;" },
-  { href: "/dashboard/facturation", label: "Facturation", icon: "&#128203;", badge: "Bient\u00f4t" },
-  { href: "/dashboard/rdv", label: "Mes RDV", icon: "&#128197;" },
-  { href: "/dashboard/parametres", label: "Param\u00e8tres", icon: "&#9881;" },
+const NAV: { href: string; label: string; icon: string; badge?: string; sep?: boolean }[] = [
+  { href: "/dashboard", label: "Tableau de bord", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>' },
+  { href: "/dashboard/profil", label: "Mon profil", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>' },
+  { href: "/dashboard/photos", label: "Mes photos", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>' },
+  { href: "/dashboard/devis", label: "Demandes de devis", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>' },
+  { href: "/dashboard/facturation", label: "Facturation", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14h.01M13 14h2M9 18h.01M13 18h2"/></svg>', badge: "Bient\u00f4t" },
+  { href: "/dashboard/rdv", label: "Mes RDV", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>' },
+  { href: "/dashboard/parametres", label: "Param\u00e8tres", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>', sep: true },
 ];
 
-const mobileNav = [
-  { href: "/dashboard", label: "Accueil", icon: "&#9776;" },
-  { href: "/dashboard/photos", label: "Photos", icon: "&#128247;" },
-  { href: "/dashboard/devis", label: "Devis", icon: "&#128196;" },
-  { href: "/dashboard/rdv", label: "RDV", icon: "&#128197;" },
-  { href: "/dashboard/profil", label: "Profil", icon: "&#128100;" },
+const MOB = [
+  { href: "/dashboard", label: "Accueil", icon: '<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>' },
+  { href: "/dashboard/profil", label: "Profil", icon: '<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>' },
+  { href: "/dashboard/devis", label: "Devis", icon: '<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>' },
+  { href: "/dashboard/photos", label: "Photos", icon: '<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>' },
+  { href: "/dashboard/facturation", label: "Factures", icon: '<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>' },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-
+  const p = usePathname();
   return (
-    <div className="flex min-h-screen bg-creme">
+    <div style={{ display: "flex", minHeight: "100vh", background: "#FAF8F5" }}>
       {/* Sidebar desktop */}
-      <aside className="hidden md:flex flex-col w-64 bg-white border-r border-g100 p-6">
-        <Link href="/" className="font-display text-xl font-bold text-terre mb-8">
-          Bativio
-        </Link>
-        <nav className="flex-1 space-y-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                pathname === item.href
-                  ? "bg-[rgba(196,83,26,.07)] text-terre font-medium"
-                  : "text-g400 hover:bg-g50 hover:text-anthracite"
-              }`}
-            >
-              <span dangerouslySetInnerHTML={{ __html: item.icon }} />
-              {item.label}
-              {item.badge && <span style={{ marginLeft: "auto", fontSize: 9, fontWeight: 600, padding: "2px 7px", borderRadius: 10, background: "rgba(232,168,76,.12)", color: "#E8A84C" }}>{item.badge}</span>}
-            </Link>
-          ))}
+      <aside style={{ width: 240, flexShrink: 0, background: "#fff", borderRight: "1px solid #EDEBE7", padding: "20px 16px", display: "flex", flexDirection: "column" }} className="hidden md:flex">
+        <Link href="/" style={{ fontFamily: "'Fraunces',serif", fontSize: 20, fontWeight: 700, color: "#C4531A", textDecoration: "none", marginBottom: 32, display: "block" }}>Bativio</Link>
+        <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+          {NAV.map((item) => {
+            const active = p === item.href;
+            return (
+              <div key={item.href}>
+                {item.sep && <div style={{ height: 1, background: "#EDEBE7", margin: "16px 0" }} />}
+                <Link href={item.href} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", borderRadius: 10, fontSize: 14, fontWeight: active ? 600 : 500, color: active ? "#C4531A" : "#6B6560", background: active ? "rgba(196,83,26,.06)" : "transparent", textDecoration: "none", transition: "all .15s" }}>
+                  <span dangerouslySetInnerHTML={{ __html: item.icon }} style={{ display: "flex", flexShrink: 0 }} />
+                  {item.label}
+                  {item.badge && <span style={{ marginLeft: "auto", fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 4, background: "rgba(232,168,76,.12)", color: "#E8A84C" }}>{item.badge}</span>}
+                </Link>
+              </div>
+            );
+          })}
         </nav>
-        <div className="pt-4 border-t border-black/5 mt-4">
-          <Link
-            href="/chambery/martin-plomberie"
-            target="_blank"
-            className="flex items-center gap-2 text-sm text-g400 hover:text-terre transition-colors"
-          >
-            &#8599; Voir ma page
-          </Link>
+        <div style={{ borderTop: "1px solid #EDEBE7", paddingTop: 16 }}>
+          <Link href="/chambery/martin-plomberie" target="_blank" style={{ fontSize: 13, color: "#C4531A", fontWeight: 500, textDecoration: "none" }}>Voir ma page &rarr;</Link>
         </div>
       </aside>
 
-      {/* Main content */}
-      <div className="flex-1 pb-20 md:pb-0">
-        <header className="bg-white border-b border-g100 px-6 py-4">
-          <p className="text-sm text-g400">Bonjour !</p>
-        </header>
-        <main className="p-4 md:p-8">{children}</main>
+      {/* Main */}
+      <div style={{ flex: 1, paddingBottom: 72 }} className="md:pb-0">
+        <main style={{ padding: "28px 32px", maxWidth: 1000, margin: "0 auto" }} className="max-md:p-4">{children}</main>
       </div>
 
-      {/* Bottom nav mobile */}
-      <nav className="fixed bottom-0 left-0 right-0 md:hidden bg-white border-t border-g100 flex z-50">
-        {mobileNav.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`flex-1 flex flex-col items-center py-3 text-xs ${
-              pathname === item.href ? "text-terre" : "text-g400"
-            }`}
-          >
-            <span dangerouslySetInnerHTML={{ __html: item.icon }} className="text-lg" />
+      {/* Mobile nav */}
+      <nav style={{ position: "fixed", bottom: 0, left: 0, right: 0, height: 56, background: "#fff", borderTop: "1px solid #EDEBE7", display: "flex", zIndex: 50 }} className="md:hidden">
+        {MOB.map((item) => (
+          <Link key={item.href} href={item.href} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, fontSize: 10, fontWeight: 500, color: p === item.href ? "#C4531A" : "#9B9590", textDecoration: "none" }}>
+            <span dangerouslySetInnerHTML={{ __html: item.icon }} style={{ display: "flex" }} />
             {item.label}
           </Link>
         ))}
