@@ -60,6 +60,9 @@ export default async function ArtisanPage({ params }: { params: Promise<{ ville:
   const photo = METIER_PHOTOS[ms] || METIER_PHOTOS.plombier;
   const primary = a.colorPrimary || "#C4531A";
   const accent = a.colorAccent || "#E8A84C";
+  const villeInfo = VILLES.find((v) => v.slug === villeSlug);
+  const lat = villeInfo?.lat ?? 45.5646;
+  const lng = villeInfo?.lng ?? 5.9178;
 
   const cssVars = { "--v-primary": primary, "--v-accent": accent } as React.CSSProperties;
 
@@ -86,8 +89,8 @@ export default async function ArtisanPage({ params }: { params: Promise<{ ville:
         url: `https://bativio.fr/${villeSlug}/${a.slug}`,
         image: photo,
         address: { "@type": "PostalAddress", streetAddress: a.adresse || "", addressLocality: a.ville || villeSlug, postalCode: a.codePostal || "", addressCountry: "FR" },
-        geo: { "@type": "GeoCoordinates", latitude: 45.5646, longitude: 5.9178 },
-        areaServed: { "@type": "GeoCircle", geoMidpoint: { "@type": "GeoCoordinates", latitude: 45.5646, longitude: 5.9178 }, geoRadius: `${a.zoneRayonKm || 25}000` },
+        geo: { "@type": "GeoCoordinates", latitude: lat, longitude: lng },
+        areaServed: { "@type": "GeoCircle", geoMidpoint: { "@type": "GeoCoordinates", latitude: lat, longitude: lng }, geoRadius: `${a.zoneRayonKm || 25}000` },
         aggregateRating: a.nombreAvis > 0 ? { "@type": "AggregateRating", ratingValue: a.noteMoyenne, reviewCount: a.nombreAvis, bestRating: 5 } : undefined,
         priceRange: "$$",
         ...(a.horaires && a.horaires.length > 0 ? { openingHoursSpecification: a.horaires.filter((h) => h.ouvert).map((h) => ({ "@type": "OpeningHoursSpecification", dayOfWeek: ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][h.jourSemaine], opens: h.heureOuverture, closes: h.heureFermeture })) } : {}),

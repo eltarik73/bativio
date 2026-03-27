@@ -1,6 +1,8 @@
 package com.bativio.api.exception;
 
 import com.bativio.api.dto.response.ApiResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,8 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleNotFound(ResourceNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -25,6 +29,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleUnauthorized(UnauthorizedException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBadCredentials(BadCredentialsException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error("Email ou mot de passe incorrect"));
     }
 
     @ExceptionHandler(PlanLimitException.class)
@@ -48,7 +58,6 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(ex.getMessage()));
     }
 
-    // Bug 2 fix: email/siret duplique → 409
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiResponse<Void>> handleDataIntegrity(DataIntegrityViolationException ex) {
         String msg = "Donnee en doublon";
@@ -62,24 +71,15 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(msg));
     }
 
-    // Bug 1 fix: acces sans token → 401 au lieu de 500
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(ApiResponse.error("Acces refuse"));
     }
 
-    // NullPointerException quand @AuthenticationPrincipal est null
-    @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity<ApiResponse<Void>> handleNullPointer(NullPointerException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(ApiResponse.error("Authentification requise"));
-    }
-
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGeneric(Exception ex) {
-        // Log pour debug
-        System.err.println("[ERROR] " + ex.getClass().getSimpleName() + ": " + ex.getMessage());
+        log.error("Erreur non geree: {} - {}", ex.getClass().getSimpleName(), ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error("Erreur interne du serveur"));
     }

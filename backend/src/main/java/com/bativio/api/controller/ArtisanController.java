@@ -13,7 +13,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +20,6 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@Transactional
 @RequestMapping("/api/v1/artisans/me")
 public class ArtisanController {
 

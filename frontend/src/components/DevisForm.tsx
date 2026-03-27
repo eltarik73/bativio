@@ -21,10 +21,8 @@ export default function DevisForm({ slug }: { slug: string }) {
     e.preventDefault();
     setLoading(true); setError("");
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
-      const res = await fetch(`${API_URL}/public/artisans/${slug}/devis`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.error);
+      const { submitDevis } = await import("@/lib/api");
+      await submitDevis(slug, form);
       setSuccess(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur lors de l'envoi. R\u00e9essayez.");

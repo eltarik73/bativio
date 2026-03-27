@@ -15,7 +15,6 @@ export default function VitrinePage() {
   const currentPalette = PALETTES.find((p) => p.id === palette) || PALETTES[0];
 
   const handlePublish = () => {
-    console.log("Vitrine publi\u00e9e:", { template, palette, photoLayout, primary: currentPalette.primary, accent: currentPalette.accent });
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };

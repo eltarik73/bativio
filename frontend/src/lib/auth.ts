@@ -66,15 +66,22 @@ export async function authFetch<T>(path: string, options?: RequestInit): Promise
     }
   }
 
-  const json = await res.json();
+  let json;
+  try {
+    json = await res.json();
+  } catch {
+    throw new Error(`Erreur serveur (${res.status})`);
+  }
   if (!json.success) throw new Error(json.error || "Erreur serveur");
   return json.data;
 }
 
 export function logout() {
   accessToken = null;
-  localStorage.removeItem("bativio_refresh");
-  window.location.href = "/connexion";
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("bativio_refresh");
+    window.location.href = "/connexion";
+  }
 }
 
 export async function login(email: string, password: string) {

@@ -14,6 +14,7 @@ import com.bativio.api.repository.NotificationRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,6 +33,7 @@ public class DevisPublicController {
         this.notificationRepository = notificationRepository;
     }
 
+    @Transactional
     @PostMapping
     public ResponseEntity<ApiResponse<String>> submitDevis(
             @PathVariable String slug,

@@ -8,7 +8,12 @@ async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
       ...options?.headers,
     },
   });
-  const json = await res.json();
+  let json;
+  try {
+    json = await res.json();
+  } catch {
+    throw new Error(`Erreur serveur (${res.status})`);
+  }
   if (!json.success) {
     throw new Error(json.error || "Erreur serveur");
   }

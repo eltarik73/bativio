@@ -35,9 +35,10 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers("/api/v1/auth/login", "/api/v1/auth/register",
+                        "/api/v1/auth/magic-link", "/api/v1/auth/magic-link/verify",
+                        "/api/v1/auth/refresh").permitAll()
                 .requestMatchers("/api/v1/public/**").permitAll()
-                .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
@@ -51,9 +52,11 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
             "http://localhost:3000",
-            "https://bativio.vercel.app"
+            "https://bativio.vercel.app",
+            "https://bativio.fr",
+            "https://www.bativio.fr"
         ));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);

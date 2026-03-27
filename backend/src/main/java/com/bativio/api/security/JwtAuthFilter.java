@@ -33,7 +33,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String token = extractToken(request);
 
-        if (StringUtils.hasText(token) && tokenProvider.validateToken(token)) {
+        if (StringUtils.hasText(token) && tokenProvider.validateToken(token) && tokenProvider.isAccessToken(token)) {
             UUID userId = tokenProvider.getUserIdFromToken(token);
             userRepository.findById(userId).ifPresent(user -> {
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(

@@ -19,8 +19,8 @@ function VerifyContent() {
       return;
     }
 
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
-    fetch(`${API_URL}/auth/magic-link/verify?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`, {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+    fetch(`${apiUrl}/auth/magic-link/verify?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`, {
       method: "POST",
     })
       .then((res) => res.json())

@@ -32,6 +32,7 @@ public class JwtTokenProvider {
         Date now = new Date();
         return Jwts.builder()
                 .subject(userId.toString())
+                .claim("type", "access")
                 .claim("role", role.name())
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + accessExpiration))
@@ -62,6 +63,15 @@ public class JwtTokenProvider {
     public UUID getUserIdFromToken(String token) {
         Claims claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
         return UUID.fromString(claims.getSubject());
+    }
+
+    public boolean isAccessToken(String token) {
+        try {
+            Claims claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
+            return "access".equals(claims.get("type", String.class));
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
     }
 
     public Role getRoleFromToken(String token) {

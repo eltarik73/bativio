@@ -13,8 +13,7 @@ spring:
       enabled: false
   sql:
     init:
-      mode: always
-      data-locations: classpath:data-dev.sql
+      mode: never
 
 logging:
   level:

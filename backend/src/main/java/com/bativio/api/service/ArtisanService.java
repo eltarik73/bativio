@@ -59,6 +59,7 @@ public class ArtisanService {
                 .orElseThrow(() -> new ResourceNotFoundException("Profil artisan introuvable"));
     }
 
+    @Transactional(readOnly = true)
     public ArtisanPrivateResponse getProfile(UUID userId) {
         return ArtisanPrivateResponse.fromEntity(getArtisanByUserId(userId));
     }
@@ -81,9 +82,10 @@ public class ArtisanService {
         return ArtisanPrivateResponse.fromEntity(artisanRepository.save(a));
     }
 
+    @Transactional(readOnly = true)
     public Map<String, Object> getStats(UUID userId) {
         Artisan a = getArtisanByUserId(userId);
-        Instant startOfMonth = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).toInstant(ZoneOffset.UTC);
+        Instant startOfMonth = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0).toInstant(ZoneOffset.UTC);
         return Map.of(
             "vuesCeMois", 0,
             "demandesDevisCeMois", devisRepository.countByArtisanIdAndCreatedAtAfter(a.getId(), startOfMonth),
@@ -196,6 +198,7 @@ public class ArtisanService {
     }
 
     // --- Devis ---
+    @Transactional(readOnly = true)
     public Page<DemandeDevis> getDevis(UUID userId, String statut, Pageable pageable) {
         Artisan a = getArtisanByUserId(userId);
         if (statut != null && !statut.isBlank()) {
@@ -204,6 +207,7 @@ public class ArtisanService {
         return devisRepository.findByArtisanId(a.getId(), pageable);
     }
 
+    @Transactional(readOnly = true)
     public List<DemandeDevis> getRecentDevis(UUID userId) {
         Artisan a = getArtisanByUserId(userId);
         return devisRepository.findTop3ByArtisanIdOrderByCreatedAtDesc(a.getId());
@@ -221,6 +225,7 @@ public class ArtisanService {
     }
 
     // --- Notifications ---
+    @Transactional(readOnly = true)
     public Page<Notification> getNotifications(UUID userId, Boolean lu, Pageable pageable) {
         Artisan a = getArtisanByUserId(userId);
         if (lu != null) {
@@ -229,6 +234,7 @@ public class ArtisanService {
         return notificationRepository.findByArtisanIdOrderByCreatedAtDesc(a.getId(), pageable);
     }
 
+    @Transactional(readOnly = true)
     public long getUnreadNotifCount(UUID userId) {
         Artisan a = getArtisanByUserId(userId);
         return notificationRepository.countByArtisanIdAndLuFalse(a.getId());

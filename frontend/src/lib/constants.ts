@@ -10,11 +10,11 @@ export const COLORS = {
 } as const;
 
 export const VILLES = [
-  { nom: "Chambéry", slug: "chambery", codePostal: "73000", departement: "Savoie" },
-  { nom: "Annecy", slug: "annecy", codePostal: "74000", departement: "Haute-Savoie" },
-  { nom: "Grenoble", slug: "grenoble", codePostal: "38000", departement: "Isère" },
-  { nom: "Lyon", slug: "lyon", codePostal: "69000", departement: "Rhône" },
-  { nom: "Valence", slug: "valence", codePostal: "26000", departement: "Drôme" },
+  { nom: "Chambéry", slug: "chambery", codePostal: "73000", departement: "Savoie", lat: 45.5646, lng: 5.9178 },
+  { nom: "Annecy", slug: "annecy", codePostal: "74000", departement: "Haute-Savoie", lat: 45.8992, lng: 6.1294 },
+  { nom: "Grenoble", slug: "grenoble", codePostal: "38000", departement: "Isère", lat: 45.1885, lng: 5.7245 },
+  { nom: "Lyon", slug: "lyon", codePostal: "69000", departement: "Rhône", lat: 45.7640, lng: 4.8357 },
+  { nom: "Valence", slug: "valence", codePostal: "26000", departement: "Drôme", lat: 44.9334, lng: 4.8924 },
 ] as const;
 
 export const METIERS = [

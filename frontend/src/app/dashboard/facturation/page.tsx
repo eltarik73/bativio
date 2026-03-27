@@ -76,7 +76,6 @@ export default function FacturationPage() {
 
   const handleNotify = () => {
     if (email) {
-      console.log("Email captur\u00e9 pour notification Invoquo :", email);
       setEmail("");
       alert("Merci ! Nous vous pr\u00e9viendrons d\u00e8s le lancement.");
     }

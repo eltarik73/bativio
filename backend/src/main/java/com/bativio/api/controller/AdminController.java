@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -41,7 +42,7 @@ public class AdminController {
 
     @GetMapping("/stats")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getStats() {
-        Instant startOfMonth = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).toInstant(ZoneOffset.UTC);
+        Instant startOfMonth = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0).toInstant(ZoneOffset.UTC);
         Map<String, Object> stats = new LinkedHashMap<>();
         stats.put("totalArtisans", artisanRepository.countByActifTrueAndDeletedAtIsNull());
         stats.put("devisCeMois", devisRepository.countByCreatedAtAfter(startOfMonth));
@@ -64,6 +65,7 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.ok(result));
     }
 
+    @Transactional
     @PutMapping("/artisans/{id}/toggle-actif")
     public ResponseEntity<ApiResponse<String>> toggleActif(@PathVariable UUID id) {
         Artisan a = artisanRepository.findById(id)
@@ -73,6 +75,7 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.ok(a.isActif() ? "Artisan active" : "Artisan desactive"));
     }
 
+    @Transactional
     @PutMapping("/artisans/{id}/toggle-visible")
     public ResponseEntity<ApiResponse<String>> toggleVisible(@PathVariable UUID id) {
         Artisan a = artisanRepository.findById(id)
@@ -82,6 +85,7 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.ok(a.isVisible() ? "Artisan visible" : "Artisan masque"));
     }
 
+    @Transactional
     @PutMapping("/artisans/{id}/plan")
     public ResponseEntity<ApiResponse<String>> changePlan(@PathVariable UUID id, @RequestBody Map<String, String> body) {
         Artisan a = artisanRepository.findById(id)
@@ -92,6 +96,7 @@ public class AdminController {
     }
 
     // --- Villes CRUD ---
+    @Transactional
     @PostMapping("/villes")
     public ResponseEntity<ApiResponse<Ville>> createVille(@RequestBody Map<String, String> body) {
         Ville v = new Ville();
@@ -102,6 +107,7 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok(villeRepository.save(v)));
     }
 
+    @Transactional
     @PutMapping("/villes/{id}")
     public ResponseEntity<ApiResponse<Ville>> updateVille(@PathVariable UUID id, @RequestBody Map<String, String> body) {
         Ville v = villeRepository.findById(id)
@@ -112,6 +118,7 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.ok(villeRepository.save(v)));
     }
 
+    @Transactional
     @DeleteMapping("/villes/{id}")
     public ResponseEntity<ApiResponse<String>> deleteVille(@PathVariable UUID id) {
         villeRepository.deleteById(id);
@@ -119,6 +126,7 @@ public class AdminController {
     }
 
     // --- Metiers CRUD ---
+    @Transactional
     @PostMapping("/metiers")
     public ResponseEntity<ApiResponse<Metier>> createMetier(@RequestBody Map<String, String> body) {
         Metier m = new Metier();
@@ -128,6 +136,7 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok(metierRepository.save(m)));
     }
 
+    @Transactional
     @PutMapping("/metiers/{id}")
     public ResponseEntity<ApiResponse<Metier>> updateMetier(@PathVariable UUID id, @RequestBody Map<String, String> body) {
         Metier m = metierRepository.findById(id)
@@ -137,6 +146,7 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.ok(metierRepository.save(m)));
     }
 
+    @Transactional
     @DeleteMapping("/metiers/{id}")
     public ResponseEntity<ApiResponse<String>> deleteMetier(@PathVariable UUID id) {
         metierRepository.deleteById(id);

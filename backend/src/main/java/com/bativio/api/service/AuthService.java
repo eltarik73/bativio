@@ -15,6 +15,8 @@ import com.bativio.api.repository.MetierRepository;
 import com.bativio.api.repository.UserRepository;
 import com.bativio.api.security.JwtTokenProvider;
 import com.bativio.api.util.SlugGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,8 @@ import java.util.UUID;
 
 @Service
 public class AuthService {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
     private final UserRepository userRepository;
     private final ArtisanRepository artisanRepository;
@@ -107,8 +111,6 @@ public class AuthService {
 
         ArtisanPrivateResponse artisanResp = null;
         if (user.getRole() == Role.ARTISAN) {
-            artisanRepository.findByUserIdAndDeletedAtIsNull(user.getId())
-                .ifPresent(a -> {});
             Artisan artisan = artisanRepository.findByUserIdAndDeletedAtIsNull(user.getId()).orElse(null);
             if (artisan != null) {
                 artisanResp = ArtisanPrivateResponse.fromEntity(artisan);
@@ -125,8 +127,7 @@ public class AuthService {
             user.setMagicLinkToken(passwordEncoder.encode(token));
             user.setMagicLinkExpiresAt(Instant.now().plusSeconds(900)); // 15 min
             userRepository.save(user);
-            // En dev, on log le lien
-            System.out.println("[MAGIC LINK] http://localhost:3000/magic-link/verify?token=" + token + "&email=" + email);
+            log.debug("[MAGIC LINK] token genere pour {}", email);
         });
     }
 
@@ -152,8 +153,6 @@ public class AuthService {
 
         ArtisanPrivateResponse artisanResp = null;
         if (user.getRole() == Role.ARTISAN) {
-            artisanRepository.findByUserIdAndDeletedAtIsNull(user.getId())
-                .ifPresent(a -> {});
             Artisan artisan = artisanRepository.findByUserIdAndDeletedAtIsNull(user.getId()).orElse(null);
             if (artisan != null) {
                 artisanResp = ArtisanPrivateResponse.fromEntity(artisan);
@@ -185,6 +184,7 @@ public class AuthService {
         return new AuthResponse(newAccessToken, newRefreshToken, null);
     }
 
+    @Transactional(readOnly = true)
     public ArtisanPrivateResponse getMe(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable"));
@@ -196,6 +196,8 @@ public class AuthService {
         }
 
         ArtisanPrivateResponse resp = new ArtisanPrivateResponse();
+        resp.setEmail(user.getEmail());
+        resp.setRole(user.getRole().name());
         return resp;
     }
 }
