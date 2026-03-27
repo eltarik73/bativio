@@ -66,7 +66,12 @@ public class AuthService {
         artisan.setZoneRayonKm(request.getZoneRayonKm());
 
         if (request.getMetierId() != null && !request.getMetierId().isBlank()) {
-            metierRepository.findById(UUID.fromString(request.getMetierId()))
+            // Accepter slug ou UUID
+            metierRepository.findBySlug(request.getMetierId())
+                .or(() -> {
+                    try { return metierRepository.findById(UUID.fromString(request.getMetierId())); }
+                    catch (IllegalArgumentException e) { return java.util.Optional.empty(); }
+                })
                 .ifPresent(artisan::setMetier);
         }
 

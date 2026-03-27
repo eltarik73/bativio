@@ -13,8 +13,7 @@ public class RegisterRequest {
     @Size(min = 8, message = "Le mot de passe doit contenir au moins 8 caracteres")
     private String password;
 
-    @NotBlank(message = "Le SIRET est requis")
-    @Size(min = 14, max = 14, message = "Le SIRET doit contenir 14 chiffres")
+    @NotBlank(message = "Le SIREN/SIRET est requis")
     private String siret;
 
     @NotBlank(message = "Le nom d'affichage est requis")
