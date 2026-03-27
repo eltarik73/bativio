@@ -34,7 +34,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
 
   const artisanPages: MetadataRoute.Sitemap = MOCK_ARTISANS.map((a) => {
-    const villeSlug = a.ville.toLowerCase().replace(/[^a-z]/g, "");
+    const villeSlug = a.ville.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
     return {
       url: `${baseUrl}/${villeSlug}/${a.slug}`,
       lastModified: new Date(),
