@@ -48,7 +48,7 @@ export default async function ArtisanPage({ params }: { params: Promise<{ ville:
       <Navbar />
       <main style={{ ...cssVars }}>
         {/* Template dispatch — pour l'instant tous sur Classique, les 3 autres viendront */}
-        <VitrineClassique a={a} photo={photo} primary={primary} accent={accent} />
+        <VitrineClassique a={a} photo={photo} primary={primary} accent={accent} villeSlug={villeSlug} />
 
         {/* Footer SIRET */}
         <div style={{ padding: 16, textAlign: "center", background: "#F7F5F2", fontSize: 12, color: "#9B9590" }}>

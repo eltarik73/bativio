@@ -67,6 +67,7 @@ export default function Home() {
 
       <section className="hero">
         <div className="hero-inner">
+          <div className="hero-badge">Inscription gratuite</div>
           <h1>Trouvez votre <em>artisan</em> en Rh&ocirc;ne-Alpes</h1>
           <p className="hero-sub">Profils v&eacute;rifi&eacute;s &middot; Avis clients &middot; Devis gratuit &middot; Z&eacute;ro commission</p>
           <div className="search-bar">
@@ -111,11 +112,45 @@ export default function Home() {
         </div>
       </div>
 
+      <section className="trust-section">
+        <div className="trust-inner">
+          <div className="trust-label">Ils nous font confiance</div>
+          <div className="trust-logos">
+            {VILLES.map((v) => (
+              <div key={v.slug} className="trust-city">
+                <div className="trust-city-icon">
+                  <svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </div>
+                <span className="trust-city-name">{v.nom}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="artisan-banner" onClick={togglePricing}>
         <div className="artisan-inner">
           <div className="zero-chip">&#10022; Z&eacute;ro commission &mdash; Abonnement fixe</div>
           <h2>Vous &ecirc;tes <em>artisan</em> ?</h2>
           <p>Cr&eacute;ez votre page pro en 3 minutes. Soyez visible aupr&egrave;s de milliers de clients.</p>
+          <div className="pricing-preview">
+            <div className="pricing-mini">
+              <div className="pricing-mini-name">Gratuit</div>
+              <div className="pricing-mini-price">0&euro;</div>
+            </div>
+            <div className="pricing-mini">
+              <div className="pricing-mini-name">Essentiel</div>
+              <div className="pricing-mini-price">19&euro;<small>/mois</small></div>
+            </div>
+            <div className="pricing-mini highlight">
+              <div className="pricing-mini-name">Pro</div>
+              <div className="pricing-mini-price">49&euro;<small>/mois</small></div>
+            </div>
+            <div className="pricing-mini">
+              <div className="pricing-mini-name">Pro+</div>
+              <div className="pricing-mini-price">79&euro;<small>/mois</small></div>
+            </div>
+          </div>
           <button className={`toggle-btn ${pricingOpen ? "open" : ""}`} onClick={(e) => { e.stopPropagation(); togglePricing(); }}>
             {pricingOpen ? "Masquer les offres" : "D\u00e9couvrir les offres"}
             <svg fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" /></svg>
