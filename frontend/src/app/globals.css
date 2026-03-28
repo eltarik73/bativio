@@ -81,6 +81,7 @@ a{text-decoration:none;color:inherit;transition:color .15s}button{font-family:'K
 .card-rating{position:absolute;bottom:12px;left:12px;z-index:1;display:flex;align-items:center;gap:5px;font-family:'Fraunces',serif;font-size:22px;font-weight:800;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.6)}
 .card-rating svg{width:16px;height:16px;fill:var(--or)}
 .card-rating small{font-family:'Karla',sans-serif;font-size:12px;font-weight:500;opacity:.7}
+.card-nouveau{position:absolute;bottom:12px;left:12px;z-index:1;font-size:11px;font-weight:600;padding:4px 12px;border-radius:6px;background:rgba(232,168,76,.15);color:#E8A84C;letter-spacing:.3px}
 .card-main{flex:1;padding:18px 20px;display:flex;flex-direction:column;justify-content:center;min-width:0}
 .card-r1{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
 .card-name{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:#1C1C1E;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
