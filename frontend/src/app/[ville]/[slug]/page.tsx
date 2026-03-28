@@ -77,7 +77,7 @@ export default async function ArtisanPage({ params }: { params: Promise<{ ville:
         </div>
 
         <div className="artisan-cta-mobile">
-          <a href={`tel:${(a.telephone || "").replace(/\s/g, "")}`} className="call">Appeler</a>
+          {a.telephone && <a href={`tel:${a.telephone.replace(/\s/g, "")}`} className="call">Appeler</a>}
           <a href="#devis" className="devis" style={{ background: primary }}>Devis gratuit</a>
         </div>
       </main>
@@ -93,8 +93,8 @@ export default async function ArtisanPage({ params }: { params: Promise<{ ville:
         areaServed: { "@type": "GeoCircle", geoMidpoint: { "@type": "GeoCoordinates", latitude: lat, longitude: lng }, geoRadius: `${a.zoneRayonKm || 25}000` },
         aggregateRating: a.nombreAvis > 0 ? { "@type": "AggregateRating", ratingValue: a.noteMoyenne, reviewCount: a.nombreAvis, bestRating: 5 } : undefined,
         priceRange: "$$",
-        ...(a.horaires && a.horaires.length > 0 ? { openingHoursSpecification: a.horaires.filter((h) => h.ouvert).map((h) => ({ "@type": "OpeningHoursSpecification", dayOfWeek: ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][h.jourSemaine], opens: h.heureOuverture, closes: h.heureFermeture })) } : {}),
-        ...(a.services && a.services.length > 0 ? { hasOfferCatalog: { "@type": "OfferCatalog", name: "Services", itemListElement: a.services.map((s) => ({ "@type": "Offer", name: s.titre, description: s.description })) } } : {}),
+        ...((a.horaires ?? []).length > 0 ? { openingHoursSpecification: (a.horaires ?? []).filter((h) => h.ouvert && h.heureOuverture).map((h) => ({ "@type": "OpeningHoursSpecification", dayOfWeek: ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][h.jourSemaine], opens: h.heureOuverture, closes: h.heureFermeture })) } : {}),
+        ...((a.services ?? []).length > 0 ? { hasOfferCatalog: { "@type": "OfferCatalog", name: "Services", itemListElement: (a.services ?? []).map((s) => ({ "@type": "Offer", name: s.titre, description: s.description })) } } : {}),
       }) }} />
     </>
   );

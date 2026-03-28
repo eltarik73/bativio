@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useAuth } from "@/components/AuthProvider";
+import { logout } from "@/lib/auth";
 
 const NAV: { href: string; label: string; icon: string; badge?: string; sep?: boolean }[] = [
   { href: "/dashboard", label: "Tableau de bord", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>' },
@@ -22,8 +25,43 @@ const MOB = [
   { href: "/dashboard/facturation", label: "Factures", icon: '<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>' },
 ];
 
+function slugifyVille(ville: string): string {
+  return ville.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-");
+}
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const p = usePathname();
+  const router = useRouter();
+  const { isAuth, loading, artisan } = useAuth();
+
+  // Auth guard: redirect to /connexion if not authenticated
+  useEffect(() => {
+    if (!loading && !isAuth) {
+      router.replace("/connexion");
+    }
+  }, [loading, isAuth, router]);
+
+  // Show loading state while checking auth
+  if (loading) {
+    return (
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: "#FAF8F5" }}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#C4531A", marginBottom: 12 }}>Bativio</div>
+          <div style={{ fontSize: 14, color: "#9B9590" }}>Chargement...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render dashboard if not authenticated (redirect is in progress)
+  if (!isAuth) {
+    return null;
+  }
+
+  const vitrineSlug = artisan?.slug || "";
+  const vitrineVille = artisan?.ville ? slugifyVille(artisan.ville) : "";
+  const vitrineHref = vitrineSlug && vitrineVille ? `/${vitrineVille}/${vitrineSlug}` : "#";
+
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "#FAF8F5" }}>
       {/* Sidebar desktop */}
@@ -44,8 +82,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             );
           })}
         </nav>
-        <div style={{ borderTop: "1px solid #EDEBE7", paddingTop: 16 }}>
-          <Link href="/chambery/martin-plomberie" target="_blank" style={{ fontSize: 13, color: "#C4531A", fontWeight: 500, textDecoration: "none" }}>Voir ma page &rarr;</Link>
+        <div style={{ borderTop: "1px solid #EDEBE7", paddingTop: 16, display: "flex", flexDirection: "column", gap: 8 }}>
+          {vitrineHref !== "#" && (
+            <Link href={vitrineHref} target="_blank" style={{ fontSize: 13, color: "#C4531A", fontWeight: 500, textDecoration: "none" }}>Voir ma page &rarr;</Link>
+          )}
+          <button onClick={() => logout()} style={{ fontSize: 13, color: "#9B9590", fontWeight: 500, background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: 0 }}>Se d&eacute;connecter</button>
         </div>
       </aside>
 

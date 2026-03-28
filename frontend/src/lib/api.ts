@@ -2,6 +2,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1
 
 async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
+    cache: "no-store",
     ...options,
     headers: {
       "Content-Type": "application/json",
@@ -37,10 +38,10 @@ export interface ArtisanPublic {
   experienceAnnees: number;
   plan: string;
   badgesNoms: string[];
-  services: ServiceData[];
-  photos: PhotoData[];
-  horaires: HoraireData[];
-  zones: string[];
+  services: ServiceData[] | null;
+  photos: PhotoData[] | null;
+  horaires: HoraireData[] | null;
+  zones: string[] | null;
   templateId?: string;
   colorPrimary?: string;
   colorAccent?: string;
@@ -67,8 +68,8 @@ export interface PhotoData {
 export interface HoraireData {
   jourSemaine: number;
   ouvert: boolean;
-  heureOuverture: string;
-  heureFermeture: string;
+  heureOuverture: string | null;
+  heureFermeture: string | null;
 }
 
 export interface VilleData {

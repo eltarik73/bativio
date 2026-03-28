@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { login, sendMagicLink } from "@/lib/auth";
+import { useAuth } from "@/components/AuthProvider";
 
 export default function ConnexionPage() {
   const router = useRouter();
+  const { refreshAuth } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
@@ -21,7 +23,13 @@ export default function ConnexionPage() {
     setError("");
     try {
       const data = await login(email, password);
-      router.push(data.artisan ? "/dashboard" : "/admin");
+      // Refresh auth context so dashboard has artisan data immediately
+      await refreshAuth();
+      if (data.artisan?.role === "ADMIN") {
+        router.push("/admin");
+      } else {
+        router.push("/dashboard");
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur de connexion");
     } finally {

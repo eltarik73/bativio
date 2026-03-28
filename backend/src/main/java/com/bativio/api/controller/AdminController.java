@@ -76,6 +76,23 @@ public class AdminController {
     }
 
     @Transactional
+    @PutMapping("/artisans/{id}/statut")
+    public ResponseEntity<ApiResponse<String>> updateStatut(@PathVariable UUID id, @RequestBody Map<String, String> body) {
+        Artisan a = artisanRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Artisan introuvable"));
+        String statut = body.get("statut");
+        if ("ACTIVE".equalsIgnoreCase(statut)) {
+            a.setActif(true);
+        } else if ("INACTIVE".equalsIgnoreCase(statut)) {
+            a.setActif(false);
+        } else {
+            return ResponseEntity.badRequest().body(ApiResponse.ok("Statut invalide. Valeurs acceptees: ACTIVE, INACTIVE"));
+        }
+        artisanRepository.save(a);
+        return ResponseEntity.ok(ApiResponse.ok(a.isActif() ? "Artisan active" : "Artisan desactive"));
+    }
+
+    @Transactional
     @PutMapping("/artisans/{id}/toggle-visible")
     public ResponseEntity<ApiResponse<String>> toggleVisible(@PathVariable UUID id) {
         Artisan a = artisanRepository.findById(id)

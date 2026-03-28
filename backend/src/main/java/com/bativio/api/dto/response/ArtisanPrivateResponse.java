@@ -30,6 +30,7 @@ public class ArtisanPrivateResponse {
     private String stripeCustomerId;
     private int profilCompletion;
     private String slug;
+    private boolean actif;
     private List<String> badgesNoms;
     private List<ServiceResponse> services;
     private List<PhotoResponse> photos;
@@ -61,6 +62,7 @@ public class ArtisanPrivateResponse {
         r.stripeCustomerId = a.getStripeCustomerId();
         r.profilCompletion = a.getProfilCompletion();
         r.slug = a.getSlug();
+        r.actif = a.isActif();
         r.badgesNoms = a.getBadges().stream().map(b -> b.getNom()).toList();
         r.services = a.getServices().stream().map(ServiceResponse::fromEntity).toList();
         r.photos = a.getPhotos().stream().map(PhotoResponse::fromEntity).toList();
@@ -97,6 +99,7 @@ public class ArtisanPrivateResponse {
     public String getStripeCustomerId() { return stripeCustomerId; }
     public int getProfilCompletion() { return profilCompletion; }
     public String getSlug() { return slug; }
+    public boolean isActif() { return actif; }
     public List<String> getBadgesNoms() { return badgesNoms; }
     public List<ServiceResponse> getServices() { return services; }
     public List<PhotoResponse> getPhotos() { return photos; }

@@ -22,6 +22,8 @@ public class ArtisanPublicResponse {
     private int zoneRayonKm;
     private Integer experienceAnnees;
     private String plan;
+    private boolean actif;
+    private String email;
     private List<String> badgesNoms;
     private List<ServiceResponse> services;
     private List<PhotoResponse> photos;
@@ -45,6 +47,8 @@ public class ArtisanPublicResponse {
         r.zoneRayonKm = a.getZoneRayonKm();
         r.experienceAnnees = a.getExperienceAnnees();
         r.plan = a.getPlan().name();
+        r.actif = a.isActif();
+        r.email = a.getUser() != null ? a.getUser().getEmail() : null;
         r.badgesNoms = a.getBadges().stream().map(b -> b.getNom()).toList();
         r.services = a.getServices().stream().map(ServiceResponse::fromEntity).toList();
         r.photos = a.getPhotos().stream().map(PhotoResponse::fromEntity).toList();
@@ -67,6 +71,8 @@ public class ArtisanPublicResponse {
             ? a.getDescription().substring(0, 150) + "..."
             : a.getDescription();
         r.plan = a.getPlan().name();
+        r.actif = a.isActif();
+        r.email = a.getUser() != null ? a.getUser().getEmail() : null;
         r.badgesNoms = a.getBadges().stream().map(b -> b.getNom()).limit(3).toList();
         return r;
     }
@@ -87,6 +93,8 @@ public class ArtisanPublicResponse {
     public int getZoneRayonKm() { return zoneRayonKm; }
     public Integer getExperienceAnnees() { return experienceAnnees; }
     public String getPlan() { return plan; }
+    public boolean isActif() { return actif; }
+    public String getEmail() { return email; }
     public List<String> getBadgesNoms() { return badgesNoms; }
     public List<ServiceResponse> getServices() { return services; }
     public List<PhotoResponse> getPhotos() { return photos; }

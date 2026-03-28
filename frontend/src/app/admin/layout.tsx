@@ -1,7 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/components/AuthProvider";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: "&#128202;" },
@@ -15,6 +18,30 @@ const navItems = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { isAuth, loading, artisan } = useAuth();
+  const [authorized, setAuthorized] = useState(false);
+
+  useEffect(() => {
+    if (loading) return;
+    if (!isAuth) {
+      router.push("/connexion");
+      return;
+    }
+    if (artisan?.role !== "ADMIN") {
+      router.push("/dashboard");
+      return;
+    }
+    setAuthorized(true);
+  }, [isAuth, loading, artisan, router]);
+
+  if (loading || !authorized) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-g50">
+        <p className="text-sm text-g400">Chargement...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-g50">

@@ -92,7 +92,7 @@ public class AuthService {
         user.setRefreshTokenHash(passwordEncoder.encode(refreshToken));
         userRepository.save(user);
 
-        return new AuthResponse(accessToken, refreshToken, ArtisanPrivateResponse.fromEntity(artisan));
+        return new AuthResponse(accessToken, refreshToken, user.getRole().name(), ArtisanPrivateResponse.fromEntity(artisan));
     }
 
     @Transactional
@@ -117,7 +117,7 @@ public class AuthService {
             }
         }
 
-        return new AuthResponse(accessToken, refreshToken, artisanResp);
+        return new AuthResponse(accessToken, refreshToken, user.getRole().name(), artisanResp);
     }
 
     @Transactional
@@ -159,7 +159,7 @@ public class AuthService {
             }
         }
 
-        return new AuthResponse(accessToken, refreshToken, artisanResp);
+        return new AuthResponse(accessToken, refreshToken, user.getRole().name(), artisanResp);
     }
 
     @Transactional
@@ -181,7 +181,7 @@ public class AuthService {
         user.setRefreshTokenHash(passwordEncoder.encode(newRefreshToken));
         userRepository.save(user);
 
-        return new AuthResponse(newAccessToken, newRefreshToken, null);
+        return new AuthResponse(newAccessToken, newRefreshToken, user.getRole().name(), null);
     }
 
     @Transactional(readOnly = true)

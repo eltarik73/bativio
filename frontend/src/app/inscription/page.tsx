@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { register } from "@/lib/auth";
+import { useAuth } from "@/components/AuthProvider";
 import { METIERS, VILLES } from "@/lib/constants";
 
 const STEP_LABELS = ["SIREN", "Infos", "M\u00e9tier", "Zone", "Photos"];
@@ -13,6 +14,7 @@ const CHECK_I = <svg width="18" height="18" fill="none" stroke="currentColor" st
 
 export default function InscriptionPage() {
   const router = useRouter();
+  const { refreshAuth } = useAuth();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -101,6 +103,8 @@ export default function InscriptionPage() {
         ville: form.ville || undefined,
         zoneRayonKm: 25,
       });
+      // Refresh auth context so dashboard has artisan data immediately
+      await refreshAuth();
       router.push("/dashboard");
     } catch (err) {
       // Bug 7 fix: meilleur parsing erreur

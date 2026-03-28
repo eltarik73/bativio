@@ -28,15 +28,17 @@ export default function ContactCard({ a }: { a: ArtisanPublic }) {
       <div className="contact-sep" />
 
       {/* T&eacute;l */}
-      <div className="contact-row">
-        <svg className="contact-row-icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 013 5.18 2 2 0 015 3h3a2 2 0 012 1.72c.12.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0122 16.92z" /></svg>
-        <div><div className="contact-row-label">T&eacute;l&eacute;phone</div><div className="contact-row-value"><a href={`tel:${a.telephone?.replace(/\s/g, "")}`}>{a.telephone}</a></div></div>
-      </div>
+      {a.telephone && (
+        <div className="contact-row">
+          <svg className="contact-row-icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 013 5.18 2 2 0 015 3h3a2 2 0 012 1.72c.12.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0122 16.92z" /></svg>
+          <div><div className="contact-row-label">T&eacute;l&eacute;phone</div><div className="contact-row-value"><a href={`tel:${a.telephone.replace(/\s/g, "")}`}>{a.telephone}</a></div></div>
+        </div>
+      )}
 
       {/* Adresse */}
       <div className="contact-row">
         <svg className="contact-row-icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" /></svg>
-        <div><div className="contact-row-label">Adresse</div><div className="contact-row-value">{a.ville}, {a.codePostal}</div></div>
+        <div><div className="contact-row-label">Adresse</div><div className="contact-row-value">{a.ville || ""}{a.ville && a.codePostal ? ", " : ""}{a.codePostal || ""}</div></div>
       </div>
 
       {/* Zone */}
@@ -46,7 +48,7 @@ export default function ContactCard({ a }: { a: ArtisanPublic }) {
       </div>
 
       {/* Horaires accordion */}
-      {a.horaires?.length > 0 && (
+      {(a.horaires ?? []).length > 0 && (
         <>
           <div className={`horaires-toggle ${horOpen ? "open" : ""}`} onClick={() => setHorOpen(!horOpen)}>
             Horaires d&apos;ouverture
@@ -60,7 +62,7 @@ export default function ContactCard({ a }: { a: ArtisanPublic }) {
                     {h.jourSemaine === TODAY && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#C4531A" }} />}
                     {JOURS[h.jourSemaine]}
                   </span>
-                  <span style={!h.ouvert ? { color: "#C4531A" } : {}}>{h.ouvert ? `${h.heureOuverture} - ${h.heureFermeture}` : "Ferm\u00e9"}</span>
+                  <span style={!h.ouvert ? { color: "#C4531A" } : {}}>{h.ouvert && h.heureOuverture ? `${h.heureOuverture} - ${h.heureFermeture}` : h.ouvert ? "Ouvert" : "Ferm\u00e9"}</span>
                 </div>
               ))}
             </div>
@@ -79,10 +81,12 @@ export default function ContactCard({ a }: { a: ArtisanPublic }) {
       </div>
 
       {/* Call button */}
-      <button className="contact-btn-call" onClick={() => window.location.href = `tel:${a.telephone?.replace(/\s/g, "")}`}>
-        <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 013 5.18 2 2 0 015 3h3a2 2 0 012 1.72c.12.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0122 16.92z" /></svg>
-        Appeler
-      </button>
+      {a.telephone && (
+        <button className="contact-btn-call" onClick={() => window.location.href = `tel:${a.telephone!.replace(/\s/g, "")}`}>
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 013 5.18 2 2 0 015 3h3a2 2 0 012 1.72c.12.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0122 16.92z" /></svg>
+          Appeler
+        </button>
+      )}
     </div>
   );
 }

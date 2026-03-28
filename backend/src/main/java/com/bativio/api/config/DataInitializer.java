@@ -68,7 +68,7 @@ public class DataInitializer {
             // --- Admin ---
             User admin = new User();
             admin.setEmail("admin@bativio.fr");
-            admin.setPasswordHash(passwordEncoder.encode("Bativio2024!"));
+            admin.setPasswordHash(passwordEncoder.encode("Bativio2026!"));
             admin.setRole(Role.ADMIN);
             admin.setEmailVerified(true);
             userRepo.save(admin);
@@ -142,6 +142,7 @@ public class DataInitializer {
         a.setNombreAvis(avis);
         a.setPlan(plan);
         a.setSlug(slug);
+        a.setActif(true);
         a.setProfilCompletion(85);
         return artisanRepo.save(a);
     }

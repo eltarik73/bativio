@@ -2,6 +2,24 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1
 
 let accessToken: string | null = null;
 
+// Artisan data cached in memory for use across components
+let cachedArtisan: ArtisanSessionData | null = null;
+
+export interface ArtisanSessionData {
+  id: string;
+  email: string;
+  role: string;
+  nomAffichage: string;
+  metierNom: string | null;
+  ville: string | null;
+  slug: string | null;
+  plan: string;
+  profilCompletion: number;
+  telephone: string | null;
+  description: string | null;
+  [key: string]: unknown;
+}
+
 export function setAccessToken(token: string | null) {
   accessToken = token;
 }
@@ -10,11 +28,19 @@ export function getAccessToken() {
   return accessToken;
 }
 
+export function getCachedArtisan(): ArtisanSessionData | null {
+  return cachedArtisan;
+}
+
+export function setCachedArtisan(artisan: ArtisanSessionData | null) {
+  cachedArtisan = artisan;
+}
+
 // Restaurer la session au chargement de la page
-export async function initAuth(): Promise<boolean> {
-  if (typeof window === "undefined") return false;
+export async function initAuth(): Promise<ArtisanSessionData | null> {
+  if (typeof window === "undefined") return null;
   const refreshToken = localStorage.getItem("bativio_refresh");
-  if (!refreshToken) return false;
+  if (!refreshToken) return null;
   try {
     const res = await fetch(`${API_URL}/auth/refresh`, {
       method: "POST",
@@ -25,12 +51,25 @@ export async function initAuth(): Promise<boolean> {
     if (json.success) {
       accessToken = json.data.accessToken;
       localStorage.setItem("bativio_refresh", json.data.refreshToken);
-      return true;
+      // Fetch artisan profile after token refresh
+      try {
+        const meRes = await fetch(`${API_URL}/auth/me`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        const meJson = await meRes.json();
+        if (meJson.success && meJson.data) {
+          cachedArtisan = meJson.data as ArtisanSessionData;
+          return cachedArtisan;
+        }
+      } catch {
+        // Token is valid but profile fetch failed - still authenticated
+      }
+      return { id: "", email: "", role: "", nomAffichage: "", metierNom: null, ville: null, slug: null, plan: "GRATUIT", profilCompletion: 0, telephone: null, description: null } as ArtisanSessionData;
     }
     localStorage.removeItem("bativio_refresh");
-    return false;
+    return null;
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -78,6 +117,7 @@ export async function authFetch<T>(path: string, options?: RequestInit): Promise
 
 export function logout() {
   accessToken = null;
+  cachedArtisan = null;
   if (typeof window !== "undefined") {
     localStorage.removeItem("bativio_refresh");
     window.location.href = "/connexion";
@@ -94,6 +134,9 @@ export async function login(email: string, password: string) {
   if (!json.success) throw new Error(json.error || "Identifiants incorrects");
   accessToken = json.data.accessToken;
   localStorage.setItem("bativio_refresh", json.data.refreshToken);
+  if (json.data.artisan) {
+    cachedArtisan = json.data.artisan as ArtisanSessionData;
+  }
   return json.data;
 }
 
@@ -118,6 +161,9 @@ export async function register(data: {
   }
   accessToken = json.data.accessToken;
   localStorage.setItem("bativio_refresh", json.data.refreshToken);
+  if (json.data.artisan) {
+    cachedArtisan = json.data.artisan as ArtisanSessionData;
+  }
   return json.data;
 }
 

@@ -75,7 +75,7 @@ public class Artisan {
     private String colorPrimary = "#C4531A";
     private String colorAccent = "#E8A84C";
     private String photoLayout = "grid";
-    private boolean actif = true;
+    private boolean actif = false;
     private boolean visible = true;
 
     @Column(unique = true)

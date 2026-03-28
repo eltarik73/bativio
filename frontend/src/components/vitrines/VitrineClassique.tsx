@@ -55,7 +55,9 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
           )}
           <div style={{ display: "flex", gap: 12, marginTop: 32 }}>
             <a href="#devis" style={{ padding: "14px 32px", background: primary, color: "#fff", borderRadius: 12, fontSize: 15, fontWeight: 600, textDecoration: "none" }}>Devis gratuit</a>
-            <a href={`tel:${a.telephone?.replace(/\s/g, "")}`} style={{ padding: "14px 32px", border: "1px solid rgba(255,255,255,.2)", color: "#fff", borderRadius: 12, fontSize: 15, fontWeight: 600, textDecoration: "none" }}>{a.telephone}</a>
+            {a.telephone && (
+              <a href={`tel:${a.telephone.replace(/\s/g, "")}`} style={{ padding: "14px 32px", border: "1px solid rgba(255,255,255,.2)", color: "#fff", borderRadius: 12, fontSize: 15, fontWeight: 600, textDecoration: "none" }}>{a.telephone}</a>
+            )}
           </div>
         </div>
       </section>
@@ -100,13 +102,13 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
       </section>
 
       {/* Services */}
-      {a.services?.length > 0 && (
+      {(a.services ?? []).length > 0 && (
         <section style={{ background: "#FAF8F5", padding: "48px 32px" }}>
           <div style={{ maxWidth: 880, margin: "0 auto" }}>
             <div style={{ width: 44, height: 2, background: primary, marginBottom: 16 }} />
             <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 20 }}>Services</h2>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-              {a.services.map((s, idx) => {
+              {(a.services ?? []).map((s, idx) => {
                 const isFeatured = idx === 0;
                 return (
                   <div key={s.id} style={{
@@ -138,13 +140,13 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
       </section>
 
       {/* Zone */}
-      {a.zones?.length > 0 && (
+      {(a.zones ?? []).length > 0 && (
         <section style={{ background: "#FAF8F5", padding: "48px 32px" }}>
           <div style={{ maxWidth: 880, margin: "0 auto" }}>
             <div style={{ width: 44, height: 2, background: primary, marginBottom: 16 }} />
             <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 16 }}>Zone d&apos;intervention</h2>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-              {a.zones.map((z) => <span key={z} style={{ padding: "9px 18px", background: "#fff", border: "1px solid #EDEBE7", borderRadius: 22, fontSize: 13, color: "#6B6560" }}>{z}</span>)}
+              {(a.zones ?? []).map((z) => <span key={z} style={{ padding: "9px 18px", background: "#fff", border: "1px solid #EDEBE7", borderRadius: 22, fontSize: 13, color: "#6B6560" }}>{z}</span>)}
             </div>
           </div>
         </section>
@@ -159,22 +161,26 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
       </section>
 
       {/* Contact + horaires */}
-      {a.horaires?.length > 0 && (
+      {(a.horaires ?? []).length > 0 && (
         <section style={{ background: "#1C1C1E", padding: "48px 32px", color: "#fff" }}>
           <div style={{ maxWidth: 880, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 }}>
             <div>
               <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, marginBottom: 20 }}>Contact</h2>
-              <p style={{ fontSize: 12, color: "rgba(255,255,255,.35)", marginBottom: 3 }}>T&eacute;l&eacute;phone</p>
-              <p style={{ fontSize: 16, fontWeight: 500 }}><a href={`tel:${a.telephone?.replace(/\s/g, "")}`} style={{ color: "#fff", textDecoration: "none" }}>{a.telephone}</a></p>
+              {a.telephone && (
+                <>
+                  <p style={{ fontSize: 12, color: "rgba(255,255,255,.35)", marginBottom: 3 }}>T&eacute;l&eacute;phone</p>
+                  <p style={{ fontSize: 16, fontWeight: 500 }}><a href={`tel:${a.telephone.replace(/\s/g, "")}`} style={{ color: "#fff", textDecoration: "none" }}>{a.telephone}</a></p>
+                </>
+              )}
               <p style={{ fontSize: 12, color: "rgba(255,255,255,.35)", marginTop: 16, marginBottom: 3 }}>Adresse</p>
-              <p style={{ fontSize: 15 }}>{a.adresse}, {a.codePostal} {a.ville}</p>
+              <p style={{ fontSize: 15 }}>{a.adresse || ""}{a.adresse && a.codePostal ? ", " : ""}{a.codePostal || ""} {a.ville || ""}</p>
             </div>
             <div>
               <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, marginBottom: 20 }}>Horaires</h2>
-              {a.horaires.map((h) => (
+              {(a.horaires ?? []).map((h) => (
                 <div key={h.jourSemaine} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, padding: "3px 0" }}>
                   <span style={{ color: "rgba(255,255,255,.55)" }}>{JOURS[h.jourSemaine]}</span>
-                  <span>{h.ouvert ? `${h.heureOuverture} - ${h.heureFermeture}` : "Ferm\u00e9"}</span>
+                  <span>{h.ouvert && h.heureOuverture ? `${h.heureOuverture} - ${h.heureFermeture}` : h.ouvert ? "Ouvert" : "Ferm\u00e9"}</span>
                 </div>
               ))}
             </div>
