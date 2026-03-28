@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { authFetch } from "@/lib/auth";
+import { useAuth } from "@/context/AuthContext";
 
 interface ArtisanAdmin {
   id: string;
@@ -28,6 +28,7 @@ const planBadge: Record<string, string> = {
 };
 
 export default function AdminArtisansPage() {
+  const { fetchWithAuth } = useAuth();
   const [artisans, setArtisans] = useState<ArtisanAdmin[]>([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
@@ -40,7 +41,7 @@ export default function AdminArtisansPage() {
     try {
       const params = new URLSearchParams({ page: String(page), size: "20" });
       if (search) params.set("search", search);
-      const data = await authFetch<PageResponse>(`/admin/artisans?${params}`);
+      const data = await fetchWithAuth(`/admin/artisans?${params}`) as PageResponse;
       setArtisans(data.content);
       setTotalPages(data.totalPages);
     } catch {
@@ -48,7 +49,7 @@ export default function AdminArtisansPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, search]);
+  }, [page, search, fetchWithAuth]);
 
   useEffect(() => {
     fetchArtisans();
@@ -57,7 +58,7 @@ export default function AdminArtisansPage() {
   const handleToggleActif = async (id: string, currentActif: boolean) => {
     setActionLoading(id);
     try {
-      await authFetch(`/admin/artisans/${id}/statut`, {
+      await fetchWithAuth(`/admin/artisans/${id}/statut`, {
         method: "PUT",
         body: JSON.stringify({ statut: currentActif ? "INACTIVE" : "ACTIVE" }),
       });
