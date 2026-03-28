@@ -68,6 +68,8 @@ public class DevisPublicController {
                 artisan.getUser().getEmail(),
                 artisan.getNomAffichage(),
                 request.getNomClient(),
+                request.getTelephoneClient(),
+                request.getEmailClient(),
                 request.getDescriptionBesoin()
             );
         } catch (Exception e) {
