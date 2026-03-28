@@ -2,7 +2,7 @@ spring:
   application:
     name: bativio-api
   datasource:
-    url: jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:bativio}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:bativio}}
     driver-class-name: org.postgresql.Driver
     username: ${PGUSER:bativio}
     password: ${PGPASSWORD:bativio}
