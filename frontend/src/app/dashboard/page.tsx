@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/components/AuthProvider";
 
-const S = { card: { background: "#fff", borderRadius: 14, border: "1px solid #EDEBE7", overflow: "hidden" } as React.CSSProperties };
+const S = { card: { background: "#fff", borderRadius: 16, border: "1.5px solid #EDEBE7", overflow: "hidden", boxShadow: "0 4px 24px rgba(28,28,30,.04)" } as React.CSSProperties };
 
 const statsDef = [
   { label: "Vues ce mois", fallback: "0", icon: '<svg width="20" height="20" fill="none" stroke="#E0DDD8" stroke-width="1.5" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' },
@@ -99,7 +99,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Completion */}
-      <div style={{ ...S.card, padding: "20px 24px", marginBottom: 24 }}>
+      <div style={{ ...S.card, padding: "24px 28px", marginBottom: 24 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
           <div style={{ position: "relative", width: 56, height: 56, flexShrink: 0 }}>
             <svg width="56" height="56" style={{ transform: "rotate(-90deg)" }}>
@@ -130,7 +130,7 @@ export default function DashboardPage() {
       {/* Stats */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, marginBottom: 24 }} className="max-md:grid-cols-2">
         {statsDef.map((s) => (
-          <div key={s.label} style={{ ...S.card, padding: 20, transition: "all .2s", cursor: "default" }}>
+          <div key={s.label} style={{ ...S.card, padding: 28, transition: "all .2s", cursor: "default" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
               <span style={{ fontFamily: "'Fraunces',serif", fontSize: 32, fontWeight: 800, color: s.color || "#1C1C1E", lineHeight: 1 }}>{s.fallback}</span>
               <span dangerouslySetInnerHTML={{ __html: s.icon }} style={{ display: "flex" }} />
@@ -142,11 +142,11 @@ export default function DashboardPage() {
 
       {/* Dernieres demandes */}
       <div style={{ ...S.card, marginBottom: 24 }}>
-        <div style={{ padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ padding: "20px 28px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span style={{ fontFamily: "'Fraunces',serif", fontSize: 17, fontWeight: 700, color: "#1C1C1E" }}>Derni&egrave;res demandes</span>
           <Link href="/dashboard/devis" style={{ fontSize: 13, color: "#C4531A", fontWeight: 500, textDecoration: "none" }}>Voir tout &rarr;</Link>
         </div>
-        <div style={{ padding: "24px 20px", textAlign: "center", color: "#9B9590", fontSize: 14 }}>
+        <div style={{ padding: "28px", textAlign: "center", color: "#9B9590", fontSize: 14 }}>
           Aucune demande pour le moment.
         </div>
       </div>
@@ -159,7 +159,7 @@ export default function DashboardPage() {
           { label: "Voir mes devis", href: "/dashboard/devis", icon: '<svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>' },
           { label: "Voir ma page", href: vitrineHref, icon: '<svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' },
         ].map((a) => (
-          <Link key={a.label} href={a.href} style={{ ...S.card, padding: 24, textAlign: "center", textDecoration: "none", transition: "all .2s", cursor: "pointer" }}>
+          <Link key={a.label} href={a.href} style={{ ...S.card, padding: 28, textAlign: "center", textDecoration: "none", transition: "all .2s", cursor: "pointer" }}>
             <span dangerouslySetInnerHTML={{ __html: a.icon }} style={{ display: "flex", justifyContent: "center", color: "#9B9590" }} />
             <p style={{ marginTop: 10, fontSize: 13, fontWeight: 600, color: "#1C1C1E" }}>{a.label}</p>
           </Link>

@@ -5,6 +5,11 @@ let accessToken: string | null = null;
 // Artisan data cached in memory for use across components
 let cachedArtisan: ArtisanSessionData | null = null;
 
+// Mutex for token refresh: prevents concurrent refresh calls from racing
+// When multiple authFetch calls get 401 simultaneously, only one refresh
+// request is sent; the others await the same promise.
+let refreshPromise: Promise<boolean> | null = null;
+
 export interface ArtisanSessionData {
   id: string;
   email: string;
@@ -17,6 +22,7 @@ export interface ArtisanSessionData {
   profilCompletion: number;
   telephone: string | null;
   description: string | null;
+  actif: boolean;
   [key: string]: unknown;
 }
 
@@ -64,12 +70,35 @@ export async function initAuth(): Promise<ArtisanSessionData | null> {
       } catch {
         // Token is valid but profile fetch failed - still authenticated
       }
-      return { id: "", email: "", role: "", nomAffichage: "", metierNom: null, ville: null, slug: null, plan: "GRATUIT", profilCompletion: 0, telephone: null, description: null } as ArtisanSessionData;
+      return { id: "", email: "", role: "", nomAffichage: "", metierNom: null, ville: null, slug: null, plan: "GRATUIT", profilCompletion: 0, telephone: null, description: null, actif: false } as ArtisanSessionData;
     }
     localStorage.removeItem("bativio_refresh");
     return null;
   } catch {
     return null;
+  }
+}
+
+// Perform a single token refresh, deduplicating concurrent calls.
+// Returns true if refresh succeeded, false otherwise.
+async function doTokenRefresh(): Promise<boolean> {
+  const refreshToken = localStorage.getItem("bativio_refresh");
+  if (!refreshToken) return false;
+  try {
+    const refreshRes = await fetch(`${API_URL}/auth/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refreshToken }),
+    });
+    const refreshJson = await refreshRes.json();
+    if (refreshJson.success) {
+      accessToken = refreshJson.data.accessToken;
+      localStorage.setItem("bativio_refresh", refreshJson.data.refreshToken);
+      return true;
+    }
+    return false;
+  } catch {
+    return false;
   }
 }
 
@@ -85,23 +114,19 @@ export async function authFetch<T>(path: string, options?: RequestInit): Promise
   let res = await fetch(`${API_URL}${path}`, { ...options, headers });
 
   if (res.status === 401 && accessToken) {
-    const refreshToken = localStorage.getItem("bativio_refresh");
-    if (refreshToken) {
-      const refreshRes = await fetch(`${API_URL}/auth/refresh`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refreshToken }),
-      });
-      const refreshJson = await refreshRes.json();
-      if (refreshJson.success) {
-        accessToken = refreshJson.data.accessToken;
-        localStorage.setItem("bativio_refresh", refreshJson.data.refreshToken);
-        headers["Authorization"] = `Bearer ${accessToken}`;
-        res = await fetch(`${API_URL}${path}`, { ...options, headers });
-      } else {
-        logout();
-        throw new Error("Session expir\u00e9e");
-      }
+    // Deduplicate concurrent refresh calls: if a refresh is already in
+    // progress, await the existing promise instead of firing another one.
+    if (!refreshPromise) {
+      refreshPromise = doTokenRefresh().finally(() => { refreshPromise = null; });
+    }
+    const refreshed = await refreshPromise;
+
+    if (refreshed) {
+      headers["Authorization"] = `Bearer ${accessToken}`;
+      res = await fetch(`${API_URL}${path}`, { ...options, headers });
+    } else {
+      logout();
+      throw new Error("Session expir\u00e9e");
     }
   }
 

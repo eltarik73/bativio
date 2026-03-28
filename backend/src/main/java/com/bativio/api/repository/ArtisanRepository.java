@@ -29,7 +29,7 @@ public interface ArtisanRepository extends JpaRepository<Artisan, UUID> {
     @Query("SELECT COUNT(a) FROM Artisan a WHERE a.actif = true AND a.visible = true AND a.deletedAt IS NULL AND LOWER(a.ville) = LOWER(:ville)")
     long countByVille(@Param("ville") String ville);
 
-    @Query("SELECT COUNT(a) FROM Artisan a WHERE a.actif = true AND a.deletedAt IS NULL AND a.metier.id = :metierId")
+    @Query("SELECT COUNT(a) FROM Artisan a WHERE a.actif = true AND a.visible = true AND a.deletedAt IS NULL AND a.metier.id = :metierId")
     long countByMetierId(@Param("metierId") UUID metierId);
 
     long countByActifTrueAndDeletedAtIsNull();

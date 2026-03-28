@@ -75,80 +75,98 @@ export default function AdminArtisansPage() {
     fetchArtisans();
   };
 
+  const tableCard: React.CSSProperties = {
+    background: "#fff",
+    borderRadius: 16,
+    border: "1.5px solid #EDEBE7",
+    boxShadow: "0 4px 24px rgba(28,28,30,.04)",
+    overflow: "hidden",
+  };
+
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="font-display text-2xl font-bold text-anthracite">Artisans</h1>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E" }}>Artisans</h1>
         <form onSubmit={handleSearch}>
           <input
             type="text"
             placeholder="Rechercher..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="px-4 py-2 rounded-lg border border-g200 text-sm focus:ring-2 focus:ring-terre/30 focus:border-terre outline-none"
+            style={{ height: 42, padding: "0 16px", borderRadius: 10, border: "1.5px solid #E0DDD8", fontSize: 14, fontFamily: "'Karla',sans-serif", color: "#1C1C1E", outline: "none", transition: "border-color .2s", width: 220 }}
+            onFocus={(e) => { e.currentTarget.style.borderColor = "#C4531A"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(196,83,26,.08)"; }}
+            onBlur={(e) => { e.currentTarget.style.borderColor = "#E0DDD8"; e.currentTarget.style.boxShadow = "none"; }}
           />
         </form>
       </div>
 
-      <div className="bg-white rounded-[14px] border border-g100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
+      <div style={tableCard}>
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
-              <tr className="border-b border-g100">
-                <th className="text-left px-6 py-3 text-xs font-medium text-g400 uppercase">Nom</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-g400 uppercase">Email</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-g400 uppercase">Ville</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-g400 uppercase">Plan</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-g400 uppercase">Statut</th>
-                <th className="px-6 py-3 text-xs font-medium text-g400 uppercase text-right">Actions</th>
+              <tr style={{ background: "#F7F5F2", borderBottom: "1.5px solid #EDEBE7" }}>
+                <th style={{ textAlign: "left", padding: "12px 24px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Nom</th>
+                <th style={{ textAlign: "left", padding: "12px 24px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Email</th>
+                <th style={{ textAlign: "left", padding: "12px 24px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Ville</th>
+                <th style={{ textAlign: "left", padding: "12px 24px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Plan</th>
+                <th style={{ textAlign: "left", padding: "12px 24px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Statut</th>
+                <th style={{ textAlign: "right", padding: "12px 24px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-sm text-g400">
+                  <td colSpan={6} style={{ padding: "32px 24px", textAlign: "center", fontSize: 14, color: "#9B9590" }}>
                     Chargement...
                   </td>
                 </tr>
               ) : artisans.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-sm text-g400">
+                  <td colSpan={6} style={{ padding: "32px 24px", textAlign: "center", fontSize: 14, color: "#9B9590" }}>
                     Aucun artisan trouve
                   </td>
                 </tr>
               ) : (
-                artisans.map((a) => (
-                  <tr key={a.id} className="border-b border-g100 last:border-0">
-                    <td className="px-6 py-4 text-sm font-medium text-anthracite">{a.nomAffichage}</td>
-                    <td className="px-6 py-4 text-sm text-g500">{a.email || "-"}</td>
-                    <td className="px-6 py-4 text-sm text-g500">{a.ville || "-"}</td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${planBadge[a.plan] || "bg-gray-100 text-gray-600"}`}>
+                artisans.map((a, idx) => (
+                  <tr key={a.id} style={{ borderBottom: idx < artisans.length - 1 ? "1px solid #F7F5F2" : "none", transition: "background .15s" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = "#FAFAF8"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                  >
+                    <td style={{ padding: "14px 24px", fontSize: 14, fontWeight: 600, color: "#1C1C1E" }}>{a.nomAffichage}</td>
+                    <td style={{ padding: "14px 24px", fontSize: 14, color: "#6B6560" }}>{a.email || "-"}</td>
+                    <td style={{ padding: "14px 24px", fontSize: 14, color: "#6B6560" }}>{a.ville || "-"}</td>
+                    <td style={{ padding: "14px 24px" }}>
+                      <span style={{
+                        padding: "4px 12px", borderRadius: 20, fontSize: 12, fontWeight: 600,
+                        background: a.plan === "PRO_PLUS" ? "rgba(28,28,30,.06)" : a.plan === "PRO" ? "rgba(196,83,26,.08)" : a.plan === "ESSENTIEL" ? "rgba(232,168,76,.1)" : "#F7F5F2",
+                        color: a.plan === "PRO_PLUS" ? "#1C1C1E" : a.plan === "PRO" ? "#C4531A" : a.plan === "ESSENTIEL" ? "#E8A84C" : "#6B6560",
+                      }}>
                         {a.plan?.replace("_", " ") || "GRATUIT"}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td style={{ padding: "14px 24px" }}>
                       {a.actif ? (
-                        <span className="inline-flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-green-500" />
-                          <span className="text-sm text-green-700 font-medium">Actif</span>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                          <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#22c55e" }} />
+                          <span style={{ fontSize: 14, color: "#15803d", fontWeight: 600 }}>Actif</span>
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-amber-500" />
-                          <span className="text-sm text-amber-700 font-medium">En attente</span>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                          <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#f59e0b" }} />
+                          <span style={{ fontSize: 14, color: "#b45309", fontWeight: 600 }}>En attente</span>
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td style={{ padding: "14px 24px", textAlign: "right" }}>
                       <button
                         onClick={() => handleToggleActif(a.id, a.actif)}
                         disabled={actionLoading === a.id}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                          a.actif
-                            ? "bg-red-50 text-red-600 hover:bg-red-100"
-                            : "bg-green-50 text-green-700 hover:bg-green-100"
-                        } disabled:opacity-50`}
+                        style={{
+                          padding: "6px 14px", borderRadius: 8, fontSize: 12, fontWeight: 600, border: "none", cursor: "pointer", transition: "all .15s",
+                          background: a.actif ? "rgba(239,68,68,.06)" : "rgba(22,163,74,.06)",
+                          color: a.actif ? "#dc2626" : "#15803d",
+                          opacity: actionLoading === a.id ? 0.5 : 1,
+                        }}
                       >
                         {actionLoading === a.id
                           ? "..."
@@ -166,21 +184,21 @@ export default function AdminArtisansPage() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-3 border-t border-g100">
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 24px", borderTop: "1.5px solid #F7F5F2" }}>
             <button
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0}
-              className="text-sm text-g400 hover:text-anthracite disabled:opacity-30"
+              style={{ fontSize: 14, color: "#9B9590", background: "none", border: "none", cursor: "pointer", opacity: page === 0 ? 0.3 : 1, fontFamily: "'Karla',sans-serif", fontWeight: 500 }}
             >
               Precedent
             </button>
-            <span className="text-sm text-g400">
+            <span style={{ fontSize: 14, color: "#9B9590" }}>
               Page {page + 1} / {totalPages}
             </span>
             <button
               onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
               disabled={page >= totalPages - 1}
-              className="text-sm text-g400 hover:text-anthracite disabled:opacity-30"
+              style={{ fontSize: 14, color: "#9B9590", background: "none", border: "none", cursor: "pointer", opacity: page >= totalPages - 1 ? 0.3 : 1, fontFamily: "'Karla',sans-serif", fontWeight: 500 }}
             >
               Suivant
             </button>

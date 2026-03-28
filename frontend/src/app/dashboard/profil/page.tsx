@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const C: React.CSSProperties = { background: "#fff", borderRadius: 14, border: "1px solid #EDEBE7", padding: 28, marginBottom: 20 };
+const C: React.CSSProperties = { background: "#fff", borderRadius: 16, border: "1.5px solid #EDEBE7", padding: 28, marginBottom: 20, boxShadow: "0 4px 24px rgba(28,28,30,.04)" };
 
 export default function ProfilPage() {
   const [form, setForm] = useState({
@@ -60,7 +60,7 @@ export default function ProfilPage() {
       </div>
 
       {/* Save */}
-      <button className="bv-btn bv-btn-primary" style={{ width: "100%", marginTop: 12 }}>Enregistrer les modifications</button>
+      <button className="bv-btn bv-btn-primary" style={{ width: "100%", marginTop: 16, height: 48, borderRadius: 10, fontWeight: 600 }}>Enregistrer les modifications</button>
     </div>
   );
 }

@@ -10,11 +10,14 @@ import com.bativio.api.entity.enums.Plan;
 import com.bativio.api.entity.enums.Role;
 import com.bativio.api.exception.ResourceNotFoundException;
 import com.bativio.api.exception.UnauthorizedException;
+import com.bativio.api.entity.Ville;
 import com.bativio.api.repository.ArtisanRepository;
 import com.bativio.api.repository.MetierRepository;
 import com.bativio.api.repository.UserRepository;
+import com.bativio.api.repository.VilleRepository;
 import com.bativio.api.security.JwtTokenProvider;
 import com.bativio.api.util.SlugGenerator;
+import jakarta.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,17 +35,22 @@ public class AuthService {
     private final UserRepository userRepository;
     private final ArtisanRepository artisanRepository;
     private final MetierRepository metierRepository;
+    private final VilleRepository villeRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
+    private final EntityManager entityManager;
 
     public AuthService(UserRepository userRepository, ArtisanRepository artisanRepository,
-                       MetierRepository metierRepository, PasswordEncoder passwordEncoder,
-                       JwtTokenProvider tokenProvider) {
+                       MetierRepository metierRepository, VilleRepository villeRepository,
+                       PasswordEncoder passwordEncoder,
+                       JwtTokenProvider tokenProvider, EntityManager entityManager) {
         this.userRepository = userRepository;
         this.artisanRepository = artisanRepository;
         this.metierRepository = metierRepository;
+        this.villeRepository = villeRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
+        this.entityManager = entityManager;
     }
 
     @Transactional
@@ -66,8 +74,17 @@ public class AuthService {
         artisan.setNomAffichage(request.getNomAffichage());
         artisan.setTelephone(request.getTelephone());
         artisan.setPlan(Plan.GRATUIT);
-        artisan.setVille(request.getVille());
+        // Normaliser la ville : chercher par nom ou slug dans la table villes
+        String villeNormalisee = request.getVille();
+        if (villeNormalisee != null && !villeNormalisee.isBlank()) {
+            String villeSlug = SlugGenerator.slugify(villeNormalisee);
+            villeNormalisee = villeRepository.findBySlug(villeSlug)
+                .map(Ville::getNom)
+                .orElse(villeNormalisee);
+        }
+        artisan.setVille(villeNormalisee);
         artisan.setZoneRayonKm(request.getZoneRayonKm());
+        artisan.setActif(true);
 
         if (request.getMetierId() != null && !request.getMetierId().isBlank()) {
             // Accepter slug ou UUID
@@ -86,6 +103,7 @@ public class AuthService {
         artisan.setSlug(slug);
         artisan.setProfilCompletion(30);
         artisan = artisanRepository.save(artisan);
+        entityManager.flush(); // Force flush to catch DB constraint violations early
 
         String accessToken = tokenProvider.generateAccessToken(user.getId(), user.getRole());
         String refreshToken = tokenProvider.generateRefreshToken(user.getId());

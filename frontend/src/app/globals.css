@@ -288,7 +288,7 @@ a{text-decoration:none;color:inherit}button{font-family:'Karla',sans-serif;curso
 .field{margin-bottom:24px}.field:last-child{margin-bottom:0}
 
 /* Buttons */
-.bv-btn{width:100%;height:52px;border:none;border-radius:12px;font-family:'Karla',sans-serif;font-size:16px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.bv-btn{width:100%;height:48px;border:none;border-radius:10px;font-family:'Karla',sans-serif;font-size:16px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
 .bv-btn:active{transform:scale(.98)}
 .bv-btn-primary{background:#C4531A;color:#fff}
 .bv-btn-primary:hover{background:#D4733A}
@@ -301,7 +301,8 @@ a{text-decoration:none;color:inherit}button{font-family:'Karla',sans-serif;curso
 .btn-row{display:flex;gap:12px;margin-top:32px}
 
 /* Cards */
-.bv-card{background:#fff;border:1px solid #EDEBE7;border-radius:20px;box-shadow:0 4px 32px rgba(28,28,30,.06);width:100%;max-width:520px;overflow:hidden;position:relative}
+.bv-card{background:#fff;border:1.5px solid #EDEBE7;border-radius:16px;box-shadow:0 4px 24px rgba(28,28,30,.04);width:100%;max-width:520px;overflow:hidden;position:relative}
+.bv-card-form{max-width:440px;padding:40px}
 .bv-card-inner{padding:44px 40px}
 .bv-card-progress{height:4px;background:#C4531A;border-radius:2px;position:absolute;top:0;left:0;transition:width .5s cubic-bezier(.22,1,.36,1)}
 .bv-separator{display:flex;align-items:center;gap:16px;margin:28px 0}

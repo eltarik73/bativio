@@ -55,7 +55,7 @@ export default function ConnexionPage() {
     return (
       <><Navbar />
       <main style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "85vh", padding: 16 }}>
-        <div className="bv-card bv-card-form" style={{ textAlign: "center" }}>
+        <div style={{ background: "#fff", borderRadius: 16, border: "1.5px solid #EDEBE7", boxShadow: "0 4px 24px rgba(28,28,30,.04)", maxWidth: 440, width: "100%", padding: 40, textAlign: "center" }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>&#9993;</div>
           <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 8 }}>Lien envoy&eacute; !</h1>
           <p style={{ fontSize: 15, color: "#9B9590", lineHeight: 1.6 }}>
@@ -69,7 +69,7 @@ export default function ConnexionPage() {
   return (
     <><Navbar />
     <main style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "85vh", padding: 16 }}>
-      <div className="bv-card" style={{ maxWidth: 440, width: "100%", padding: 40 }}>
+      <div style={{ background: "#fff", borderRadius: 16, border: "1.5px solid #EDEBE7", boxShadow: "0 4px 24px rgba(28,28,30,.04)", maxWidth: 440, width: "100%", padding: 40 }}>
         <div style={{ textAlign: "center", marginBottom: 32 }}>
           <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "#C4531A", letterSpacing: -0.5 }}>Bativio</h1>
           <p style={{ marginTop: 8, fontSize: 15, color: "#9B9590" }}>Connectez-vous &agrave; votre espace</p>
@@ -92,14 +92,20 @@ export default function ConnexionPage() {
 
           {error && <p style={{ color: "#dc2626", fontSize: 14 }}>{error}</p>}
 
-          <button type="submit" disabled={loading} className="bv-btn bv-btn-primary bv-btn-full">
+          <button type="submit" disabled={loading} style={{ width: "100%", height: 48, background: "#C4531A", color: "#fff", border: "none", borderRadius: 10, fontFamily: "'Karla',sans-serif", fontSize: 16, fontWeight: 600, cursor: "pointer", transition: "background .2s" }}
+            onMouseEnter={(e) => { if (!loading) e.currentTarget.style.background = "#D4733A"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "#C4531A"; }}
+          >
             {loading ? "Connexion..." : "Se connecter"}
           </button>
         </form>
 
         <div className="bv-separator"><span>ou</span></div>
 
-        <button onClick={handleMagicLink} disabled={loading} className="bv-btn bv-btn-secondary bv-btn-full">
+        <button onClick={handleMagicLink} disabled={loading} style={{ width: "100%", height: 48, background: "transparent", color: "#1C1C1E", border: "1.5px solid #E0DDD8", borderRadius: 10, fontFamily: "'Karla',sans-serif", fontSize: 16, fontWeight: 600, cursor: "pointer", transition: "all .2s" }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#C5C0B9"; e.currentTarget.style.background = "rgba(0,0,0,.02)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#E0DDD8"; e.currentTarget.style.background = "transparent"; }}
+        >
           Recevoir un magic link
         </button>
 

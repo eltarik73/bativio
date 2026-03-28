@@ -65,28 +65,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "#FAF8F5" }}>
       {/* Sidebar desktop */}
-      <aside style={{ width: 240, flexShrink: 0, background: "#fff", borderRight: "1px solid #EDEBE7", padding: "20px 16px", display: "flex", flexDirection: "column" }} className="hidden md:flex">
-        <Link href="/" style={{ fontFamily: "'Fraunces',serif", fontSize: 20, fontWeight: 700, color: "#C4531A", textDecoration: "none", marginBottom: 32, display: "block" }}>Bativio</Link>
+      <aside style={{ width: 252, flexShrink: 0, background: "#fff", borderRight: "1.5px solid #EDEBE7", padding: "24px 16px 20px", display: "flex", flexDirection: "column" }} className="hidden md:flex">
+        <Link href="/" style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#C4531A", textDecoration: "none", marginBottom: 36, paddingLeft: 14, display: "block", letterSpacing: -0.5 }}>Bativio</Link>
         <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
           {NAV.map((item) => {
             const active = p === item.href;
             return (
               <div key={item.href}>
-                {item.sep && <div style={{ height: 1, background: "#EDEBE7", margin: "16px 0" }} />}
-                <Link href={item.href} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", borderRadius: 10, fontSize: 14, fontWeight: active ? 600 : 500, color: active ? "#C4531A" : "#6B6560", background: active ? "rgba(196,83,26,.06)" : "transparent", textDecoration: "none", transition: "all .15s" }}>
-                  <span dangerouslySetInnerHTML={{ __html: item.icon }} style={{ display: "flex", flexShrink: 0 }} />
+                {item.sep && <div style={{ height: 1, background: "#F7F5F2", margin: "14px 8px" }} />}
+                <Link href={item.href} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", borderRadius: 10, fontSize: 14, fontWeight: active ? 600 : 500, color: active ? "#C4531A" : "#6B6560", background: active ? "rgba(196,83,26,.08)" : "transparent", textDecoration: "none", transition: "all .15s" }}>
+                  <span dangerouslySetInnerHTML={{ __html: item.icon }} style={{ display: "flex", flexShrink: 0, width: 20, height: 20 }} />
                   {item.label}
-                  {item.badge && <span style={{ marginLeft: "auto", fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 4, background: "rgba(232,168,76,.12)", color: "#E8A84C" }}>{item.badge}</span>}
+                  {item.badge === "Bient\u00f4t" && <span style={{ marginLeft: "auto", fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: "rgba(232,168,76,.12)", color: "#E8A84C", letterSpacing: 0.2 }}>{item.badge}</span>}
+                  {item.badge && item.badge !== "Bient\u00f4t" && <span style={{ marginLeft: "auto", fontSize: 10, fontWeight: 600, padding: "3px 10px", borderRadius: 6, background: "rgba(196,83,26,.06)", color: "#C4531A", letterSpacing: 0.2 }}>{item.badge}</span>}
                 </Link>
               </div>
             );
           })}
         </nav>
-        <div style={{ borderTop: "1px solid #EDEBE7", paddingTop: 16, display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={{ borderTop: "1.5px solid #F7F5F2", paddingTop: 16, display: "flex", flexDirection: "column", gap: 10, paddingLeft: 14 }}>
           {vitrineHref !== "#" && (
-            <Link href={vitrineHref} target="_blank" style={{ fontSize: 13, color: "#C4531A", fontWeight: 500, textDecoration: "none" }}>Voir ma page &rarr;</Link>
+            <Link href={vitrineHref} target="_blank" style={{ fontSize: 13, color: "#C4531A", fontWeight: 600, textDecoration: "none", transition: "color .15s" }}>Voir ma page &rarr;</Link>
           )}
-          <button onClick={() => logout()} style={{ fontSize: 13, color: "#9B9590", fontWeight: 500, background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: 0 }}>Se d&eacute;connecter</button>
+          <button onClick={() => logout()} style={{ fontSize: 13, color: "#9B9590", fontWeight: 500, background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: 0, transition: "color .15s" }}>Se d&eacute;connecter</button>
         </div>
       </aside>
 
@@ -96,9 +97,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
 
       {/* Mobile nav */}
-      <nav style={{ position: "fixed", bottom: 0, left: 0, right: 0, height: 56, background: "#fff", borderTop: "1px solid #EDEBE7", display: "flex", zIndex: 50 }} className="md:hidden">
+      <nav style={{ position: "fixed", bottom: 0, left: 0, right: 0, height: 60, background: "rgba(255,255,255,.96)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderTop: "1.5px solid #EDEBE7", display: "flex", zIndex: 50 }} className="md:hidden">
         {MOB.map((item) => (
-          <Link key={item.href} href={item.href} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, fontSize: 10, fontWeight: 500, color: p === item.href ? "#C4531A" : "#9B9590", textDecoration: "none" }}>
+          <Link key={item.href} href={item.href} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, fontSize: 10, fontWeight: p === item.href ? 600 : 500, color: p === item.href ? "#C4531A" : "#9B9590", textDecoration: "none", transition: "color .15s" }}>
             <span dangerouslySetInnerHTML={{ __html: item.icon }} style={{ display: "flex" }} />
             {item.label}
           </Link>

@@ -6,8 +6,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -75,6 +77,36 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(ApiResponse.error("Acces refuse"));
+    }
+
+    @ExceptionHandler(JpaSystemException.class)
+    public ResponseEntity<ApiResponse<Void>> handleJpaSystem(JpaSystemException ex) {
+        String detail = ex.getMostSpecificCause().getMessage();
+        log.error("JPA system error: {}", detail, ex);
+        String msg = "Erreur de donnees";
+        if (detail != null) {
+            if (detail.contains("not-null") || detail.contains("null")) {
+                msg = "Un champ obligatoire est manquant";
+            } else if (detail.contains("email")) {
+                msg = "Un compte existe deja avec cet email";
+            } else if (detail.contains("siret")) {
+                msg = "Un artisan est deja inscrit avec ce SIRET";
+            }
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(msg));
+    }
+
+    @ExceptionHandler(TransactionSystemException.class)
+    public ResponseEntity<ApiResponse<Void>> handleTransactionSystem(TransactionSystemException ex) {
+        Throwable cause = ex.getMostSpecificCause();
+        log.error("Transaction error: {} - {}", cause.getClass().getSimpleName(), cause.getMessage(), ex);
+        String msg = "Erreur lors de la sauvegarde";
+        if (cause.getMessage() != null && (cause.getMessage().contains("not-null") || cause.getMessage().contains("null"))) {
+            msg = "Un champ obligatoire est manquant";
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(msg));
     }
 
     @ExceptionHandler(Exception.class)

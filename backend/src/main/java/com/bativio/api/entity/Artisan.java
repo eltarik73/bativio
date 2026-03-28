@@ -39,8 +39,8 @@ public class Artisan {
     private String prenom;
     private String nom;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "metier_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "metier_id", nullable = true)
     private Metier metier;
 
     @Column(columnDefinition = "TEXT")
