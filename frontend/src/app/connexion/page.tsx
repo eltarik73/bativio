@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
@@ -9,13 +9,20 @@ import { useAuth } from "@/components/AuthProvider";
 
 export default function ConnexionPage() {
   const router = useRouter();
-  const { refreshAuth } = useAuth();
+  const { isAuth, loading: authLoading, refreshAuth } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [magicSent, setMagicSent] = useState(false);
+
+  // Redirect to dashboard if already authenticated
+  useEffect(() => {
+    if (!authLoading && isAuth) {
+      router.replace("/dashboard");
+    }
+  }, [authLoading, isAuth, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

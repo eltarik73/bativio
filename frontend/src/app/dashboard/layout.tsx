@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAuth } from "@/components/AuthProvider";
-import { logout } from "@/lib/auth";
+import { logout, getAccessToken } from "@/lib/auth";
 
 const NAV: { href: string; label: string; icon: string; badge?: string; sep?: boolean }[] = [
   { href: "/dashboard", label: "Tableau de bord", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>' },
@@ -34,15 +34,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const { isAuth, loading, artisan } = useAuth();
 
-  // Auth guard: redirect to /connexion if not authenticated
+  // Auth guard: redirect to /connexion if not authenticated.
+  // We also check the module-level access token as a fallback: if register/login
+  // just set it but the React state hasn't committed yet, we should NOT redirect.
   useEffect(() => {
-    if (!loading && !isAuth) {
+    if (!loading && !isAuth && !getAccessToken()) {
       router.replace("/connexion");
     }
   }, [loading, isAuth, router]);
 
-  // Show loading state while checking auth
-  if (loading) {
+  // Show loading state while checking auth.
+  // Also treat "has token in memory but context not yet updated" as loading.
+  if (loading || (!isAuth && getAccessToken())) {
     return (
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: "#FAF8F5" }}>
         <div style={{ textAlign: "center" }}>

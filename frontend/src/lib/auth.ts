@@ -113,20 +113,27 @@ export async function authFetch<T>(path: string, options?: RequestInit): Promise
 
   let res = await fetch(`${API_URL}${path}`, { ...options, headers });
 
-  if (res.status === 401 && accessToken) {
-    // Deduplicate concurrent refresh calls: if a refresh is already in
-    // progress, await the existing promise instead of firing another one.
-    if (!refreshPromise) {
-      refreshPromise = doTokenRefresh().finally(() => { refreshPromise = null; });
-    }
-    const refreshed = await refreshPromise;
+  if (res.status === 401) {
+    // Try to refresh the token. This handles both cases:
+    // 1. accessToken expired (was set but server rejected it)
+    // 2. accessToken was null (page refreshed, initAuth hasn't run yet)
+    // In both cases, attempt a refresh if we have a refresh token.
+    const hasRefreshToken = typeof window !== "undefined" && !!localStorage.getItem("bativio_refresh");
+    if (hasRefreshToken) {
+      // Deduplicate concurrent refresh calls: if a refresh is already in
+      // progress, await the existing promise instead of firing another one.
+      if (!refreshPromise) {
+        refreshPromise = doTokenRefresh().finally(() => { refreshPromise = null; });
+      }
+      const refreshed = await refreshPromise;
 
-    if (refreshed) {
-      headers["Authorization"] = `Bearer ${accessToken}`;
-      res = await fetch(`${API_URL}${path}`, { ...options, headers });
-    } else {
-      logout();
-      throw new Error("Session expir\u00e9e");
+      if (refreshed) {
+        headers["Authorization"] = `Bearer ${accessToken}`;
+        res = await fetch(`${API_URL}${path}`, { ...options, headers });
+      } else {
+        logout();
+        throw new Error("Session expir\u00e9e");
+      }
     }
   }
 
@@ -161,6 +168,20 @@ export async function login(email: string, password: string) {
   localStorage.setItem("bativio_refresh", json.data.refreshToken);
   if (json.data.artisan) {
     cachedArtisan = json.data.artisan as ArtisanSessionData;
+  } else {
+    // Artisan data missing from login response (backend may have failed to
+    // load it). Fetch it immediately so the dashboard has data on first render.
+    try {
+      const meRes = await fetch(`${API_URL}/auth/me`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      const meJson = await meRes.json();
+      if (meJson.success && meJson.data) {
+        cachedArtisan = meJson.data as ArtisanSessionData;
+      }
+    } catch {
+      // Will be fetched by initAuth on next page load
+    }
   }
   return json.data;
 }

@@ -15,6 +15,10 @@ import java.util.UUID;
 public interface ArtisanRepository extends JpaRepository<Artisan, UUID> {
     Optional<Artisan> findBySlugAndActifTrueAndVisibleTrueAndDeletedAtIsNull(String slug);
     Optional<Artisan> findByUserIdAndDeletedAtIsNull(UUID userId);
+
+    @Query("SELECT DISTINCT a FROM Artisan a LEFT JOIN FETCH a.user LEFT JOIN FETCH a.metier LEFT JOIN FETCH a.badges " +
+           "WHERE a.user.id = :userId AND a.deletedAt IS NULL")
+    Optional<Artisan> findByUserIdWithRelations(@Param("userId") UUID userId);
     Optional<Artisan> findBySlug(String slug);
     boolean existsBySiret(String siret);
     boolean existsBySlug(String slug);

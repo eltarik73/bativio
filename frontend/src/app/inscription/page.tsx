@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { register } from "@/lib/auth";
@@ -14,10 +14,17 @@ const CHECK_I = <svg width="18" height="18" fill="none" stroke="currentColor" st
 
 export default function InscriptionPage() {
   const router = useRouter();
-  const { refreshAuth } = useAuth();
+  const { isAuth, loading: authLoading, refreshAuth } = useAuth();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Redirect to dashboard if already authenticated
+  useEffect(() => {
+    if (!authLoading && isAuth) {
+      router.replace("/dashboard");
+    }
+  }, [authLoading, isAuth, router]);
   const [siretLoading, setSiretLoading] = useState(false);
   const [siretFound, setSiretFound] = useState(false);
   const [photos, setPhotos] = useState<File[]>([]);

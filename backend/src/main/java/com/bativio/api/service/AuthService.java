@@ -129,9 +129,15 @@ public class AuthService {
 
         ArtisanPrivateResponse artisanResp = null;
         if (user.getRole() == Role.ARTISAN) {
-            Artisan artisan = artisanRepository.findByUserIdAndDeletedAtIsNull(user.getId()).orElse(null);
-            if (artisan != null) {
-                artisanResp = ArtisanPrivateResponse.fromEntity(artisan);
+            try {
+                Artisan artisan = artisanRepository.findByUserIdWithRelations(user.getId()).orElse(null);
+                if (artisan != null) {
+                    artisanResp = ArtisanPrivateResponse.fromEntity(artisan);
+                }
+            } catch (Exception e) {
+                log.error("Erreur chargement profil artisan pour login userId={}: {}", user.getId(), e.getMessage(), e);
+                // Login succeeds even if artisan profile loading fails — the frontend
+                // will fetch the profile via /auth/me on the next page load.
             }
         }
 
@@ -171,9 +177,13 @@ public class AuthService {
 
         ArtisanPrivateResponse artisanResp = null;
         if (user.getRole() == Role.ARTISAN) {
-            Artisan artisan = artisanRepository.findByUserIdAndDeletedAtIsNull(user.getId()).orElse(null);
-            if (artisan != null) {
-                artisanResp = ArtisanPrivateResponse.fromEntity(artisan);
+            try {
+                Artisan artisan = artisanRepository.findByUserIdWithRelations(user.getId()).orElse(null);
+                if (artisan != null) {
+                    artisanResp = ArtisanPrivateResponse.fromEntity(artisan);
+                }
+            } catch (Exception e) {
+                log.error("Erreur chargement profil artisan pour magic link userId={}: {}", user.getId(), e.getMessage(), e);
             }
         }
 
@@ -208,7 +218,7 @@ public class AuthService {
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable"));
 
         if (user.getRole() == Role.ARTISAN) {
-            Artisan artisan = artisanRepository.findByUserIdAndDeletedAtIsNull(userId)
+            Artisan artisan = artisanRepository.findByUserIdWithRelations(userId)
                     .orElseThrow(() -> new ResourceNotFoundException("Profil artisan introuvable"));
             return ArtisanPrivateResponse.fromEntity(artisan);
         }
