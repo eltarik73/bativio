@@ -127,21 +127,7 @@ public class AuthService {
         user.setRefreshTokenHash(passwordEncoder.encode(refreshToken));
         userRepository.save(user);
 
-        ArtisanPrivateResponse artisanResp = null;
-        if (user.getRole() == Role.ARTISAN) {
-            try {
-                Artisan artisan = artisanRepository.findByUserIdWithRelations(user.getId()).orElse(null);
-                if (artisan != null) {
-                    artisanResp = ArtisanPrivateResponse.fromEntity(artisan);
-                }
-            } catch (Exception e) {
-                log.error("Erreur chargement profil artisan pour login userId={}: {}", user.getId(), e.getMessage(), e);
-                // Login succeeds even if artisan profile loading fails — the frontend
-                // will fetch the profile via /auth/me on the next page load.
-            }
-        }
-
-        return new AuthResponse(accessToken, refreshToken, user.getRole().name(), artisanResp);
+        return new AuthResponse(accessToken, refreshToken, user.getRole().name(), null);
     }
 
     @Transactional
@@ -175,19 +161,7 @@ public class AuthService {
         user.setRefreshTokenHash(passwordEncoder.encode(refreshToken));
         userRepository.save(user);
 
-        ArtisanPrivateResponse artisanResp = null;
-        if (user.getRole() == Role.ARTISAN) {
-            try {
-                Artisan artisan = artisanRepository.findByUserIdWithRelations(user.getId()).orElse(null);
-                if (artisan != null) {
-                    artisanResp = ArtisanPrivateResponse.fromEntity(artisan);
-                }
-            } catch (Exception e) {
-                log.error("Erreur chargement profil artisan pour magic link userId={}: {}", user.getId(), e.getMessage(), e);
-            }
-        }
-
-        return new AuthResponse(accessToken, refreshToken, user.getRole().name(), artisanResp);
+        return new AuthResponse(accessToken, refreshToken, user.getRole().name(), null);
     }
 
     @Transactional
@@ -218,8 +192,14 @@ public class AuthService {
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable"));
 
         if (user.getRole() == Role.ARTISAN) {
-            Artisan artisan = artisanRepository.findByUserIdWithRelations(userId)
+            Artisan artisan = artisanRepository.findByUserIdAndDeletedAtIsNull(userId)
                     .orElseThrow(() -> new ResourceNotFoundException("Profil artisan introuvable"));
+            // Force initialization of lazy collections within this transaction
+            artisan.getBadges().size();
+            artisan.getServices().size();
+            artisan.getPhotos().size();
+            artisan.getHoraires().size();
+            artisan.getZones().size();
             return ArtisanPrivateResponse.fromEntity(artisan);
         }
 

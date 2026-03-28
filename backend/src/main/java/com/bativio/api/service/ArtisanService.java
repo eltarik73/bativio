@@ -61,7 +61,14 @@ public class ArtisanService {
 
     @Transactional(readOnly = true)
     public ArtisanPrivateResponse getProfile(UUID userId) {
-        return ArtisanPrivateResponse.fromEntity(getArtisanByUserId(userId));
+        Artisan a = getArtisanByUserId(userId);
+        // Force initialization of lazy collections within this transaction
+        a.getBadges().size();
+        a.getServices().size();
+        a.getPhotos().size();
+        a.getHoraires().size();
+        a.getZones().size();
+        return ArtisanPrivateResponse.fromEntity(a);
     }
 
     @Transactional
