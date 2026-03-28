@@ -2,10 +2,10 @@ spring:
   application:
     name: bativio-api
   datasource:
-    url: ${DATABASE_URL:jdbc:h2:mem:bativio}
-    driver-class-name: ${DB_DRIVER:org.h2.Driver}
-    username: ${DB_USERNAME:sa}
-    password: ${DB_PASSWORD:}
+    url: jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:bativio}
+    driver-class-name: org.postgresql.Driver
+    username: ${PGUSER:bativio}
+    password: ${PGPASSWORD:bativio}
   jpa:
     hibernate:
       ddl-auto: update
@@ -14,6 +14,7 @@ spring:
       hibernate:
         format_sql: true
     open-in-view: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
   servlet:
     multipart:
       max-file-size: 10MB

@@ -48,11 +48,11 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- H2 pour dev/test -->
+        <!-- H2 pour tests uniquement -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>runtime</scope>
+            <scope>test</scope>
         </dependency>
 
         <!-- JWT -->

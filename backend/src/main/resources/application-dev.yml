@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/bativio
+    url: jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:bativio}
     driver-class-name: org.postgresql.Driver
-    username: ${DB_USERNAME:bativio}
-    password: ${DB_PASSWORD:bativio}
+    username: ${PGUSER:bativio}
+    password: ${PGPASSWORD:bativio}
   jpa:
     show-sql: true
     hibernate:
