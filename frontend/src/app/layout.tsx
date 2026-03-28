@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Karla } from "next/font/google";
-import AuthProvider from "@/components/AuthProvider";
+import { AuthProvider } from "@/context/AuthContext";
 import "./globals.css";
 
 const fraunces = Fraunces({

@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { useAuth } from "@/components/AuthProvider";
-import { logout, getAccessToken } from "@/lib/auth";
+import { useAuth } from "@/context/AuthContext";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 const NAV: { href: string; label: string; icon: string; badge?: string; sep?: boolean }[] = [
   { href: "/dashboard", label: "Tableau de bord", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>' },
@@ -32,89 +31,65 @@ function slugifyVille(ville: string): string {
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const p = usePathname();
   const router = useRouter();
-  const { isAuth, loading, artisan } = useAuth();
+  const { user, logout } = useAuth();
 
-  // Auth guard: redirect to /connexion if not authenticated.
-  // We check multiple sources before redirecting: React context, in-memory token,
-  // AND localStorage token. This prevents false redirects during page refresh.
-  useEffect(() => {
-    if (!loading && !isAuth && !getAccessToken()) {
-      // Final check: localStorage might still have a valid refresh token
-      const hasRefresh = typeof window !== "undefined" && !!localStorage.getItem("bativio_refresh");
-      if (!hasRefresh) {
-        router.replace("/connexion");
-      }
-    }
-  }, [loading, isAuth, router]);
+  const handleLogout = () => {
+    logout();
+    router.replace("/connexion");
+  };
 
-  // Show loading state while checking auth.
-  // Also treat "has token in memory but context not yet updated" as loading.
-  // Check localStorage refresh token too — during page refresh, in-memory token
-  // is null but localStorage still holds the session.
-  const hasRefreshToken = typeof window !== "undefined" && !!localStorage.getItem("bativio_refresh");
-  if (loading || (!isAuth && (getAccessToken() || hasRefreshToken))) {
-    return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: "#FAF8F5" }}>
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#C4531A", marginBottom: 12 }}>Bativio</div>
-          <div style={{ fontSize: 14, color: "#9B9590" }}>Chargement...</div>
-        </div>
-      </div>
-    );
-  }
-
-  // Don't render dashboard if not authenticated (redirect is in progress)
-  if (!isAuth) {
-    return null;
-  }
-
-  const vitrineSlug = artisan?.slug || "";
-  const vitrineVille = artisan?.ville ? slugifyVille(artisan.ville) : "";
+  const vitrineSlug = user?.slug || "";
+  const vitrineVille = user?.ville ? slugifyVille(user.ville) : "";
   const vitrineHref = vitrineSlug && vitrineVille ? `/${vitrineVille}/${vitrineSlug}` : "#";
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "#FAF8F5" }}>
-      {/* Sidebar desktop */}
-      <aside style={{ width: 252, flexShrink: 0, background: "#fff", borderRight: "1.5px solid #EDEBE7", padding: "24px 16px 20px", display: "flex", flexDirection: "column" }} className="hidden md:flex">
-        <Link href="/" style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#C4531A", textDecoration: "none", marginBottom: 36, paddingLeft: 14, display: "block", letterSpacing: -0.5 }}>Bativio</Link>
-        <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
-          {NAV.map((item) => {
-            const active = p === item.href;
-            return (
-              <div key={item.href}>
-                {item.sep && <div style={{ height: 1, background: "#F7F5F2", margin: "14px 8px" }} />}
-                <Link href={item.href} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", borderRadius: 10, fontSize: 14, fontWeight: active ? 600 : 500, color: active ? "#C4531A" : "#6B6560", background: active ? "rgba(196,83,26,.08)" : "transparent", textDecoration: "none", transition: "all .15s" }}>
-                  <span dangerouslySetInnerHTML={{ __html: item.icon }} style={{ display: "flex", flexShrink: 0, width: 20, height: 20 }} />
-                  {item.label}
-                  {item.badge === "Bient\u00f4t" && <span style={{ marginLeft: "auto", fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: "rgba(232,168,76,.12)", color: "#E8A84C", letterSpacing: 0.2 }}>{item.badge}</span>}
-                  {item.badge && item.badge !== "Bient\u00f4t" && <span style={{ marginLeft: "auto", fontSize: 10, fontWeight: 600, padding: "3px 10px", borderRadius: 6, background: "rgba(196,83,26,.06)", color: "#C4531A", letterSpacing: 0.2 }}>{item.badge}</span>}
-                </Link>
-              </div>
-            );
-          })}
-        </nav>
-        <div style={{ borderTop: "1.5px solid #F7F5F2", paddingTop: 16, display: "flex", flexDirection: "column", gap: 10, paddingLeft: 14 }}>
-          {vitrineHref !== "#" && (
-            <Link href={vitrineHref} target="_blank" style={{ fontSize: 13, color: "#C4531A", fontWeight: 600, textDecoration: "none", transition: "color .15s" }}>Voir ma page &rarr;</Link>
-          )}
-          <button onClick={() => logout()} style={{ fontSize: 13, color: "#9B9590", fontWeight: 500, background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: 0, transition: "color .15s" }}>Se d&eacute;connecter</button>
+    <ProtectedRoute>
+      <div style={{ display: "flex", minHeight: "100vh", background: "#FAF8F5" }}>
+        {/* Sidebar desktop */}
+        <aside style={{ width: 252, flexShrink: 0, background: "#fff", borderRight: "1.5px solid #EDEBE7", padding: "24px 16px 20px", display: "flex", flexDirection: "column" }} className="hidden md:flex">
+          <Link href="/" style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#C4531A", textDecoration: "none", marginBottom: 36, paddingLeft: 14, display: "block", letterSpacing: -0.5 }}>Bativio</Link>
+          <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+            {NAV.map((item) => {
+              const active = p === item.href;
+              return (
+                <div key={item.href}>
+                  {item.sep && <div style={{ height: 1, background: "#F7F5F2", margin: "14px 8px" }} />}
+                  <Link href={item.href} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", borderRadius: 10, fontSize: 14, fontWeight: active ? 600 : 500, color: active ? "#C4531A" : "#6B6560", background: active ? "rgba(196,83,26,.08)" : "transparent", textDecoration: "none", transition: "all .15s" }}>
+                    <span dangerouslySetInnerHTML={{ __html: item.icon }} style={{ display: "flex", flexShrink: 0, width: 20, height: 20 }} />
+                    {item.label}
+                    {item.badge === "Bient\u00f4t" && <span style={{ marginLeft: "auto", fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: "rgba(232,168,76,.12)", color: "#E8A84C", letterSpacing: 0.2 }}>{item.badge}</span>}
+                    {item.badge && item.badge !== "Bient\u00f4t" && <span style={{ marginLeft: "auto", fontSize: 10, fontWeight: 600, padding: "3px 10px", borderRadius: 6, background: "rgba(196,83,26,.06)", color: "#C4531A", letterSpacing: 0.2 }}>{item.badge}</span>}
+                  </Link>
+                </div>
+              );
+            })}
+          </nav>
+          <div style={{ borderTop: "1.5px solid #F7F5F2", paddingTop: 16, display: "flex", flexDirection: "column", gap: 10, paddingLeft: 14 }}>
+            {vitrineHref !== "#" && (
+              <Link href={vitrineHref} target="_blank" style={{ fontSize: 13, color: "#C4531A", fontWeight: 600, textDecoration: "none", transition: "color .15s" }}>Voir ma page &rarr;</Link>
+            )}
+            <button onClick={handleLogout} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "#DC2626", fontWeight: 600, background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: 0, transition: "color .15s" }}>
+              <span dangerouslySetInnerHTML={{ __html: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>' }} style={{ display: "flex", flexShrink: 0, width: 20, height: 20 }} />
+              Se d&eacute;connecter
+            </button>
+          </div>
+        </aside>
+
+        {/* Main */}
+        <div style={{ flex: 1, paddingBottom: 72 }} className="md:pb-0">
+          <main style={{ padding: "28px 32px", maxWidth: 1000, margin: "0 auto" }} className="max-md:p-4">{children}</main>
         </div>
-      </aside>
 
-      {/* Main */}
-      <div style={{ flex: 1, paddingBottom: 72 }} className="md:pb-0">
-        <main style={{ padding: "28px 32px", maxWidth: 1000, margin: "0 auto" }} className="max-md:p-4">{children}</main>
+        {/* Mobile nav */}
+        <nav style={{ position: "fixed", bottom: 0, left: 0, right: 0, height: 60, background: "rgba(255,255,255,.96)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderTop: "1.5px solid #EDEBE7", display: "flex", zIndex: 50 }} className="md:hidden">
+          {MOB.map((item) => (
+            <Link key={item.href} href={item.href} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, fontSize: 10, fontWeight: p === item.href ? 600 : 500, color: p === item.href ? "#C4531A" : "#9B9590", textDecoration: "none", transition: "color .15s" }}>
+              <span dangerouslySetInnerHTML={{ __html: item.icon }} style={{ display: "flex" }} />
+              {item.label}
+            </Link>
+          ))}
+        </nav>
       </div>
-
-      {/* Mobile nav */}
-      <nav style={{ position: "fixed", bottom: 0, left: 0, right: 0, height: 60, background: "rgba(255,255,255,.96)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderTop: "1.5px solid #EDEBE7", display: "flex", zIndex: 50 }} className="md:hidden">
-        {MOB.map((item) => (
-          <Link key={item.href} href={item.href} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, fontSize: 10, fontWeight: p === item.href ? 600 : 500, color: p === item.href ? "#C4531A" : "#9B9590", textDecoration: "none", transition: "color .15s" }}>
-            <span dangerouslySetInnerHTML={{ __html: item.icon }} style={{ display: "flex" }} />
-            {item.label}
-          </Link>
-        ))}
-      </nav>
-    </div>
+    </ProtectedRoute>
   );
 }

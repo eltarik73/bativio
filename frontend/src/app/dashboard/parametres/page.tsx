@@ -1,9 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function ParametresPage() {
   const [copied, setCopied] = useState(false);
+  const router = useRouter();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    router.push("/");
+  };
 
   // TODO: remplacer par les données de l'artisan connecté
   const email = "jp.martin@email.com";
@@ -200,6 +209,25 @@ export default function ParametresPage() {
           Désactiver mon compte
         </button>
       </div>
+
+      {/* --- Se déconnecter --- */}
+      <button
+        onClick={handleLogout}
+        style={{
+          width: "100%",
+          height: 48,
+          border: "1.5px solid #DC2626",
+          color: "#DC2626",
+          background: "transparent",
+          borderRadius: 10,
+          fontSize: 15,
+          fontWeight: 600,
+          cursor: "pointer",
+          marginBottom: 20,
+        }}
+      >
+        Se déconnecter
+      </button>
     </div>
   );
 }

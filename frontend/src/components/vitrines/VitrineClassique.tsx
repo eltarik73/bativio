@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ArtisanPublic } from "@/lib/api";
 import DevisForm3Steps from "@/components/DevisForm3Steps";
 import ContactCard from "@/components/ContactCard";
@@ -12,9 +13,9 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
       {/* Breadcrumb */}
       <nav style={{ background: "#FAF8F5", padding: "12px 32px" }}>
         <div style={{ maxWidth: 880, margin: "0 auto", display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#9B9590", fontFamily: "'Karla',sans-serif" }}>
-          <a href="/" className="breadcrumb-link">Accueil</a>
+          <Link href="/" className="breadcrumb-link">Accueil</Link>
           <span style={{ color: "#C5C0B9" }}>&gt;</span>
-          <a href={`/${villeSlug}`} className="breadcrumb-link">{a.ville}</a>
+          <Link href={`/${villeSlug}`} className="breadcrumb-link">{a.ville}</Link>
           <span style={{ color: "#C5C0B9" }}>&gt;</span>
           <span style={{ color: "#6B6560", fontWeight: 500 }}>{a.nomAffichage}</span>
         </div>

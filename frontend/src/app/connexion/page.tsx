@@ -4,12 +4,12 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
-import { login, sendMagicLink } from "@/lib/auth";
-import { useAuth } from "@/components/AuthProvider";
+import { sendMagicLink } from "@/lib/auth";
+import { useAuth } from "@/context/AuthContext";
 
 export default function ConnexionPage() {
   const router = useRouter();
-  const { isAuth, loading: authLoading, refreshAuth } = useAuth();
+  const { isAuthenticated, isAdmin, loading: authLoading, login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
@@ -17,24 +17,20 @@ export default function ConnexionPage() {
   const [error, setError] = useState("");
   const [magicSent, setMagicSent] = useState(false);
 
-  // Redirect to dashboard if already authenticated
+  // Redirect if already authenticated
   useEffect(() => {
-    if (!authLoading && isAuth) {
-      router.replace("/dashboard");
+    if (!authLoading && isAuthenticated) {
+      router.replace(isAdmin ? "/admin" : "/dashboard");
     }
-  }, [authLoading, isAuth, router]);
+  }, [authLoading, isAuthenticated, isAdmin, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     try {
-      const data = await login(email, password);
-      // Refresh auth context so dashboard has artisan data immediately
-      await refreshAuth();
-      // Backend returns role at top level OR in artisan object
-      const role = data.role || data.artisan?.role;
-      if (role === "ADMIN") {
+      const user = await login(email, password);
+      if (user.role === "ADMIN") {
         router.push("/admin");
       } else {
         router.push("/dashboard");

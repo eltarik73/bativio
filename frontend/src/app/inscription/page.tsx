@@ -3,8 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { register, getAccessToken } from "@/lib/auth";
-import { useAuth } from "@/components/AuthProvider";
+import { register } from "@/lib/auth";
+import { useAuth } from "@/context/AuthContext";
 import { METIERS, VILLES } from "@/lib/constants";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
@@ -16,7 +16,7 @@ const CHECK_I = <svg width="18" height="18" fill="none" stroke="currentColor" st
 
 export default function InscriptionPage() {
   const router = useRouter();
-  const { isAuth, loading: authLoading, refreshAuth } = useAuth();
+  const { isAuthenticated, loading: authLoading, updateUser, login: authLogin } = useAuth();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -24,10 +24,10 @@ export default function InscriptionPage() {
 
   // Redirect to dashboard if already authenticated
   useEffect(() => {
-    if (!authLoading && isAuth) {
+    if (!authLoading && isAuthenticated) {
       router.replace("/dashboard");
     }
-  }, [authLoading, isAuth, router]);
+  }, [authLoading, isAuthenticated, router]);
   const [siretLoading, setSiretLoading] = useState(false);
   const [siretFound, setSiretFound] = useState(false);
   const [photos, setPhotos] = useState<File[]>([]);
@@ -97,12 +97,12 @@ export default function InscriptionPage() {
     return true;
   };
 
-  // Register the artisan account
+  // Register the artisan account and sync session to AuthContext
   const doRegister = async () => {
     // Bug 1 fix: padder SIREN a 14 chiffres
     const siretToSend = rawSiret.length === 9 ? rawSiret + "00000" : rawSiret;
     // Bug 4 fix: plus de fallback mot de passe
-    await register({
+    const data = await register({
       email: form.email,
       password: form.password,
       siret: siretToSend,
@@ -112,11 +112,22 @@ export default function InscriptionPage() {
       ville: form.ville || undefined,
       zoneRayonKm: 25,
     });
+    // Sync session into the new AuthContext: store tokens + user
+    if (data.accessToken) {
+      localStorage.setItem("bativio_token", data.accessToken);
+    }
+    if (data.refreshToken) {
+      localStorage.setItem("bativio_refresh", data.refreshToken);
+    }
+    if (data.artisan) {
+      updateUser(data.artisan);
+    }
+    return data;
   };
 
   // Upload photos to backend after registration
   const uploadPhotos = async (filesToUpload: File[]): Promise<number> => {
-    const token = getAccessToken();
+    const token = localStorage.getItem("bativio_token");
     if (!token || filesToUpload.length === 0) return 0;
     let uploaded = 0;
     for (const file of filesToUpload) {
@@ -142,7 +153,6 @@ export default function InscriptionPage() {
     setLoading(true); setError(""); setPhotoToast("");
     try {
       await doRegister();
-      await refreshAuth();
       // Upload photos if any were selected
       if (photos.length > 0) {
         try {
@@ -174,7 +184,6 @@ export default function InscriptionPage() {
     setLoading(true); setError("");
     try {
       await doRegister();
-      await refreshAuth();
       router.push("/dashboard");
     } catch (err) {
       if (err instanceof Error) {

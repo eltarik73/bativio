@@ -1,11 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAuth } from "@/components/AuthProvider";
-import { getAccessToken } from "@/lib/auth";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>' },
@@ -19,66 +16,43 @@ const navItems = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { isAuth, loading, artisan } = useAuth();
-  const [authorized, setAuthorized] = useState(false);
-
-  useEffect(() => {
-    if (loading) return;
-    // Don't redirect if we have a token in memory (state might not be committed yet)
-    if (!isAuth && !getAccessToken()) {
-      router.push("/connexion");
-      return;
-    }
-    if (artisan?.role !== "ADMIN") {
-      router.push("/dashboard");
-      return;
-    }
-    setAuthorized(true);
-  }, [isAuth, loading, artisan, router]);
-
-  if (loading || !authorized) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-g50">
-        <p className="text-sm text-g400">Chargement...</p>
-      </div>
-    );
-  }
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "#FAF8F5" }}>
-      <aside style={{ width: 260, flexShrink: 0, background: "#1C1C1E", padding: "24px 16px 20px", display: "flex", flexDirection: "column" }} className="hidden md:flex">
-        <Link href="/admin" style={{ fontFamily: "'Fraunces',serif", fontSize: 20, fontWeight: 700, color: "#E8A84C", textDecoration: "none", marginBottom: 36, paddingLeft: 14, display: "block", letterSpacing: -0.3 }}>
-          Bativio Admin
-        </Link>
-        <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
-          {navItems.map((item) => {
-            const active = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                style={{
-                  display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", borderRadius: 10,
-                  fontSize: 14, fontWeight: active ? 600 : 500,
-                  color: active ? "#fff" : "rgba(255,255,255,.5)",
-                  background: active ? "rgba(255,255,255,.12)" : "transparent",
-                  textDecoration: "none", transition: "all .15s",
-                }}
-              >
-                <span dangerouslySetInnerHTML={{ __html: item.icon }} style={{ display: "flex", flexShrink: 0, width: 20, height: 20 }} />
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-      </aside>
-      <div style={{ flex: 1 }}>
-        <header style={{ background: "#fff", borderBottom: "1.5px solid #EDEBE7", padding: "16px 32px" }}>
-          <p style={{ fontSize: 14, color: "#9B9590", fontWeight: 500 }}>Administration Bativio</p>
-        </header>
-        <main style={{ padding: "28px 32px", maxWidth: 1200, margin: "0 auto" }} className="max-md:p-4">{children}</main>
+    <ProtectedRoute requireAdmin>
+      <div style={{ display: "flex", minHeight: "100vh", background: "#FAF8F5" }}>
+        <aside style={{ width: 260, flexShrink: 0, background: "#1C1C1E", padding: "24px 16px 20px", display: "flex", flexDirection: "column" }} className="hidden md:flex">
+          <Link href="/admin" style={{ fontFamily: "'Fraunces',serif", fontSize: 20, fontWeight: 700, color: "#E8A84C", textDecoration: "none", marginBottom: 36, paddingLeft: 14, display: "block", letterSpacing: -0.3 }}>
+            Bativio Admin
+          </Link>
+          <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+            {navItems.map((item) => {
+              const active = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", borderRadius: 10,
+                    fontSize: 14, fontWeight: active ? 600 : 500,
+                    color: active ? "#fff" : "rgba(255,255,255,.5)",
+                    background: active ? "rgba(255,255,255,.12)" : "transparent",
+                    textDecoration: "none", transition: "all .15s",
+                  }}
+                >
+                  <span dangerouslySetInnerHTML={{ __html: item.icon }} style={{ display: "flex", flexShrink: 0, width: 20, height: 20 }} />
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+        </aside>
+        <div style={{ flex: 1 }}>
+          <header style={{ background: "#fff", borderBottom: "1.5px solid #EDEBE7", padding: "16px 32px" }}>
+            <p style={{ fontSize: 14, color: "#9B9590", fontWeight: 500 }}>Administration Bativio</p>
+          </header>
+          <main style={{ padding: "28px 32px", maxWidth: 1200, margin: "0 auto" }} className="max-md:p-4">{children}</main>
+        </div>
       </div>
-    </div>
+    </ProtectedRoute>
   );
 }

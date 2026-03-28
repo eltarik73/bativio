@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useAuth } from "@/components/AuthProvider";
+import { useAuth } from "@/context/AuthContext";
 
 const S = { card: { background: "#fff", borderRadius: 16, border: "1.5px solid #EDEBE7", overflow: "hidden", boxShadow: "0 4px 24px rgba(28,28,30,.04)" } as React.CSSProperties };
 
@@ -41,7 +41,7 @@ function getCompletionItems(artisan: { description?: string | null; metierNom?: 
 }
 
 export default function DashboardPage() {
-  const { artisan } = useAuth();
+  const { user: artisan } = useAuth();
   const [greeting, setGreeting] = useState("Bonjour");
   const [dateStr, setDateStr] = useState("");
 
