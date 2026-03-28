@@ -29,8 +29,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <ProtectedRoute requireAdmin>
       <div style={{ display: "flex", minHeight: "100vh", background: "#FAF8F5" }}>
         <aside style={{ width: 260, flexShrink: 0, background: "#1C1C1E", padding: "24px 16px 20px", display: "flex", flexDirection: "column" }} className="hidden md:flex">
-          <Link href="/admin" style={{ fontFamily: "'Fraunces',serif", fontSize: 20, fontWeight: 700, color: "#E8A84C", textDecoration: "none", marginBottom: 36, paddingLeft: 14, display: "block", letterSpacing: -0.3 }}>
-            Bativio Admin
+          <Link href="/admin" style={{ textDecoration: "none", marginBottom: 36, paddingLeft: 14, display: "flex", alignItems: "baseline", gap: 8 }}>
+            <span style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#fff", letterSpacing: -0.3 }}>Bativio</span>
+            <span style={{ fontSize: 11, color: "rgba(255,255,255,.4)", fontWeight: 500 }}>Admin</span>
           </Link>
           <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
             {navItems.map((item) => {
@@ -42,8 +43,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   style={{
                     display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", borderRadius: 10,
                     fontSize: 14, fontWeight: active ? 600 : 500,
-                    color: active ? "#fff" : "rgba(255,255,255,.5)",
-                    background: active ? "rgba(255,255,255,.12)" : "transparent",
+                    color: active ? "#fff" : "rgba(255,255,255,.6)",
+                    background: active ? "rgba(255,255,255,.08)" : "transparent",
+                    borderLeft: active ? "3px solid #C4531A" : "3px solid transparent",
                     textDecoration: "none", transition: "all .15s",
                   }}
                 >
@@ -55,6 +57,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </nav>
           <button
             onClick={handleLogout}
+            className="admin-logout-btn"
             style={{
               marginTop: "auto",
               display: "flex",
@@ -64,13 +67,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               borderRadius: 10,
               fontSize: 13,
               fontWeight: 600,
-              color: "#DC2626",
+              color: "rgba(255,255,255,.4)",
               background: "transparent",
               border: "none",
               cursor: "pointer",
               width: "100%",
               transition: "all .15s",
             }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = "#DC2626"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255,255,255,.4)"; }}
           >
             <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" /></svg>
             Se déconnecter
@@ -78,7 +83,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </aside>
         <div style={{ flex: 1 }}>
           <header style={{ background: "#fff", borderBottom: "1.5px solid #EDEBE7", padding: "16px 32px" }}>
-            <p style={{ fontSize: 14, color: "#9B9590", fontWeight: 500 }}>Administration Bativio</p>
+            <p style={{ fontSize: 14, color: "#9B9590", fontWeight: 500 }}>Tableau de bord &middot; Vue d&apos;ensemble de votre plateforme</p>
           </header>
           <main style={{ padding: "28px 32px", maxWidth: 1200, margin: "0 auto" }} className="max-md:p-4">{children}</main>
         </div>

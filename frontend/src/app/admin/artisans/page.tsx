@@ -78,9 +78,8 @@ export default function AdminArtisansPage() {
 
   const tableCard: React.CSSProperties = {
     background: "#fff",
-    borderRadius: 16,
-    border: "1.5px solid #EDEBE7",
-    boxShadow: "0 4px 24px rgba(28,28,30,.04)",
+    borderRadius: 14,
+    border: "1px solid #EDEBE7",
     overflow: "hidden",
   };
 
@@ -105,13 +104,13 @@ export default function AdminArtisansPage() {
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
-              <tr style={{ background: "#F7F5F2", borderBottom: "1.5px solid #EDEBE7" }}>
-                <th style={{ textAlign: "left", padding: "12px 24px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Nom</th>
-                <th style={{ textAlign: "left", padding: "12px 24px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Email</th>
-                <th style={{ textAlign: "left", padding: "12px 24px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Ville</th>
-                <th style={{ textAlign: "left", padding: "12px 24px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Plan</th>
-                <th style={{ textAlign: "left", padding: "12px 24px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Statut</th>
-                <th style={{ textAlign: "right", padding: "12px 24px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Actions</th>
+              <tr style={{ background: "#F7F5F2", borderBottom: "1px solid #EDEBE7" }}>
+                <th style={{ textAlign: "left", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Nom</th>
+                <th style={{ textAlign: "left", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Email</th>
+                <th style={{ textAlign: "left", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Ville</th>
+                <th style={{ textAlign: "left", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Plan</th>
+                <th style={{ textAlign: "left", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Statut</th>
+                <th style={{ textAlign: "right", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -130,13 +129,13 @@ export default function AdminArtisansPage() {
               ) : (
                 artisans.map((a, idx) => (
                   <tr key={a.id} style={{ borderBottom: idx < artisans.length - 1 ? "1px solid #F7F5F2" : "none", transition: "background .15s" }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = "#FAFAF8"; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = "#FAF8F5"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
                   >
-                    <td style={{ padding: "14px 24px", fontSize: 14, fontWeight: 600, color: "#1C1C1E" }}>{a.nomAffichage}</td>
-                    <td style={{ padding: "14px 24px", fontSize: 14, color: "#6B6560" }}>{a.email || "-"}</td>
-                    <td style={{ padding: "14px 24px", fontSize: 14, color: "#6B6560" }}>{a.ville || "-"}</td>
-                    <td style={{ padding: "14px 24px" }}>
+                    <td style={{ padding: "14px 16px", fontSize: 14, fontWeight: 600, color: "#1C1C1E" }}>{a.nomAffichage}</td>
+                    <td style={{ padding: "14px 16px", fontSize: 14, color: "#6B6560" }}>{a.email || "-"}</td>
+                    <td style={{ padding: "14px 16px", fontSize: 14, color: "#6B6560" }}>{a.ville || "-"}</td>
+                    <td style={{ padding: "14px 16px" }}>
                       <span style={{
                         padding: "4px 12px", borderRadius: 20, fontSize: 12, fontWeight: 600,
                         background: a.plan === "PRO_PLUS" ? "rgba(28,28,30,.06)" : a.plan === "PRO" ? "rgba(196,83,26,.08)" : a.plan === "ESSENTIEL" ? "rgba(232,168,76,.1)" : "#F7F5F2",
@@ -145,26 +144,27 @@ export default function AdminArtisansPage() {
                         {a.plan?.replace("_", " ") || "GRATUIT"}
                       </span>
                     </td>
-                    <td style={{ padding: "14px 24px" }}>
+                    <td style={{ padding: "14px 16px" }}>
                       {a.actif ? (
-                        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: 20, background: "rgba(34,197,94,.08)" }}>
                           <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#22c55e" }} />
-                          <span style={{ fontSize: 14, color: "#15803d", fontWeight: 600 }}>Actif</span>
+                          <span style={{ fontSize: 12, color: "#15803d", fontWeight: 600 }}>Actif</span>
                         </span>
                       ) : (
-                        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: 20, background: "rgba(245,158,11,.08)" }}>
                           <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#f59e0b" }} />
-                          <span style={{ fontSize: 14, color: "#b45309", fontWeight: 600 }}>En attente</span>
+                          <span style={{ fontSize: 12, color: "#b45309", fontWeight: 600 }}>En attente</span>
                         </span>
                       )}
                     </td>
-                    <td style={{ padding: "14px 24px", textAlign: "right" }}>
+                    <td style={{ padding: "14px 16px", textAlign: "right" }}>
                       <button
                         onClick={() => handleToggleActif(a.id, a.actif)}
                         disabled={actionLoading === a.id}
                         style={{
-                          padding: "6px 14px", borderRadius: 8, fontSize: 12, fontWeight: 600, border: "none", cursor: "pointer", transition: "all .15s",
-                          background: a.actif ? "rgba(239,68,68,.06)" : "rgba(22,163,74,.06)",
+                          padding: "6px 14px", height: 32, borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: "pointer", transition: "all .15s",
+                          border: a.actif ? "1px solid rgba(239,68,68,.2)" : "1px solid rgba(22,163,74,.2)",
+                          background: "transparent",
                           color: a.actif ? "#dc2626" : "#15803d",
                           opacity: actionLoading === a.id ? 0.5 : 1,
                         }}
@@ -185,7 +185,7 @@ export default function AdminArtisansPage() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 24px", borderTop: "1.5px solid #F7F5F2" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderTop: "1px solid #F7F5F2" }}>
             <button
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0}

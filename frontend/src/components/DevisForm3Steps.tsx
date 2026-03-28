@@ -72,13 +72,12 @@ export default function DevisForm3Steps({ slug, artisanName, ville }: { slug: st
       <div className="devis-header">
         <div className="devis-title">
           <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2" /><path d="M8 6h8M8 10h8M8 14h5" /></svg>
-          <h2>Demander un devis gratuit</h2>
+          <h2>Obtenez votre devis gratuit en 2 minutes</h2>
         </div>
         <div className="devis-subtitle">D&eacute;crivez votre projet, l&apos;artisan vous r&eacute;pond sous 24h</div>
         <div className="devis-badges">
-          <span className="devis-badge green">&#9889; R&eacute;ponse sous 24h</span>
+          <span className="devis-badge green">&#9889; R&eacute;ponse moyenne : 2h</span>
           <span className="devis-badge gray">&#128274; Gratuit et sans engagement</span>
-          <span className="devis-badge gray">&#10003; Donn&eacute;es prot&eacute;g&eacute;es</span>
         </div>
         <div className="devis-sep" />
       </div>

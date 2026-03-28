@@ -11,14 +11,20 @@ import type { ArtisanPublic, MetierData } from "@/lib/api";
 import { VILLES } from "@/lib/constants";
 
 const PLANS_DATA = [
-  { name: "Gratuit", price: "0\u20AC", per: "", desc: "Pour d\u00e9marrer et tester", pop: false, btn: "ghost",
+  { name: "Gratuit", price: "0\u20AC", per: "", desc: "Pour d\u00e9couvrir Bativio", pop: false, btn: "ghost",
     feats: ["Fiche sur l\u2019annuaire", "Formulaire de devis", "3 photos max", "2 badges"] },
-  { name: "Essentiel", price: "19\u20AC", per: "/mois", desc: "Visible et joignable", pop: false, btn: "ghost",
+  { name: "Essentiel", price: "19\u20AC", per: "/mois", desc: "Pour \u00eatre visible et joignable", pop: false, btn: "ghost",
     feats: ["10 photos + avant/apr\u00e8s", "Badges illimit\u00e9s", "Agenda + RDV en ligne", "SMS rappel + relance 20min", "R\u00e9ception factures PA"] },
-  { name: "Pro", price: "49\u20AC", per: "/mois", desc: "Vitrine compl\u00e8te + facturation", pop: true, btn: "fill",
+  { name: "Pro", price: "49\u20AC", per: "/mois", desc: "Votre site vitrine complet", pop: true, btn: "fill",
     feats: ["<strong>URL perso (site vitrine)</strong>", "Photos illimit\u00e9es", "QR Code + bouton Google", "Mini-CRM clients", "Transmission PA", "Export comptable"] },
-  { name: "Pro+", price: "79\u20AC", per: "/mois", desc: "Augment\u00e9 par l\u2019IA", pop: false, btn: "ghost",
+  { name: "Pro+", price: "79\u20AC", per: "/mois", desc: "L\u2019artisan boost\u00e9 par l\u2019IA", pop: false, btn: "ghost",
     feats: ["<strong>Agent IA r\u00e9pondeur</strong>", "<strong>Devis IA automatique</strong>", "Cr\u00e9ation factures", "Support d\u00e9di\u00e9"] },
+];
+
+const TESTIMONIALS = [
+  { text: "Depuis que je suis sur Bativio, j\u2019ai 30% de demandes de devis en plus.", name: "Jean M.", role: "plombier \u00e0 Chamb\u00e9ry", initials: "JM" },
+  { text: "J\u2019ai trouv\u00e9 un \u00e9lectricien de confiance en 5 minutes. Travaux impeccables.", name: "Sophie L.", role: "Annecy", initials: "SL" },
+  { text: "Simple, rapide, et surtout gratuit. Je recommande \u00e0 tous les artisans du coin.", name: "Pierre D.", role: "peintre \u00e0 Grenoble", initials: "PD" },
 ];
 
 export default function Home() {
@@ -67,9 +73,9 @@ export default function Home() {
 
       <section className="hero">
         <div className="hero-inner">
-          <div className="hero-badge">Inscription gratuite</div>
-          <h1>Trouvez votre <em>artisan</em> en Rh&ocirc;ne-Alpes</h1>
-          <p className="hero-sub">Profils v&eacute;rifi&eacute;s &middot; Avis clients &middot; Devis gratuit &middot; Z&eacute;ro commission</p>
+          <div className="hero-badge">&#10022; Plus de 50 artisans v&eacute;rifi&eacute;s en Rh&ocirc;ne-Alpes</div>
+          <h1>Trouvez l&apos;artisan <span style={{ color: "var(--terre)" }}>id&eacute;al</span> pr&egrave;s de chez vous</h1>
+          <p className="hero-sub">Des artisans de confiance, v&eacute;rifi&eacute;s et not&eacute;s par leurs clients. Devis gratuit en 24h.</p>
           <div className="search-bar">
             <select value={villeFilter} onChange={(e) => setVilleFilter(e.target.value)}>
               <option value="">Toutes les villes</option>
@@ -86,6 +92,7 @@ export default function Home() {
               Rechercher
             </button>
           </div>
+          <p className="hero-popular">&#128269; Recherches populaires : r&eacute;novation salle de bain, plombier urgent, peinture int&eacute;rieure</p>
         </div>
       </section>
 
@@ -112,27 +119,45 @@ export default function Home() {
         </div>
       </div>
 
-      <section className="trust-section">
-        <div className="trust-inner">
-          <div className="trust-label">Ils nous font confiance</div>
-          <div className="trust-logos">
-            {VILLES.map((v) => (
-              <div key={v.slug} className="trust-city">
-                <div className="trust-city-icon">
-                  <svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      <section className="testimonials">
+        <div className="testimonials-inner">
+          <h2 className="testimonials-title">La confiance de nos artisans et de leurs clients</h2>
+          <div className="testimonials-grid">
+            {TESTIMONIALS.map((t) => (
+              <div key={t.name} className="testimonial-card">
+                <div className="testimonial-quote">&ldquo;&rdquo;</div>
+                <p className="testimonial-text">&ldquo;{t.text}&rdquo;</p>
+                <div className="testimonial-author">
+                  <div className="testimonial-avatar">{t.initials}</div>
+                  <div className="testimonial-info">
+                    <div className="testimonial-name">{t.name}</div>
+                    <div className="testimonial-role">{t.role}</div>
+                  </div>
+                  <div className="testimonial-stars">
+                    {[1,2,3,4,5].map((s) => (
+                      <svg key={s} viewBox="0 0 20 20"><path d="M10 1l2.39 4.84 5.34.78-3.87 3.77.91 5.33L10 13.27l-4.77 2.51.91-5.33L2.27 6.68l5.34-.78L10 1z" /></svg>
+                    ))}
+                  </div>
                 </div>
-                <span className="trust-city-name">{v.nom}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
+      <section className="cta-artisan">
+        <div className="cta-artisan-inner">
+          <h2>Vous &ecirc;tes artisan ? Rejoignez la 1&egrave;re plateforme de confiance en <em>Rh&ocirc;ne-Alpes</em></h2>
+          <p className="cta-artisan-sub">Gratuit &middot; Sans engagement &middot; Sans carte bancaire</p>
+          <Link href="/inscription" className="cta-artisan-btn">Cr&eacute;er ma page gratuitement</Link>
+        </div>
+      </section>
+
       <section className="artisan-banner" onClick={togglePricing}>
         <div className="artisan-inner">
           <div className="zero-chip">&#10022; Z&eacute;ro commission &mdash; Abonnement fixe</div>
-          <h2>Vous &ecirc;tes <em>artisan</em> ?</h2>
-          <p>Cr&eacute;ez votre page pro en 3 minutes. Soyez visible aupr&egrave;s de milliers de clients.</p>
+          <h2>D&eacute;couvrez nos <em>offres</em></h2>
+          <p>Choisissez le plan adapt&eacute; &agrave; votre activit&eacute;. &Eacute;voluez &agrave; tout moment.</p>
           <div className="pricing-preview">
             <div className="pricing-mini">
               <div className="pricing-mini-name">Gratuit</div>

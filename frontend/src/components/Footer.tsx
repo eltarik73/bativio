@@ -3,13 +3,44 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="footer">
-      <span className="footer-logo">Bativio</span>
-      <div className="footer-links">
-        <Link href="/">Accueil</Link>
-        <Link href="#">Mentions l&eacute;gales</Link>
-        <Link href="#">Contact</Link>
+      <div className="footer-inner">
+        <div className="footer-cols">
+          <div className="footer-col">
+            <span className="footer-logo">Bativio</span>
+            <p className="footer-logo-desc">
+              La plateforme des artisans du b&acirc;timent en Rh&ocirc;ne-Alpes.
+              Z&eacute;ro commission, z&eacute;ro frais cach&eacute;s.
+            </p>
+          </div>
+          <div className="footer-col">
+            <div className="footer-col-title">Pour les particuliers</div>
+            <Link href="/">Trouver un artisan</Link>
+            <Link href="/">Demander un devis</Link>
+            <Link href="/">Nos villes</Link>
+          </div>
+          <div className="footer-col">
+            <div className="footer-col-title">Pour les artisans</div>
+            <Link href="/inscription">Cr&eacute;er ma page</Link>
+            <Link href="/#pricing">Tarifs</Link>
+            <Link href="/facturation-electronique">Facturation</Link>
+          </div>
+          <div className="footer-col">
+            <div className="footer-col-title">Bativio</div>
+            <Link href="#">&Agrave; propos</Link>
+            <Link href="#">Contact</Link>
+            <Link href="#">Mentions l&eacute;gales</Link>
+            <Link href="#">CGU</Link>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <div className="footer-trust">
+            Artisans v&eacute;rifi&eacute;s &middot; Donn&eacute;es prot&eacute;g&eacute;es &middot; Z&eacute;ro commission
+          </div>
+          <div className="footer-copy">
+            &copy; 2026 Bativio &middot; Fabriqu&eacute; &agrave; Chamb&eacute;ry avec &#10084;&#65039;
+          </div>
+        </div>
       </div>
-      <span>&copy; 2026 Bativio &middot; Z&eacute;ro commission.</span>
     </footer>
   );
 }

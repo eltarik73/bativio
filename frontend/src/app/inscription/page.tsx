@@ -217,6 +217,13 @@ export default function InscriptionPage() {
       </nav>
 
       <main style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", padding: "40px 20px 60px" }}>
+        {/* Hero header */}
+        <div style={{ textAlign: "center", marginBottom: 32, maxWidth: 540 }}>
+          <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "#1C1C1E", letterSpacing: -0.5, marginBottom: 8 }}>Cr&eacute;ez votre page pro en 3 minutes</h1>
+          <p style={{ fontSize: 15, color: "#6B6560", lineHeight: 1.6, marginBottom: 12 }}>Rejoignez les artisans de Chamb&eacute;ry, Annecy, Grenoble, Lyon et Valence</p>
+          <p style={{ fontSize: 13, color: "#9B9590", fontWeight: 500 }}>Gratuit &middot; Sans engagement &middot; Sans carte bancaire</p>
+        </div>
+
         {/* Stepper */}
         <div className="reg-stepper">
           {STEP_LABELS.map((label, i) => (

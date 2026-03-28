@@ -50,7 +50,7 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
           {(a.badgesNoms||[]).length > 0 && (
             <div style={{ display: "flex", gap: 8, marginTop: 16, flexWrap: "wrap" }}>
               {(a.badgesNoms||[]).map((b) => (
-                <span key={b} style={{ background: "rgba(255,255,255,.15)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,.2)", color: "#fff", padding: "6px 14px", borderRadius: 8, fontSize: 13, fontWeight: 500 }}>{b}</span>
+                <span key={b} style={{ background: "rgba(255,255,255,.12)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,.2)", color: "#fff", padding: "6px 14px", borderRadius: 8, fontSize: 12, fontWeight: 600 }}>{b}</span>
               ))}
             </div>
           )}
@@ -65,23 +65,25 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
 
       {/* Stats */}
       <section style={{ background: "#FAF8F5", padding: "48px 32px" }}>
-        <div style={{ maxWidth: 880, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
+        <div style={{ maxWidth: 880, margin: "0 auto" }}>
+          <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 20, textAlign: "center" }}>Pourquoi choisir {a.nomAffichage}&nbsp;?</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
           {([
             ...(a.experienceAnnees ? [{ v: String(a.experienceAnnees), l: "ann\u00e9es d'exp\u00e9rience", icon: "clock" as const }] : []),
             { v: String(a.nombreAvis), l: "avis clients", icon: "star" as const },
             { v: `${a.zoneRayonKm} km`, l: "rayon d'intervention", icon: "compass" as const },
           ]).map((s, i) => (
-            <div key={i} style={{ background: "#fff", borderRadius: 12, padding: 20, border: "1px solid #EDEBE7", textAlign: "center", position: "relative", overflow: "hidden" }}>
+            <div key={i} className="stat-card-hover" style={{ background: "#fff", borderRadius: 12, padding: 20, border: "1px solid #EDEBE7", textAlign: "center", position: "relative", overflow: "hidden", transition: "transform .2s, box-shadow .2s", cursor: "default" }}>
               {/* Background icon */}
               <div style={{ position: "absolute", top: -6, right: -6, opacity: 0.45 }}>
                 {s.icon === "clock" && (
-                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#E0DDD8" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(196,83,26,.25)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 )}
                 {s.icon === "star" && (
-                  <svg width="64" height="64" viewBox="0 0 24 24" fill="#E0DDD8" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="rgba(196,83,26,.25)" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                 )}
                 {s.icon === "compass" && (
-                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#E0DDD8" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="#E0DDD8" stroke="#E0DDD8"/></svg>
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(196,83,26,.25)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="rgba(196,83,26,.25)" stroke="rgba(196,83,26,.25)"/></svg>
                 )}
               </div>
               <div style={{ position: "relative", zIndex: 1 }}>
@@ -90,6 +92,7 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
               </div>
             </div>
           ))}
+        </div>
         </div>
       </section>
 
@@ -107,7 +110,7 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
         <section style={{ background: "#FAF8F5", padding: "48px 32px" }}>
           <div style={{ maxWidth: 880, margin: "0 auto" }}>
             <div style={{ width: 44, height: 2, background: primary, marginBottom: 16 }} />
-            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 20 }}>Services</h2>
+            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 20 }}>Nos prestations</h2>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               {(a.services ?? []).map((s, idx) => {
                 const isFeatured = idx === 0;
@@ -122,7 +125,10 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
                     {isFeatured && (
                       <span style={{ display: "inline-block", fontSize: 11, fontWeight: 700, color: primary, background: `rgba(${parseInt(primary.slice(1, 3), 16)},${parseInt(primary.slice(3, 5), 16)},${parseInt(primary.slice(5, 7), 16)},.1)`, padding: "3px 10px", borderRadius: 6, marginBottom: 8, letterSpacing: ".3px", textTransform: "uppercase" }}>Service phare</span>
                     )}
-                    <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, color: "#1C1C1E", marginBottom: 6 }}>{s.titre}</h3>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                      <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, color: "#1C1C1E" }}>{s.titre}</h3>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: "#16a34a", background: "rgba(22,163,74,.08)", padding: "2px 8px", borderRadius: 4, whiteSpace: "nowrap", letterSpacing: ".2px" }}>Devis gratuit</span>
+                    </div>
                     <p style={{ fontSize: 13, color: "#6B6560", lineHeight: 1.5 }}>{s.description}</p>
                     {s.prixIndicatif && <p style={{ fontSize: 13, fontWeight: 600, color: primary, marginTop: 10 }}>{s.prixIndicatif}</p>}
                   </div>

@@ -80,6 +80,17 @@ export default function ContactCard({ a }: { a: ArtisanPublic }) {
         ))}
       </div>
 
+      {/* Trust badges */}
+      <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 4 }}>
+        <span style={{ fontSize: 12, color: "rgba(0,0,0,.45)" }}>{"\u2713"} Profil v&eacute;rifi&eacute;</span>
+        {(a.badgesNoms || []).some((b) => b.toLowerCase().includes("d\u00e9cennale") || b.toLowerCase().includes("assurance")) && (
+          <span style={{ fontSize: 12, color: "rgba(0,0,0,.45)" }}>{"\u2713"} Assurance d&eacute;cennale</span>
+        )}
+        {a.experienceAnnees > 0 && (
+          <span style={{ fontSize: 12, color: "rgba(0,0,0,.45)" }}>{"\u2713"} Artisan depuis {a.experienceAnnees} ans</span>
+        )}
+      </div>
+
       {/* Call button */}
       {a.telephone && (
         <button className="contact-btn-call" onClick={() => window.location.href = `tel:${a.telephone!.replace(/\s/g, "")}`}>

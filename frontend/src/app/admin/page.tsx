@@ -1,60 +1,62 @@
 export default function AdminDashboard() {
   const stats = [
-    { label: "Total artisans", value: "5", color: "text-anthracite" },
-    { label: "Inscriptions ce mois", value: "2", color: "text-terre" },
-    { label: "Devis ce mois", value: "12", color: "text-or" },
-    { label: "Revenus estimes", value: "216 EUR", color: "text-green-600" },
+    { label: "Total artisans", value: "5", color: "#1C1C1E", icon: '<svg width="20" height="20" fill="none" stroke="#E0DDD8" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>' },
+    { label: "Inscriptions ce mois", value: "2", color: "#1C1C1E", icon: '<svg width="20" height="20" fill="none" stroke="#E0DDD8" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>' },
+    { label: "Devis ce mois", value: "12", color: "#1C1C1E", icon: '<svg width="20" height="20" fill="none" stroke="#E0DDD8" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>' },
+    { label: "Revenus estimés", value: "216 €", color: "#C4531A", icon: '<svg width="20" height="20" fill="none" stroke="#E0DDD8" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>' },
   ];
 
   const planData = [
-    { plan: "Gratuit", count: 1, color: "bg-gray-300" },
-    { plan: "Essentiel", count: 2, color: "bg-or" },
-    { plan: "Pro", count: 1, color: "bg-terre" },
-    { plan: "Pro+", count: 1, color: "bg-anthracite" },
+    { plan: "Gratuit", count: 1, color: "#C5C0B9" },
+    { plan: "Essentiel", count: 2, color: "#E8A84C" },
+    { plan: "Pro", count: 1, color: "#C4531A" },
+    { plan: "Pro+", count: 1, color: "#1C1C1E" },
   ];
 
-  const cardStyle: React.CSSProperties = {
-    background: "#fff",
-    borderRadius: 16,
-    border: "1.5px solid #EDEBE7",
-    boxShadow: "0 4px 24px rgba(28,28,30,.04)",
-  };
+  const total = planData.reduce((s, p) => s + p.count, 0);
+
+  const pendingCount = 0;
 
   return (
     <div>
       <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 24 }}>Dashboard</h1>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, marginBottom: 32 }} className="max-md:grid-cols-2">
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 16, marginBottom: 32 }} className="max-md:grid-cols-1">
         {stats.map((s) => (
-          <div key={s.label} style={{ ...cardStyle, padding: 28 }}>
-            <p style={{ fontFamily: "'Fraunces',serif", fontSize: 32, fontWeight: 800, lineHeight: 1, color: s.color === "text-terre" ? "#C4531A" : s.color === "text-or" ? "#E8A84C" : s.color === "text-green-600" ? "#16a34a" : "#1C1C1E" }}>{s.value}</p>
+          <div key={s.label} style={{ background: "#fff", borderRadius: 14, border: "1px solid #EDEBE7", padding: 24, position: "relative" }}>
+            <span style={{ position: "absolute", top: 20, right: 20 }} dangerouslySetInnerHTML={{ __html: s.icon }} />
+            <p style={{ fontFamily: "'Fraunces',serif", fontSize: 32, fontWeight: 700, lineHeight: 1, color: s.color }}>{s.value}</p>
             <p style={{ fontSize: 13, color: "#9B9590", marginTop: 8 }}>{s.label}</p>
           </div>
         ))}
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 20 }} className="max-md:grid-cols-1">
-        <div style={{ ...cardStyle, padding: 28 }}>
-          <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 20 }}>Repartition par plan</h2>
+        <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #EDEBE7", padding: 24 }}>
+          <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 20 }}>Répartition par plan</h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             {planData.map((p) => (
-              <div key={p.plan} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <div style={{ width: 10, height: 10, borderRadius: "50%", background: p.color === "bg-gray-300" ? "#C5C0B9" : p.color === "bg-or" ? "#E8A84C" : p.color === "bg-terre" ? "#C4531A" : "#1C1C1E", flexShrink: 0 }} />
-                <span style={{ fontSize: 14, color: "#6B6560", flex: 1 }}>{p.plan}</span>
-                <span style={{ fontSize: 14, fontWeight: 600, color: "#1C1C1E", minWidth: 20, textAlign: "right" }}>{p.count}</span>
-                <div style={{ width: 96, height: 6, background: "#F7F5F2", borderRadius: 3, overflow: "hidden" }}>
-                  <div style={{ height: "100%", borderRadius: 3, background: p.color === "bg-gray-300" ? "#C5C0B9" : p.color === "bg-or" ? "#E8A84C" : p.color === "bg-terre" ? "#C4531A" : "#1C1C1E", width: `${(p.count / 5) * 100}%` }} />
+              <div key={p.plan}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <div style={{ width: 10, height: 10, borderRadius: "50%", background: p.color, flexShrink: 0 }} />
+                    <span style={{ fontSize: 14, color: "#6B6560" }}>{p.plan}</span>
+                  </div>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: "#1C1C1E" }}>{p.count}</span>
+                </div>
+                <div style={{ width: "100%", height: 6, background: "#F7F5F2", borderRadius: 3, overflow: "hidden" }}>
+                  <div style={{ height: "100%", borderRadius: 3, background: p.color, width: `${(p.count / total) * 100}%`, transition: "width .3s ease" }} />
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <div style={{ ...cardStyle, padding: 28 }}>
-          <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 20 }}>Repartition par ville</h2>
+        <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #EDEBE7", padding: 24 }}>
+          <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 20 }}>Répartition par ville</h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             {[
-              { ville: "Chambery", count: 5 },
+              { ville: "Chambéry", count: 5 },
               { ville: "Annecy", count: 0 },
               { ville: "Grenoble", count: 0 },
               { ville: "Lyon", count: 0 },
@@ -68,6 +70,12 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+
+      {pendingCount === 0 && (
+        <div style={{ marginTop: 24, background: "#fff", borderRadius: 14, border: "1px solid #EDEBE7", padding: 24, textAlign: "center" }}>
+          <p style={{ fontSize: 15, color: "#9B9590" }}>Aucun artisan en attente de validation. Bonne nouvelle ! 🎉</p>
+        </div>
+      )}
     </div>
   );
 }
