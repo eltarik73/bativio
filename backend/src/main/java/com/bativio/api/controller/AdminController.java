@@ -40,6 +40,7 @@ public class AdminController {
         this.devisRepository = devisRepository;
     }
 
+    @Transactional(readOnly = true)
     @GetMapping("/stats")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getStats() {
         Instant startOfMonth = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0).toInstant(ZoneOffset.UTC);
@@ -54,6 +55,7 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.ok(stats));
     }
 
+    @Transactional(readOnly = true)
     @GetMapping("/artisans")
     public ResponseEntity<ApiResponse<Page<ArtisanPublicResponse>>> getArtisans(
             @RequestParam(required = false) String search,
