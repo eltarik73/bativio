@@ -17,6 +17,7 @@ public interface ArtisanRepository extends JpaRepository<Artisan, UUID> {
     Optional<Artisan> findByUserIdAndDeletedAtIsNull(UUID userId);
 
     @Query("SELECT DISTINCT a FROM Artisan a LEFT JOIN FETCH a.user LEFT JOIN FETCH a.metier LEFT JOIN FETCH a.badges " +
+           "LEFT JOIN FETCH a.services LEFT JOIN FETCH a.photos LEFT JOIN FETCH a.horaires LEFT JOIN FETCH a.zones " +
            "WHERE a.user.id = :userId AND a.deletedAt IS NULL")
     Optional<Artisan> findByUserIdWithRelations(@Param("userId") UUID userId);
     Optional<Artisan> findBySlug(String slug);
