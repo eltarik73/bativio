@@ -39,11 +39,13 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
     private final EntityManager entityManager;
+    private final EmailService emailService;
 
     public AuthService(UserRepository userRepository, ArtisanRepository artisanRepository,
                        MetierRepository metierRepository, VilleRepository villeRepository,
                        PasswordEncoder passwordEncoder,
-                       JwtTokenProvider tokenProvider, EntityManager entityManager) {
+                       JwtTokenProvider tokenProvider, EntityManager entityManager,
+                       EmailService emailService) {
         this.userRepository = userRepository;
         this.artisanRepository = artisanRepository;
         this.metierRepository = metierRepository;
@@ -51,6 +53,7 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
         this.entityManager = entityManager;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -110,6 +113,13 @@ public class AuthService {
         user.setRefreshTokenHash(passwordEncoder.encode(refreshToken));
         userRepository.save(user);
 
+        // Send welcome email (fire-and-forget)
+        try {
+            emailService.sendWelcome(request.getEmail(), request.getNomAffichage());
+        } catch (Exception e) {
+            log.error("Failed to send welcome email to {}: {}", request.getEmail(), e.getMessage());
+        }
+
         return new AuthResponse(accessToken, refreshToken, user.getRole().name(), ArtisanPrivateResponse.fromEntity(artisan));
     }
 
@@ -138,6 +148,11 @@ public class AuthService {
             user.setMagicLinkExpiresAt(Instant.now().plusSeconds(900)); // 15 min
             userRepository.save(user);
             log.debug("[MAGIC LINK] token genere pour {}", email);
+            try {
+                emailService.sendMagicLink(email, token);
+            } catch (Exception e) {
+                log.error("Failed to send magic link email to {}: {}", email, e.getMessage());
+            }
         });
     }
 

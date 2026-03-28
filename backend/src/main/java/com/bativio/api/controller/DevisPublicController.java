@@ -11,6 +11,7 @@ import com.bativio.api.exception.ResourceNotFoundException;
 import com.bativio.api.repository.ArtisanRepository;
 import com.bativio.api.repository.DemandeDevisRepository;
 import com.bativio.api.repository.NotificationRepository;
+import com.bativio.api.service.EmailService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,13 +25,16 @@ public class DevisPublicController {
     private final ArtisanRepository artisanRepository;
     private final DemandeDevisRepository devisRepository;
     private final NotificationRepository notificationRepository;
+    private final EmailService emailService;
 
     public DevisPublicController(ArtisanRepository artisanRepository,
                                   DemandeDevisRepository devisRepository,
-                                  NotificationRepository notificationRepository) {
+                                  NotificationRepository notificationRepository,
+                                  EmailService emailService) {
         this.artisanRepository = artisanRepository;
         this.devisRepository = devisRepository;
         this.notificationRepository = notificationRepository;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -57,6 +61,18 @@ public class DevisPublicController {
         notif.setTitre("Nouvelle demande de devis");
         notif.setMessage(request.getNomClient() + " souhaite un devis : " + request.getDescriptionBesoin());
         notificationRepository.save(notif);
+
+        // Send email notification to artisan (fire-and-forget)
+        try {
+            emailService.sendDevisNotification(
+                artisan.getUser().getEmail(),
+                artisan.getNomAffichage(),
+                request.getNomClient(),
+                request.getDescriptionBesoin()
+            );
+        } catch (Exception e) {
+            // Don't fail the devis submission if email fails
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.ok("Demande de devis envoyee avec succes"));

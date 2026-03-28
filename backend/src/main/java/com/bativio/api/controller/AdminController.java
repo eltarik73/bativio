@@ -8,6 +8,8 @@ import com.bativio.api.entity.Ville;
 import com.bativio.api.entity.enums.Plan;
 import com.bativio.api.exception.ResourceNotFoundException;
 import com.bativio.api.repository.*;
+import com.bativio.api.service.EmailService;
+import com.bativio.api.util.SlugGenerator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -31,13 +33,16 @@ public class AdminController {
     private final VilleRepository villeRepository;
     private final MetierRepository metierRepository;
     private final DemandeDevisRepository devisRepository;
+    private final EmailService emailService;
 
     public AdminController(ArtisanRepository artisanRepository, VilleRepository villeRepository,
-                           MetierRepository metierRepository, DemandeDevisRepository devisRepository) {
+                           MetierRepository metierRepository, DemandeDevisRepository devisRepository,
+                           EmailService emailService) {
         this.artisanRepository = artisanRepository;
         this.villeRepository = villeRepository;
         this.metierRepository = metierRepository;
         this.devisRepository = devisRepository;
+        this.emailService = emailService;
     }
 
     @Transactional(readOnly = true)
@@ -85,6 +90,13 @@ public class AdminController {
         String statut = body.get("statut");
         if ("ACTIVE".equalsIgnoreCase(statut)) {
             a.setActif(true);
+            // Send validation email (fire-and-forget)
+            try {
+                String villeSlug = a.getVille() != null ? SlugGenerator.slugify(a.getVille()) : "";
+                emailService.sendValidation(a.getUser().getEmail(), a.getNomAffichage(), villeSlug, a.getSlug());
+            } catch (Exception e) {
+                // Don't fail the status update if email fails
+            }
         } else if ("INACTIVE".equalsIgnoreCase(statut)) {
             a.setActif(false);
         } else {
