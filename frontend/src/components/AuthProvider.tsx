@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, createContext, useContext, useCallback, useRef } from "react";
-import { initAuth, getAccessToken, getCachedArtisan, setCachedArtisan, type ArtisanSessionData } from "@/lib/auth";
+import { initAuth, getAccessToken, getCachedArtisan, setCachedArtisan, getStoredUser, type ArtisanSessionData } from "@/lib/auth";
 
 interface AuthContextType {
   isAuth: boolean;
@@ -27,24 +27,34 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   // On mount, check if tokens already exist (e.g. set by register/login before
   // a client-side navigation to /dashboard). This avoids the flash where
   // isAuth is false for one render cycle before the useEffect runs.
+  // We also check localStorage for persisted user data to survive full page refreshes.
   const [loading, setLoading] = useState(() => {
+    if (typeof window === "undefined") return true;
     // If we already have an access token and cached artisan in memory
     // (set synchronously by register/login), skip the loading state.
-    if (typeof window !== "undefined" && getAccessToken() && getCachedArtisan()) {
-      return false;
-    }
+    if (getAccessToken() && getCachedArtisan()) return false;
+    // If we have stored user + refresh token in localStorage, we're still
+    // "authenticated" — skip initial loading to prevent flash.
+    // The async initAuth will refresh tokens in the background.
+    const storedUser = getStoredUser();
+    const hasRefresh = !!localStorage.getItem("bativio_refresh");
+    if (storedUser && hasRefresh) return false;
     return true;
   });
   const [isAuth, setIsAuth] = useState(() => {
-    if (typeof window !== "undefined" && getAccessToken() && getCachedArtisan()) {
-      return true;
-    }
+    if (typeof window === "undefined") return false;
+    if (getAccessToken() && getCachedArtisan()) return true;
+    const storedUser = getStoredUser();
+    const hasRefresh = !!localStorage.getItem("bativio_refresh");
+    if (storedUser && hasRefresh) return true;
     return false;
   });
   const [artisan, setArtisanState] = useState<ArtisanSessionData | null>(() => {
-    if (typeof window !== "undefined" && getAccessToken() && getCachedArtisan()) {
-      return getCachedArtisan();
-    }
+    if (typeof window === "undefined") return null;
+    if (getAccessToken() && getCachedArtisan()) return getCachedArtisan();
+    const storedUser = getStoredUser();
+    const hasRefresh = !!localStorage.getItem("bativio_refresh");
+    if (storedUser && hasRefresh) return storedUser;
     return null;
   });
 
@@ -101,6 +111,8 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       return;
     }
 
+    // Even if we have localStorage data (used to prevent flash), we still
+    // need to run initAuth to refresh tokens and get fresh data.
     initAuth()
       .then((result) => {
         if (result) {

@@ -39,6 +39,9 @@ export default function DevisForm3Steps({ slug, artisanName, ville }: { slug: st
   const [cgu, setCgu] = useState(true);
   const [loading, setLoading] = useState(false);
   const [photos, setPhotos] = useState<File[]>([]);
+  const [ctaDismissed, setCtaDismissed] = useState(false);
+  const [ctaPassword, setCtaPassword] = useState("");
+  const [ctaToast, setCtaToast] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const go = (s: number) => setStep(s);
@@ -169,16 +172,48 @@ export default function DevisForm3Steps({ slug, artisanName, ville }: { slug: st
       {/* CONFIRMATION */}
       <div className={`devis-step ${step === 3 ? "active" : ""}`}>
         <div className="confirmation">
-          <div className="conf-icon"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" /></svg></div>
-          <div className="conf-title">Demande envoy&eacute;e !</div>
-          <div className="conf-sub">{artisanName} va vous contacter sous 24h.</div>
+          <div className="conf-icon-lg"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" /></svg></div>
+          <div className="conf-title">Votre demande a &eacute;t&eacute; envoy&eacute;e !</div>
+          <div className="conf-sub">{artisanName} vous r&eacute;pondra sous 24h.</div>
           <div className="conf-recap">
             <div className="conf-recap-row"><span className="label">Type de travaux</span><span className="val">{METIERS.find((m) => m.id === metier)?.name} &mdash; {subOpt}</span></div>
             <div className="conf-recap-row"><span className="label">D&eacute;lai</span><span className="val">{delai}</span></div>
             <div className="conf-recap-row"><span className="label">Artisan</span><span className="val">{artisanName} &middot; {ville}</span></div>
           </div>
-          <p style={{ fontSize: 13, color: "#9B9590", marginBottom: 24 }}>&#128233; Un email et un SMS de confirmation vous ont &eacute;t&eacute; envoy&eacute;s.</p>
-          <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#F7F5F2", border: "1.5px solid #E0DDD8", borderRadius: 10, padding: "10px 24px", fontSize: 14, fontWeight: 600, color: "#1C1C1E", textDecoration: "none" }}>&larr; Retour &agrave; l&apos;accueil</Link>
+          <p className="conf-email-notice">&#128233; Un email de confirmation vous a &eacute;t&eacute; envoy&eacute;.</p>
+
+          {!ctaDismissed && (
+            <div className="conf-cta-block">
+              <div className="conf-cta-sep" />
+              <p className="conf-cta-label">Cr&eacute;ez un compte pour suivre vos demandes</p>
+              <div className="conf-cta-password-wrap">
+                <input
+                  type="password"
+                  className="conf-cta-input"
+                  placeholder="Choisissez un mot de passe"
+                  value={ctaPassword}
+                  onChange={(e) => setCtaPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="conf-cta-btn"
+                  onClick={() => {
+                    setCtaToast(true);
+                    setTimeout(() => setCtaToast(false), 3000);
+                  }}
+                >
+                  Cr&eacute;er mon compte
+                </button>
+              </div>
+              <button type="button" className="conf-cta-dismiss" onClick={() => setCtaDismissed(true)}>Non merci</button>
+            </div>
+          )}
+
+          {ctaToast && (
+            <div className="conf-toast">Fonctionnalit&eacute; bient&ocirc;t disponible</div>
+          )}
+
+          <Link href="/" className="conf-back-link">&larr; Retour &agrave; l&apos;accueil</Link>
         </div>
       </div>
     </div>

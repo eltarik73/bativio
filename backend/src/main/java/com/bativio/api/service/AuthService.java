@@ -84,7 +84,7 @@ public class AuthService {
         }
         artisan.setVille(villeNormalisee);
         artisan.setZoneRayonKm(request.getZoneRayonKm());
-        artisan.setActif(true);
+        artisan.setActif(false);
 
         if (request.getMetierId() != null && !request.getMetierId().isBlank()) {
             // Accepter slug ou UUID

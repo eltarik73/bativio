@@ -75,7 +75,7 @@ export default function DashboardPage() {
       {isPending && (
         <div style={{
           background: "#FFFBEB",
-          border: "1px solid #FDE68A",
+          border: "1.5px solid #FDE68A",
           color: "#92400E",
           padding: 16,
           borderRadius: 12,
@@ -87,7 +87,7 @@ export default function DashboardPage() {
           gap: 12,
         }}>
           <span style={{ fontSize: 20, flexShrink: 0 }}>&#9203;</span>
-          <span>Votre compte est en attente de validation par notre equipe. Vous pouvez completer votre profil en attendant.</span>
+          <span>Votre profil est en attente de validation. Vous serez visible dans l&apos;annuaire d&egrave;s validation par notre &eacute;quipe.</span>
         </div>
       )}
 

@@ -35,17 +35,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { isAuth, loading, artisan } = useAuth();
 
   // Auth guard: redirect to /connexion if not authenticated.
-  // We also check the module-level access token as a fallback: if register/login
-  // just set it but the React state hasn't committed yet, we should NOT redirect.
+  // We check multiple sources before redirecting: React context, in-memory token,
+  // AND localStorage token. This prevents false redirects during page refresh.
   useEffect(() => {
     if (!loading && !isAuth && !getAccessToken()) {
-      router.replace("/connexion");
+      // Final check: localStorage might still have a valid refresh token
+      const hasRefresh = typeof window !== "undefined" && !!localStorage.getItem("bativio_refresh");
+      if (!hasRefresh) {
+        router.replace("/connexion");
+      }
     }
   }, [loading, isAuth, router]);
 
   // Show loading state while checking auth.
   // Also treat "has token in memory but context not yet updated" as loading.
-  if (loading || (!isAuth && getAccessToken())) {
+  // Check localStorage refresh token too — during page refresh, in-memory token
+  // is null but localStorage still holds the session.
+  const hasRefreshToken = typeof window !== "undefined" && !!localStorage.getItem("bativio_refresh");
+  if (loading || (!isAuth && (getAccessToken() || hasRefreshToken))) {
     return (
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: "#FAF8F5" }}>
         <div style={{ textAlign: "center" }}>

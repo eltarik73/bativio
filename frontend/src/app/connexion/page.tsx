@@ -32,7 +32,9 @@ export default function ConnexionPage() {
       const data = await login(email, password);
       // Refresh auth context so dashboard has artisan data immediately
       await refreshAuth();
-      if (data.artisan?.role === "ADMIN") {
+      // Backend returns role at top level OR in artisan object
+      const role = data.role || data.artisan?.role;
+      if (role === "ADMIN") {
         router.push("/admin");
       } else {
         router.push("/dashboard");

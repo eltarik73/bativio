@@ -1,13 +1,17 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Link from "next/link";
 
-export default function DevisForm({ slug }: { slug: string }) {
+export default function DevisForm({ slug, artisanName }: { slug: string; artisanName?: string }) {
   const [form, setForm] = useState({ nomClient: "", telephoneClient: "", emailClient: "", descriptionBesoin: "" });
   const [photos, setPhotos] = useState<{ file: File; preview: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [ctaDismissed, setCtaDismissed] = useState(false);
+  const [ctaPassword, setCtaPassword] = useState("");
+  const [ctaToast, setCtaToast] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleFiles = (files: FileList | null) => {
@@ -31,11 +35,49 @@ export default function DevisForm({ slug }: { slug: string }) {
 
   if (success) {
     return (
-      <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 20, padding: 36, textAlign: "center" }}>
-        <div style={{ width: 56, height: 56, borderRadius: "50%", background: "#16a34a", color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 26, marginBottom: 16 }}>&#10003;</div>
-        <p style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#166534" }}>Demande envoy&eacute;e !</p>
-        <p style={{ color: "#15803d", marginTop: 10, fontSize: 15, lineHeight: 1.5 }}>L&apos;artisan reviendra vers vous tr&egrave;s rapidement.</p>
-        <p style={{ fontSize: 12, color: "#9B9590", marginTop: 16 }}>Temps de r&eacute;ponse moyen : 2h</p>
+      <div className="confirmation" style={{ padding: "40px 20px" }}>
+        <div className="conf-icon-lg"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" /></svg></div>
+        <div className="conf-title">Votre demande a &eacute;t&eacute; envoy&eacute;e !</div>
+        <div className="conf-sub">{artisanName ? `${artisanName} vous r\u00e9pondra sous 24h.` : "L\u0027artisan vous r\u00e9pondra sous 24h."}</div>
+        <div className="conf-recap">
+          {form.descriptionBesoin && (
+            <div className="conf-recap-row"><span className="label">Votre besoin</span><span className="val" style={{ maxWidth: "60%", textAlign: "right" }}>{form.descriptionBesoin.length > 80 ? form.descriptionBesoin.slice(0, 80) + "..." : form.descriptionBesoin}</span></div>
+          )}
+        </div>
+        <p className="conf-email-notice">&#128233; Un email de confirmation vous a &eacute;t&eacute; envoy&eacute;.</p>
+
+        {!ctaDismissed && form.emailClient && (
+          <div className="conf-cta-block">
+            <div className="conf-cta-sep" />
+            <p className="conf-cta-label">Cr&eacute;ez un compte pour suivre vos demandes</p>
+            <div className="conf-cta-password-wrap">
+              <input
+                type="password"
+                className="conf-cta-input"
+                placeholder="Choisissez un mot de passe"
+                value={ctaPassword}
+                onChange={(e) => setCtaPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="conf-cta-btn"
+                onClick={() => {
+                  setCtaToast(true);
+                  setTimeout(() => setCtaToast(false), 3000);
+                }}
+              >
+                Cr&eacute;er mon compte
+              </button>
+            </div>
+            <button type="button" className="conf-cta-dismiss" onClick={() => setCtaDismissed(true)}>Non merci</button>
+          </div>
+        )}
+
+        {ctaToast && (
+          <div className="conf-toast">Fonctionnalit&eacute; bient&ocirc;t disponible</div>
+        )}
+
+        <Link href="/" className="conf-back-link">&larr; Retour &agrave; l&apos;accueil</Link>
       </div>
     );
   }

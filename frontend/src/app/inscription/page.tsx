@@ -3,9 +3,11 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { register } from "@/lib/auth";
+import { register, getAccessToken } from "@/lib/auth";
 import { useAuth } from "@/components/AuthProvider";
 import { METIERS, VILLES } from "@/lib/constants";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
 
 const STEP_LABELS = ["SIREN", "Infos", "M\u00e9tier", "Zone", "Photos"];
 const ARROW_R = <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" /></svg>;
@@ -18,6 +20,7 @@ export default function InscriptionPage() {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [photoToast, setPhotoToast] = useState("");
 
   // Redirect to dashboard if already authenticated
   useEffect(() => {
@@ -94,27 +97,86 @@ export default function InscriptionPage() {
     return true;
   };
 
-  const handleSubmit = async () => {
-    setLoading(true); setError("");
+  // Register the artisan account
+  const doRegister = async () => {
+    // Bug 1 fix: padder SIREN a 14 chiffres
+    const siretToSend = rawSiret.length === 9 ? rawSiret + "00000" : rawSiret;
+    // Bug 4 fix: plus de fallback mot de passe
+    await register({
+      email: form.email,
+      password: form.password,
+      siret: siretToSend,
+      nomAffichage: form.nomAffichage,
+      telephone: form.telephone,
+      metierId: form.metierId || undefined,
+      ville: form.ville || undefined,
+      zoneRayonKm: 25,
+    });
+  };
+
+  // Upload photos to backend after registration
+  const uploadPhotos = async (filesToUpload: File[]): Promise<number> => {
+    const token = getAccessToken();
+    if (!token || filesToUpload.length === 0) return 0;
+    let uploaded = 0;
+    for (const file of filesToUpload) {
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        const res = await fetch(`${API_URL}/artisans/me/photos/upload`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData,
+        });
+        const json = await res.json();
+        if (json.success) uploaded++;
+      } catch {
+        // Individual photo upload failed — continue with others
+      }
+    }
+    return uploaded;
+  };
+
+  // "Terminer mon inscription" — register + upload photos + redirect
+  const handleFinish = async () => {
+    setLoading(true); setError(""); setPhotoToast("");
     try {
-      // Bug 1 fix: padder SIREN a 14 chiffres
-      const siretToSend = rawSiret.length === 9 ? rawSiret + "00000" : rawSiret;
-      // Bug 4 fix: plus de fallback mot de passe
-      await register({
-        email: form.email,
-        password: form.password,
-        siret: siretToSend,
-        nomAffichage: form.nomAffichage,
-        telephone: form.telephone,
-        metierId: form.metierId || undefined,
-        ville: form.ville || undefined,
-        zoneRayonKm: 25,
-      });
-      // Refresh auth context so dashboard has artisan data immediately
+      await doRegister();
       await refreshAuth();
+      // Upload photos if any were selected
+      if (photos.length > 0) {
+        try {
+          const uploaded = await uploadPhotos(photos);
+          if (uploaded === 0) {
+            setPhotoToast("Photos enregistr\u00e9es ult\u00e9rieurement");
+          } else if (uploaded < photos.length) {
+            setPhotoToast(`${uploaded}/${photos.length} photos envoy\u00e9es. Les autres seront ajout\u00e9es depuis le tableau de bord.`);
+          }
+        } catch {
+          setPhotoToast("Photos enregistr\u00e9es ult\u00e9rieurement");
+        }
+      }
       router.push("/dashboard");
     } catch (err) {
       // Bug 7 fix: meilleur parsing erreur
+      if (err instanceof Error) {
+        setError(err.message || "Erreur lors de l'inscription");
+      } else {
+        setError("Erreur lors de l'inscription. V\u00e9rifiez vos informations.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // "Passer cette etape" — register without photos + redirect
+  const handleSkip = async () => {
+    setLoading(true); setError("");
+    try {
+      await doRegister();
+      await refreshAuth();
+      router.push("/dashboard");
+    } catch (err) {
       if (err instanceof Error) {
         setError(err.message || "Erreur lors de l'inscription");
       } else {
@@ -263,7 +325,7 @@ export default function InscriptionPage() {
             {step === 4 && (
               <div className="step-animate">
                 <div className="card-title">Vos r&eacute;alisations</div>
-                <div className="card-subtitle">Ajoutez des photos de vos chantiers pour convaincre vos futurs clients. <strong style={{ color: "#9B9590" }}>(facultatif)</strong></div>
+                <div className="card-subtitle">Ajoutez 2-3 photos de vos r&eacute;alisations pour convaincre vos futurs clients.</div>
                 <div
                   className="uz"
                   onClick={() => fileRef.current?.click()}
@@ -289,10 +351,23 @@ export default function InscriptionPage() {
                   </div>
                 )}
                 {error && <p style={{ color: "#dc2626", fontSize: 14, marginTop: 16 }}>{error}</p>}
-                <div className="btn-row" style={{ marginTop: 28 }}>
-                  <button className="bv-btn bv-btn-secondary bv-btn-half" onClick={() => go(3)}>{ARROW_L} Retour</button>
-                  <button className="bv-btn bv-btn-primary bv-btn-half" disabled={loading} onClick={handleSubmit}>
-                    {loading ? "Cr\u00e9ation en cours..." : <>Cr&eacute;er mon espace {CHECK_I}</>}
+                {photoToast && <p style={{ color: "#C4531A", fontSize: 14, marginTop: 12, background: "#FEF3EC", padding: "10px 14px", borderRadius: 8, border: "1px solid #F5D0B9" }}>{photoToast}</p>}
+                <div style={{ marginTop: 28, display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+                  <button
+                    className="bv-btn bv-btn-primary"
+                    style={{ width: "100%", height: 48 }}
+                    disabled={loading}
+                    onClick={handleFinish}
+                  >
+                    {loading ? "Cr\u00e9ation en cours..." : <>Terminer mon inscription {CHECK_I}</>}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={loading}
+                    onClick={handleSkip}
+                    style={{ background: "none", border: "none", color: "#C4531A", fontSize: 14, fontWeight: 500, cursor: "pointer", padding: "4px 0" }}
+                  >
+                    Passer cette &eacute;tape &rarr;
                   </button>
                 </div>
                 <div className="bv-help" style={{ marginTop: 16 }}>Vous pourrez ajouter plus de photos depuis votre tableau de bord.</div>

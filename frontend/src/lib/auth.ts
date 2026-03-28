@@ -40,13 +40,45 @@ export function getCachedArtisan(): ArtisanSessionData | null {
 
 export function setCachedArtisan(artisan: ArtisanSessionData | null) {
   cachedArtisan = artisan;
+  persistUser(artisan);
+}
+
+// Restore user data from localStorage (synchronous, for instant hydration)
+export function getStoredUser(): ArtisanSessionData | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem("bativio_user");
+    if (raw) return JSON.parse(raw) as ArtisanSessionData;
+  } catch {
+    // corrupted data, ignore
+  }
+  return null;
+}
+
+// Persist user data to localStorage
+function persistUser(artisan: ArtisanSessionData | null) {
+  if (typeof window === "undefined") return;
+  if (artisan) {
+    localStorage.setItem("bativio_user", JSON.stringify(artisan));
+  } else {
+    localStorage.removeItem("bativio_user");
+  }
 }
 
 // Restaurer la session au chargement de la page
 export async function initAuth(): Promise<ArtisanSessionData | null> {
   if (typeof window === "undefined") return null;
   const refreshToken = localStorage.getItem("bativio_refresh");
-  if (!refreshToken) return null;
+  if (!refreshToken) {
+    // No refresh token — clear any stale user data
+    localStorage.removeItem("bativio_user");
+    return null;
+  }
+
+  // Return stored user data immediately as a starting point
+  // (will be updated below after network calls)
+  const storedUser = getStoredUser();
+
   try {
     const res = await fetch(`${API_URL}/auth/refresh`, {
       method: "POST",
@@ -65,16 +97,32 @@ export async function initAuth(): Promise<ArtisanSessionData | null> {
         const meJson = await meRes.json();
         if (meJson.success && meJson.data) {
           cachedArtisan = meJson.data as ArtisanSessionData;
+          persistUser(cachedArtisan);
           return cachedArtisan;
         }
       } catch {
-        // Token is valid but profile fetch failed - still authenticated
+        // Token is valid but profile fetch failed - use stored data if available
+        if (storedUser) {
+          cachedArtisan = storedUser;
+          return cachedArtisan;
+        }
+      }
+      // Tokens refreshed but no profile data — use stored user or minimal fallback
+      if (storedUser) {
+        cachedArtisan = storedUser;
+        return cachedArtisan;
       }
       return { id: "", email: "", role: "", nomAffichage: "", metierNom: null, ville: null, slug: null, plan: "GRATUIT", profilCompletion: 0, telephone: null, description: null, actif: false } as ArtisanSessionData;
     }
     localStorage.removeItem("bativio_refresh");
+    localStorage.removeItem("bativio_user");
     return null;
   } catch {
+    // Network error — if we have stored user data AND a refresh token, stay authenticated
+    if (storedUser) {
+      cachedArtisan = storedUser;
+      return cachedArtisan;
+    }
     return null;
   }
 }
@@ -152,6 +200,7 @@ export function logout() {
   cachedArtisan = null;
   if (typeof window !== "undefined") {
     localStorage.removeItem("bativio_refresh");
+    localStorage.removeItem("bativio_user");
     window.location.href = "/connexion";
   }
 }
@@ -168,6 +217,7 @@ export async function login(email: string, password: string) {
   localStorage.setItem("bativio_refresh", json.data.refreshToken);
   if (json.data.artisan) {
     cachedArtisan = json.data.artisan as ArtisanSessionData;
+    persistUser(cachedArtisan);
   } else {
     // Artisan data missing from login response (backend may have failed to
     // load it). Fetch it immediately so the dashboard has data on first render.
@@ -178,6 +228,7 @@ export async function login(email: string, password: string) {
       const meJson = await meRes.json();
       if (meJson.success && meJson.data) {
         cachedArtisan = meJson.data as ArtisanSessionData;
+        persistUser(cachedArtisan);
       }
     } catch {
       // Will be fetched by initAuth on next page load
@@ -209,6 +260,7 @@ export async function register(data: {
   localStorage.setItem("bativio_refresh", json.data.refreshToken);
   if (json.data.artisan) {
     cachedArtisan = json.data.artisan as ArtisanSessionData;
+    persistUser(cachedArtisan);
   }
   return json.data;
 }

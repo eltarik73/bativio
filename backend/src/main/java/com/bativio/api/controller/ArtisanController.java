@@ -7,13 +7,18 @@ import com.bativio.api.entity.*;
 import com.bativio.api.entity.enums.PhotoType;
 import com.bativio.api.entity.enums.StatutDevis;
 import com.bativio.api.service.ArtisanService;
+import com.bativio.api.service.CloudinaryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -23,10 +28,14 @@ import java.util.UUID;
 @RequestMapping("/api/v1/artisans/me")
 public class ArtisanController {
 
-    private final ArtisanService artisanService;
+    private static final Logger log = LoggerFactory.getLogger(ArtisanController.class);
 
-    public ArtisanController(ArtisanService artisanService) {
+    private final ArtisanService artisanService;
+    private final CloudinaryService cloudinaryService;
+
+    public ArtisanController(ArtisanService artisanService, CloudinaryService cloudinaryService) {
         this.artisanService = artisanService;
+        this.cloudinaryService = cloudinaryService;
     }
 
     @GetMapping
@@ -57,6 +66,23 @@ public class ArtisanController {
                 body.get("type") != null ? PhotoType.valueOf(body.get("type")) : PhotoType.SIMPLE,
                 body.get("paireId") != null ? UUID.fromString(body.get("paireId")) : null);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok(p));
+    }
+
+    @PostMapping(value = "/photos/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<Photo>> uploadPhoto(
+            @AuthenticationPrincipal User user,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "titre", required = false) String titre) {
+        try {
+            CloudinaryService.UploadResult result = cloudinaryService.upload(file);
+            Photo p = artisanService.addPhoto(user.getId(),
+                    result.url(), result.publicId(), titre, PhotoType.SIMPLE, null);
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok(p));
+        } catch (Exception e) {
+            log.error("Photo upload failed", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Erreur lors de l'upload de la photo"));
+        }
     }
 
     @DeleteMapping("/photos/{id}")

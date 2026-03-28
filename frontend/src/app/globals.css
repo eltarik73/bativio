@@ -422,6 +422,24 @@ a{text-decoration:none;color:inherit}button{font-family:'Karla',sans-serif;curso
 .conf-recap-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px}
 .conf-recap-row .label{color:#9B9590}
 .conf-recap-row .val{font-weight:600}
+.conf-icon-lg{width:56px;height:56px;border-radius:50%;background:#16a34a;display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+.conf-icon-lg svg{width:28px;height:28px;stroke:#fff;fill:none;stroke-width:2.5}
+.conf-email-notice{font-size:13px;color:#9B9590;margin-bottom:24px}
+.conf-cta-block{text-align:center;margin-bottom:24px}
+.conf-cta-sep{width:40px;height:1px;background:#E0DDD8;margin:0 auto 20px}
+.conf-cta-label{font-family:'Karla',sans-serif;font-size:14px;color:#6B6560;margin-bottom:12px}
+.conf-cta-password-wrap{display:flex;gap:8px;max-width:360px;margin:0 auto 10px}
+.conf-cta-input{flex:1;height:44px;border:1.5px solid #E0DDD8;border-radius:10px;padding:0 14px;font-size:14px;font-family:'Karla',sans-serif;background:#FAF8F5;color:#1C1C1E;outline:none;transition:border-color .2s}
+.conf-cta-input:focus{border-color:#C4531A}
+.conf-cta-input::placeholder{color:#C5C0B9}
+.conf-cta-btn{height:44px;padding:0 20px;border:1.5px solid #C4531A;border-radius:10px;background:transparent;color:#C4531A;font-size:14px;font-weight:600;font-family:'Karla',sans-serif;cursor:pointer;white-space:nowrap;transition:all .2s}
+.conf-cta-btn:hover{background:rgba(196,83,26,.05)}
+.conf-cta-dismiss{background:none;border:none;font-size:13px;color:#9B9590;cursor:pointer;font-family:'Karla',sans-serif;padding:4px 8px;transition:color .2s}
+.conf-cta-dismiss:hover{color:#6B6560}
+.conf-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1C1C1E;color:#fff;padding:12px 24px;border-radius:10px;font-size:14px;font-family:'Karla',sans-serif;box-shadow:0 8px 32px rgba(0,0,0,.2);z-index:9999;animation:toastIn .3s ease}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.conf-back-link{display:inline-flex;align-items:center;gap:6px;background:#F7F5F2;border:1.5px solid #E0DDD8;border-radius:10px;padding:10px 24px;font-size:14px;font-weight:600;color:#1C1C1E;text-decoration:none;transition:all .2s;margin-top:4px}
+.conf-back-link:hover{background:#EDEBE7}
 
 /* CONTACT CARD */
 .contact-card{background:#fff;border-radius:20px;border:1.5px solid #EDEBE7;box-shadow:0 4px 32px rgba(28,28,30,.06);padding:28px;position:sticky;top:80px}
