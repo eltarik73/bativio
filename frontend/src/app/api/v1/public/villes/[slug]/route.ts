@@ -73,6 +73,8 @@ export async function GET(
         departement: ville.departement,
         latitude: ville.latitude,
         longitude: ville.longitude,
+        seoTitle: ville.seoTitle,
+        seoDescription: ville.seoDescription,
         contenuSeo: ville.contenuSeo,
       },
       artisans: artisansData,

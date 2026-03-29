@@ -14,15 +14,27 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ ville: string }> }): Promise<Metadata> {
   const { ville: villeSlug } = await params;
-  const ville = MOCK_VILLES.find((v) => v.slug === villeSlug);
-  const nom = ville?.nom || villeSlug;
+  let nom = villeSlug;
+  let seoTitle = "";
+  let seoDesc = "";
+  try {
+    const data = await getVille(villeSlug);
+    nom = data.nom || villeSlug;
+    seoTitle = (data as unknown as Record<string, unknown>).seoTitle as string || "";
+    seoDesc = (data as unknown as Record<string, unknown>).seoDescription as string || "";
+  } catch {
+    const mock = MOCK_VILLES.find((v) => v.slug === villeSlug);
+    nom = mock?.nom || villeSlug;
+  }
+  const title = seoTitle || `Artisans du bâtiment à ${nom} | Bativio`;
+  const description = seoDesc || `Trouvez les meilleurs artisans du bâtiment à ${nom}. Plombier, électricien, peintre, maçon. Devis gratuit, zéro commission.`;
   return {
-    title: `Artisans du bâtiment à ${nom}`,
-    description: `Trouvez les meilleurs artisans du bâtiment à ${nom}. Plombier, électricien, peintre, maçon... Devis gratuit, zéro commission.`,
-    alternates: { canonical: `/${villeSlug}` },
+    title,
+    description,
+    alternates: { canonical: `https://bativio.fr/${villeSlug}` },
     openGraph: {
-      title: `Artisans du bâtiment à ${nom} | Bativio`,
-      description: `Trouvez les meilleurs artisans à ${nom}. Devis gratuit, zéro commission.`,
+      title,
+      description,
       url: `https://bativio.fr/${villeSlug}`,
       images: [{ url: "https://bativio.fr/og-image.png", width: 1200, height: 630 }],
     },
@@ -73,12 +85,9 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
         {/* SEO content */}
         {ville?.contenuSeo && (
           <section className="px-7 py-12 max-md:px-4 border-t border-g100">
-            <div className="max-w-[800px] mx-auto">
-              <h2 className="font-display text-lg font-bold text-anthracite mb-3">
-                Artisans du b&acirc;timent &agrave; {ville.nom}
-              </h2>
-              <p className="text-[13px] text-g500 leading-relaxed">{ville.contenuSeo}</p>
-            </div>
+            <div className="max-w-[800px] mx-auto prose prose-sm prose-headings:font-display prose-headings:text-anthracite prose-p:text-g500 prose-strong:text-anthracite prose-li:text-g500"
+              dangerouslySetInnerHTML={{ __html: ville.contenuSeo }}
+            />
           </section>
         )}
       </main>

@@ -80,6 +80,10 @@ async function main() {
   const { seedConfig } = require("./seed-config");
   await seedConfig();
 
+  // Seed SEO
+  const { seedSeo } = require("./seed-seo");
+  await seedSeo();
+
   console.log("Seed termine !");
 }
 

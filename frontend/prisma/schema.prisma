@@ -155,8 +155,10 @@ model Ville {
   departement String?
   latitude    Float?
   longitude   Float?
-  contenuSeo  String?  @map("contenu_seo") @db.Text
-  actif       Boolean  @default(true)
+  seoTitle       String?  @map("seo_title")
+  seoDescription String?  @map("seo_description") @db.Text
+  contenuSeo     String?  @map("contenu_seo") @db.Text
+  actif          Boolean  @default(true)
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
