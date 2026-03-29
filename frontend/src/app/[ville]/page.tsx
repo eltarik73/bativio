@@ -17,12 +17,12 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
   const ville = MOCK_VILLES.find((v) => v.slug === villeSlug);
   const nom = ville?.nom || villeSlug;
   return {
-    title: `Artisans du b\u00e2timent \u00e0 ${nom}`,
-    description: `Trouvez les meilleurs artisans du b\u00e2timent \u00e0 ${nom}. Plombier, \u00e9lectricien, peintre, ma\u00e7on... Devis gratuit, z\u00e9ro commission.`,
+    title: `Artisans du bâtiment à ${nom}`,
+    description: `Trouvez les meilleurs artisans du bâtiment à ${nom}. Plombier, électricien, peintre, maçon... Devis gratuit, zéro commission.`,
     alternates: { canonical: `/${villeSlug}` },
     openGraph: {
-      title: `Artisans du b\u00e2timent \u00e0 ${nom} | Bativio`,
-      description: `Trouvez les meilleurs artisans \u00e0 ${nom}. Devis gratuit, z\u00e9ro commission.`,
+      title: `Artisans du bâtiment à ${nom} | Bativio`,
+      description: `Trouvez les meilleurs artisans à ${nom}. Devis gratuit, zéro commission.`,
       url: `https://bativio.fr/${villeSlug}`,
       images: [{ url: "https://bativio.fr/og-image.png", width: 1200, height: 630 }],
     },
@@ -35,7 +35,7 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
   // Essayer le backend, fallback mock
   let ville = MOCK_VILLES.find((v) => v.slug === villeSlug);
   let artisans: ArtisanPublic[] = MOCK_ARTISANS.filter(
-    (a) => a.ville.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "") === villeSlug
+    (a) => a.ville.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z]/g, "") === villeSlug
   );
   let metiers: MetierData[] = MOCK_METIERS;
 

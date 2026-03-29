@@ -4,7 +4,7 @@ interface Props {
 }
 
 export default function MetierIcon({ metier, className = "w-4 h-4" }: Props) {
-  const slug = metier.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const slug = metier.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 
   const icons: Record<string, React.ReactNode> = {
     plombier: (

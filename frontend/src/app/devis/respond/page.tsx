@@ -56,9 +56,9 @@ function RespondContent() {
   if (info.statut === "ACCEPTE" || info.statut === "REFUSE") {
     return (
       <div style={{ maxWidth: 500, margin: "60px auto", textAlign: "center", padding: 20 }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>{info.statut === "ACCEPTE" ? "\u2705" : "\u274C"}</div>
+        <div style={{ fontSize: 48, marginBottom: 16 }}>{info.statut === "ACCEPTE" ? "✅" : "❌"}</div>
         <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#1C1C1E" }}>Vous avez d&eacute;j&agrave; r&eacute;pondu</h2>
-        <p style={{ fontSize: 14, color: "#9B9590", marginTop: 8 }}>Ce devis a &eacute;t&eacute; {info.statut === "ACCEPTE" ? "accept\u00e9" : "d\u00e9clin\u00e9"}.</p>
+        <p style={{ fontSize: 14, color: "#9B9590", marginTop: 8 }}>Ce devis a &eacute;t&eacute; {info.statut === "ACCEPTE" ? "accepté" : "décliné"}.</p>
       </div>
     );
   }
@@ -66,7 +66,7 @@ function RespondContent() {
   if (done) {
     return (
       <div style={{ maxWidth: 500, margin: "60px auto", textAlign: "center", padding: 20 }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>{isAccept ? "\u2705" : "\uD83D\uDCE8"}</div>
+        <div style={{ fontSize: 48, marginBottom: 16 }}>{isAccept ? "✅" : "\uD83D\uDCE8"}</div>
         <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#1C1C1E" }}>{result}</h2>
       </div>
     );
@@ -76,7 +76,7 @@ function RespondContent() {
     <div style={{ maxWidth: 500, margin: "60px auto", padding: 20 }}>
       <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #EDEBE7", padding: 32 }}>
         <div style={{ textAlign: "center", marginBottom: 24 }}>
-          <div style={{ fontSize: 48, marginBottom: 12 }}>{isAccept ? "\u2705" : "\u274C"}</div>
+          <div style={{ fontSize: 48, marginBottom: 12 }}>{isAccept ? "✅" : "❌"}</div>
           <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#1C1C1E" }}>{isAccept ? "Accepter le devis" : "Refuser le devis"}</h2>
           <p style={{ fontSize: 14, color: "#9B9590", marginTop: 8 }}>De <strong>{info.artisanName}</strong></p>
         </div>
@@ -86,7 +86,7 @@ function RespondContent() {
         {!isAccept && (
           <div style={{ marginBottom: 20 }}>
             <label style={{ fontSize: 13, fontWeight: 600, color: "#1C1C1E", display: "block", marginBottom: 6 }}>Raison du refus (facultatif)</label>
-            <textarea value={raison} onChange={(e) => setRaison(e.target.value)} rows={3} placeholder="Trop cher, d\u00e9lai trop long..." style={{ width: "100%", padding: 12, borderRadius: 8, border: "1.5px solid #E0DDD8", fontSize: 14, fontFamily: "'Karla',sans-serif", resize: "vertical", outline: "none" }} />
+            <textarea value={raison} onChange={(e) => setRaison(e.target.value)} rows={3} placeholder="Trop cher, délai trop long..." style={{ width: "100%", padding: 12, borderRadius: 8, border: "1.5px solid #E0DDD8", fontSize: 14, fontFamily: "'Karla',sans-serif", resize: "vertical", outline: "none" }} />
           </div>
         )}
         <button onClick={handleSubmit} disabled={submitting} style={{

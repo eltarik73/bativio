@@ -180,7 +180,7 @@ export async function authFetch<T>(path: string, options?: RequestInit): Promise
         res = await fetch(`${API_URL}${path}`, { ...options, headers });
       } else {
         logout();
-        throw new Error("Session expir\u00e9e");
+        throw new Error("Session expirée");
       }
     }
   }

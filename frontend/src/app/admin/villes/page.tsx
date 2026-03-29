@@ -1,11 +1,11 @@
 "use client";
 
 const villes = [
-  { id: "1", nom: "Chamb\u00e9ry", slug: "chambery", departement: "Savoie", artisans: 5, actif: true },
+  { id: "1", nom: "Chambéry", slug: "chambery", departement: "Savoie", artisans: 5, actif: true },
   { id: "2", nom: "Annecy", slug: "annecy", departement: "Haute-Savoie", artisans: 0, actif: true },
-  { id: "3", nom: "Grenoble", slug: "grenoble", departement: "Is\u00e8re", artisans: 0, actif: true },
-  { id: "4", nom: "Lyon", slug: "lyon", departement: "Rh\u00f4ne", artisans: 0, actif: true },
-  { id: "5", nom: "Valence", slug: "valence", departement: "Dr\u00f4me", artisans: 0, actif: true },
+  { id: "3", nom: "Grenoble", slug: "grenoble", departement: "Isère", artisans: 0, actif: true },
+  { id: "4", nom: "Lyon", slug: "lyon", departement: "Rhône", artisans: 0, actif: true },
+  { id: "5", nom: "Valence", slug: "valence", departement: "Drôme", artisans: 0, actif: true },
 ];
 
 export default function AdminVillesPage() {

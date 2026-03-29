@@ -24,7 +24,7 @@ export function getArtisanPhoto(artisan: { photos?: { url?: string }[] | null; m
   // 2. Default photo by metier
   const metier = artisan.metierSlug || artisan.metierNom;
   if (metier) {
-    const slug = metier.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-");
+    const slug = metier.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, "-");
     if (DEFAULT_PHOTOS[slug]) return DEFAULT_PHOTOS[slug];
   }
 

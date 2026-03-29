@@ -8,7 +8,7 @@ import { METIERS, VILLES } from "@/lib/constants";
 
 const API_URL = "/api/v1";
 
-const STEP_LABELS = ["SIREN", "Infos", "M\u00e9tier", "Zone", "Photos"];
+const STEP_LABELS = ["SIREN", "Infos", "Métier", "Zone", "Photos"];
 const ARROW_R = <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" /></svg>;
 const ARROW_L = <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>;
 const CHECK_I = <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg>;
@@ -45,8 +45,8 @@ export default function InscriptionPage() {
 
   // Bug 8 fix: normaliser la ville retournee par l'API
   const matchVille = (commune: string) => {
-    const c = commune.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    const match = VILLES.find((v) => v.nom.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === c || v.slug === c);
+    const c = commune.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    const match = VILLES.find((v) => v.nom.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "") === c || v.slug === c);
     return match ? match.nom : "";
   };
 
@@ -70,10 +70,10 @@ export default function InscriptionPage() {
         }));
         setSiretFound(true);
       } else {
-        setError("SIREN/SIRET introuvable. V\u00e9rifiez le num\u00e9ro.");
+        setError("SIREN/SIRET introuvable. Vérifiez le numéro.");
       }
     } catch {
-      setError("Impossible de v\u00e9rifier. R\u00e9essayez.");
+      setError("Impossible de vérifier. Réessayez.");
     } finally {
       setSiretLoading(false);
     }
@@ -83,16 +83,16 @@ export default function InscriptionPage() {
   const validateStep1 = () => {
     if (!form.nomAffichage.trim()) { setError("Le nom d'affichage est requis"); return false; }
     if (!form.email.trim()) { setError("L'email est requis"); return false; }
-    if (!form.telephone.trim()) { setError("Le t\u00e9l\u00e9phone est requis"); return false; }
-    if (!form.password || form.password.length < 8) { setError("Le mot de passe doit contenir au moins 8 caract\u00e8res"); return false; }
+    if (!form.telephone.trim()) { setError("Le téléphone est requis"); return false; }
+    if (!form.password || form.password.length < 8) { setError("Le mot de passe doit contenir au moins 8 caractères"); return false; }
     return true;
   };
   const validateStep2 = () => {
-    if (!form.metierNom) { setError("S\u00e9lectionnez votre m\u00e9tier"); return false; }
+    if (!form.metierNom) { setError("Sélectionnez votre métier"); return false; }
     return true;
   };
   const validateStep3 = () => {
-    if (!form.ville) { setError("S\u00e9lectionnez votre ville"); return false; }
+    if (!form.ville) { setError("Sélectionnez votre ville"); return false; }
     return true;
   };
 
@@ -157,12 +157,12 @@ export default function InscriptionPage() {
         try {
           const uploaded = await uploadPhotos(photos);
           if (uploaded === 0) {
-            setPhotoToast("Photos enregistr\u00e9es ult\u00e9rieurement");
+            setPhotoToast("Photos enregistrées ultérieurement");
           } else if (uploaded < photos.length) {
-            setPhotoToast(`${uploaded}/${photos.length} photos envoy\u00e9es. Les autres seront ajout\u00e9es depuis le tableau de bord.`);
+            setPhotoToast(`${uploaded}/${photos.length} photos envoyées. Les autres seront ajoutées depuis le tableau de bord.`);
           }
         } catch {
-          setPhotoToast("Photos enregistr\u00e9es ult\u00e9rieurement");
+          setPhotoToast("Photos enregistrées ultérieurement");
         }
       }
       router.push("/dashboard");
@@ -171,7 +171,7 @@ export default function InscriptionPage() {
       if (err instanceof Error) {
         setError(err.message || "Erreur lors de l'inscription");
       } else {
-        setError("Erreur lors de l'inscription. V\u00e9rifiez vos informations.");
+        setError("Erreur lors de l'inscription. Vérifiez vos informations.");
       }
     } finally {
       setLoading(false);
@@ -188,7 +188,7 @@ export default function InscriptionPage() {
       if (err instanceof Error) {
         setError(err.message || "Erreur lors de l'inscription");
       } else {
-        setError("Erreur lors de l'inscription. V\u00e9rifiez vos informations.");
+        setError("Erreur lors de l'inscription. Vérifiez vos informations.");
       }
     } finally {
       setLoading(false);
@@ -271,7 +271,7 @@ export default function InscriptionPage() {
                 )}
                 {error && <p style={{ color: "#dc2626", fontSize: 14, marginBottom: 16 }}>{error}</p>}
                 <button className="bv-btn bv-btn-primary" disabled={!siretValid || siretLoading} onClick={() => { if (!siretFound) handleSiretLookup(); else go(1); }}>
-                  {siretLoading ? "V\u00e9rification..." : siretFound ? <>Continuer {ARROW_R}</> : <>V&eacute;rifier et continuer {ARROW_R}</>}
+                  {siretLoading ? "Vérification..." : siretFound ? <>Continuer {ARROW_R}</> : <>V&eacute;rifier et continuer {ARROW_R}</>}
                 </button>
                 <div className="bv-help">Vous n&apos;avez pas de SIREN/SIRET ? <a href="#" className="bv-link">Contactez-nous</a></div>
               </div>
@@ -374,7 +374,7 @@ export default function InscriptionPage() {
                     disabled={loading}
                     onClick={handleFinish}
                   >
-                    {loading ? "Cr\u00e9ation en cours..." : <>Terminer mon inscription {CHECK_I}</>}
+                    {loading ? "Création en cours..." : <>Terminer mon inscription {CHECK_I}</>}
                   </button>
                   <button
                     type="button"

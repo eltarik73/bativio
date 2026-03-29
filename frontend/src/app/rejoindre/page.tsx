@@ -2,23 +2,23 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Rejoignez Bativio \u2014 D\u00e9veloppez votre activit\u00e9 artisan",
-  description: "Cr\u00e9ez votre page pro en 3 minutes. Recevez des demandes de devis qualifi\u00e9es. Z\u00e9ro commission, abonnement fixe.",
+  title: "Rejoignez Bativio — Développez votre activité artisan",
+  description: "Créez votre page pro en 3 minutes. Recevez des demandes de devis qualifiées. Zéro commission, abonnement fixe.",
 };
 
 const PLANS = [
-  { name: "Gratuit", price: "0\u20AC", per: "", desc: "Pour d\u00e9marrer", feats: ["Fiche annuaire", "Formulaire devis", "3 photos", "2 badges"], pop: false },
-  { name: "Essentiel", price: "19\u20AC", per: "/mois", desc: "Visible et joignable", feats: ["10 photos + avant/apr\u00e8s", "Agenda + RDV", "SMS rappel", "Badges illimit\u00e9s"], pop: false },
-  { name: "Pro", price: "49\u20AC", per: "/mois", desc: "Vitrine compl\u00e8te", feats: ["URL perso (site vitrine)", "Photos illimit\u00e9es", "Mini-CRM", "Facturation PA", "Export comptable"], pop: true },
-  { name: "Pro+", price: "79\u20AC", per: "/mois", desc: "Augment\u00e9 par l\u2019IA", feats: ["Agent IA r\u00e9pondeur", "Devis IA automatique", "Cr\u00e9ation factures", "Support d\u00e9di\u00e9"], pop: false },
+  { name: "Gratuit", price: "0€", per: "", desc: "Pour démarrer", feats: ["Fiche annuaire", "Formulaire devis", "3 photos", "2 badges"], pop: false },
+  { name: "Essentiel", price: "19€", per: "/mois", desc: "Visible et joignable", feats: ["10 photos + avant/après", "Agenda + RDV", "SMS rappel", "Badges illimités"], pop: false },
+  { name: "Pro", price: "49€", per: "/mois", desc: "Vitrine complète", feats: ["URL perso (site vitrine)", "Photos illimitées", "Mini-CRM", "Facturation PA", "Export comptable"], pop: true },
+  { name: "Pro+", price: "79€", per: "/mois", desc: "Augmenté par l’IA", feats: ["Agent IA répondeur", "Devis IA automatique", "Création factures", "Support dédié"], pop: false },
 ];
 
 const FAQ = [
-  { q: "Est-ce vraiment gratuit ?", a: "Oui, le plan Gratuit est gratuit \u00e0 vie. Vous pouvez \u00e9voluer vers un plan payant quand vous le souhaitez." },
-  { q: "Combien de temps pour cr\u00e9er ma page ?", a: "3 minutes. Entrez votre SIREN, on r\u00e9cup\u00e8re vos infos automatiquement." },
-  { q: "Y a-t-il des commissions ?", a: "Non, jamais. Abonnement fixe, z\u00e9ro commission sur les devis ou les chantiers." },
-  { q: "Mes clients peuvent me trouver comment ?", a: "Via l\u2019annuaire Bativio, votre URL personnalis\u00e9e, et Google gr\u00e2ce au SEO int\u00e9gr\u00e9." },
-  { q: "C\u2019est quoi Invoquo ?", a: "Notre module de facturation \u00e9lectronique, bient\u00f4t disponible pour vous mettre en conformit\u00e9 avec la r\u00e9forme 2026." },
+  { q: "Est-ce vraiment gratuit ?", a: "Oui, le plan Gratuit est gratuit à vie. Vous pouvez évoluer vers un plan payant quand vous le souhaitez." },
+  { q: "Combien de temps pour créer ma page ?", a: "3 minutes. Entrez votre SIREN, on récupère vos infos automatiquement." },
+  { q: "Y a-t-il des commissions ?", a: "Non, jamais. Abonnement fixe, zéro commission sur les devis ou les chantiers." },
+  { q: "Mes clients peuvent me trouver comment ?", a: "Via l’annuaire Bativio, votre URL personnalisée, et Google grâce au SEO intégré." },
+  { q: "C’est quoi Invoquo ?", a: "Notre module de facturation électronique, bientôt disponible pour vous mettre en conformité avec la réforme 2026." },
 ];
 
 const CK = <svg width="15" height="15" fill="none" stroke="#E8A84C" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg>;
@@ -54,9 +54,9 @@ export default function RejoindrePage() {
         <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "#1C1C1E", textAlign: "center", marginBottom: 48 }}>Pourquoi Bativio ?</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24 }}>
           {[
-            { icon: "&#127760;", title: "Votre vitrine pro en ligne", desc: "Page publique avec vos r\u00e9alisations, avis clients, coordonn\u00e9es. Visible sur Google." },
-            { icon: "&#128172;", title: "Des demandes qualifi\u00e9es", desc: "Clients de votre ville qui cherchent vos services. Notification imm\u00e9diate par email et SMS." },
-            { icon: "&#128176;", title: "Z\u00e9ro commission, toujours", desc: "Abonnement fixe, pas de co\u00fbt par devis. Vos revenus restent vos revenus." },
+            { icon: "&#127760;", title: "Votre vitrine pro en ligne", desc: "Page publique avec vos réalisations, avis clients, coordonnées. Visible sur Google." },
+            { icon: "&#128172;", title: "Des demandes qualifiées", desc: "Clients de votre ville qui cherchent vos services. Notification immédiate par email et SMS." },
+            { icon: "&#128176;", title: "Zéro commission, toujours", desc: "Abonnement fixe, pas de coût par devis. Vos revenus restent vos revenus." },
           ].map((item) => (
             <div key={item.title} style={{ textAlign: "center", padding: 24 }}>
               <div style={{ fontSize: 40, marginBottom: 16 }} dangerouslySetInnerHTML={{ __html: item.icon }} />
@@ -73,10 +73,10 @@ export default function RejoindrePage() {
           <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "#1C1C1E", textAlign: "center", marginBottom: 48 }}>Comment &ccedil;a marche</h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
             {[
-              { n: "1", label: "Entrez votre SIREN", desc: "On r\u00e9cup\u00e8re vos infos automatiquement" },
+              { n: "1", label: "Entrez votre SIREN", desc: "On récupère vos infos automatiquement" },
               { n: "2", label: "Personnalisez votre profil", desc: "Photos, services, badges" },
               { n: "3", label: "Recevez des demandes", desc: "Clients de votre ville" },
-              { n: "4", label: "D\u00e9veloppez votre activit\u00e9", desc: "Avis, visibilit\u00e9, facturation" },
+              { n: "4", label: "Développez votre activité", desc: "Avis, visibilité, facturation" },
             ].map((s) => (
               <div key={s.n} style={{ textAlign: "center" }}>
                 <div style={{ width: 48, height: 48, borderRadius: "50%", background: "#fff", border: "2px solid #C4531A", display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "'Fraunces',serif", fontSize: 20, fontWeight: 700, color: "#C4531A", marginBottom: 14 }}>{s.n}</div>
@@ -109,7 +109,7 @@ export default function RejoindrePage() {
                   ))}
                 </ul>
                 <Link href="/inscription" style={{ display: "block", textAlign: "center", padding: 12, borderRadius: 10, fontSize: 14, fontWeight: 600, textDecoration: "none", ...(p.pop ? { background: "#C4531A", color: "#fff" } : { border: "1px solid rgba(255,255,255,.12)", color: "rgba(255,255,255,.6)" }) }}>
-                  {p.price === "0\u20AC" ? "Commencer" : "Choisir"}
+                  {p.price === "0€" ? "Commencer" : "Choisir"}
                 </Link>
               </div>
             ))}

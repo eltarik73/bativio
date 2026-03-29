@@ -15,12 +15,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const t = TRAVAUX.find((x) => x.slug === slug);
   if (!t) return { title: "Travaux introuvables" };
   return {
-    title: `${t.nom} \u00e0 Chamb\u00e9ry | Devis gratuit`,
-    description: `Trouvez un artisan qualifi\u00e9 pour votre ${t.nom.toLowerCase()} \u00e0 Chamb\u00e9ry. Profils v\u00e9rifi\u00e9s, avis clients, devis gratuit sous 24h. Z\u00e9ro commission.`,
+    title: `${t.nom} à Chambéry | Devis gratuit`,
+    description: `Trouvez un artisan qualifié pour votre ${t.nom.toLowerCase()} à Chambéry. Profils vérifiés, avis clients, devis gratuit sous 24h. Zéro commission.`,
     alternates: { canonical: `/travaux/${slug}` },
     openGraph: {
-      title: `${t.nom} \u00e0 Chamb\u00e9ry | Bativio`,
-      description: `Devis gratuit pour votre ${t.nom.toLowerCase()}. Z\u00e9ro commission.`,
+      title: `${t.nom} à Chambéry | Bativio`,
+      description: `Devis gratuit pour votre ${t.nom.toLowerCase()}. Zéro commission.`,
       url: `https://bativio.fr/travaux/${slug}`,
       images: [{ url: t.photo, width: 600, height: 400, alt: t.nom }],
     },
@@ -33,7 +33,7 @@ export default async function TravauxPage({ params }: { params: Promise<{ slug: 
   if (!t) return <div>Travaux introuvables</div>;
 
   const artisans = MOCK_ARTISANS.filter((a) => {
-    const ms = a.metierNom.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
+    const ms = a.metierNom.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z]/g, "");
     return t.metiers.includes(ms);
   });
 

@@ -33,7 +33,7 @@ export default function VitrineModerne({ a, photo, primary, accent, villeSlug }:
             <span style={{ fontSize: 13, opacity: 0.6 }}>{a.nombreAvis} avis</span>
           </div>
           <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(32px,5vw,52px)", fontWeight: 700, lineHeight: 1.1 }}>{a.nomAffichage}</h1>
-          <p style={{ fontSize: 17, opacity: 0.65, marginTop: 6 }}>{a.metierNom || "Artisan"} &agrave; {a.ville || "Chamb\u00e9ry"}</p>
+          <p style={{ fontSize: 17, opacity: 0.65, marginTop: 6 }}>{a.metierNom || "Artisan"} &agrave; {a.ville || "Chambéry"}</p>
         </div>
       </section>
 
@@ -48,7 +48,7 @@ export default function VitrineModerne({ a, photo, primary, accent, villeSlug }:
 
           {/* Stat cards */}
           {([
-            ...(a.experienceAnnees ? [{ v: String(a.experienceAnnees), l: "ann\u00e9es" }] : []),
+            ...(a.experienceAnnees ? [{ v: String(a.experienceAnnees), l: "années" }] : []),
             { v: String(a.nombreAvis), l: "avis clients" },
             { v: `${a.zoneRayonKm}km`, l: "rayon" },
           ]).slice(0, 2).map((s, i) => (

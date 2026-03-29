@@ -29,7 +29,7 @@ export default function DevisForm({ slug, artisanName }: { slug: string; artisan
       await submitDevis(slug, form);
       setSuccess(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur lors de l'envoi. R\u00e9essayez.");
+      setError(err instanceof Error ? err.message : "Erreur lors de l'envoi. Réessayez.");
     } finally { setLoading(false); }
   };
 
@@ -38,7 +38,7 @@ export default function DevisForm({ slug, artisanName }: { slug: string; artisan
       <div className="confirmation" style={{ padding: "40px 20px" }}>
         <div className="conf-icon-lg"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" /></svg></div>
         <div className="conf-title">Votre demande a &eacute;t&eacute; envoy&eacute;e !</div>
-        <div className="conf-sub">{artisanName ? `${artisanName} vous r\u00e9pondra sous 24h.` : "L\u0027artisan vous r\u00e9pondra sous 24h."}</div>
+        <div className="conf-sub">{artisanName ? `${artisanName} vous répondra sous 24h.` : "L'artisan vous répondra sous 24h."}</div>
         <div className="conf-recap">
           {form.descriptionBesoin && (
             <div className="conf-recap-row"><span className="label">Votre besoin</span><span className="val" style={{ maxWidth: "60%", textAlign: "right" }}>{form.descriptionBesoin.length > 80 ? form.descriptionBesoin.slice(0, 80) + "..." : form.descriptionBesoin}</span></div>

@@ -62,7 +62,7 @@ export default function ContactCard({ a }: { a: ArtisanPublic }) {
                     {h.jourSemaine === TODAY && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#C4531A" }} />}
                     {JOURS[h.jourSemaine]}
                   </span>
-                  <span style={!h.ouvert ? { color: "#C4531A" } : {}}>{h.ouvert && h.heureOuverture ? `${h.heureOuverture} - ${h.heureFermeture}` : h.ouvert ? "Ouvert" : "Ferm\u00e9"}</span>
+                  <span style={!h.ouvert ? { color: "#C4531A" } : {}}>{h.ouvert && h.heureOuverture ? `${h.heureOuverture} - ${h.heureFermeture}` : h.ouvert ? "Ouvert" : "Fermé"}</span>
                 </div>
               ))}
             </div>
@@ -82,12 +82,12 @@ export default function ContactCard({ a }: { a: ArtisanPublic }) {
 
       {/* Trust badges */}
       <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 4 }}>
-        <span style={{ fontSize: 12, color: "rgba(0,0,0,.45)" }}>{"\u2713"} Profil v&eacute;rifi&eacute;</span>
-        {(a.badgesNoms || []).some((b) => b.toLowerCase().includes("d\u00e9cennale") || b.toLowerCase().includes("assurance")) && (
-          <span style={{ fontSize: 12, color: "rgba(0,0,0,.45)" }}>{"\u2713"} Assurance d&eacute;cennale</span>
+        <span style={{ fontSize: 12, color: "rgba(0,0,0,.45)" }}>{"✓"} Profil v&eacute;rifi&eacute;</span>
+        {(a.badgesNoms || []).some((b) => b.toLowerCase().includes("décennale") || b.toLowerCase().includes("assurance")) && (
+          <span style={{ fontSize: 12, color: "rgba(0,0,0,.45)" }}>{"✓"} Assurance d&eacute;cennale</span>
         )}
         {a.experienceAnnees > 0 && (
-          <span style={{ fontSize: 12, color: "rgba(0,0,0,.45)" }}>{"\u2713"} Artisan depuis {a.experienceAnnees} ans</span>
+          <span style={{ fontSize: 12, color: "rgba(0,0,0,.45)" }}>{"✓"} Artisan depuis {a.experienceAnnees} ans</span>
         )}
       </div>
 

@@ -18,7 +18,7 @@ const registerSchema = z.object({
 function generateSlug(nom: string): string {
   return nom
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // remove diacritics
+    .replace(/[̀-ͯ]/g, "") // remove diacritics
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-") // replace non-alnum with -
     .replace(/-{2,}/g, "-") // dedup consecutive dashes

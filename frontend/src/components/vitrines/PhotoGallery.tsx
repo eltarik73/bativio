@@ -100,7 +100,7 @@ function BeforeAfterGallery({ urls }: { urls: string[] }) {
       onMouseMove={(e) => { const rect = e.currentTarget.getBoundingClientRect(); setPos(Math.max(5, Math.min(95, ((e.clientX - rect.left) / rect.width) * 100))); }}
       onTouchMove={(e) => { const rect = e.currentTarget.getBoundingClientRect(); const t = e.touches[0]; setPos(Math.max(5, Math.min(95, ((t.clientX - rect.left) / rect.width) * 100))); }}
     >
-      <Image src={urls[1]} alt="Apr\u00e8s" fill style={{ objectFit: "cover" }} sizes="100vw" />
+      <Image src={urls[1]} alt="Après" fill style={{ objectFit: "cover" }} sizes="100vw" />
       <div style={{ position: "absolute", inset: 0, width: `${pos}%`, overflow: "hidden" }}>
         <Image src={urls[0]} alt="Avant" fill style={{ objectFit: "cover" }} sizes="100vw" />
       </div>

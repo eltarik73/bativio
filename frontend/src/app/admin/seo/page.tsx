@@ -23,7 +23,7 @@ export default function SeoPage() {
                 <td style={{ padding: "14px 20px", fontSize: 13, color: "#9B9590", fontFamily: "monospace" }}>/travaux/{t.slug}</td>
                 <td style={{ padding: "14px 20px" }}>
                   <span style={{ fontSize: 12, fontWeight: 600, padding: "3px 10px", borderRadius: 6, background: t.description.length > 200 ? "rgba(34,197,94,.08)" : "rgba(232,168,76,.1)", color: t.description.length > 200 ? "#16a34a" : "#E8A84C" }}>
-                    {t.description.length > 200 ? "Bon" : "Am\u00e9liorer"}
+                    {t.description.length > 200 ? "Bon" : "Améliorer"}
                   </span>
                 </td>
                 <td style={{ padding: "14px 20px" }}><button style={{ fontSize: 12, color: "#C4531A", fontWeight: 600, background: "none", border: "none", cursor: "pointer" }}>Modifier</button></td>

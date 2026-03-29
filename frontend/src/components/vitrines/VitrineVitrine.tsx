@@ -33,7 +33,7 @@ export default function VitrineVitrine({ a, photo, primary, accent, villeSlug }:
       {/* Slider hero */}
       <section style={{ position: "relative", height: 420, overflow: "hidden" }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={sliderPhotos[slideIdx]} alt={`${a.nomAffichage} - r\u00e9alisation ${slideIdx + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "opacity .3s" }} />
+        <img src={sliderPhotos[slideIdx]} alt={`${a.nomAffichage} - réalisation ${slideIdx + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "opacity .3s" }} />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(transparent 40%, rgba(0,0,0,.4))" }} />
         {slideIdx > 0 && <button onClick={() => setSlideIdx(slideIdx - 1)} style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", width: 44, height: 44, borderRadius: "50%", background: "rgba(255,255,255,.9)", border: "none", fontSize: 18, cursor: "pointer", color: "#1C1C1E" }}>&larr;</button>}
         {slideIdx < sliderPhotos.length - 1 && <button onClick={() => setSlideIdx(slideIdx + 1)} style={{ position: "absolute", right: 16, top: "50%", transform: "translateY(-50%)", width: 44, height: 44, borderRadius: "50%", background: "rgba(255,255,255,.9)", border: "none", fontSize: 18, cursor: "pointer", color: "#1C1C1E" }}>&rarr;</button>}
@@ -45,7 +45,7 @@ export default function VitrineVitrine({ a, photo, primary, accent, villeSlug }:
       {/* Name + badges + rating centered */}
       <section style={{ background: "#fff", padding: "40px 32px", textAlign: "center" }}>
         <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(28px,5vw,44px)", fontWeight: 700, color: "#1C1C1E" }}>{a.nomAffichage}</h1>
-        <p style={{ fontSize: 16, color: "#9B9590", marginTop: 6 }}>{a.metierNom || "Artisan"} &agrave; {a.ville || "Chamb\u00e9ry"}</p>
+        <p style={{ fontSize: 16, color: "#9B9590", marginTop: 6 }}>{a.metierNom || "Artisan"} &agrave; {a.ville || "Chambéry"}</p>
         {(a.badgesNoms || []).length > 0 && (
           <div style={{ display: "flex", gap: 6, justifyContent: "center", marginTop: 14, flexWrap: "wrap" }}>
             {(a.badgesNoms || []).map((b) => (
@@ -134,7 +134,7 @@ export default function VitrineVitrine({ a, photo, primary, accent, villeSlug }:
               {(a.horaires ?? []).map((h) => (
                 <div key={h.jourSemaine} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, padding: "3px 0" }}>
                   <span style={{ color: "rgba(255,255,255,.55)" }}>{JOURS[h.jourSemaine]}</span>
-                  <span>{h.ouvert && h.heureOuverture ? `${h.heureOuverture} - ${h.heureFermeture}` : h.ouvert ? "Ouvert" : "Ferm\u00e9"}</span>
+                  <span>{h.ouvert && h.heureOuverture ? `${h.heureOuverture} - ${h.heureFermeture}` : h.ouvert ? "Ouvert" : "Fermé"}</span>
                 </div>
               ))}
             </div>

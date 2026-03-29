@@ -9,17 +9,17 @@ const stats = [
 
 const topArtisans = [
   { nom: "Martin Plomberie", devis: 47, vues: 834 },
-  { nom: "Alpes Ma\u00e7onnerie", devis: 38, vues: 712 },
-  { nom: "\u00c9lec Savoie", devis: 32, vues: 567 },
+  { nom: "Alpes Maçonnerie", devis: 38, vues: 712 },
+  { nom: "Élec Savoie", devis: 32, vues: 567 },
   { nom: "Dupont Peinture", devis: 21, vues: 423 },
   { nom: "Savoie Carrelage", devis: 18, vues: 311 },
 ];
 
 const topTravaux = [
-  { nom: "R\u00e9novation salle de bain", recherches: 234 },
-  { nom: "D\u00e9pannage plomberie", recherches: 189 },
-  { nom: "Peinture int\u00e9rieure", recherches: 156 },
-  { nom: "Mise aux normes \u00e9lectriques", recherches: 134 },
+  { nom: "Rénovation salle de bain", recherches: 234 },
+  { nom: "Dépannage plomberie", recherches: 189 },
+  { nom: "Peinture intérieure", recherches: 156 },
+  { nom: "Mise aux normes électriques", recherches: 134 },
   { nom: "Installation PAC", recherches: 98 },
 ];
 

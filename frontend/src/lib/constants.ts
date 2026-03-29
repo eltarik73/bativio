@@ -19,7 +19,7 @@ export const VILLES = [
 
 export const METIERS = [
   { nom: "Plombier", slug: "plombier", icone: "\u{1F527}" },
-  { nom: "Électricien", slug: "electricien", icone: "\u26A1" },
+  { nom: "Électricien", slug: "electricien", icone: "⚡" },
   { nom: "Peintre", slug: "peintre", icone: "\u{1F3A8}" },
   { nom: "Maçon", slug: "macon", icone: "\u{1F9F1}" },
   { nom: "Carreleur", slug: "carreleur", icone: "\u{1F532}" },

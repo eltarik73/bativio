@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 
 const DOT: Record<string, string> = { NOUVEAU: "#dc2626", VU: "#E8A84C", REPONDU: "#2563EB", ACCEPTE: "#16a34a", REFUSE: "#9B9590", ARCHIVE: "#C5C0B9" };
-const LABEL: Record<string, string> = { NOUVEAU: "Nouveau", VU: "En attente", REPONDU: "R\u00e9pondu", ACCEPTE: "Accept\u00e9", REFUSE: "Refus\u00e9", ARCHIVE: "Archiv\u00e9" };
+const LABEL: Record<string, string> = { NOUVEAU: "Nouveau", VU: "En attente", REPONDU: "Répondu", ACCEPTE: "Accepté", REFUSE: "Refusé", ARCHIVE: "Archivé" };
 
 interface Reply {
   id: string;
@@ -164,13 +164,13 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
                   <div key={r.id} style={{ display: "flex", gap: 12 }}>
                     <span style={{ fontSize: 16, flexShrink: 0 }}>{r.type === "QUOTE_UPLOAD" ? "\uD83D\uDCCE" : "\uD83D\uDCAC"}</span>
                     <div style={{ flex: 1 }}>
-                      <p style={{ fontSize: 13, fontWeight: 600, color: "#1C1C1E" }}>{r.type === "QUOTE_UPLOAD" ? "Devis envoy\u00e9" : "R\u00e9ponse envoy\u00e9e"}</p>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: "#1C1C1E" }}>{r.type === "QUOTE_UPLOAD" ? "Devis envoyé" : "Réponse envoyée"}</p>
                       <p style={{ fontSize: 12, color: "#9B9590", marginBottom: 6 }}>{formatDate(r.createdAt)}</p>
                       <div style={{ background: "#F7F5F2", borderRadius: 8, padding: 12 }}>
                         <p style={{ fontSize: 13, color: "#6B6560", lineHeight: 1.5 }}>{r.message}</p>
                         {r.attachmentUrl && (
                           <a href={r.attachmentUrl} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 13, color: "#C4531A", fontWeight: 600, textDecoration: "none" }}>
-                            &#128206; {r.attachmentFilename || "Pi\u00e8ce jointe"}
+                            &#128206; {r.attachmentFilename || "Pièce jointe"}
                           </a>
                         )}
                       </div>
@@ -261,7 +261,7 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
               <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
                 <button onClick={() => setReplyOpen(false)} style={{ flex: 1, height: 42, borderRadius: 8, border: "1.5px solid #E0DDD8", background: "none", fontSize: 14, fontWeight: 600, color: "#6B6560", cursor: "pointer" }}>Annuler</button>
                 <button onClick={handleReply} disabled={sending || !replyMsg.trim()} style={{ flex: 1, height: 42, borderRadius: 8, background: "#C4531A", color: "#fff", border: "none", fontSize: 14, fontWeight: 600, cursor: sending ? "wait" : "pointer", opacity: sending || !replyMsg.trim() ? 0.5 : 1 }}>
-                  {sending ? "Envoi..." : "Envoyer \u2192"}
+                  {sending ? "Envoi..." : "Envoyer →"}
                 </button>
               </div>
             </div>
@@ -302,7 +302,7 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
               <div style={{ display: "flex", gap: 10 }}>
                 <button onClick={() => { setPdfOpen(false); setPdfFile(null); }} style={{ flex: 1, height: 42, borderRadius: 8, border: "1.5px solid #E0DDD8", background: "none", fontSize: 14, fontWeight: 600, color: "#6B6560", cursor: "pointer" }}>Annuler</button>
                 <button onClick={handlePdfUpload} disabled={sending || !pdfFile} style={{ flex: 1, height: 42, borderRadius: 8, background: "#C4531A", color: "#fff", border: "none", fontSize: 14, fontWeight: 600, cursor: sending || !pdfFile ? "not-allowed" : "pointer", opacity: sending || !pdfFile ? 0.5 : 1 }}>
-                  {sending ? "Envoi..." : "Envoyer le devis \u2192"}
+                  {sending ? "Envoi..." : "Envoyer le devis →"}
                 </button>
               </div>
             </div>

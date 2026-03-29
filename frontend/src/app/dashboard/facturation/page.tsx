@@ -26,27 +26,27 @@ const CHECK = (
 const plans = [
   {
     name: "Essentiel",
-    price: "19\u20AC/mois",
+    price: "19€/mois",
     icon: "\uD83D\uDCE5",
-    desc: "Vous avez d\u00e9j\u00e0 un logiciel de facturation",
+    desc: "Vous avez déjà un logiciel de facturation",
     features: [
-      "R\u00e9ception des factures via plateforme certifi\u00e9e",
-      "Consultation et t\u00e9l\u00e9chargement",
+      "Réception des factures via plateforme certifiée",
+      "Consultation et téléchargement",
       "Notifications automatiques",
-      "Archivage s\u00e9curis\u00e9",
+      "Archivage sécurisé",
     ],
     key: "ESSENTIEL",
   },
   {
     name: "Pro",
-    price: "49\u20AC/mois",
+    price: "49€/mois",
     icon: "\uD83D\uDCE4",
-    desc: "Transmettez vos factures en conformit\u00e9",
+    desc: "Transmettez vos factures en conformité",
     features: [
       "Tout Essentiel +",
-      "D\u00e9p\u00f4t de factures (glisser-d\u00e9poser)",
-      "Transmission automatique vers plateforme certifi\u00e9e",
-      "Suivi des statuts en temps r\u00e9el",
+      "Dépôt de factures (glisser-déposer)",
+      "Transmission automatique vers plateforme certifiée",
+      "Suivi des statuts en temps réel",
       "Export comptable CSV/Excel",
     ],
     key: "PRO",
@@ -54,15 +54,15 @@ const plans = [
   },
   {
     name: "Pro+",
-    price: "79\u20AC/mois",
-    icon: "\u26A1",
+    price: "79€/mois",
+    icon: "⚡",
     desc: "Bativio devient votre logiciel de facturation",
     features: [
       "Tout Pro +",
-      "Cr\u00e9ation de factures dans Bativio",
+      "Création de factures dans Bativio",
       "Assistant IA pour les devis",
-      "Calcul TVA et mentions l\u00e9gales automatiques",
-      "Mod\u00e8les personnalisables",
+      "Calcul TVA et mentions légales automatiques",
+      "Modèles personnalisables",
     ],
     key: "PRO_PLUS",
   },
@@ -77,7 +77,7 @@ export default function FacturationPage() {
   const handleNotify = () => {
     if (email) {
       setEmail("");
-      alert("Merci ! Nous vous pr\u00e9viendrons d\u00e8s le lancement.");
+      alert("Merci ! Nous vous préviendrons dès le lancement.");
     }
   };
 
@@ -231,7 +231,7 @@ export default function FacturationPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
           {[
             { n: "1", icon: "&#128100;", label: "Vous vous inscrivez sur Bativio" },
-            { n: "2", icon: "&#128229;", label: "On active votre bo\u00eete de r\u00e9ception" },
+            { n: "2", icon: "&#128229;", label: "On active votre boîte de réception" },
             { n: "3", icon: "&#128231;", label: "Vos fournisseurs vous envoient leurs factures" },
             { n: "4", icon: "&#10004;", label: "Vous les retrouvez dans votre espace" },
           ].map((s, i) => (

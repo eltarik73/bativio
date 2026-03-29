@@ -23,7 +23,7 @@ async function fetchActiveArtisans(): Promise<{ slug: string; ville: string; upd
 }
 
 function slugifyVille(ville: string): string {
-  return ville.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "");
+  return ville.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "");
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

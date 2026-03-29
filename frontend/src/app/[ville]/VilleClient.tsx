@@ -19,7 +19,7 @@ export default function VilleClient({
     ? artisans
     : artisans.filter((a) => {
         if (!a.metierNom) return false;
-        const ms = a.metierNom.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
+        const ms = a.metierNom.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z]/g, "");
         return ms === metierFilter;
       });
 

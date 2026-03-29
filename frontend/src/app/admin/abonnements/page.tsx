@@ -1,11 +1,11 @@
 const C: React.CSSProperties = { background: "#fff", borderRadius: 14, border: "1px solid #EDEBE7", overflow: "hidden" };
 
 const subs = [
-  { nom: "Martin Plomberie", plan: "Pro", prix: "49\u20AC", statut: "Actif", date: "15/03/2026" },
-  { nom: "\u00c9lec Savoie", plan: "Essentiel", prix: "19\u20AC", statut: "Actif", date: "16/03/2026" },
-  { nom: "Dupont Peinture", plan: "Gratuit", prix: "0\u20AC", statut: "Gratuit", date: "17/03/2026" },
-  { nom: "Alpes Ma\u00e7onnerie", plan: "Pro+", prix: "79\u20AC", statut: "Actif", date: "18/03/2026" },
-  { nom: "Savoie Carrelage", plan: "Essentiel", prix: "19\u20AC", statut: "Actif", date: "19/03/2026" },
+  { nom: "Martin Plomberie", plan: "Pro", prix: "49€", statut: "Actif", date: "15/03/2026" },
+  { nom: "Élec Savoie", plan: "Essentiel", prix: "19€", statut: "Actif", date: "16/03/2026" },
+  { nom: "Dupont Peinture", plan: "Gratuit", prix: "0€", statut: "Gratuit", date: "17/03/2026" },
+  { nom: "Alpes Maçonnerie", plan: "Pro+", prix: "79€", statut: "Actif", date: "18/03/2026" },
+  { nom: "Savoie Carrelage", plan: "Essentiel", prix: "19€", statut: "Actif", date: "19/03/2026" },
 ];
 
 export default function AbonnementsPage() {
@@ -15,8 +15,8 @@ export default function AbonnementsPage() {
       <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 20 }}>Abonnements</h1>
       {/* MRR */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16, marginBottom: 24 }}>
-        <div style={{ ...C, padding: 20 }}><div style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 800, color: "#1C1C1E" }}>{mrr}\u20AC</div><div style={{ fontSize: 13, color: "#9B9590", marginTop: 4 }}>MRR total</div></div>
-        <div style={{ ...C, padding: 20 }}><div style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 800, color: "#22c55e" }}>4</div><div style={{ fontSize: 13, color: "#9B9590", marginTop: 4 }}>Abonn\u00e9s payants</div></div>
+        <div style={{ ...C, padding: 20 }}><div style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 800, color: "#1C1C1E" }}>{mrr}€</div><div style={{ fontSize: 13, color: "#9B9590", marginTop: 4 }}>MRR total</div></div>
+        <div style={{ ...C, padding: 20 }}><div style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 800, color: "#22c55e" }}>4</div><div style={{ fontSize: 13, color: "#9B9590", marginTop: 4 }}>Abonnés payants</div></div>
         <div style={{ ...C, padding: 20 }}><div style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 800, color: "#E8A84C" }}>1</div><div style={{ fontSize: 13, color: "#9B9590", marginTop: 4 }}>Plan gratuit</div></div>
       </div>
       <div style={C}>

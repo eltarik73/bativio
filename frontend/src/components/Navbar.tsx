@@ -28,12 +28,12 @@ const ARTISAN_MENU = [
   { href: "/dashboard/vitrine", label: "Ma vitrine" },
   { href: "/dashboard/devis", label: "Demandes de devis" },
   { href: "/dashboard/photos", label: "Mes photos" },
-  { href: "/dashboard/parametres", label: "Param\u00e8tres" },
+  { href: "/dashboard/parametres", label: "Paramètres" },
 ];
 
 const ADMIN_MENU = [
   { href: "/admin", label: "Administration" },
-  { href: "/admin/artisans", label: "G\u00e9rer les artisans" },
+  { href: "/admin/artisans", label: "Gérer les artisans" },
   { href: "/admin/statistiques", label: "Statistiques" },
 ];
 

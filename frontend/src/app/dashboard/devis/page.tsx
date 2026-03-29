@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 
 const DOT: Record<string, string> = { NOUVEAU: "#dc2626", VU: "#E8A84C", REPONDU: "#2563EB", ACCEPTE: "#16a34a", REFUSE: "#9B9590", ARCHIVE: "#C5C0B9" };
-const LABEL: Record<string, string> = { NOUVEAU: "Nouveau", VU: "En attente", REPONDU: "R\u00e9pondu", ACCEPTE: "Accept\u00e9", REFUSE: "Refus\u00e9", ARCHIVE: "Archiv\u00e9" };
+const LABEL: Record<string, string> = { NOUVEAU: "Nouveau", VU: "En attente", REPONDU: "Répondu", ACCEPTE: "Accepté", REFUSE: "Refusé", ARCHIVE: "Archivé" };
 const BG: Record<string, string> = { NOUVEAU: "rgba(220,38,38,.08)", VU: "rgba(232,168,76,.08)", REPONDU: "rgba(37,99,235,.08)", ACCEPTE: "rgba(22,163,74,.08)", REFUSE: "rgba(155,149,144,.08)", ARCHIVE: "rgba(197,192,185,.08)" };
 
 interface Devis {

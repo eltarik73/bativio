@@ -16,7 +16,7 @@ import { notFound } from "next/navigation";
 export function generateStaticParams() {
   const p: { ville: string; slug: string }[] = [];
   for (const v of VILLES) {
-    MOCK_ARTISANS.filter((a) => a.ville && a.ville.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "") === v.slug)
+    MOCK_ARTISANS.filter((a) => a.ville && a.ville.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z]/g, "") === v.slug)
       .forEach((a) => p.push({ ville: v.slug, slug: a.slug }));
   }
   return p;
@@ -39,20 +39,20 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
   const { ville: villeParam, slug } = await params;
   const a = await fetchArtisan(slug);
   if (!a) return { title: "Artisan introuvable" };
-  const ms = (a.metierNom || "plombier").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
+  const ms = (a.metierNom || "plombier").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z]/g, "");
   const metierImg = METIER_PHOTOS[ms] || METIER_PHOTOS.plombier;
   const ogImage = (a.photos && a.photos.length > 0) ? a.photos[0].url : metierImg;
   const seoDesc = a.seoDescription;
-  const metaDesc = seoDesc || `${a.nomAffichage}, ${(a.metierNom || "artisan").toLowerCase()} \u00e0 ${a.ville || villeParam}. ${a.description || ""} Devis gratuit.`;
+  const metaDesc = seoDesc || `${a.nomAffichage}, ${(a.metierNom || "artisan").toLowerCase()} à ${a.ville || villeParam}. ${a.description || ""} Devis gratuit.`;
   return {
-    title: `${a.nomAffichage} \u2014 ${a.metierNom || "Artisan"} \u00e0 ${a.ville || villeParam} | Bativio`,
+    title: `${a.nomAffichage} — ${a.metierNom || "Artisan"} à ${a.ville || villeParam} | Bativio`,
     description: metaDesc.length > 160 ? metaDesc.substring(0, 157) + "..." : metaDesc,
     alternates: { canonical: `https://bativio.fr/${villeParam}/${a.slug}` },
     openGraph: {
-      title: `${a.nomAffichage} \u2014 ${a.metierNom || "Artisan"} \u00e0 ${a.ville || villeParam}`,
-      description: `Devis gratuit \u00b7 \u2605 ${a.noteMoyenne || 0}/5${a.experienceAnnees ? " \u00b7 " + a.experienceAnnees + " ans" : ""}`,
+      title: `${a.nomAffichage} — ${a.metierNom || "Artisan"} à ${a.ville || villeParam}`,
+      description: `Devis gratuit · ★ ${a.noteMoyenne || 0}/5${a.experienceAnnees ? " · " + a.experienceAnnees + " ans" : ""}`,
       url: `https://bativio.fr/${villeParam}/${a.slug}`,
-      images: [{ url: ogImage, width: 800, height: 600, alt: `${a.nomAffichage} - ${a.metierNom || "Artisan"} \u00e0 ${a.ville || villeParam}` }],
+      images: [{ url: ogImage, width: 800, height: 600, alt: `${a.nomAffichage} - ${a.metierNom || "Artisan"} à ${a.ville || villeParam}` }],
     },
   };
 }
@@ -62,7 +62,7 @@ export default async function ArtisanPage({ params }: { params: Promise<{ ville:
   const a = await fetchArtisan(slug);
   if (!a) notFound();
 
-  const ms = (a.metierNom || "plombier").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
+  const ms = (a.metierNom || "plombier").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z]/g, "");
   const photo = METIER_PHOTOS[ms] || METIER_PHOTOS.plombier;
   const primary = a.colorPrimary || "#C4531A";
   const accent = a.colorAccent || "#E8A84C";

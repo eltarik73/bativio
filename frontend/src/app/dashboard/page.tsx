@@ -16,25 +16,25 @@ const statsDef = [
 function getGreeting(): string {
   const h = new Date().getHours();
   if (h < 12) return "Bon matin";
-  if (h < 18) return "Bon apr\u00e8s-midi";
-  return "Bonne soir\u00e9e";
+  if (h < 18) return "Bon après-midi";
+  return "Bonne soirée";
 }
 
 function getFormattedDate(): string {
   const now = new Date();
   const days = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
-  const months = ["janvier", "f\u00e9vrier", "mars", "avril", "mai", "juin", "juillet", "ao\u00fbt", "septembre", "octobre", "novembre", "d\u00e9cembre"];
+  const months = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
   return `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
 }
 
 function slugifyVille(ville: string): string {
-  return ville.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-");
+  return ville.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, "-");
 }
 
 function getCompletionItems(artisan: { description?: string | null; metierNom?: string | null; [key: string]: unknown } | null) {
   return [
     { label: "Informations", done: true, href: "/dashboard/profil" },
-    { label: "M\u00e9tier", done: !!artisan?.metierNom, href: "/dashboard/profil" },
+    { label: "Métier", done: !!artisan?.metierNom, href: "/dashboard/profil" },
     { label: "Photos", done: false, href: "/dashboard/photos" },
     { label: "Description", done: !!artisan?.description, href: "/dashboard/profil" },
   ];
@@ -62,10 +62,10 @@ export default function DashboardPage() {
     ? "Profil complet !"
     : completion >= 70
       ? "Profil presque complet"
-      : "Compl\u00e9tez votre profil";
+      : "Complétez votre profil";
   const completionHint = completion >= 100
     ? "Votre profil est visible dans l'annuaire."
-    : "Ajoutez des informations pour am\u00e9liorer votre visibilit\u00e9.";
+    : "Ajoutez des informations pour améliorer votre visibilité.";
 
   const isPending = artisan?.actif === false;
 
@@ -120,7 +120,7 @@ export default function DashboardPage() {
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 16, paddingTop: 16, borderTop: "1px solid #F7F5F2" }}>
           {completionItems.map((item) => (
             <Link key={item.label} href={item.href} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 14px", borderRadius: 8, fontSize: 13, fontWeight: 500, textDecoration: "none", transition: "all .15s", background: item.done ? "rgba(34,197,94,.06)" : "rgba(155,149,144,.06)", color: item.done ? "#16a34a" : "#9B9590" }}>
-              <span style={{ fontSize: 14, lineHeight: 1 }}>{item.done ? "\u2713" : "\u25CB"}</span>
+              <span style={{ fontSize: 14, lineHeight: 1 }}>{item.done ? "✓" : "○"}</span>
               {item.label}
             </Link>
           ))}

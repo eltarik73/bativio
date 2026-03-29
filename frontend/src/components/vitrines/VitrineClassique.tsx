@@ -43,7 +43,7 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
               En ligne
             </span>
           </div>
-          <p style={{ fontSize: 18, color: "rgba(255,255,255,.45)", marginTop: 8 }}>{a.metierNom || "Artisan"} &agrave; {a.ville || "Chamb\u00e9ry"}</p>
+          <p style={{ fontSize: 18, color: "rgba(255,255,255,.45)", marginTop: 8 }}>{a.metierNom || "Artisan"} &agrave; {a.ville || "Chambéry"}</p>
           {a.experienceAnnees && (
             <p style={{ fontSize: 14, color: "rgba(255,255,255,.35)", marginTop: 4 }}>{a.experienceAnnees} ans d&apos;exp&eacute;rience</p>
           )}
@@ -69,7 +69,7 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
           <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 20, textAlign: "center" }}>Pourquoi choisir {a.nomAffichage}&nbsp;?</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
           {([
-            ...(a.experienceAnnees ? [{ v: String(a.experienceAnnees), l: "ann\u00e9es d'exp\u00e9rience", icon: "clock" as const }] : []),
+            ...(a.experienceAnnees ? [{ v: String(a.experienceAnnees), l: "années d'expérience", icon: "clock" as const }] : []),
             { v: String(a.nombreAvis), l: "avis clients", icon: "star" as const },
             { v: `${a.zoneRayonKm} km`, l: "rayon d'intervention", icon: "compass" as const },
           ]).map((s, i) => (
@@ -96,7 +96,7 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
         </div>
       </section>
 
-      {/* Pr\u00e9sentation */}
+      {/* Présentation */}
       <section style={{ background: "#fff", padding: "48px 32px" }}>
         <div style={{ maxWidth: 880, margin: "0 auto" }}>
           <div style={{ width: 44, height: 2, background: primary, marginBottom: 16 }} />
@@ -187,7 +187,7 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
               {(a.horaires ?? []).map((h) => (
                 <div key={h.jourSemaine} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, padding: "3px 0" }}>
                   <span style={{ color: "rgba(255,255,255,.55)" }}>{JOURS[h.jourSemaine]}</span>
-                  <span>{h.ouvert && h.heureOuverture ? `${h.heureOuverture} - ${h.heureFermeture}` : h.ouvert ? "Ouvert" : "Ferm\u00e9"}</span>
+                  <span>{h.ouvert && h.heureOuverture ? `${h.heureOuverture} - ${h.heureFermeture}` : h.ouvert ? "Ouvert" : "Fermé"}</span>
                 </div>
               ))}
             </div>

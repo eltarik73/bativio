@@ -8,7 +8,7 @@ import { PALETTES, TEMPLATES, PHOTO_LAYOUTS } from "@/lib/vitrine-config";
 const C: React.CSSProperties = { background: "#fff", borderRadius: 14, border: "1px solid #EDEBE7", padding: 20, marginBottom: 16 };
 
 function slugifyVille(ville: string): string {
-  return ville.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-");
+  return ville.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, "-");
 }
 
 export default function VitrinePage() {
@@ -182,7 +182,7 @@ export default function VitrinePage() {
 
         {/* Publish */}
         <button onClick={handlePublish} disabled={saving || !isPro} style={{ width: "100%", height: 48, borderRadius: 10, background: isPro ? currentPalette.primary : "#E0DDD8", color: "#fff", fontSize: 15, fontWeight: 600, border: "none", cursor: isPro ? "pointer" : "not-allowed", transition: "all .2s", opacity: saving ? 0.6 : 1 }}>
-          {saved ? "\u2713 Vitrine publi\u00e9e !" : saving ? "Publication..." : "Publier les modifications"}
+          {saved ? "✓ Vitrine publiée !" : saving ? "Publication..." : "Publier les modifications"}
         </button>
       </div>
 
@@ -212,11 +212,11 @@ export default function VitrinePage() {
                   <span style={{ fontSize: 11, color: "rgba(255,255,255,.4)" }}>47 avis</span>
                 </div>
                 <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#fff" }}>{user?.nomAffichage || "Mon entreprise"}</h2>
-                <p style={{ fontSize: 13, color: "rgba(255,255,255,.4)", marginTop: 4 }}>{user?.metierNom || "Artisan"} &agrave; {user?.ville || "Chamb\u00e9ry"}</p>
+                <p style={{ fontSize: 13, color: "rgba(255,255,255,.4)", marginTop: 4 }}>{user?.metierNom || "Artisan"} &agrave; {user?.ville || "Chambéry"}</p>
                 <span style={{ display: "inline-block", marginTop: 16, background: currentPalette.primary, color: "#fff", padding: "8px 16px", borderRadius: 8, fontSize: 12, fontWeight: 600 }}>Devis gratuit</span>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8, marginBottom: 12 }}>
-                {[{ v: "15", l: "ann\u00e9es" }, { v: "47", l: "avis" }, { v: "25 km", l: "rayon" }].map((s) => (
+                {[{ v: "15", l: "années" }, { v: "47", l: "avis" }, { v: "25 km", l: "rayon" }].map((s) => (
                   <div key={s.l} style={{ background: "#fff", border: "1px solid #EDEBE7", borderRadius: 8, padding: 12, textAlign: "center" }}>
                     <div style={{ fontFamily: "'Fraunces',serif", fontSize: 20, fontWeight: 700, color: currentPalette.primary }}>{s.v}</div>
                     <div style={{ fontSize: 10, color: "#9B9590" }}>{s.l}</div>
@@ -237,7 +237,7 @@ export default function VitrinePage() {
                 <div style={{ padding: 24, display: "flex", flexDirection: "column", justifyContent: "center" }}>
                   <span style={{ background: currentPalette.accent, color: "#1C1C1E", padding: "3px 8px", borderRadius: 8, fontSize: 11, fontWeight: 700, alignSelf: "flex-start", marginBottom: 8 }}>4.8 &#9733;</span>
                   <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 20, fontWeight: 700 }}>{user?.nomAffichage || "Mon entreprise"}</h2>
-                  <p style={{ fontSize: 12, color: "#9B9590", marginTop: 4 }}>{user?.metierNom || "Artisan"} &agrave; {user?.ville || "Chamb\u00e9ry"}</p>
+                  <p style={{ fontSize: 12, color: "#9B9590", marginTop: 4 }}>{user?.metierNom || "Artisan"} &agrave; {user?.ville || "Chambéry"}</p>
                   <span style={{ display: "inline-block", marginTop: 14, background: currentPalette.primary, color: "#fff", padding: "6px 14px", borderRadius: 8, fontSize: 11, fontWeight: 600, alignSelf: "flex-start" }}>Devis gratuit</span>
                 </div>
               </div>
@@ -255,7 +255,7 @@ export default function VitrinePage() {
             <div style={{ padding: 20 }}>
               <div style={{ background: currentPalette.primary, borderRadius: 12, padding: "24px 20px", marginBottom: 12, color: "#fff" }}>
                 <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700 }}>{user?.nomAffichage || "Mon entreprise"}</h2>
-                <p style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>{user?.metierNom || "Artisan"} &agrave; {user?.ville || "Chamb\u00e9ry"}</p>
+                <p style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>{user?.metierNom || "Artisan"} &agrave; {user?.ville || "Chambéry"}</p>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gridTemplateRows: "auto auto", gap: 8 }}>
                 <div style={{ background: "#EDEBE7", borderRadius: 10, gridRow: "1/3", minHeight: 140 }} />
@@ -297,7 +297,7 @@ export default function VitrinePage() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0 }}>
                 <div style={{ padding: 16, background: "#FAF8F5" }}>
                   <p style={{ fontSize: 10, fontWeight: 600, color: "#9B9590", marginBottom: 6 }}>PR&Eacute;SENTATION</p>
-                  <p style={{ fontSize: 11, color: "#6B6560", lineHeight: 1.4 }}>{user?.metierNom || "Artisan"} &agrave; {user?.ville || "Chamb\u00e9ry"}.</p>
+                  <p style={{ fontSize: 11, color: "#6B6560", lineHeight: 1.4 }}>{user?.metierNom || "Artisan"} &agrave; {user?.ville || "Chambéry"}.</p>
                 </div>
                 <div style={{ background: "#EDEBE7" }} />
               </div>

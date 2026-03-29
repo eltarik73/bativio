@@ -23,17 +23,17 @@ export const PALETTES: Palette[] = [
 ];
 
 export const TEMPLATES: TemplateConfig[] = [
-  { id: "classique", nom: "Classique", description: "Hero plein \u00e9cran + sections verticales" },
+  { id: "classique", nom: "Classique", description: "Hero plein écran + sections verticales" },
   { id: "portfolio", nom: "Portfolio", description: "Split screen + galerie masonry" },
   { id: "moderne", nom: "Moderne", description: "Bento grid + modal devis" },
   { id: "vitrine", nom: "Vitrine", description: "Slider photos + look magazine" },
 ];
 
 export const PHOTO_LAYOUTS = [
-  { id: "grid", nom: "Grille", icon: "\u25A6" },
-  { id: "masonry", nom: "Masonry", icon: "\u2593" },
-  { id: "slider", nom: "Slider", icon: "\u25B6" },
-  { id: "before-after", nom: "Avant/Apr\u00e8s", icon: "\u21C4" },
+  { id: "grid", nom: "Grille", icon: "▦" },
+  { id: "masonry", nom: "Masonry", icon: "▓" },
+  { id: "slider", nom: "Slider", icon: "▶" },
+  { id: "before-after", nom: "Avant/Après", icon: "⇄" },
 ] as const;
 
 export type PhotoLayoutType = "grid" | "masonry" | "slider" | "before-after";

@@ -4,27 +4,27 @@ import { useState, useRef } from "react";
 import Link from "next/link";
 
 const SUB: Record<string, { label: string; opts: string[] }> = {
-  plomberie: { label: "Quel type d'intervention ?", opts: ["Fuite / D\u00e9pannage", "R\u00e9novation salle de bain", "Installation chauffage", "Chauffe-eau", "Autre"] },
+  plomberie: { label: "Quel type d'intervention ?", opts: ["Fuite / Dépannage", "Rénovation salle de bain", "Installation chauffage", "Chauffe-eau", "Autre"] },
   electricite: { label: "Quel type de travaux ?", opts: ["Mise aux normes", "Nouveau tableau", "Prises / Interrupteurs", "Domotique", "Autre"] },
-  peinture: { label: "Quel type de surface ?", opts: ["Peinture int\u00e9rieure", "Peinture ext\u00e9rieure", "Papier peint", "Autre"] },
-  maconnerie: { label: "Quel type de travaux ?", opts: ["Construction mur", "Extension", "R\u00e9novation fa\u00e7ade", "Autre"] },
-  carrelage: { label: "Quelle pi\u00e8ce ?", opts: ["Salle de bain", "Cuisine", "Sol int\u00e9rieur", "Terrasse", "Autre"] },
-  toiture: { label: "Quel type d'intervention ?", opts: ["R\u00e9novation toiture", "R\u00e9paration fuite", "D\u00e9moussage", "Isolation", "Autre"] },
-  chauffage: { label: "Quel type d'\u00e9quipement ?", opts: ["Pompe \u00e0 chaleur", "Chaudi\u00e8re gaz", "Radiateurs", "Plancher chauffant", "Autre"] },
+  peinture: { label: "Quel type de surface ?", opts: ["Peinture intérieure", "Peinture extérieure", "Papier peint", "Autre"] },
+  maconnerie: { label: "Quel type de travaux ?", opts: ["Construction mur", "Extension", "Rénovation façade", "Autre"] },
+  carrelage: { label: "Quelle pièce ?", opts: ["Salle de bain", "Cuisine", "Sol intérieur", "Terrasse", "Autre"] },
+  toiture: { label: "Quel type d'intervention ?", opts: ["Rénovation toiture", "Réparation fuite", "Démoussage", "Isolation", "Autre"] },
+  chauffage: { label: "Quel type d'équipement ?", opts: ["Pompe à chaleur", "Chaudière gaz", "Radiateurs", "Plancher chauffant", "Autre"] },
   menuiserie: { label: "Quel type de travaux ?", opts: ["Pose de parquet", "Meuble sur mesure", "Pose cuisine", "Autre"] },
-  autre: { label: "D\u00e9crivez votre besoin", opts: ["R\u00e9novation compl\u00e8te", "Am\u00e9nagement combles", "Multi-travaux", "Autre"] },
+  autre: { label: "Décrivez votre besoin", opts: ["Rénovation complète", "Aménagement combles", "Multi-travaux", "Autre"] },
 };
 
 const METIERS = [
   { id: "plomberie", emoji: "\uD83D\uDD27", name: "Plomberie" },
-  { id: "electricite", emoji: "\u26A1", name: "\u00c9lectricit\u00e9" },
+  { id: "electricite", emoji: "⚡", name: "Électricité" },
   { id: "peinture", emoji: "\uD83C\uDFA8", name: "Peinture" },
-  { id: "maconnerie", emoji: "\uD83E\uDDF1", name: "Ma\u00e7onnerie" },
+  { id: "maconnerie", emoji: "\uD83E\uDDF1", name: "Maçonnerie" },
   { id: "carrelage", emoji: "\uD83D\uDD32", name: "Carrelage" },
   { id: "toiture", emoji: "\uD83C\uDFE0", name: "Toiture" },
   { id: "chauffage", emoji: "\uD83D\uDD25", name: "Chauffage" },
   { id: "menuiserie", emoji: "\uD83E\uDE9A", name: "Menuiserie" },
-  { id: "autre", emoji: "\uD83C\uDFD7\uFE0F", name: "Autre" },
+  { id: "autre", emoji: "\uD83C\uDFD7️", name: "Autre" },
 ];
 
 export default function DevisForm3Steps({ slug, artisanName, ville }: { slug: string; artisanName: string; ville: string }) {
@@ -110,7 +110,7 @@ export default function DevisForm3Steps({ slug, artisanName, ville }: { slug: st
         <div className="field">
           <label>D&eacute;lai souhait&eacute;</label>
           <div className="pills-devis">
-            {["Urgent (< 48h)", "Sous 2 semaines", "Sous 1 mois", "Pas press\u00e9"].map((d) => <div key={d} className={`pill-opt ${delai === d ? "selected" : ""}`} onClick={() => setDelai(d)}>{d}</div>)}
+            {["Urgent (< 48h)", "Sous 2 semaines", "Sous 1 mois", "Pas pressé"].map((d) => <div key={d} className={`pill-opt ${delai === d ? "selected" : ""}`} onClick={() => setDelai(d)}>{d}</div>)}
           </div>
         </div>
         <div className="field">

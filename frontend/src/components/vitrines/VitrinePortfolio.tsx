@@ -34,7 +34,7 @@ export default function VitrinePortfolio({ a, photo, primary, accent, villeSlug 
             <span style={{ fontSize: 13, color: "#9B9590" }}>{a.nombreAvis} avis</span>
           </div>
           <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(28px,5vw,48px)", fontWeight: 700, color: "#1C1C1E", lineHeight: 1.1 }}>{a.nomAffichage}</h1>
-          <p style={{ fontSize: 16, color: "#9B9590", marginTop: 6 }}>{a.metierNom || "Artisan"} &agrave; {a.ville || "Chamb\u00e9ry"}</p>
+          <p style={{ fontSize: 16, color: "#9B9590", marginTop: 6 }}>{a.metierNom || "Artisan"} &agrave; {a.ville || "Chambéry"}</p>
           {a.experienceAnnees && <p style={{ fontSize: 14, color: "#C5C0B9", marginTop: 2 }}>{a.experienceAnnees} ans d&apos;exp&eacute;rience</p>}
           {(a.badgesNoms || []).length > 0 && (
             <div style={{ display: "flex", gap: 6, marginTop: 16, flexWrap: "wrap" }}>
@@ -80,7 +80,7 @@ export default function VitrinePortfolio({ a, photo, primary, accent, villeSlug 
         </section>
       )}
 
-      {/* Pr\u00e9sentation */}
+      {/* Présentation */}
       <section style={{ background: "#fff", padding: "48px 32px" }}>
         <div style={{ maxWidth: 880, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40 }} className="max-md:grid-cols-1">
           <div>
@@ -90,7 +90,7 @@ export default function VitrinePortfolio({ a, photo, primary, accent, villeSlug 
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             {([
-              ...(a.experienceAnnees ? [{ v: String(a.experienceAnnees), l: "ann\u00e9es" }] : []),
+              ...(a.experienceAnnees ? [{ v: String(a.experienceAnnees), l: "années" }] : []),
               { v: String(a.nombreAvis), l: "avis" },
               { v: `${a.zoneRayonKm} km`, l: "rayon" },
             ]).map((s, i) => (

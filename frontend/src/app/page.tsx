@@ -11,20 +11,20 @@ import type { ArtisanPublic, MetierData } from "@/lib/api";
 import { VILLES } from "@/lib/constants";
 
 const PLANS_DATA = [
-  { name: "Gratuit", price: "0\u20AC", per: "", desc: "Pour d\u00e9couvrir Bativio", pop: false, btn: "ghost",
-    feats: ["Fiche sur l\u2019annuaire", "Formulaire de devis", "3 photos max", "2 badges"] },
-  { name: "Essentiel", price: "19\u20AC", per: "/mois", desc: "Pour \u00eatre visible et joignable", pop: false, btn: "ghost",
-    feats: ["10 photos + avant/apr\u00e8s", "Badges illimit\u00e9s", "Agenda + RDV en ligne", "SMS rappel + relance 20min", "R\u00e9ception factures PA"] },
-  { name: "Pro", price: "49\u20AC", per: "/mois", desc: "Votre site vitrine complet", pop: true, btn: "fill",
-    feats: ["<strong>URL perso (site vitrine)</strong>", "Photos illimit\u00e9es", "QR Code + bouton Google", "Mini-CRM clients", "Transmission PA", "Export comptable"] },
-  { name: "Pro+", price: "79\u20AC", per: "/mois", desc: "L\u2019artisan boost\u00e9 par l\u2019IA", pop: false, btn: "ghost",
-    feats: ["<strong>Agent IA r\u00e9pondeur</strong>", "<strong>Devis IA automatique</strong>", "Cr\u00e9ation factures", "Support d\u00e9di\u00e9"] },
+  { name: "Gratuit", price: "0€", per: "", desc: "Pour découvrir Bativio", pop: false, btn: "ghost",
+    feats: ["Fiche sur l’annuaire", "Formulaire de devis", "3 photos max", "2 badges"] },
+  { name: "Essentiel", price: "19€", per: "/mois", desc: "Pour être visible et joignable", pop: false, btn: "ghost",
+    feats: ["10 photos + avant/après", "Badges illimités", "Agenda + RDV en ligne", "SMS rappel + relance 20min", "Réception factures PA"] },
+  { name: "Pro", price: "49€", per: "/mois", desc: "Votre site vitrine complet", pop: true, btn: "fill",
+    feats: ["<strong>URL perso (site vitrine)</strong>", "Photos illimitées", "QR Code + bouton Google", "Mini-CRM clients", "Transmission PA", "Export comptable"] },
+  { name: "Pro+", price: "79€", per: "/mois", desc: "L’artisan boosté par l’IA", pop: false, btn: "ghost",
+    feats: ["<strong>Agent IA répondeur</strong>", "<strong>Devis IA automatique</strong>", "Création factures", "Support dédié"] },
 ];
 
 const TESTIMONIALS = [
-  { text: "Depuis que je suis sur Bativio, j\u2019ai 30% de demandes de devis en plus.", name: "Jean M.", role: "plombier \u00e0 Chamb\u00e9ry", initials: "JM" },
-  { text: "J\u2019ai trouv\u00e9 un \u00e9lectricien de confiance en 5 minutes. Travaux impeccables.", name: "Sophie L.", role: "Annecy", initials: "SL" },
-  { text: "Simple, rapide, et surtout gratuit. Je recommande \u00e0 tous les artisans du coin.", name: "Pierre D.", role: "peintre \u00e0 Grenoble", initials: "PD" },
+  { text: "Depuis que je suis sur Bativio, j’ai 30% de demandes de devis en plus.", name: "Jean M.", role: "plombier à Chambéry", initials: "JM" },
+  { text: "J’ai trouvé un électricien de confiance en 5 minutes. Travaux impeccables.", name: "Sophie L.", role: "Annecy", initials: "SL" },
+  { text: "Simple, rapide, et surtout gratuit. Je recommande à tous les artisans du coin.", name: "Pierre D.", role: "peintre à Grenoble", initials: "PD" },
 ];
 
 export default function Home() {
@@ -47,11 +47,11 @@ export default function Home() {
   }, []);
 
   const filtered = allArtisans.filter((a) => {
-    const vs = (a.ville || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
+    const vs = (a.ville || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z]/g, "");
     if (villeFilter && (!a.ville || vs !== villeFilter)) return false;
     if (metierFilter !== "all") {
       if (!a.metierNom) return false;
-      const ms = (a.metierNom || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
+      const ms = (a.metierNom || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z]/g, "");
       if (ms !== metierFilter) return false;
     }
     if (search) {
@@ -177,7 +177,7 @@ export default function Home() {
             </div>
           </div>
           <button className={`toggle-btn ${pricingOpen ? "open" : ""}`} onClick={(e) => { e.stopPropagation(); togglePricing(); }}>
-            {pricingOpen ? "Masquer les offres" : "D\u00e9couvrir les offres"}
+            {pricingOpen ? "Masquer les offres" : "Découvrir les offres"}
             <svg fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" /></svg>
           </button>
         </div>
@@ -200,7 +200,7 @@ export default function Home() {
                 ))}
               </ul>
               <Link href="/inscription" className={`plan-btn ${p.btn}`}>
-                {p.price === "0\u20AC" ? "Commencer" : "Choisir"}
+                {p.price === "0€" ? "Commencer" : "Choisir"}
               </Link>
             </div>
           ))}
@@ -215,7 +215,7 @@ export default function Home() {
       {/* JSON-LD WebSite + Organization */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([
         { "@context": "https://schema.org", "@type": "WebSite", name: "Bativio", url: "https://bativio.fr", potentialAction: { "@type": "SearchAction", target: "https://bativio.fr/?search={search_term_string}", "query-input": "required name=search_term_string" } },
-        { "@context": "https://schema.org", "@type": "Organization", name: "Bativio", url: "https://bativio.fr", logo: "https://bativio.fr/og-image.png", description: "La plateforme des artisans du b\u00e2timent en Rh\u00f4ne-Alpes. Z\u00e9ro commission.", areaServed: { "@type": "State", name: "Rh\u00f4ne-Alpes" } }
+        { "@context": "https://schema.org", "@type": "Organization", name: "Bativio", url: "https://bativio.fr", logo: "https://bativio.fr/og-image.png", description: "La plateforme des artisans du bâtiment en Rhône-Alpes. Zéro commission.", areaServed: { "@type": "State", name: "Rhône-Alpes" } }
       ]) }} />
     </>
   );
