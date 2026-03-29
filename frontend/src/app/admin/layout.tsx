@@ -28,12 +28,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <ProtectedRoute requireAdmin>
       <div style={{ display: "flex", minHeight: "100vh", background: "#FAF8F5" }}>
-        <aside style={{ width: 260, flexShrink: 0, background: "#1C1C1E", padding: "24px 16px 20px", display: "flex", flexDirection: "column" }} className="hidden md:flex">
-          <Link href="/admin" style={{ textDecoration: "none", marginBottom: 36, paddingLeft: 14, display: "flex", alignItems: "baseline", gap: 8 }}>
+        <aside style={{ width: 260, flexShrink: 0, background: "#1C1C1E", display: "flex", flexDirection: "column", height: "100vh", position: "sticky", top: 0, overflow: "hidden" }} className="hidden md:flex">
+          <Link href="/admin" style={{ textDecoration: "none", padding: "24px 16px 0 30px", marginBottom: 36, display: "flex", alignItems: "baseline", gap: 8, flexShrink: 0 }}>
             <span style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#fff", letterSpacing: -0.3 }}>Bativio</span>
             <span style={{ fontSize: 11, color: "rgba(255,255,255,.4)", fontWeight: 500 }}>Admin</span>
           </Link>
-          <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+          <nav style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 2, padding: "0 16px" }}>
             {navItems.map((item) => {
               const active = pathname === item.href;
               return (
@@ -55,31 +55,32 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               );
             })}
           </nav>
-          <button
-            onClick={handleLogout}
-            className="admin-logout-btn"
-            style={{
-              marginTop: "auto",
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "10px 14px",
-              borderRadius: 10,
-              fontSize: 13,
-              fontWeight: 600,
-              color: "rgba(255,255,255,.4)",
-              background: "transparent",
-              border: "none",
-              cursor: "pointer",
-              width: "100%",
-              transition: "all .15s",
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = "#DC2626"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255,255,255,.4)"; }}
-          >
-            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" /></svg>
-            Se déconnecter
-          </button>
+          <div style={{ flexShrink: 0, borderTop: "1px solid rgba(255,255,255,.08)", padding: "16px 16px 20px" }}>
+            <button
+              onClick={handleLogout}
+              className="admin-logout-btn"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "10px 14px",
+                borderRadius: 10,
+                fontSize: 13,
+                fontWeight: 600,
+                color: "rgba(255,255,255,.4)",
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                width: "100%",
+                transition: "all .15s",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = "#DC2626"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255,255,255,.4)"; }}
+            >
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" /></svg>
+              Se déconnecter
+            </button>
+          </div>
         </aside>
         <div style={{ flex: 1 }}>
           <header style={{ background: "#fff", borderBottom: "1.5px solid #EDEBE7", padding: "16px 32px" }}>

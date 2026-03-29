@@ -46,9 +46,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <ProtectedRoute>
       <div style={{ display: "flex", minHeight: "100vh", background: "#FAF8F5" }}>
         {/* Sidebar desktop */}
-        <aside style={{ width: 252, flexShrink: 0, background: "#fff", borderRight: "1.5px solid #EDEBE7", padding: "24px 16px 20px", display: "flex", flexDirection: "column", height: "100vh", position: "sticky", top: 0 }} className="hidden md:flex">
-          <Link href="/" style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#C4531A", textDecoration: "none", marginBottom: 36, paddingLeft: 14, display: "block", letterSpacing: -0.5 }}>Bativio</Link>
-          <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+        <aside style={{ width: 252, flexShrink: 0, background: "#fff", borderRight: "1.5px solid #EDEBE7", display: "flex", flexDirection: "column", height: "100vh", position: "sticky", top: 0, overflow: "hidden" }} className="hidden md:flex">
+          <Link href="/" style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#C4531A", textDecoration: "none", padding: "24px 16px 0 30px", marginBottom: 36, display: "block", letterSpacing: -0.5, flexShrink: 0 }}>Bativio</Link>
+          <nav style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 2, padding: "0 16px" }}>
             {NAV.map((item) => {
               const active = p === item.href;
               return (
@@ -64,7 +64,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               );
             })}
           </nav>
-          <div style={{ marginTop: "auto", borderTop: "1.5px solid #F7F5F2", paddingTop: 16, display: "flex", flexDirection: "column", gap: 10, paddingLeft: 14 }}>
+          <div style={{ flexShrink: 0, borderTop: "1.5px solid #F7F5F2", padding: "16px 16px 20px 30px", display: "flex", flexDirection: "column", gap: 10 }}>
             {vitrineHref !== "#" && user?.actif && (
               <Link href={vitrineHref} target="_blank" style={{ fontSize: 13, color: "#C4531A", fontWeight: 600, textDecoration: "none", transition: "color .15s" }}>Voir ma page &rarr;</Link>
             )}
