@@ -25,6 +25,16 @@ export const metadata: Metadata = {
     "Trouvez votre artisan du b\u00e2timent en Rh\u00f4ne-Alpes. Profils v\u00e9rifi\u00e9s, avis clients, devis gratuit. Z\u00e9ro commission.",
   metadataBase: new URL("https://bativio.fr"),
   alternates: { canonical: "/" },
+  manifest: "/manifest.json",
+  themeColor: "#C4531A",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Bativio",
+  },
+  icons: {
+    apple: "/icons/icon-192.png",
+  },
   openGraph: {
     type: "website",
     locale: "fr_FR",
