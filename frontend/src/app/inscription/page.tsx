@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { register } from "@/lib/auth";
 import { useAuth } from "@/context/AuthContext";
 import { METIERS, VILLES } from "@/lib/constants";
 
@@ -102,33 +101,33 @@ export default function InscriptionPage() {
     // Bug 1 fix: padder SIREN a 14 chiffres
     const siretToSend = rawSiret.length === 9 ? rawSiret + "00000" : rawSiret;
     // Bug 4 fix: plus de fallback mot de passe
-    const data = await register({
-      email: form.email,
-      password: form.password,
-      siret: siretToSend,
-      nomAffichage: form.nomAffichage,
-      telephone: form.telephone,
-      metierId: form.metierId || undefined,
-      ville: form.ville || undefined,
-      zoneRayonKm: 25,
+    const res = await fetch(`${API_URL}/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        email: form.email,
+        password: form.password,
+        siret: siretToSend,
+        nomAffichage: form.nomAffichage,
+        telephone: form.telephone,
+        metierId: form.metierId || undefined,
+        ville: form.ville || undefined,
+        zoneRayonKm: 25,
+      }),
     });
-    // Sync session into the new AuthContext: store tokens + user
-    if (data.accessToken) {
-      localStorage.setItem("bativio_token", data.accessToken);
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || "Erreur lors de l'inscription");
+    // Cookie is set server-side — update local state
+    if (json.data) {
+      updateUser(json.data);
     }
-    if (data.refreshToken) {
-      localStorage.setItem("bativio_refresh", data.refreshToken);
-    }
-    if (data.artisan) {
-      updateUser(data.artisan);
-    }
-    return data;
+    return json.data;
   };
 
   // Upload photos to backend after registration
   const uploadPhotos = async (filesToUpload: File[]): Promise<number> => {
-    const token = localStorage.getItem("bativio_token");
-    if (!token || filesToUpload.length === 0) return 0;
+    if (filesToUpload.length === 0) return 0;
     let uploaded = 0;
     for (const file of filesToUpload) {
       try {
@@ -136,7 +135,7 @@ export default function InscriptionPage() {
         formData.append("file", file);
         const res = await fetch(`${API_URL}/artisans/me/photos/upload`, {
           method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
           body: formData,
         });
         const json = await res.json();

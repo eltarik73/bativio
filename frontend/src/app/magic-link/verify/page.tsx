@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { setAccessToken } from "@/lib/auth";
 import { Suspense } from "react";
 
 function VerifyContent() {
@@ -19,15 +18,14 @@ function VerifyContent() {
       return;
     }
 
-    const apiUrl = "/api/v1";
-    fetch(`${apiUrl}/auth/magic-link/verify?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`, {
+    fetch(`/api/v1/auth/magic-link/verify?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`, {
       method: "POST",
+      credentials: "include",
     })
       .then((res) => res.json())
       .then((json) => {
         if (json.success) {
-          setAccessToken(json.data.accessToken);
-          localStorage.setItem("bativio_refresh", json.data.refreshToken);
+          // Cookie is set server-side — just redirect
           router.push("/dashboard");
         } else {
           setError(json.error || "Lien invalide ou expire");

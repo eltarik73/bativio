@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
-import { sendMagicLink } from "@/lib/auth";
 import { useAuth } from "@/context/AuthContext";
 
 export default function ConnexionPage() {
@@ -47,7 +46,13 @@ export default function ConnexionPage() {
     setLoading(true);
     setError("");
     try {
-      await sendMagicLink(email);
+      const res = await fetch("/api/v1/auth/magic-link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error || "Erreur");
       setMagicSent(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur");

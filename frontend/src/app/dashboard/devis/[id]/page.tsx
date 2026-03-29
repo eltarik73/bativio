@@ -88,11 +88,9 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
       formData.append("file", pdfFile);
       formData.append("titre", pdfFile.name);
 
-      const API_URL = "/api/v1";
-      const token = localStorage.getItem("bativio_token");
-      const uploadRes = await fetch(`${API_URL}/artisans/me/devis/${id}/upload-quote`, {
+      const uploadRes = await fetch(`/api/v1/artisans/me/devis/${id}/upload-quote`, {
         method: "POST",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        credentials: "include",
         body: formData,
       });
       const uploadJson = await uploadRes.json();

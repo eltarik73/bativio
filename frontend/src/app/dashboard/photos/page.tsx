@@ -24,26 +24,16 @@ export default function PhotosPage() {
   const planLabel = planLimit === Infinity ? "Illimite" : `${planLimit}`;
   const totalPhotos = serverPhotos.length + localPhotos.length;
 
-  const getToken = useCallback(() => {
-    if (typeof window === "undefined") return null;
-    return localStorage.getItem("bativio_token");
-  }, []);
+  const { fetchWithAuth } = useAuth();
 
   // Load existing photos from the server
   useEffect(() => {
-    const token = getToken();
-    if (!token) return;
-    fetch(`${API_URL}/artisans/me/photos`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => r.json())
-      .then((json) => {
-        if (json.success && Array.isArray(json.data)) {
-          setServerPhotos(json.data);
-        }
+    fetchWithAuth("/artisans/me/photos")
+      .then((data) => {
+        if (Array.isArray(data)) setServerPhotos(data as PhotoData[]);
       })
       .catch(() => {});
-  }, [getToken]);
+  }, [fetchWithAuth]);
 
   const handleFiles = (files: FileList | null) => {
     if (!files) return;
@@ -62,17 +52,9 @@ export default function PhotosPage() {
   };
 
   const removeServer = async (photoId: string) => {
-    const token = getToken();
-    if (!token) return;
     try {
-      const res = await fetch(`${API_URL}/artisans/me/photos/${photoId}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const json = await res.json();
-      if (json.success) {
-        setServerPhotos((p) => p.filter((ph) => ph.id !== photoId));
-      }
+      await fetchWithAuth(`/artisans/me/photos/${photoId}`, { method: "DELETE" });
+      setServerPhotos((p) => p.filter((ph) => ph.id !== photoId));
     } catch {
       // silent
     }
@@ -80,8 +62,6 @@ export default function PhotosPage() {
 
   const uploadPhotos = async () => {
     if (localPhotos.length === 0) return;
-    const token = getToken();
-    if (!token) { setError("Vous devez etre connecte."); return; }
     setUploading(true);
     setError(null);
 
@@ -93,10 +73,7 @@ export default function PhotosPage() {
 
         const res = await fetch(`${API_URL}/artisans/me/photos/upload`, {
           method: "POST",
-          headers: {
-            // Do NOT set Content-Type — let the browser set it with the boundary
-            Authorization: `Bearer ${token}`,
-          },
+          credentials: "include",
           body: formData,
         });
         const json = await res.json();
