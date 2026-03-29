@@ -59,6 +59,8 @@ export default function NouveauDevisIAPage() {
   const [niveauGamme, setNiveauGamme] = useState<"STANDARD" | "PREMIUM">(
     "STANDARD"
   );
+  const [fournitureOption, setFournitureOption] = useState<"artisan_fournit" | "client_fournit" | "a_definir">("artisan_fournit");
+  const [showFourniture, setShowFourniture] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [genError, setGenError] = useState("");
 
@@ -75,6 +77,16 @@ export default function NouveauDevisIAPage() {
   const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
+
+  /* Load tarification to check fourniture policy */
+  useEffect(() => {
+    fetchWithAuth("/artisans/me/tarification").then((data) => {
+      const t = data as { fourniturePolicy?: string } | null;
+      if (t?.fourniturePolicy === "client_peut_fournir" || t?.fourniturePolicy === "peu_importe") {
+        setShowFourniture(true);
+      }
+    }).catch(() => {});
+  }, [fetchWithAuth]);
 
   /* Load existing devis if editing */
   useEffect(() => {
@@ -131,6 +143,7 @@ export default function NouveauDevisIAPage() {
           description,
           surface,
           niveauGamme,
+          fournitureOption,
         }),
       })) as DevisGenerated;
       setDevisId(data.id);
@@ -437,6 +450,40 @@ export default function NouveauDevisIAPage() {
               ))}
             </div>
           </div>
+
+          {/* Fourniture option */}
+          {showFourniture && (
+            <div style={{ marginBottom: 16 }}>
+              <label style={labelStyle}>Le client fournit-il les matériaux ?</label>
+              <div style={{ display: "flex", gap: 8 }}>
+                {([
+                  { value: "artisan_fournit", label: "Non — je fournis tout" },
+                  { value: "client_fournit", label: "Oui — MO seule" },
+                  { value: "a_definir", label: "Pas encore défini" },
+                ] as const).map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setFournitureOption(opt.value)}
+                    style={{
+                      flex: 1, padding: "10px 12px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer",
+                      border: fournitureOption === opt.value ? "2px solid #C4531A" : "1.5px solid #E0DDD8",
+                      background: fournitureOption === opt.value ? "rgba(196,83,26,.05)" : "#fff",
+                      color: fournitureOption === opt.value ? "#C4531A" : "#6B6560",
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              {fournitureOption === "client_fournit" && (
+                <p style={{ fontSize: 12, color: "#9B9590", marginTop: 6 }}>Le devis sera en main d&apos;œuvre seule. Les prix indicatifs des matériaux seront affichés à titre informatif.</p>
+              )}
+              {fournitureOption === "a_definir" && (
+                <p style={{ fontSize: 12, color: "#9B9590", marginTop: 6 }}>L&apos;IA générera 2 options : fourni-posé et pose seule.</p>
+              )}
+            </div>
+          )}
 
           {/* Error */}
           {genError && (

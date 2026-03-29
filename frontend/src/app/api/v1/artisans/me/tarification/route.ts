@@ -42,6 +42,7 @@ const tarificationSchema = z.object({
   tvaDefault: z.number().min(0).max(20),
   assuranceNumero: z.string().optional(),
   assuranceNom: z.string().optional(),
+  fourniturePolicy: z.enum(["artisan_fournit", "client_peut_fournir", "peu_importe"]).optional(),
 });
 
 export async function PUT(request: NextRequest) {

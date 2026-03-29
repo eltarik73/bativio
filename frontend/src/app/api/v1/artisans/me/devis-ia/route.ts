@@ -13,6 +13,7 @@ const devisIASchema = z.object({
   clientAdresse: z.string().optional(),
   surface: z.string().optional(),
   niveauGamme: z.enum(["standard", "premium"]).default("standard"),
+  fournitureOption: z.enum(["artisan_fournit", "client_fournit", "a_definir"]).default("artisan_fournit"),
   devisRequestId: z.string().optional(),
 });
 
@@ -79,6 +80,7 @@ export async function POST(request: NextRequest) {
       clientAdresse,
       surface,
       niveauGamme,
+      fournitureOption,
       devisRequestId,
     } = parsed.data;
 
@@ -110,6 +112,8 @@ ${prestationsLib}
 IMPORTANT : Tu dois repondre UNIQUEMENT avec du JSON valide, sans texte avant ou apres. Le JSON doit suivre exactement cette structure :
 {"objet":"description courte du devis", "postes":[{"categorie":"categorie du poste", "designation":"description du poste", "quantite":1, "unite":"forfait", "prixUnitaireHT":120, "totalHT":120, "inclutFourniture":false}], "totalHT":5000, "dureeEstimee":"5 jours", "notes":"remarques ou conditions particulieres"}
 
+FOURNITURE MATERIEL : ${fournitureOption === "client_fournit" ? "Le client fournit les materiaux. Genere le devis en MAIN D'OEUVRE SEULE. Pour chaque poste qui inclut normalement des materiaux, cree 2 lignes : une ligne 'Pose [prestation]' (MO seule) et une ligne info 'Fourniture [materiau] - prix indicatif marche : XX EUR/unite (non inclus)' avec prixUnitaireHT a 0 et totalHT a 0 mais qui affiche le prix indicatif dans la designation." : fournitureOption === "a_definir" ? "Le choix de fourniture n'est pas encore defini. Genere 2 sections dans le meme devis : les postes avec categorie 'OPTION_A_FOURNI_POSE' pour la version fourni-pose (materiaux + pose), et les postes avec categorie 'OPTION_B_POSE_SEULE' pour la version pose seule. Chaque section doit etre complete et independante." : "L'artisan fournit les materiaux (fourni-pose). Inclus materiaux + main d'oeuvre + marge fournitures."}
+
 Regles :
 - Utilise les prestations de la bibliotheque quand c'est pertinent, sinon cree de nouveaux postes.
 - Les prix doivent etre realistes pour le marche francais.
@@ -122,6 +126,7 @@ Regles :
 Description : ${description}
 ${surface ? `Surface : ${surface}` : ""}
 Niveau de gamme : ${niveauGamme}
+Fourniture : ${fournitureOption === "client_fournit" ? "Client fournit les materiaux (MO seule)" : fournitureOption === "a_definir" ? "A definir — genere les 2 options" : "Artisan fournit (fourni-pose)"}
 
 Reponds uniquement avec le JSON.`;
 
@@ -217,6 +222,7 @@ Reponds uniquement avec le JSON.`;
         clientAdresse: clientAdresse || null,
         objet: devisIA.objet,
         niveauGamme,
+        fournitureOption,
         postes: devisIA.postes,
         totalHT: Math.round(totalHT * 100) / 100,
         tauxTVA,

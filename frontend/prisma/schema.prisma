@@ -305,6 +305,7 @@ model Tarification {
   tvaDefault              Float    @default(10) @map("tva_default")
   assuranceNumero         String?  @map("assurance_numero")
   assuranceNom            String?  @map("assurance_nom")
+  fourniturePolicy        String   @default("artisan_fournit") @map("fourniture_policy")
   createdAt               DateTime @default(now()) @map("created_at")
   updatedAt               DateTime @updatedAt @map("updated_at")
 
@@ -349,6 +350,7 @@ model Devis {
   clientAdresse       String?     @map("client_adresse")
   objet               String
   niveauGamme         String      @default("standard") @map("niveau_gamme")
+  fournitureOption    String      @default("artisan_fournit") @map("fourniture_option")
   postes              Json
   totalHT             Float       @map("total_ht")
   tauxTVA             Float       @map("taux_tva")
