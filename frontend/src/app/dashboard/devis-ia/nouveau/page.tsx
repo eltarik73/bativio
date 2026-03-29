@@ -1,0 +1,1078 @@
+"use client";
+
+import { useState, useCallback, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+
+/* ───── Types ───── */
+
+interface Poste {
+  categorie: string;
+  designation: string;
+  quantite: number;
+  unite: string;
+  prixUnitaireHT: number;
+}
+
+interface DevisGenerated {
+  id: string;
+  numero: string;
+  objet: string;
+  postes: Poste[];
+  tauxTVA: number;
+  notes: string;
+  sousReserveVisite: boolean;
+  duree: string;
+  conditionsPaiement: string;
+  clientNom: string;
+  clientEmail: string;
+  clientTelephone: string;
+  clientAdresse: string;
+}
+
+/* ───── Helpers ───── */
+
+function formatEuros(n: number): string {
+  return new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: "EUR",
+  }).format(n);
+}
+
+/* ───── Component ───── */
+
+export default function NouveauDevisIAPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get("id");
+  const { fetchWithAuth } = useAuth();
+
+  /* Step 1 state */
+  const [step, setStep] = useState<1 | 2>(1);
+  const [clientNom, setClientNom] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
+  const [clientTelephone, setClientTelephone] = useState("");
+  const [clientAdresse, setClientAdresse] = useState("");
+  const [description, setDescription] = useState("");
+  const [surface, setSurface] = useState("");
+  const [niveauGamme, setNiveauGamme] = useState<"STANDARD" | "PREMIUM">(
+    "STANDARD"
+  );
+  const [generating, setGenerating] = useState(false);
+  const [genError, setGenError] = useState("");
+
+  /* Step 2 state */
+  const [devisId, setDevisId] = useState<string | null>(null);
+  const [postes, setPostes] = useState<Poste[]>([]);
+  const [tauxTVA, setTauxTVA] = useState(20);
+  const [notes, setNotes] = useState("");
+  const [sousReserveVisite, setSousReserveVisite] = useState(true);
+  const [duree, setDuree] = useState("");
+  const [conditionsPaiement, setConditionsPaiement] = useState(
+    "30% \u00e0 la commande, 40% au d\u00e9but des travaux, 30% \u00e0 la r\u00e9ception"
+  );
+  const [saving, setSaving] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [saveMsg, setSaveMsg] = useState("");
+
+  /* Load existing devis if editing */
+  useEffect(() => {
+    if (!editId) return;
+    (async () => {
+      try {
+        const data = (await fetchWithAuth(
+          `/artisans/me/devis-ia/${editId}`
+        )) as DevisGenerated;
+        setDevisId(data.id);
+        setClientNom(data.clientNom || "");
+        setClientEmail(data.clientEmail || "");
+        setClientTelephone(data.clientTelephone || "");
+        setClientAdresse(data.clientAdresse || "");
+        setPostes(data.postes || []);
+        setTauxTVA(data.tauxTVA || 20);
+        setNotes(data.notes || "");
+        setSousReserveVisite(data.sousReserveVisite ?? true);
+        setDuree(data.duree || "");
+        setConditionsPaiement(
+          data.conditionsPaiement ||
+            "30% \u00e0 la commande, 40% au d\u00e9but des travaux, 30% \u00e0 la r\u00e9ception"
+        );
+        setStep(2);
+      } catch {
+        /* empty */
+      }
+    })();
+  }, [editId, fetchWithAuth]);
+
+  /* ───── Calculations ───── */
+
+  const totalHT = postes.reduce(
+    (sum, p) => sum + p.quantite * p.prixUnitaireHT,
+    0
+  );
+  const montantTVA = totalHT * (tauxTVA / 100);
+  const totalTTC = totalHT + montantTVA;
+
+  /* ───── Handlers ───── */
+
+  const handleGenerate = useCallback(async () => {
+    if (!clientNom.trim() || !description.trim()) return;
+    setGenerating(true);
+    setGenError("");
+    try {
+      const data = (await fetchWithAuth("/artisans/me/devis-ia", {
+        method: "POST",
+        body: JSON.stringify({
+          clientNom,
+          clientEmail,
+          clientTelephone,
+          clientAdresse,
+          description,
+          surface,
+          niveauGamme,
+        }),
+      })) as DevisGenerated;
+      setDevisId(data.id);
+      setPostes(data.postes || []);
+      setTauxTVA(data.tauxTVA || 20);
+      setNotes(data.notes || "");
+      setSousReserveVisite(data.sousReserveVisite ?? true);
+      setDuree(data.duree || "");
+      if (data.conditionsPaiement) {
+        setConditionsPaiement(data.conditionsPaiement);
+      }
+      setStep(2);
+    } catch (err) {
+      setGenError(
+        err instanceof Error ? err.message : "Erreur lors de la g\u00e9n\u00e9ration"
+      );
+    } finally {
+      setGenerating(false);
+    }
+  }, [
+    clientNom,
+    clientEmail,
+    clientTelephone,
+    clientAdresse,
+    description,
+    surface,
+    niveauGamme,
+    fetchWithAuth,
+  ]);
+
+  const handleUpdatePoste = (
+    index: number,
+    field: keyof Poste,
+    value: string | number
+  ) => {
+    setPostes((prev) =>
+      prev.map((p, i) => (i === index ? { ...p, [field]: value } : p))
+    );
+  };
+
+  const handleRemovePoste = (index: number) => {
+    setPostes((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleAddPoste = () => {
+    setPostes((prev) => [
+      ...prev,
+      {
+        categorie: "",
+        designation: "",
+        quantite: 1,
+        unite: "u",
+        prixUnitaireHT: 0,
+      },
+    ]);
+  };
+
+  const handleSave = useCallback(async () => {
+    if (!devisId) return;
+    setSaving(true);
+    setSaveMsg("");
+    try {
+      await fetchWithAuth(`/artisans/me/devis-ia/${devisId}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          postes,
+          tauxTVA,
+          notes,
+          sousReserveVisite,
+          duree,
+          conditionsPaiement,
+        }),
+      });
+      setSaveMsg("Brouillon enregistr\u00e9");
+      setTimeout(() => setSaveMsg(""), 3000);
+    } catch {
+      setSaveMsg("Erreur lors de l\u2019enregistrement");
+    } finally {
+      setSaving(false);
+    }
+  }, [
+    devisId,
+    postes,
+    tauxTVA,
+    notes,
+    sousReserveVisite,
+    duree,
+    conditionsPaiement,
+    fetchWithAuth,
+  ]);
+
+  const handleSend = useCallback(async () => {
+    if (!devisId) return;
+    setSending(true);
+    try {
+      await fetchWithAuth(`/artisans/me/devis-ia/${devisId}/send`, {
+        method: "POST",
+      });
+      router.push("/dashboard/devis-ia");
+    } catch {
+      setSaveMsg("Erreur lors de l\u2019envoi");
+    } finally {
+      setSending(false);
+    }
+  }, [devisId, fetchWithAuth, router]);
+
+  /* ───── Shared styles ───── */
+
+  const inputStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "10px 14px",
+    borderRadius: 8,
+    border: "1.5px solid #E0DDD8",
+    fontSize: 14,
+    fontFamily: "'Karla', sans-serif",
+    color: "#1C1C1E",
+    outline: "none",
+    background: "#fff",
+    transition: "border-color .15s",
+  };
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: 13,
+    fontWeight: 600,
+    color: "#1C1C1E",
+    marginBottom: 6,
+    display: "block",
+  };
+
+  /* ───── Render ───── */
+
+  return (
+    <div style={{ maxWidth: 860, margin: "0 auto" }}>
+      {/* Back link */}
+      <Link
+        href="/dashboard/devis-ia"
+        style={{
+          fontSize: 13,
+          color: "#9B9590",
+          textDecoration: "none",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 6,
+          marginBottom: 20,
+        }}
+      >
+        <svg
+          width="16"
+          height="16"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+        >
+          <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        Retour aux devis
+      </Link>
+
+      <h1
+        style={{
+          fontFamily: "'Fraunces', serif",
+          fontSize: 24,
+          fontWeight: 700,
+          color: "#1C1C1E",
+          marginBottom: 24,
+        }}
+      >
+        {editId ? "Modifier le devis" : "Nouveau devis IA"}
+      </h1>
+
+      {/* ──── STEP 1 ──── */}
+      {step === 1 && (
+        <div
+          style={{
+            background: "#fff",
+            border: "1px solid #EDEBE7",
+            borderRadius: 14,
+            padding: 28,
+          }}
+        >
+          <h2
+            style={{
+              fontFamily: "'Fraunces', serif",
+              fontSize: 18,
+              fontWeight: 700,
+              color: "#1C1C1E",
+              marginBottom: 20,
+            }}
+          >
+            Informations client &amp; travaux
+          </h2>
+
+          {/* Client info */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 16,
+              marginBottom: 16,
+            }}
+            className="max-md:grid-cols-1"
+          >
+            <div>
+              <label style={labelStyle}>
+                Nom du client <span style={{ color: "#dc2626" }}>*</span>
+              </label>
+              <input
+                type="text"
+                value={clientNom}
+                onChange={(e) => setClientNom(e.target.value)}
+                placeholder="Jean Dupont"
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>Email</label>
+              <input
+                type="email"
+                value={clientEmail}
+                onChange={(e) => setClientEmail(e.target.value)}
+                placeholder="jean@exemple.fr"
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>T&eacute;l&eacute;phone</label>
+              <input
+                type="tel"
+                value={clientTelephone}
+                onChange={(e) => setClientTelephone(e.target.value)}
+                placeholder="06 12 34 56 78"
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>Surface</label>
+              <input
+                type="text"
+                value={surface}
+                onChange={(e) => setSurface(e.target.value)}
+                placeholder="ex: 8m\u00b2"
+                style={inputStyle}
+              />
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 16 }}>
+            <label style={labelStyle}>Adresse du client</label>
+            <textarea
+              value={clientAdresse}
+              onChange={(e) => setClientAdresse(e.target.value)}
+              placeholder="Adresse du chantier ou du client"
+              rows={2}
+              style={{ ...inputStyle, resize: "vertical" }}
+            />
+          </div>
+
+          <div style={{ marginBottom: 16 }}>
+            <label style={labelStyle}>
+              Description des travaux{" "}
+              <span style={{ color: "#dc2626" }}>*</span>
+            </label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="D\u00e9crivez les travaux souhait\u00e9s..."
+              rows={4}
+              style={{ ...inputStyle, resize: "vertical" }}
+            />
+          </div>
+
+          {/* Niveau de gamme */}
+          <div style={{ marginBottom: 24 }}>
+            <label style={labelStyle}>Niveau de gamme</label>
+            <div style={{ display: "flex", gap: 10 }}>
+              {(["STANDARD", "PREMIUM"] as const).map((level) => (
+                <button
+                  key={level}
+                  type="button"
+                  onClick={() => setNiveauGamme(level)}
+                  style={{
+                    flex: 1,
+                    padding: "10px 0",
+                    borderRadius: 8,
+                    fontSize: 14,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    transition: "all .15s",
+                    border:
+                      niveauGamme === level
+                        ? "2px solid #C4531A"
+                        : "1.5px solid #E0DDD8",
+                    background:
+                      niveauGamme === level
+                        ? "rgba(196,83,26,.06)"
+                        : "#fff",
+                    color:
+                      niveauGamme === level ? "#C4531A" : "#6B6560",
+                  }}
+                >
+                  {level === "STANDARD" ? "Standard" : "Premium"}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Error */}
+          {genError && (
+            <div
+              style={{
+                background: "rgba(220,38,38,.06)",
+                border: "1px solid rgba(220,38,38,.2)",
+                borderRadius: 8,
+                padding: "10px 14px",
+                fontSize: 13,
+                color: "#dc2626",
+                marginBottom: 16,
+              }}
+            >
+              {genError}
+            </div>
+          )}
+
+          {/* Generate button */}
+          <button
+            type="button"
+            onClick={handleGenerate}
+            disabled={generating || !clientNom.trim() || !description.trim()}
+            style={{
+              width: "100%",
+              padding: "14px 0",
+              borderRadius: 8,
+              background:
+                generating || !clientNom.trim() || !description.trim()
+                  ? "#D4733A"
+                  : "#C4531A",
+              color: "#fff",
+              fontSize: 15,
+              fontWeight: 700,
+              fontFamily: "'Karla', sans-serif",
+              border: "none",
+              cursor:
+                generating || !clientNom.trim() || !description.trim()
+                  ? "not-allowed"
+                  : "pointer",
+              opacity:
+                generating || !clientNom.trim() || !description.trim()
+                  ? 0.6
+                  : 1,
+              transition: "all .15s",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+            }}
+          >
+            {generating && (
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                style={{
+                  animation: "spin 1s linear infinite",
+                }}
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="rgba(255,255,255,.3)"
+                  strokeWidth="3"
+                />
+                <path
+                  d="M12 2a10 10 0 019.95 9"
+                  stroke="#fff"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                />
+              </svg>
+            )}
+            {generating
+              ? "G\u00e9n\u00e9ration en cours..."
+              : "G\u00e9n\u00e9rer le devis avec l\u2019IA \u2728"}
+          </button>
+
+          <style>{`
+            @keyframes spin {
+              from { transform: rotate(0deg); }
+              to { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
+      )}
+
+      {/* ──── STEP 2 ──── */}
+      {step === 2 && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          {/* Client recap */}
+          <div
+            style={{
+              background: "#fff",
+              border: "1px solid #EDEBE7",
+              borderRadius: 14,
+              padding: "16px 24px",
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              flexWrap: "wrap",
+            }}
+          >
+            <span
+              style={{ fontSize: 14, fontWeight: 700, color: "#1C1C1E" }}
+            >
+              {clientNom}
+            </span>
+            {clientEmail && (
+              <span style={{ fontSize: 13, color: "#9B9590" }}>
+                {clientEmail}
+              </span>
+            )}
+            {clientTelephone && (
+              <span style={{ fontSize: 13, color: "#9B9590" }}>
+                &middot; {clientTelephone}
+              </span>
+            )}
+          </div>
+
+          {/* Postes table */}
+          <div
+            style={{
+              background: "#fff",
+              border: "1px solid #EDEBE7",
+              borderRadius: 14,
+              padding: 24,
+              overflowX: "auto",
+            }}
+          >
+            <h2
+              style={{
+                fontFamily: "'Fraunces', serif",
+                fontSize: 18,
+                fontWeight: 700,
+                color: "#1C1C1E",
+                marginBottom: 16,
+              }}
+            >
+              D&eacute;tail des postes
+            </h2>
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                fontSize: 13,
+              }}
+            >
+              <thead>
+                <tr
+                  style={{
+                    borderBottom: "1.5px solid #EDEBE7",
+                    textAlign: "left",
+                  }}
+                >
+                  <th
+                    style={{
+                      padding: "8px 6px",
+                      color: "#9B9590",
+                      fontWeight: 600,
+                      fontSize: 11,
+                      textTransform: "uppercase",
+                      letterSpacing: 0.5,
+                    }}
+                  >
+                    Cat&eacute;gorie
+                  </th>
+                  <th
+                    style={{
+                      padding: "8px 6px",
+                      color: "#9B9590",
+                      fontWeight: 600,
+                      fontSize: 11,
+                      textTransform: "uppercase",
+                      letterSpacing: 0.5,
+                    }}
+                  >
+                    D&eacute;signation
+                  </th>
+                  <th
+                    style={{
+                      padding: "8px 6px",
+                      color: "#9B9590",
+                      fontWeight: 600,
+                      fontSize: 11,
+                      textTransform: "uppercase",
+                      letterSpacing: 0.5,
+                      width: 70,
+                    }}
+                  >
+                    Qt&eacute;
+                  </th>
+                  <th
+                    style={{
+                      padding: "8px 6px",
+                      color: "#9B9590",
+                      fontWeight: 600,
+                      fontSize: 11,
+                      textTransform: "uppercase",
+                      letterSpacing: 0.5,
+                      width: 70,
+                    }}
+                  >
+                    Unit&eacute;
+                  </th>
+                  <th
+                    style={{
+                      padding: "8px 6px",
+                      color: "#9B9590",
+                      fontWeight: 600,
+                      fontSize: 11,
+                      textTransform: "uppercase",
+                      letterSpacing: 0.5,
+                      width: 100,
+                    }}
+                  >
+                    PU HT
+                  </th>
+                  <th
+                    style={{
+                      padding: "8px 6px",
+                      color: "#9B9590",
+                      fontWeight: 600,
+                      fontSize: 11,
+                      textTransform: "uppercase",
+                      letterSpacing: 0.5,
+                      width: 100,
+                      textAlign: "right",
+                    }}
+                  >
+                    Total HT
+                  </th>
+                  <th style={{ width: 36 }} />
+                </tr>
+              </thead>
+              <tbody>
+                {postes.map((p, i) => {
+                  const rowTotal = p.quantite * p.prixUnitaireHT;
+                  return (
+                    <tr
+                      key={i}
+                      style={{
+                        borderBottom: "1px solid #F7F5F2",
+                      }}
+                    >
+                      <td style={{ padding: "6px 4px" }}>
+                        <input
+                          value={p.categorie}
+                          onChange={(e) =>
+                            handleUpdatePoste(i, "categorie", e.target.value)
+                          }
+                          style={{
+                            ...inputStyle,
+                            padding: "6px 8px",
+                            fontSize: 13,
+                            border: "1px solid #EDEBE7",
+                          }}
+                        />
+                      </td>
+                      <td style={{ padding: "6px 4px" }}>
+                        <input
+                          value={p.designation}
+                          onChange={(e) =>
+                            handleUpdatePoste(i, "designation", e.target.value)
+                          }
+                          style={{
+                            ...inputStyle,
+                            padding: "6px 8px",
+                            fontSize: 13,
+                            border: "1px solid #EDEBE7",
+                          }}
+                        />
+                      </td>
+                      <td style={{ padding: "6px 4px" }}>
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={p.quantite}
+                          onChange={(e) =>
+                            handleUpdatePoste(
+                              i,
+                              "quantite",
+                              parseFloat(e.target.value) || 0
+                            )
+                          }
+                          style={{
+                            ...inputStyle,
+                            padding: "6px 8px",
+                            fontSize: 13,
+                            border: "1px solid #EDEBE7",
+                            textAlign: "right",
+                          }}
+                        />
+                      </td>
+                      <td style={{ padding: "6px 4px" }}>
+                        <input
+                          value={p.unite}
+                          onChange={(e) =>
+                            handleUpdatePoste(i, "unite", e.target.value)
+                          }
+                          style={{
+                            ...inputStyle,
+                            padding: "6px 8px",
+                            fontSize: 13,
+                            border: "1px solid #EDEBE7",
+                          }}
+                        />
+                      </td>
+                      <td style={{ padding: "6px 4px" }}>
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={p.prixUnitaireHT}
+                          onChange={(e) =>
+                            handleUpdatePoste(
+                              i,
+                              "prixUnitaireHT",
+                              parseFloat(e.target.value) || 0
+                            )
+                          }
+                          style={{
+                            ...inputStyle,
+                            padding: "6px 8px",
+                            fontSize: 13,
+                            border: "1px solid #EDEBE7",
+                            textAlign: "right",
+                          }}
+                        />
+                      </td>
+                      <td
+                        style={{
+                          padding: "6px 4px",
+                          textAlign: "right",
+                          fontWeight: 600,
+                          color: "#1C1C1E",
+                          fontSize: 13,
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {formatEuros(rowTotal)}
+                      </td>
+                      <td style={{ padding: "6px 4px", textAlign: "center" }}>
+                        <button
+                          type="button"
+                          onClick={() => handleRemovePoste(i)}
+                          title="Supprimer ce poste"
+                          style={{
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            color: "#dc2626",
+                            fontSize: 18,
+                            lineHeight: 1,
+                            padding: 4,
+                            borderRadius: 4,
+                            transition: "background .15s",
+                          }}
+                        >
+                          &times;
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+
+            {/* Add row */}
+            <button
+              type="button"
+              onClick={handleAddPoste}
+              style={{
+                marginTop: 12,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                fontSize: 13,
+                fontWeight: 600,
+                color: "#C4531A",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: "6px 0",
+              }}
+            >
+              <svg
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Ajouter un poste
+            </button>
+          </div>
+
+          {/* Totals */}
+          <div
+            style={{
+              background: "#fff",
+              border: "1px solid #EDEBE7",
+              borderRadius: 14,
+              padding: 24,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 10,
+                maxWidth: 340,
+                marginLeft: "auto",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: 14,
+                  color: "#6B6560",
+                }}
+              >
+                <span>Total HT</span>
+                <span style={{ fontWeight: 600 }}>{formatEuros(totalHT)}</span>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  fontSize: 14,
+                  color: "#6B6560",
+                }}
+              >
+                <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  TVA
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.5"
+                    value={tauxTVA}
+                    onChange={(e) =>
+                      setTauxTVA(parseFloat(e.target.value) || 0)
+                    }
+                    style={{
+                      width: 56,
+                      padding: "4px 6px",
+                      borderRadius: 6,
+                      border: "1px solid #EDEBE7",
+                      fontSize: 13,
+                      textAlign: "right",
+                      outline: "none",
+                    }}
+                  />
+                  <span style={{ fontSize: 13 }}>%</span>
+                </span>
+                <span style={{ fontWeight: 600 }}>
+                  {formatEuros(montantTVA)}
+                </span>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: 16,
+                  fontWeight: 700,
+                  color: "#1C1C1E",
+                  borderTop: "2px solid #EDEBE7",
+                  paddingTop: 10,
+                }}
+              >
+                <span
+                  style={{ fontFamily: "'Fraunces', serif" }}
+                >
+                  Total TTC
+                </span>
+                <span style={{ fontFamily: "'Fraunces', serif" }}>
+                  {formatEuros(totalTTC)}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Options */}
+          <div
+            style={{
+              background: "#fff",
+              border: "1px solid #EDEBE7",
+              borderRadius: 14,
+              padding: 24,
+              display: "flex",
+              flexDirection: "column",
+              gap: 16,
+            }}
+          >
+            <div>
+              <label style={labelStyle}>Notes</label>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={3}
+                style={{ ...inputStyle, resize: "vertical" }}
+              />
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 16,
+              }}
+              className="max-md:grid-cols-1"
+            >
+              <div>
+                <label style={labelStyle}>Dur&eacute;e estim&eacute;e des travaux</label>
+                <input
+                  type="text"
+                  value={duree}
+                  onChange={(e) => setDuree(e.target.value)}
+                  placeholder="ex: 3 jours"
+                  style={inputStyle}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Conditions de paiement</label>
+                <input
+                  type="text"
+                  value={conditionsPaiement}
+                  onChange={(e) => setConditionsPaiement(e.target.value)}
+                  style={inputStyle}
+                />
+              </div>
+            </div>
+
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                cursor: "pointer",
+                fontSize: 14,
+                color: "#1C1C1E",
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={sousReserveVisite}
+                onChange={(e) => setSousReserveVisite(e.target.checked)}
+                style={{
+                  width: 18,
+                  height: 18,
+                  accentColor: "#C4531A",
+                  cursor: "pointer",
+                }}
+              />
+              Sous r&eacute;serve de visite de chantier
+            </label>
+          </div>
+
+          {/* Save message */}
+          {saveMsg && (
+            <div
+              style={{
+                textAlign: "center",
+                fontSize: 13,
+                fontWeight: 600,
+                color: saveMsg.includes("Erreur") ? "#dc2626" : "#16a34a",
+                padding: "6px 0",
+              }}
+            >
+              {saveMsg}
+            </div>
+          )}
+
+          {/* Actions */}
+          <div
+            style={{
+              display: "flex",
+              gap: 12,
+              justifyContent: "flex-end",
+              flexWrap: "wrap",
+            }}
+          >
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saving}
+              style={{
+                padding: "12px 28px",
+                borderRadius: 8,
+                fontSize: 14,
+                fontWeight: 600,
+                fontFamily: "'Karla', sans-serif",
+                background: "#fff",
+                color: "#1C1C1E",
+                border: "1.5px solid #E0DDD8",
+                cursor: saving ? "not-allowed" : "pointer",
+                opacity: saving ? 0.6 : 1,
+                transition: "all .15s",
+              }}
+            >
+              {saving ? "Enregistrement..." : "Enregistrer brouillon"}
+            </button>
+            <button
+              type="button"
+              onClick={handleSend}
+              disabled={sending}
+              style={{
+                padding: "12px 28px",
+                borderRadius: 8,
+                fontSize: 14,
+                fontWeight: 700,
+                fontFamily: "'Karla', sans-serif",
+                background: sending ? "#D4733A" : "#C4531A",
+                color: "#fff",
+                border: "none",
+                cursor: sending ? "not-allowed" : "pointer",
+                opacity: sending ? 0.6 : 1,
+                transition: "all .15s",
+              }}
+            >
+              {sending ? "Envoi..." : "Envoyer au client"}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

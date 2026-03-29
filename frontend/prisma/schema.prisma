@@ -104,6 +104,7 @@ model Artisan {
   actif           Boolean  @default(false)
   visible         Boolean  @default(true)
   slug            String   @unique
+  logo            String?
   deletedAt       DateTime? @map("deleted_at")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
@@ -118,6 +119,9 @@ model Artisan {
   zones           ZoneIntervention[]
   notifications   Notification[]
   devisReplies    DevisReply[]
+  tarification    Tarification?
+  prestationTypes PrestationType[]
+  devisList       Devis[]
 
   @@index([ville, metierId])
   @@index([slug])
@@ -289,4 +293,86 @@ model Notification {
 
   @@index([artisanId, createdAt])
   @@map("notifications")
+}
+
+model Tarification {
+  id                      String   @id @default(cuid())
+  artisanId               String   @unique @map("artisan_id")
+  tarifHoraire            Float    @map("tarif_horaire")
+  fraisDeplacementType    String   @default("forfait") @map("frais_deplacement_type")
+  fraisDeplacementMontant Float    @default(30) @map("frais_deplacement_montant")
+  margeFournitures        Float    @default(25) @map("marge_fournitures")
+  tvaDefault              Float    @default(10) @map("tva_default")
+  assuranceNumero         String?  @map("assurance_numero")
+  assuranceNom            String?  @map("assurance_nom")
+  createdAt               DateTime @default(now()) @map("created_at")
+  updatedAt               DateTime @updatedAt @map("updated_at")
+
+  artisan                 Artisan  @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+
+  @@map("tarifications")
+}
+
+model PrestationType {
+  id               String   @id @default(cuid())
+  artisanId        String   @map("artisan_id")
+  designation      String
+  unite            String
+  prixUnitaire     Float    @map("prix_unitaire")
+  categorie        String?
+  inclutFourniture Boolean  @default(true) @map("inclut_fourniture")
+  isCustom         Boolean  @default(false) @map("is_custom")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  artisan          Artisan  @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+
+  @@index([artisanId])
+  @@map("prestation_types")
+}
+
+enum DevisStatut {
+  BROUILLON
+  ENVOYE
+  VU
+  ACCEPTE
+  REFUSE
+  EXPIRE
+}
+
+model Devis {
+  id                  String      @id @default(cuid())
+  artisanId           String      @map("artisan_id")
+  numero              String      @unique
+  clientNom           String      @map("client_nom")
+  clientEmail         String?     @map("client_email")
+  clientTelephone     String?     @map("client_telephone")
+  clientAdresse       String?     @map("client_adresse")
+  objet               String
+  niveauGamme         String      @default("standard") @map("niveau_gamme")
+  postes              Json
+  totalHT             Float       @map("total_ht")
+  tauxTVA             Float       @map("taux_tva")
+  montantTVA          Float       @map("montant_tva")
+  totalTTC            Float       @map("total_ttc")
+  dureeEstimee        String?     @map("duree_estimee")
+  conditionsPaiement  String?     @map("conditions_paiement")
+  notes               String?     @db.Text
+  mentionSousReserve  Boolean     @default(true) @map("mention_sous_reserve")
+  validiteJours       Int         @default(30) @map("validite_jours")
+  statut              DevisStatut @default(BROUILLON)
+  envoyeAt            DateTime?   @map("envoye_at")
+  vuAt                DateTime?   @map("vu_at")
+  accepteAt           DateTime?   @map("accepte_at")
+  refuseAt            DateTime?   @map("refuse_at")
+  pdfUrl              String?     @map("pdf_url")
+  viewToken           String?     @unique @map("view_token")
+  devisRequestId      String?     @map("devis_request_id")
+  createdAt           DateTime    @default(now()) @map("created_at")
+  updatedAt           DateTime    @updatedAt @map("updated_at")
+
+  artisan             Artisan     @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+
+  @@index([artisanId, statut])
+  @@index([artisanId, createdAt])
+  @@map("devis")
 }
