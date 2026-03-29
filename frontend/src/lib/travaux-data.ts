@@ -43,7 +43,7 @@ export const TRAVAUX: TypeTravaux[] = [
     id: "4", nom: "Mise aux normes électriques", slug: "mise-aux-normes-electriques",
     description: "La mise aux normes électriques NF C 15-100 est obligatoire lors de la vente ou de la rénovation d'un logement. Un électricien qualifié réalise un diagnostic, remplace le tableau électrique si nécessaire, et met en conformité l'ensemble de l'installation.",
     metiers: ["electricien"],
-    photo: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&h=400&fit=crop",
+    photo: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=600&h=400&fit=crop",
     faq: [
       { q: "Est-ce obligatoire ?", a: "Oui, lors d'une vente (diagnostic obligatoire) et recommandé pour tout logement de plus de 15 ans." },
     ],
@@ -106,7 +106,7 @@ export const TRAVAUX: TypeTravaux[] = [
     id: "11", nom: "Pose de parquet", slug: "pose-de-parquet",
     description: "La pose de parquet massif, contrecollé ou stratifié est un travail de précision. Un menuisier professionnel garantit un sol parfaitement posé, stable et durable.",
     metiers: ["menuisier"],
-    photo: "https://images.unsplash.com/photo-1558618019-44bc87907eaa?w=600&h=400&fit=crop",
+    photo: "https://images.unsplash.com/photo-1588854337236-6889d631faa8?w=600&h=400&fit=crop",
     faq: [
       { q: "Quel type de parquet choisir ?", a: "Massif pour le haut de gamme, contrecollé pour le rapport qualité/prix, stratifié pour le budget." },
     ],
@@ -115,7 +115,7 @@ export const TRAVAUX: TypeTravaux[] = [
     id: "12", nom: "Changement de serrure", slug: "changement-de-serrure",
     description: "Le changement de serrure est nécessaire après un cambriolage, une perte de clés, ou pour renforcer la sécurité de votre logement. Un serrurier professionnel intervient rapidement et vous conseille sur le niveau de sécurité adapté.",
     metiers: ["serrurier"],
-    photo: "https://images.unsplash.com/photo-1558618019-44bc87907eaa?w=600&h=400&fit=crop",
+    photo: "https://images.unsplash.com/photo-1588854337236-6889d631faa8?w=600&h=400&fit=crop",
     faq: [
       { q: "Combien coûte un changement de serrure ?", a: "De 80 à 300€ selon le type de serrure (simple, 3 points, 5 points)." },
     ],

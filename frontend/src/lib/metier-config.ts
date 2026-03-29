@@ -13,14 +13,14 @@ export const METIER_COLORS: Record<string, string> = {
 
 export const METIER_PHOTOS: Record<string, string> = {
   plombier: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=400&fit=crop&crop=center",
-  electricien: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&h=400&fit=crop&crop=center",
+  electricien: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=400&h=400&fit=crop&crop=center",
   peintre: "https://images.unsplash.com/photo-1562259929-b4e1fd3aef09?w=400&h=400&fit=crop&crop=center",
   macon: "https://images.unsplash.com/photo-1517581177682-a085bb7ffb15?w=400&h=400&fit=crop&crop=center",
   carreleur: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=400&h=400&fit=crop&crop=center",
-  menuisier: "https://images.unsplash.com/photo-1558618019-44bc87907eaa?w=400&h=400&fit=crop&crop=center",
+  menuisier: "https://images.unsplash.com/photo-1588854337236-6889d631faa8?w=400&h=400&fit=crop&crop=center",
   couvreur: "https://images.unsplash.com/photo-1632759145351-1d592919f522?w=400&h=400&fit=crop&crop=center",
   chauffagiste: "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&h=400&fit=crop&crop=center",
-  serrurier: "https://images.unsplash.com/photo-1558618019-44bc87907eaa?w=400&h=400&fit=crop&crop=center",
+  serrurier: "https://images.unsplash.com/photo-1588854337236-6889d631faa8?w=400&h=400&fit=crop&crop=center",
   cuisiniste: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop&crop=center",
 };
 
