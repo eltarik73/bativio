@@ -39,9 +39,7 @@ public interface ArtisanRepository extends JpaRepository<Artisan, UUID> {
     long countByActifTrueAndDeletedAtIsNull();
     long countByPlanAndDeletedAtIsNull(Plan plan);
 
-    @Query(value = "SELECT a FROM Artisan a LEFT JOIN FETCH a.user LEFT JOIN FETCH a.metier WHERE a.deletedAt IS NULL " +
-           "AND (:search IS NULL OR LOWER(a.nomAffichage) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(a.ville) LIKE LOWER(CONCAT('%', :search, '%')))",
-           countQuery = "SELECT COUNT(a) FROM Artisan a WHERE a.deletedAt IS NULL " +
+    @Query(value = "SELECT a FROM Artisan a WHERE a.deletedAt IS NULL " +
            "AND (:search IS NULL OR LOWER(a.nomAffichage) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(a.ville) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<Artisan> findAllAdmin(@Param("search") String search, Pageable pageable);
 }

@@ -76,8 +76,8 @@ public class AdminController {
             m.put("nomAffichage", a.getNomAffichage());
             m.put("slug", a.getSlug());
             m.put("ville", a.getVille());
-            m.put("email", a.getUser() != null ? a.getUser().getEmail() : null);
-            m.put("metierNom", a.getMetier() != null ? a.getMetier().getNom() : null);
+            try { m.put("email", a.getUser() != null ? a.getUser().getEmail() : null); } catch (Exception e) { m.put("email", null); }
+            try { m.put("metierNom", a.getMetier() != null ? a.getMetier().getNom() : null); } catch (Exception e) { m.put("metierNom", null); }
             m.put("plan", a.getPlan() != null ? a.getPlan().name() : "GRATUIT");
             m.put("actif", a.isActif());
             m.put("visible", a.isVisible());
