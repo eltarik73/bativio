@@ -82,6 +82,7 @@ export default function Navbar() {
         {/* STATE 2: Not connected */}
         {!loading && !isAuthenticated && (
           <>
+            <Link href="/tarifs" className="nav-link">Tarifs</Link>
             <Link href="/connexion" className="nav-link">Connexion</Link>
             <Link href="/inscription" className="nav-cta">Espace artisan</Link>
           </>
