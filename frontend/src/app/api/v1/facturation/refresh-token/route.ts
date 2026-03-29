@@ -15,11 +15,12 @@ export async function GET() {
     const invoquoEmail = `bativio-${artisan.id}@bativio.fr`;
     const invoquoPassword = artisan.invoquoApiKey || "";
 
-    // Login sur Invoquo pour obtenir un JWT frais
+    // Login sur Invoquo — le token est dans le Set-Cookie header
     const loginRes = await fetch("https://invoquo.vercel.app/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: invoquoEmail, password: invoquoPassword }),
+      redirect: "manual",
     });
 
     if (!loginRes.ok) {
@@ -27,31 +28,21 @@ export async function GET() {
       return apiError("Impossible de se connecter à Invoquo", 502);
     }
 
-    const loginData = await loginRes.json();
-    const accessToken = loginData.data?.accessToken;
-    if (!accessToken) return apiError("Token Invoquo manquant", 502);
+    // Extraire le token du Set-Cookie header
+    const setCookieHeader = loginRes.headers.get("set-cookie") || "";
+    const tokenMatch = setCookieHeader.match(/invoquo-session=([^;]+)/);
+    const token = tokenMatch?.[1] || "";
 
-    // Essayer d'obtenir un embed token
-    const embedRes = await fetch("https://invoquo.vercel.app/api/v1/embed-tokens", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify({
-        siret: artisan.invoquoSiret || artisan.siret,
-        modules: ["dashboard", "invoices", "received", "quotes", "clients"],
-      }),
-    });
-
-    if (embedRes.ok) {
-      const json = await embedRes.json();
-      const embedToken = json.data?.token || json.token;
-      if (embedToken) return apiSuccess({ token: embedToken });
+    if (!token) {
+      // Fallback: chercher dans le body
+      const body = await loginRes.json();
+      const bodyToken = body.data?.accessToken || body.data?.token;
+      if (bodyToken) return apiSuccess({ token: bodyToken });
+      console.error("No token found in Invoquo response");
+      return apiError("Token Invoquo introuvable", 502);
     }
 
-    // Fallback: utiliser le JWT Invoquo directement
-    return apiSuccess({ token: accessToken, direct: true });
+    return apiSuccess({ token });
   } catch (error: unknown) {
     const err = error as Error;
     if (err.message === "UNAUTHORIZED") return apiError("Non autorisé", 401);
