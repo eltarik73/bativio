@@ -7,7 +7,9 @@ import com.bativio.api.entity.*;
 import com.bativio.api.entity.enums.PhotoType;
 import com.bativio.api.entity.enums.StatutDevis;
 import com.bativio.api.service.ArtisanService;
+import com.bativio.api.service.ClaudeApiService;
 import com.bativio.api.service.CloudinaryService;
+import com.bativio.api.service.ImageOptimizationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -32,10 +34,15 @@ public class ArtisanController {
 
     private final ArtisanService artisanService;
     private final CloudinaryService cloudinaryService;
+    private final ImageOptimizationService imageOptimizationService;
+    private final ClaudeApiService claudeApiService;
 
-    public ArtisanController(ArtisanService artisanService, CloudinaryService cloudinaryService) {
+    public ArtisanController(ArtisanService artisanService, CloudinaryService cloudinaryService,
+                             ImageOptimizationService imageOptimizationService, ClaudeApiService claudeApiService) {
         this.artisanService = artisanService;
         this.cloudinaryService = cloudinaryService;
+        this.imageOptimizationService = imageOptimizationService;
+        this.claudeApiService = claudeApiService;
     }
 
     @GetMapping
@@ -74,10 +81,24 @@ public class ArtisanController {
             @RequestParam("file") MultipartFile file,
             @RequestParam(value = "titre", required = false) String titre) {
         try {
-            CloudinaryService.UploadResult result = cloudinaryService.upload(file);
+            // Validate image format and size
+            imageOptimizationService.validateImage(file);
+
+            // Optimize before uploading to Cloudinary (compress large phone photos)
+            byte[] optimized;
+            if (file.getSize() > 500 * 1024) { // Only optimize if > 500KB
+                optimized = imageOptimizationService.compressForUpload(file.getBytes());
+                log.info("Photo optimized: {}KB -> {}KB", file.getSize() / 1024, optimized.length / 1024);
+            } else {
+                optimized = file.getBytes();
+            }
+
+            CloudinaryService.UploadResult result = cloudinaryService.upload(file, optimized);
             Photo p = artisanService.addPhoto(user.getId(),
                     result.url(), result.publicId(), titre, PhotoType.SIMPLE, null);
             return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok(p));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
         } catch (Exception e) {
             log.error("Photo upload failed", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -194,5 +215,11 @@ public class ArtisanController {
     public ResponseEntity<ApiResponse<String>> deleteZone(@AuthenticationPrincipal User user, @PathVariable UUID id) {
         artisanService.deleteZone(user.getId(), id);
         return ResponseEntity.ok(ApiResponse.ok("Zone supprimee"));
+    }
+
+    // --- SEO IA (Pro+ uniquement) ---
+    @PostMapping("/seo-optimize")
+    public ResponseEntity<ApiResponse<Map<String, String>>> optimizeSeo(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(ApiResponse.ok(artisanService.optimizeSeo(user.getId(), claudeApiService)));
     }
 }

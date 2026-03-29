@@ -109,7 +109,7 @@ export default function VitrineVitrine({ a, photo, primary, accent, villeSlug }:
       {(a.photos ?? []).length > 0 && (
         <section style={{ background: "#FAF8F5", padding: "48px 32px" }}>
           <div style={{ maxWidth: 880, margin: "0 auto" }}>
-            <PhotoGallery photos={a.photos || []} layout={(a.photoLayout || "slider") as PhotoLayoutType} primary={primary} />
+            <PhotoGallery photos={a.photos || []} layout={(a.photoLayout || "slider") as PhotoLayoutType} primary={primary} metierNom={a.metierNom} ville={a.ville} />
           </div>
         </section>
       )}

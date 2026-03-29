@@ -55,7 +55,7 @@ export default function VitrinePortfolio({ a, photo, primary, accent, villeSlug 
       {/* Gallery — masonry by default for portfolio */}
       <section style={{ background: "#fff", padding: "48px 32px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <PhotoGallery photos={a.photos || []} layout={(a.photoLayout || "masonry") as PhotoLayoutType} primary={primary} />
+          <PhotoGallery photos={a.photos || []} layout={(a.photoLayout || "masonry") as PhotoLayoutType} primary={primary} metierNom={a.metierNom} ville={a.ville} />
         </div>
       </section>
 

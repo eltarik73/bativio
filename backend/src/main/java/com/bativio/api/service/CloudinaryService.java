@@ -44,13 +44,17 @@ public class CloudinaryService {
      */
     @SuppressWarnings("unchecked")
     public UploadResult upload(MultipartFile file) throws IOException {
+        return upload(file, file.getBytes());
+    }
+
+    @SuppressWarnings("unchecked")
+    public UploadResult upload(MultipartFile file, byte[] bytes) throws IOException {
         if (!configured) {
-            // Return a placeholder so the photo record is still created
             String placeholder = "https://placehold.co/800x600/C4531A/FFFFFF?text=Photo";
             return new UploadResult(placeholder, null);
         }
 
-        Map<String, Object> result = cloudinary.uploader().upload(file.getBytes(),
+        Map<String, Object> result = cloudinary.uploader().upload(bytes,
                 ObjectUtils.asMap(
                         "folder", "bativio/photos",
                         "resource_type", "image",

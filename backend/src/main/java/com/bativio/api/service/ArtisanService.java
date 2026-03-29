@@ -298,6 +298,56 @@ public class ArtisanService {
         zoneRepository.delete(z);
     }
 
+    // --- SEO IA ---
+    @Transactional
+    public Map<String, String> optimizeSeo(UUID userId, ClaudeApiService claudeApi) {
+        Artisan a = getArtisanByUserId(userId);
+        if (a.getPlan() != com.bativio.api.entity.enums.Plan.PRO_PLUS) {
+            throw new PlanLimitException("Disponible uniquement avec le plan Pro+");
+        }
+        if (!claudeApi.isConfigured()) {
+            throw new IllegalStateException("Service IA non configure");
+        }
+
+        String metierNom = a.getMetier() != null ? a.getMetier().getNom() : "Artisan";
+        String servicesStr = a.getServices().stream().map(s -> s.getTitre()).reduce((x, y) -> x + ", " + y).orElse("");
+
+        String prompt = "Tu es un expert SEO local pour les artisans du batiment en France. "
+                + "Genere pour cet artisan : "
+                + "1. Une meta description SEO optimisee (max 160 caracteres) "
+                + "2. 10 mots-cles SEO pertinents separes par des virgules "
+                + "Informations : "
+                + "Nom : " + a.getNomAffichage() + ". "
+                + "Metier : " + metierNom + ". "
+                + "Ville : " + (a.getVille() != null ? a.getVille() : "Chambery") + ". "
+                + "Services : " + servicesStr + ". "
+                + "Description actuelle : " + (a.getDescription() != null ? a.getDescription() : "aucune") + ". "
+                + "Experience : " + (a.getExperienceAnnees() != null ? a.getExperienceAnnees() + " ans" : "non renseignee") + ". "
+                + "Reponds UNIQUEMENT en format : META: [meta description] KEYWORDS: [mots-cles]";
+
+        String response = claudeApi.call(prompt);
+        if (response == null) {
+            throw new IllegalStateException("Erreur lors de l'appel IA");
+        }
+
+        String metaDesc = "";
+        String keywords = "";
+        int metaIdx = response.indexOf("META:");
+        int kwIdx = response.indexOf("KEYWORDS:");
+        if (metaIdx >= 0 && kwIdx > metaIdx) {
+            metaDesc = response.substring(metaIdx + 5, kwIdx).trim();
+            keywords = response.substring(kwIdx + 9).trim();
+        } else {
+            metaDesc = response.length() > 160 ? response.substring(0, 160) : response;
+        }
+
+        a.setSeoDescription(metaDesc);
+        a.setSeoKeywords(keywords);
+        artisanRepository.save(a);
+
+        return Map.of("metaDescription", metaDesc, "keywords", keywords);
+    }
+
     private int calculateCompletion(Artisan a) {
         int score = 0;
         if (a.getNomAffichage() != null) score += 15;

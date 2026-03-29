@@ -46,6 +46,8 @@ export interface ArtisanPublic {
   colorPrimary?: string;
   colorAccent?: string;
   photoLayout?: string;
+  seoDescription?: string;
+  seoKeywords?: string;
 }
 
 export interface ServiceData {

@@ -39,3 +39,6 @@ logging:
 resend:
   api-key: ${RESEND_API_KEY:}
   from-email: ${RESEND_FROM_EMAIL:onboarding@resend.dev}
+
+anthropic:
+  api-key: ${ANTHROPIC_API_KEY:}

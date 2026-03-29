@@ -93,7 +93,7 @@ export default function VitrineModerne({ a, photo, primary, accent, villeSlug }:
       {/* Photos */}
       <section style={{ background: "#FAF8F5", padding: "48px 32px" }}>
         <div style={{ maxWidth: 960, margin: "0 auto" }}>
-          <PhotoGallery photos={a.photos || []} layout={(a.photoLayout || "grid") as PhotoLayoutType} primary={primary} />
+          <PhotoGallery photos={a.photos || []} layout={(a.photoLayout || "grid") as PhotoLayoutType} primary={primary} metierNom={a.metierNom} ville={a.ville} />
         </div>
       </section>
 

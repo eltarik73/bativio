@@ -18,8 +18,11 @@ export default function VitrinePage() {
   const [photoLayout, setPhotoLayout] = useState("grid");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [seoLoading, setSeoLoading] = useState(false);
+  const [seoResult, setSeoResult] = useState<{ metaDescription: string; keywords: string } | null>(null);
 
   const isPro = user?.plan === "PRO" || user?.plan === "PRO_PLUS";
+  const isProPlus = user?.plan === "PRO_PLUS";
 
   // Load current settings from user profile
   useEffect(() => {
@@ -139,6 +142,42 @@ export default function VitrinePage() {
               {l.label} <span style={{ color: "#C5C0B9" }}>&rarr;</span>
             </Link>
           ))}
+        </div>
+
+        {/* SEO IA (Pro+ only) */}
+        <div style={C}>
+          <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1C1C1E", marginBottom: 8 }}>SEO par IA</h3>
+          {isProPlus ? (
+            <>
+              <p style={{ fontSize: 12, color: "#9B9590", marginBottom: 12, lineHeight: 1.5 }}>G&eacute;n&eacute;rez une meta description et des mots-cl&eacute;s optimis&eacute;s pour le r&eacute;f&eacute;rencement.</p>
+              <button
+                onClick={async () => {
+                  setSeoLoading(true);
+                  try {
+                    const res = await fetchWithAuth("/artisans/me/seo-optimize", { method: "POST" }) as { metaDescription: string; keywords: string };
+                    setSeoResult(res);
+                  } catch { /* ignore */ }
+                  finally { setSeoLoading(false); }
+                }}
+                disabled={seoLoading}
+                style={{ width: "100%", padding: "10px 16px", borderRadius: 8, background: "linear-gradient(135deg, #C4531A, #E8A84C)", color: "#fff", fontSize: 13, fontWeight: 600, border: "none", cursor: seoLoading ? "wait" : "pointer", opacity: seoLoading ? 0.6 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+              >
+                {seoLoading ? "Optimisation..." : "\uD83E\uDD16 Optimiser avec l'IA"}
+              </button>
+              {seoResult && (
+                <div style={{ marginTop: 12, padding: 12, background: "#F0FDF4", borderRadius: 8, border: "1px solid rgba(22,163,74,.15)" }}>
+                  <p style={{ fontSize: 11, fontWeight: 600, color: "#15803d", marginBottom: 4 }}>Meta description :</p>
+                  <p style={{ fontSize: 12, color: "#6B6560", lineHeight: 1.4 }}>{seoResult.metaDescription}</p>
+                  <p style={{ fontSize: 11, fontWeight: 600, color: "#15803d", marginTop: 8, marginBottom: 4 }}>Mots-cl&eacute;s :</p>
+                  <p style={{ fontSize: 12, color: "#6B6560", lineHeight: 1.4 }}>{seoResult.keywords}</p>
+                </div>
+              )}
+            </>
+          ) : (
+            <div style={{ padding: 12, background: "#FAF8F5", borderRadius: 8, textAlign: "center" }}>
+              <p style={{ fontSize: 12, color: "#9B9590" }}>Disponible avec le plan Pro+</p>
+            </div>
+          )}
         </div>
 
         {/* Publish */}

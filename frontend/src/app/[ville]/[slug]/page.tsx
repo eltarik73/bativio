@@ -40,16 +40,19 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
   const a = await fetchArtisan(slug);
   if (!a) return { title: "Artisan introuvable" };
   const ms = (a.metierNom || "plombier").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
-  const img = METIER_PHOTOS[ms] || METIER_PHOTOS.plombier;
+  const metierImg = METIER_PHOTOS[ms] || METIER_PHOTOS.plombier;
+  const ogImage = (a.photos && a.photos.length > 0) ? a.photos[0].url : metierImg;
+  const seoDesc = a.seoDescription;
+  const metaDesc = seoDesc || `${a.nomAffichage}, ${(a.metierNom || "artisan").toLowerCase()} \u00e0 ${a.ville || villeParam}. ${a.description || ""} Devis gratuit.`;
   return {
-    title: `${a.nomAffichage} \u2014 ${a.metierNom || "Artisan"} \u00e0 ${a.ville || villeParam}`,
-    description: `${a.nomAffichage}, ${(a.metierNom || "artisan").toLowerCase()} \u00e0 ${a.ville || villeParam}. ${a.description || ""} Devis gratuit.`,
-    alternates: { canonical: `/${villeParam}/${a.slug}` },
+    title: `${a.nomAffichage} \u2014 ${a.metierNom || "Artisan"} \u00e0 ${a.ville || villeParam} | Bativio`,
+    description: metaDesc.length > 160 ? metaDesc.substring(0, 157) + "..." : metaDesc,
+    alternates: { canonical: `https://bativio.fr/${villeParam}/${a.slug}` },
     openGraph: {
       title: `${a.nomAffichage} \u2014 ${a.metierNom || "Artisan"} \u00e0 ${a.ville || villeParam}`,
-      description: `Devis gratuit \u00b7 \u2605 ${a.noteMoyenne || 0}/5`,
+      description: `Devis gratuit \u00b7 \u2605 ${a.noteMoyenne || 0}/5${a.experienceAnnees ? " \u00b7 " + a.experienceAnnees + " ans" : ""}`,
       url: `https://bativio.fr/${villeParam}/${a.slug}`,
-      images: [{ url: img, width: 400, height: 400, alt: a.nomAffichage }],
+      images: [{ url: ogImage, width: 800, height: 600, alt: `${a.nomAffichage} - ${a.metierNom || "Artisan"} \u00e0 ${a.ville || villeParam}` }],
     },
   };
 }

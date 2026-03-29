@@ -75,6 +75,10 @@ public class Artisan {
     private String colorPrimary = "#C4531A";
     private String colorAccent = "#E8A84C";
     private String photoLayout = "grid";
+    @Column(columnDefinition = "TEXT")
+    private String seoDescription;
+    @Column(columnDefinition = "TEXT")
+    private String seoKeywords;
     private boolean actif = false;
     private boolean visible = true;
 
@@ -178,6 +182,10 @@ public class Artisan {
     public void setColorAccent(String colorAccent) { this.colorAccent = colorAccent; }
     public String getPhotoLayout() { return photoLayout; }
     public void setPhotoLayout(String photoLayout) { this.photoLayout = photoLayout; }
+    public String getSeoDescription() { return seoDescription; }
+    public void setSeoDescription(String seoDescription) { this.seoDescription = seoDescription; }
+    public String getSeoKeywords() { return seoKeywords; }
+    public void setSeoKeywords(String seoKeywords) { this.seoKeywords = seoKeywords; }
     public boolean isActif() { return actif; }
     public void setActif(boolean actif) { this.actif = actif; }
     public boolean isVisible() { return visible; }

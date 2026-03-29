@@ -33,6 +33,8 @@ public class ArtisanPublicResponse {
     private String colorPrimary;
     private String colorAccent;
     private String photoLayout;
+    private String seoDescription;
+    private String seoKeywords;
 
     public static ArtisanPublicResponse fromEntity(Artisan a) {
         ArtisanPublicResponse r = new ArtisanPublicResponse();
@@ -62,6 +64,8 @@ public class ArtisanPublicResponse {
         r.colorPrimary = a.getColorPrimary();
         r.colorAccent = a.getColorAccent();
         r.photoLayout = a.getPhotoLayout();
+        r.seoDescription = a.getSeoDescription();
+        r.seoKeywords = a.getSeoKeywords();
         return r;
     }
 
@@ -130,4 +134,6 @@ public class ArtisanPublicResponse {
     public String getColorPrimary() { return colorPrimary; }
     public String getColorAccent() { return colorAccent; }
     public String getPhotoLayout() { return photoLayout; }
+    public String getSeoDescription() { return seoDescription; }
+    public String getSeoKeywords() { return seoKeywords; }
 }
