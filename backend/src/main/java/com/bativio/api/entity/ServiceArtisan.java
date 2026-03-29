@@ -20,12 +20,13 @@ public class ServiceArtisan {
     @JoinColumn(name = "artisan_id", nullable = false)
     private Artisan artisan;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "varchar(255)")
     private String titre;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(columnDefinition = "varchar(100)")
     private String prixIndicatif;
 
     private int ordre = 0;

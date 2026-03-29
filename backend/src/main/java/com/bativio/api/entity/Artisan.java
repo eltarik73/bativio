@@ -31,12 +31,15 @@ public class Artisan {
     @Column(length = 14, unique = true, nullable = false)
     private String siret;
 
+    @Column(columnDefinition = "varchar(255)")
     private String raisonSociale;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "varchar(255)")
     private String nomAffichage;
 
+    @Column(columnDefinition = "varchar(255)")
     private String prenom;
+    @Column(columnDefinition = "varchar(255)")
     private String nom;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
@@ -46,11 +49,14 @@ public class Artisan {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "varchar(255)")
     private String telephone;
 
+    @Column(columnDefinition = "varchar(255)")
     private String adresse;
+    @Column(columnDefinition = "varchar(255)")
     private String codePostal;
+    @Column(columnDefinition = "varchar(255)")
     private String ville;
     private Double latitude;
     private Double longitude;
@@ -66,14 +72,20 @@ public class Artisan {
     @Column(nullable = false)
     private Plan plan = Plan.GRATUIT;
 
+    @Column(columnDefinition = "varchar(255)")
     private String stripeCustomerId;
+    @Column(columnDefinition = "varchar(255)")
     private String stripeSubscriptionId;
     private int profilCompletion = 0;
 
     // Vitrine personnalisable (Pro/Pro+)
+    @Column(columnDefinition = "varchar(50)")
     private String templateId = "classique";
+    @Column(columnDefinition = "varchar(20)")
     private String colorPrimary = "#C4531A";
+    @Column(columnDefinition = "varchar(20)")
     private String colorAccent = "#E8A84C";
+    @Column(columnDefinition = "varchar(50)")
     private String photoLayout = "grid";
     @Column(columnDefinition = "TEXT")
     private String seoDescription;
@@ -82,7 +94,7 @@ public class Artisan {
     private boolean actif = false;
     private boolean visible = true;
 
-    @Column(unique = true)
+    @Column(unique = true, columnDefinition = "varchar(255)")
     private String slug;
 
     private Instant deletedAt;

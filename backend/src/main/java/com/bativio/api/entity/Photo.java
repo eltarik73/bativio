@@ -22,11 +22,13 @@ public class Photo {
     @JoinColumn(name = "artisan_id", nullable = false)
     private Artisan artisan;
 
+    @Column(columnDefinition = "varchar(255)")
     private String cloudinaryPublicId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "varchar(512)")
     private String url;
 
+    @Column(columnDefinition = "varchar(255)")
     private String titre;
 
     @Enumerated(EnumType.STRING)

@@ -24,10 +24,12 @@ public class Badge {
     @Column(nullable = false)
     private BadgeType type = BadgeType.SYSTEME;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "varchar(255)")
     private String nom;
 
+    @Column(columnDefinition = "varchar(255)")
     private String icone;
+    @Column(columnDefinition = "varchar(20)")
     private String couleur;
 
     @CreationTimestamp

@@ -14,12 +14,13 @@ public class Metier {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, columnDefinition = "varchar(255)")
     private String nom;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, columnDefinition = "varchar(255)")
     private String slug;
 
+    @Column(columnDefinition = "varchar(255)")
     private String icone;
 
     @CreationTimestamp

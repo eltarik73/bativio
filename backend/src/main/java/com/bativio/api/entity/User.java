@@ -16,9 +16,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, columnDefinition = "varchar(255)")
     private String email;
 
+    @Column(columnDefinition = "varchar(255)")
     private String passwordHash;
 
     @Enumerated(EnumType.STRING)
@@ -27,10 +28,12 @@ public class User {
 
     private boolean emailVerified = false;
 
+    @Column(columnDefinition = "varchar(255)")
     private String magicLinkToken;
 
     private Instant magicLinkExpiresAt;
 
+    @Column(columnDefinition = "varchar(255)")
     private String refreshTokenHash;
 
     @CreationTimestamp

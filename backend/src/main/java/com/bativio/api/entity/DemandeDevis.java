@@ -23,12 +23,13 @@ public class DemandeDevis {
     @JoinColumn(name = "artisan_id", nullable = false)
     private Artisan artisan;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "varchar(255)")
     private String nomClient;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "varchar(255)")
     private String telephoneClient;
 
+    @Column(columnDefinition = "varchar(255)")
     private String emailClient;
 
     @Column(columnDefinition = "TEXT", nullable = false)

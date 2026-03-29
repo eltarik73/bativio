@@ -15,14 +15,16 @@ public class Ville {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "varchar(255)")
     private String nom;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, columnDefinition = "varchar(255)")
     private String slug;
 
+    @Column(columnDefinition = "varchar(20)")
     private String codePostal;
 
+    @Column(columnDefinition = "varchar(10)")
     private String departement;
 
     private Double latitude;
