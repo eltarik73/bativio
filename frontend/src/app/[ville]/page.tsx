@@ -19,9 +19,11 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
   let seoDesc = "";
   try {
     const data = await getVille(villeSlug);
-    nom = data.nom || villeSlug;
-    seoTitle = (data as unknown as Record<string, unknown>).seoTitle as string || "";
-    seoDesc = (data as unknown as Record<string, unknown>).seoDescription as string || "";
+    // getVille returns { ville: {...}, artisans: [...] } or { nom, slug, ... }
+    const villeObj = (data as unknown as Record<string, unknown>).ville as Record<string, unknown> || data;
+    nom = (villeObj.nom as string) || (data.nom as string) || villeSlug;
+    seoTitle = (villeObj.seoTitle as string) || "";
+    seoDesc = (villeObj.seoDescription as string) || "";
   } catch {
     const mock = MOCK_VILLES.find((v) => v.slug === villeSlug);
     nom = mock?.nom || villeSlug;
