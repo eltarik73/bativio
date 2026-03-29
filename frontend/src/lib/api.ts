@@ -1,5 +1,14 @@
+function getBaseUrl() {
+  // Server-side: need absolute URL
+  if (typeof window === "undefined") {
+    return process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000";
+  }
+  // Client-side: relative URL works
+  return "";
+}
+
 async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`/api/v1${path}`, {
+  const res = await fetch(`${getBaseUrl()}/api/v1${path}`, {
     cache: "no-store",
     ...options,
     headers: {
