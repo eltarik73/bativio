@@ -39,6 +39,7 @@ public class SecurityConfig {
                         "/api/v1/auth/magic-link", "/api/v1/auth/magic-link/verify",
                         "/api/v1/auth/refresh").permitAll()
                 .requestMatchers("/api/v1/public/**").permitAll()
+                .requestMatchers("/api/v1/webhooks/**").permitAll()
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )

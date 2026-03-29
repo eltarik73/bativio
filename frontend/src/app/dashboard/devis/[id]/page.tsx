@@ -39,7 +39,10 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
   const [devis, setDevis] = useState<DevisDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [replyOpen, setReplyOpen] = useState(false);
+  const [pdfOpen, setPdfOpen] = useState(false);
   const [replyMsg, setReplyMsg] = useState("");
+  const [pdfMsg, setPdfMsg] = useState("");
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
 
@@ -70,6 +73,35 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
       setReplyOpen(false);
       setReplyMsg("");
       // Refresh
+      const d = await fetchWithAuth(`/artisans/me/devis/${id}`) as DevisDetail;
+      setDevis(d);
+    } catch { /* empty */ }
+    finally { setSending(false); }
+  };
+
+  const handlePdfUpload = async () => {
+    if (!pdfFile) return;
+    setSending(true);
+    try {
+      // Upload PDF to Cloudinary via the photo upload endpoint (reuse)
+      const formData = new FormData();
+      formData.append("file", pdfFile);
+      formData.append("titre", pdfFile.name);
+
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+      const token = localStorage.getItem("bativio_token");
+      const uploadRes = await fetch(`${API_URL}/artisans/me/devis/${id}/upload-quote`, {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
+      });
+      const uploadJson = await uploadRes.json();
+      if (!uploadJson.success) throw new Error(uploadJson.error || "Erreur upload");
+
+      setSent(true);
+      setPdfOpen(false);
+      setPdfFile(null);
+      setPdfMsg("");
       const d = await fetchWithAuth(`/artisans/me/devis/${id}`) as DevisDetail;
       setDevis(d);
     } catch { /* empty */ }
@@ -199,8 +231,15 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
               <a href={`tel:${devis.telephoneClient.replace(/\s/g, "")}`} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, border: "1.5px solid #E0DDD8", fontSize: 14, fontWeight: 600, color: "#1C1C1E", textDecoration: "none" }}>
                 &#128222; Appeler le client
               </a>
-              <button onClick={() => { setReplyOpen(!replyOpen); setSent(false); }} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, background: "#C4531A", color: "#fff", fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer" }}>
+              <button onClick={() => { setReplyOpen(!replyOpen); setPdfOpen(false); setSent(false); }} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, background: "#C4531A", color: "#fff", fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer" }}>
                 &#128172; R&eacute;pondre par message
+              </button>
+              <button onClick={() => { setPdfOpen(!pdfOpen); setReplyOpen(false); setSent(false); }} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, border: "1.5px solid #C4531A", fontSize: 14, fontWeight: 600, color: "#C4531A", background: "none", cursor: "pointer" }}>
+                &#128206; Envoyer un devis PDF
+              </button>
+              <button disabled style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, border: "1.5px solid #E0DDD8", fontSize: 14, fontWeight: 600, color: "#C5C0B9", background: "none", cursor: "not-allowed", opacity: 0.6 }} title="Invoquo sera disponible prochainement">
+                &#129534; Cr&eacute;er un devis Invoquo
+                <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: "rgba(232,168,76,.12)", color: "#E8A84C" }}>Bient&ocirc;t</span>
               </button>
               {devis.statut !== "ARCHIVE" && (
                 <button onClick={handleArchive} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, border: "1.5px solid #E0DDD8", fontSize: 14, fontWeight: 600, color: "#9B9590", background: "none", cursor: "pointer", marginTop: 8 }}>
@@ -225,6 +264,47 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
                 <button onClick={() => setReplyOpen(false)} style={{ flex: 1, height: 42, borderRadius: 8, border: "1.5px solid #E0DDD8", background: "none", fontSize: 14, fontWeight: 600, color: "#6B6560", cursor: "pointer" }}>Annuler</button>
                 <button onClick={handleReply} disabled={sending || !replyMsg.trim()} style={{ flex: 1, height: 42, borderRadius: 8, background: "#C4531A", color: "#fff", border: "none", fontSize: 14, fontWeight: 600, cursor: sending ? "wait" : "pointer", opacity: sending || !replyMsg.trim() ? 0.5 : 1 }}>
                   {sending ? "Envoi..." : "Envoyer \u2192"}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* PDF upload form */}
+          {pdfOpen && (
+            <div style={{ ...C, marginTop: 16 }}>
+              <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1C1C1E", marginBottom: 12 }}>Envoyer un devis &agrave; {devis.nomClient}</h3>
+              <div
+                onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = "#C4531A"; }}
+                onDragLeave={(e) => { e.currentTarget.style.borderColor = "#E0DDD8"; }}
+                onDrop={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = "#E0DDD8"; const f = e.dataTransfer.files[0]; if (f && f.type === "application/pdf") setPdfFile(f); }}
+                style={{ border: "2px dashed #E0DDD8", borderRadius: 10, padding: 24, textAlign: "center", cursor: "pointer", transition: "border-color .15s", marginBottom: 12 }}
+                onClick={() => document.getElementById("pdf-input")?.click()}
+              >
+                {pdfFile ? (
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                    <span style={{ fontSize: 20 }}>&#128196;</span>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: "#1C1C1E" }}>{pdfFile.name}</span>
+                    <span style={{ fontSize: 12, color: "#9B9590" }}>({(pdfFile.size / 1024).toFixed(0)} Ko)</span>
+                  </div>
+                ) : (
+                  <>
+                    <p style={{ fontSize: 14, color: "#6B6560", marginBottom: 4 }}>Glissez votre fichier PDF ici</p>
+                    <p style={{ fontSize: 12, color: "#C5C0B9" }}>ou cliquez pour choisir &middot; Max 10 Mo</p>
+                  </>
+                )}
+                <input id="pdf-input" type="file" accept="application/pdf" style={{ display: "none" }} onChange={(e) => { const f = e.target.files?.[0]; if (f) setPdfFile(f); }} />
+              </div>
+              <textarea
+                value={pdfMsg}
+                onChange={(e) => setPdfMsg(e.target.value)}
+                placeholder="Message accompagnant (facultatif)"
+                rows={3}
+                style={{ width: "100%", padding: 12, borderRadius: 8, border: "1.5px solid #E0DDD8", fontSize: 14, fontFamily: "'Karla',sans-serif", color: "#1C1C1E", resize: "vertical", outline: "none", marginBottom: 12 }}
+              />
+              <div style={{ display: "flex", gap: 10 }}>
+                <button onClick={() => { setPdfOpen(false); setPdfFile(null); }} style={{ flex: 1, height: 42, borderRadius: 8, border: "1.5px solid #E0DDD8", background: "none", fontSize: 14, fontWeight: 600, color: "#6B6560", cursor: "pointer" }}>Annuler</button>
+                <button onClick={handlePdfUpload} disabled={sending || !pdfFile} style={{ flex: 1, height: 42, borderRadius: 8, background: "#C4531A", color: "#fff", border: "none", fontSize: 14, fontWeight: 600, cursor: sending || !pdfFile ? "not-allowed" : "pointer", opacity: sending || !pdfFile ? 0.5 : 1 }}>
+                  {sending ? "Envoi..." : "Envoyer le devis \u2192"}
                 </button>
               </div>
             </div>

@@ -227,6 +227,56 @@ public class ArtisanController {
         return ResponseEntity.ok(ApiResponse.ok("Reponse envoyee"));
     }
 
+    @PostMapping(value = "/devis/{id}/upload-quote", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<String>> uploadQuotePdf(
+            @AuthenticationPrincipal User user,
+            @PathVariable UUID id,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "message", required = false) String message) {
+        try {
+            // Validate PDF
+            String ct = file.getContentType();
+            if (ct == null || !ct.equals("application/pdf")) {
+                return ResponseEntity.badRequest().body(ApiResponse.error("Seuls les fichiers PDF sont acceptes"));
+            }
+            if (file.getSize() > 10 * 1024 * 1024) {
+                return ResponseEntity.badRequest().body(ApiResponse.error("Le fichier ne doit pas depasser 10 Mo"));
+            }
+
+            // Upload to Cloudinary
+            CloudinaryService.UploadResult result = cloudinaryService.upload(file);
+
+            // Create reply with QUOTE_UPLOAD type
+            String msg = (message != null && !message.isBlank()) ? message : "Veuillez trouver ci-joint mon devis pour les travaux demandes.";
+            DevisReply reply = artisanService.replyToDevis(user.getId(), id, msg,
+                    result.url(), file.getOriginalFilename(), ReplyType.QUOTE_UPLOAD);
+
+            // Send email to client
+            try {
+                Map<String, Object> detail = artisanService.getDevisDetail(user.getId(), id);
+                ArtisanPrivateResponse profile = artisanService.getProfile(user.getId());
+                String villeSlug = profile.getVille() != null ? SlugGenerator.slugify(profile.getVille()) : "";
+                String clientEmail = (String) detail.get("emailClient");
+                if (clientEmail != null && !clientEmail.isBlank()) {
+                    emailService.sendDevisReply(clientEmail, profile.getNomAffichage(), profile.getTelephone(),
+                            profile.getSlug(), villeSlug,
+                            ((String) detail.get("descriptionBesoin")).substring(0, Math.min(80, ((String) detail.get("descriptionBesoin")).length())),
+                            msg, result.url(), file.getOriginalFilename(), null);
+                }
+            } catch (Exception e) {
+                log.error("Failed to send quote email: {}", e.getMessage());
+            }
+
+            return ResponseEntity.ok(ApiResponse.ok("Devis envoye avec succes"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
+        } catch (Exception e) {
+            log.error("Quote upload failed", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Erreur lors de l'envoi du devis"));
+        }
+    }
+
     @GetMapping("/devis/count-new")
     public ResponseEntity<ApiResponse<Long>> countNewDevis(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(ApiResponse.ok(artisanService.countNewDevis(user.getId())));
