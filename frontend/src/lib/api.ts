@@ -1,10 +1,11 @@
 function getBaseUrl() {
-  // Server-side: need absolute URL
-  if (typeof window === "undefined") {
-    return process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000";
-  }
   // Client-side: relative URL works
-  return "";
+  if (typeof window !== "undefined") return "";
+  // Server-side: need absolute URL for internal API calls
+  if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL;
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return "http://localhost:3000";
 }
 
 async function fetchApi<T>(path: string, options?: RequestInit): Promise<T> {
