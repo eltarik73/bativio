@@ -49,6 +49,7 @@ export async function GET() {
       photoLayout: artisan.photoLayout,
       siret: artisan.siret,
       raisonSociale: artisan.raisonSociale,
+      invoquoEnabled: artisan.invoquoEnabled,
       adresse: artisan.adresse,
       codePostal: artisan.codePostal,
       zoneRayonKm: artisan.zoneRayonKm,
