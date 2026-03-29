@@ -22,6 +22,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -62,13 +63,39 @@ public class AdminController {
 
     @Transactional(readOnly = true)
     @GetMapping("/artisans")
-    public ResponseEntity<ApiResponse<Page<ArtisanPublicResponse>>> getArtisans(
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getArtisans(
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        Page<ArtisanPublicResponse> result = artisanRepository
-                .findAllAdmin(search, PageRequest.of(page, size, Sort.by("createdAt").descending()))
-                .map(ArtisanPublicResponse::fromEntityShort);
+        Page<Artisan> artisans = artisanRepository
+                .findAllAdmin(search, PageRequest.of(page, size, Sort.by("createdAt").descending()));
+
+        List<Map<String, Object>> content = artisans.getContent().stream().map(a -> {
+            Map<String, Object> m = new LinkedHashMap<>();
+            m.put("id", a.getId());
+            m.put("nomAffichage", a.getNomAffichage());
+            m.put("slug", a.getSlug());
+            m.put("ville", a.getVille());
+            m.put("email", a.getUser() != null ? a.getUser().getEmail() : null);
+            m.put("metierNom", a.getMetier() != null ? a.getMetier().getNom() : null);
+            m.put("plan", a.getPlan() != null ? a.getPlan().name() : "GRATUIT");
+            m.put("actif", a.isActif());
+            m.put("visible", a.isVisible());
+            m.put("createdAt", a.getCreatedAt());
+            m.put("telephone", a.getTelephone());
+            m.put("noteMoyenne", a.getNoteMoyenne());
+            m.put("nombreAvis", a.getNombreAvis());
+            m.put("profilCompletion", a.getProfilCompletion());
+            return m;
+        }).toList();
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("content", content);
+        result.put("totalElements", artisans.getTotalElements());
+        result.put("totalPages", artisans.getTotalPages());
+        result.put("number", artisans.getNumber());
+        result.put("size", artisans.getSize());
+
         return ResponseEntity.ok(ApiResponse.ok(result));
     }
 
