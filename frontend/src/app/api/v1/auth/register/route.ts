@@ -7,9 +7,10 @@ import { apiSuccess, apiError } from "@/lib/api-response";
 const registerSchema = z.object({
   email: z.string().email("Email invalide"),
   password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères"),
-  nom: z.string().min(1, "Le nom est requis"),
-  siret: z.string().min(1, "Le SIRET est requis"),
-  telephone: z.string().min(1, "Le téléphone est requis"),
+  nom: z.string().optional(),
+  nomAffichage: z.string().optional(),
+  siret: z.string().optional(),
+  telephone: z.string().optional(),
   metierId: z.string().optional(),
   ville: z.string().optional(),
   zoneRayonKm: z.number().int().min(5).max(80).optional(),
@@ -35,7 +36,13 @@ export async function POST(request: NextRequest) {
       return apiError(firstError, 400);
     }
 
-    const { email, password, nom, siret, telephone, metierId, ville, zoneRayonKm } = parsed.data;
+    const data = parsed.data;
+    const email = data.email;
+    const password = data.password;
+    const nom = data.nomAffichage || data.nom || email.split("@")[0];
+    const telephone = data.telephone || "";
+    const siret = data.siret && data.siret.length >= 9 ? data.siret : `TEMP${Date.now()}`;
+    const { metierId, ville, zoneRayonKm } = data;
 
     // Check email uniqueness
     const existingEmail = await prisma.user.findUnique({ where: { email } });
@@ -43,10 +50,12 @@ export async function POST(request: NextRequest) {
       return apiError("Un compte existe déjà avec cet email", 409);
     }
 
-    // Check SIRET uniqueness
-    const existingSiret = await prisma.artisan.findUnique({ where: { siret } });
-    if (existingSiret) {
-      return apiError("Un compte existe déjà avec ce SIRET", 409);
+    // Check SIRET uniqueness (skip for temp SIRETs)
+    if (!siret.startsWith("TEMP")) {
+      const existingSiret = await prisma.artisan.findUnique({ where: { siret } });
+      if (existingSiret) {
+        return apiError("Un compte existe déjà avec ce SIRET", 409);
+      }
     }
 
     // Generate unique slug
