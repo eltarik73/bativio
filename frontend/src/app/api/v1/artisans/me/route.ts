@@ -103,10 +103,25 @@ export async function PUT(request: NextRequest) {
       return apiError("Artisan introuvable", 404);
     }
 
+    // Resolve metierId if it's a slug
+    const updateData = { ...parsed.data };
+    if (updateData.metierId) {
+      const metier = await prisma.metier.findFirst({
+        where: {
+          OR: [
+            { id: updateData.metierId },
+            { slug: updateData.metierId },
+            { nom: { equals: updateData.metierId, mode: "insensitive" as const } },
+          ],
+        },
+      });
+      updateData.metierId = metier?.id || undefined;
+    }
+
     // Update artisan fields
     const updatedArtisan = await prisma.artisan.update({
       where: { id: artisan.id },
-      data: parsed.data,
+      data: updateData,
       include: {
         user: { select: { email: true } },
         metier: true,

@@ -64,6 +64,21 @@ export async function POST(request: NextRequest) {
     }
     slug = slugCandidate;
 
+    // Resolve metierId — accepts slug or cuid
+    let resolvedMetierId: string | null = null;
+    if (metierId) {
+      const metier = await prisma.metier.findFirst({
+        where: {
+          OR: [
+            { id: metierId },
+            { slug: metierId },
+            { nom: { equals: metierId, mode: "insensitive" } },
+          ],
+        },
+      });
+      resolvedMetierId = metier?.id || null;
+    }
+
     // Hash password
     const passwordHash = await hashPassword(password);
 
@@ -83,7 +98,7 @@ export async function POST(request: NextRequest) {
           siret,
           nomAffichage: nom,
           telephone,
-          metierId: metierId || null,
+          metierId: resolvedMetierId,
           ville: ville || null,
           zoneRayonKm: zoneRayonKm ?? 15,
           slug,
