@@ -68,7 +68,7 @@ public class AdminController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         Page<Artisan> artisans = artisanRepository
-                .findAllAdmin(search, PageRequest.of(page, size, Sort.by("createdAt").descending()));
+                .findAllAdmin(search != null ? search : "", PageRequest.of(page, size, Sort.by("createdAt").descending()));
 
         List<Map<String, Object>> content = artisans.getContent().stream().map(a -> {
             Map<String, Object> m = new LinkedHashMap<>();

@@ -40,6 +40,6 @@ public interface ArtisanRepository extends JpaRepository<Artisan, UUID> {
     long countByPlanAndDeletedAtIsNull(Plan plan);
 
     @Query(value = "SELECT a FROM Artisan a WHERE a.deletedAt IS NULL " +
-           "AND (:search IS NULL OR LOWER(a.nomAffichage) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(a.ville) LIKE LOWER(CONCAT('%', :search, '%')))")
+           "AND (:search IS NULL OR :search = '' OR LOWER(a.nomAffichage) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(a.ville) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<Artisan> findAllAdmin(@Param("search") String search, Pageable pageable);
 }
