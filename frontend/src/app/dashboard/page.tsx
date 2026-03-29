@@ -40,14 +40,24 @@ function getCompletionItems(artisan: { description?: string | null; metierNom?: 
   ];
 }
 
+interface DevisRecent { id: string; nomClient: string; descriptionBesoin: string; statut: string; createdAt: string }
+interface Stats { vuesCeMois: number; demandesCeMois: number; rdvCeMois: number; noteMoyenne: number; nombreAvis: number }
+
 export default function DashboardPage() {
-  const { user: artisan } = useAuth();
+  const { user: artisan, fetchWithAuth } = useAuth();
   const [greeting, setGreeting] = useState("Bonjour");
   const [dateStr, setDateStr] = useState("");
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [recentDevis, setRecentDevis] = useState<DevisRecent[]>([]);
 
   useEffect(() => {
     setGreeting(getGreeting());
     setDateStr(getFormattedDate());
+    fetchWithAuth("/artisans/me/stats").then((d) => setStats(d as Stats)).catch(() => {});
+    fetchWithAuth("/artisans/me/devis?page=0&size=3").then((d) => {
+      const data = d as { devis?: DevisRecent[]; content?: DevisRecent[] };
+      setRecentDevis(data.devis || data.content || []);
+    }).catch(() => {});
   }, []);
 
   const displayName = artisan?.nomAffichage || "Artisan";
@@ -132,7 +142,7 @@ export default function DashboardPage() {
         {statsDef.map((s) => (
           <div key={s.label} style={{ ...S.card, padding: 28, transition: "all .2s", cursor: "default" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-              <span style={{ fontFamily: "'Fraunces',serif", fontSize: 32, fontWeight: 800, color: s.color || "#1C1C1E", lineHeight: 1 }}>{s.fallback}</span>
+              <span style={{ fontFamily: "'Fraunces',serif", fontSize: 32, fontWeight: 800, color: s.color || "#1C1C1E", lineHeight: 1 }}>{stats ? [stats.vuesCeMois, stats.demandesCeMois, stats.rdvCeMois, stats.noteMoyenne > 0 ? stats.noteMoyenne.toFixed(1) : "-"][statsDef.indexOf(s)] : s.fallback}</span>
               <span dangerouslySetInnerHTML={{ __html: s.icon }} style={{ display: "flex" }} />
             </div>
             <p style={{ fontSize: 13, color: "#9B9590", marginTop: 6 }}>{s.label}</p>
@@ -146,9 +156,23 @@ export default function DashboardPage() {
           <span style={{ fontFamily: "'Fraunces',serif", fontSize: 17, fontWeight: 700, color: "#1C1C1E" }}>Derni&egrave;res demandes</span>
           <Link href="/dashboard/devis" style={{ fontSize: 13, color: "#C4531A", fontWeight: 500, textDecoration: "none" }}>Voir tout &rarr;</Link>
         </div>
-        <div style={{ padding: "28px", textAlign: "center", color: "#9B9590", fontSize: 14 }}>
-          Aucune demande pour le moment.
-        </div>
+        {recentDevis.length > 0 ? (
+          <div>
+            {recentDevis.map((d) => (
+              <Link key={d.id} href={`/dashboard/devis/${d.id}`} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 28px", borderTop: "1px solid #F7F5F2", textDecoration: "none", transition: "background .15s" }}>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#1C1C1E" }}>{d.nomClient}</div>
+                  <div style={{ fontSize: 12, color: "#9B9590", marginTop: 2 }}>{d.descriptionBesoin.substring(0, 60)}{d.descriptionBesoin.length > 60 ? "..." : ""}</div>
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 8px", borderRadius: 4, background: d.statut === "NOUVEAU" ? "rgba(220,38,38,.08)" : d.statut === "REPONDU" ? "rgba(37,99,235,.08)" : "rgba(155,149,144,.08)", color: d.statut === "NOUVEAU" ? "#dc2626" : d.statut === "REPONDU" ? "#2563EB" : "#9B9590" }}>{d.statut === "NOUVEAU" ? "Nouveau" : d.statut === "REPONDU" ? "Répondu" : d.statut}</span>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div style={{ padding: "28px", textAlign: "center", color: "#9B9590", fontSize: 14 }}>
+            Aucune demande pour le moment.
+          </div>
+        )}
       </div>
 
       {/* Actions rapides */}

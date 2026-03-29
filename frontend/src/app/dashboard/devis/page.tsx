@@ -46,9 +46,9 @@ export default function DevisPage() {
     try {
       const params = new URLSearchParams({ page: String(page), size: "20" });
       if (filter !== "TOUS") params.set("statut", filter);
-      const data = await fetchWithAuth(`/artisans/me/devis?${params}`) as { content: Devis[]; totalPages: number };
-      setDevis(data.content || []);
-      setTotalPages(data.totalPages || 0);
+      const data = await fetchWithAuth(`/artisans/me/devis?${params}`) as { devis?: Devis[]; content?: Devis[]; totalPages?: number; pagination?: { totalPages: number } };
+      setDevis(data.devis || data.content || []);
+      setTotalPages(data.pagination?.totalPages || data.totalPages || 0);
     } catch { /* empty */ }
     finally { setLoading(false); }
   }, [page, filter, fetchWithAuth]);
