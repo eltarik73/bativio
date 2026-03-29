@@ -48,24 +48,27 @@ export async function POST(request: Request) {
       return apiSuccess({ url: portalSession.url, type: "portal" });
     }
 
+    // Use real Stripe Price IDs if configured, otherwise create ad-hoc
+    const priceEnvKey = `STRIPE_PRICE_${plan}`;
+    const stripePriceId = process.env[priceEnvKey];
+
+    const lineItems = stripePriceId
+      ? [{ price: stripePriceId, quantity: 1 }]
+      : [{
+          price_data: {
+            currency: "eur" as const,
+            product_data: { name: `Bativio ${config.name}`, description: `Abonnement mensuel Bativio ${config.name}` },
+            unit_amount: config.price,
+            recurring: { interval: "month" as const },
+          },
+          quantity: 1,
+        }];
+
     // Create Checkout Session
     const checkoutSession = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: "subscription",
-      line_items: [
-        {
-          price_data: {
-            currency: "eur",
-            product_data: {
-              name: `Bativio ${config.name}`,
-              description: `Abonnement mensuel Bativio ${config.name}`,
-            },
-            unit_amount: config.price,
-            recurring: { interval: "month" },
-          },
-          quantity: 1,
-        },
-      ],
+      line_items: lineItems,
       success_url: `${appUrl}/dashboard/parametres?success=true&plan=${plan}`,
       cancel_url: `${appUrl}/dashboard/parametres?canceled=true`,
       metadata: {
