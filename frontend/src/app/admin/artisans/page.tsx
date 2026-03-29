@@ -6,7 +6,8 @@ import { useAuth } from "@/context/AuthContext";
 interface ArtisanAdmin {
   id: string;
   nomAffichage: string;
-  email: string;
+  user?: { email: string };
+  email?: string;
   ville: string;
   plan: string;
   actif: boolean;
@@ -14,10 +15,11 @@ interface ArtisanAdmin {
 }
 
 interface PageResponse {
-  content: ArtisanAdmin[];
-  totalElements: number;
-  totalPages: number;
-  number: number;
+  artisans: ArtisanAdmin[];
+  pagination: { totalPages: number; total: number; page: number };
+  // Legacy Spring Boot format fallback
+  content?: ArtisanAdmin[];
+  totalPages?: number;
 }
 
 const planBadge: Record<string, string> = {
@@ -42,8 +44,8 @@ export default function AdminArtisansPage() {
       const params = new URLSearchParams({ page: String(page), size: "20" });
       if (search) params.set("search", search);
       const data = await fetchWithAuth(`/admin/artisans?${params}`) as PageResponse;
-      setArtisans(data.content);
-      setTotalPages(data.totalPages);
+      setArtisans(data.artisans || data.content || []);
+      setTotalPages(data.pagination?.totalPages || data.totalPages || 0);
     } catch {
       // silently fail
     } finally {
@@ -133,7 +135,7 @@ export default function AdminArtisansPage() {
                     onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
                   >
                     <td style={{ padding: "14px 16px", fontSize: 14, fontWeight: 600, color: "#1C1C1E" }}>{a.nomAffichage}</td>
-                    <td style={{ padding: "14px 16px", fontSize: 14, color: "#6B6560" }}>{a.email || "-"}</td>
+                    <td style={{ padding: "14px 16px", fontSize: 14, color: "#6B6560" }}>{a.user?.email || a.email || "-"}</td>
                     <td style={{ padding: "14px 16px", fontSize: 14, color: "#6B6560" }}>{a.ville || "-"}</td>
                     <td style={{ padding: "14px 16px" }}>
                       <span style={{
