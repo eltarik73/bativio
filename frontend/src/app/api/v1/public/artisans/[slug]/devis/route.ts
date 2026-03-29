@@ -10,6 +10,7 @@ const devisSchema = z.object({
   telephoneClient: z.string().min(1, "Le téléphone est requis"),
   emailClient: z.string().email("Email invalide").optional().or(z.literal("")),
   descriptionBesoin: z.string().min(1, "La description du besoin est requise"),
+  urgence: z.enum(["normal", "urgent"]).default("normal"),
 });
 
 export async function POST(
@@ -26,7 +27,7 @@ export async function POST(
       return apiError(firstError, 400);
     }
 
-    const { nomClient, telephoneClient, emailClient, descriptionBesoin } =
+    const { nomClient, telephoneClient, emailClient, descriptionBesoin, urgence } =
       parsed.data;
 
     // Find artisan by slug
@@ -57,6 +58,7 @@ export async function POST(
         telephoneClient,
         emailClient: emailClient || null,
         descriptionBesoin,
+        urgence,
         responseToken,
       },
     });
@@ -88,7 +90,7 @@ export async function POST(
               <p>${descriptionBesoin}</p>
             </div>
             <p>Répondez rapidement pour maximiser vos chances de décrocher ce chantier !</p>
-            <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://bativio.fr"}/dashboard/devis/${demandeDevis.id}"
+            <a href="${process.env.NEXT_PUBLIC_SITE_URL || "https://bativio.vercel.app"}/dashboard/devis/${demandeDevis.id}"
                style="display: inline-block; background: #C4531A; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin-top: 8px;">
               Voir la demande
             </a>
@@ -99,15 +101,15 @@ export async function POST(
         `,
     );
 
-    // Send SMS to artisan (critical notification)
-    if (artisan.telephone) {
+    // Send SMS to artisan ONLY for urgent requests
+    if (urgence === "urgent" && artisan.telephone) {
       await sendSmsWithQuota({
         artisanId: artisan.id,
         artisanPlan: artisan.plan,
         to: artisan.telephone,
         content: smsTemplates.nouveauDevisUrgent(nomClient),
         artisanEmail: artisan.user.email,
-      }).catch(() => {});
+      }).catch((e) => console.error("SMS error:", e));
     }
 
     return apiSuccess(

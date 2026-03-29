@@ -141,7 +141,7 @@ export async function getMetiers(): Promise<MetierData[]> {
 
 export async function submitDevis(
   slug: string,
-  data: { nomClient: string; telephoneClient: string; emailClient?: string; descriptionBesoin: string }
+  data: { nomClient: string; telephoneClient: string; emailClient?: string; descriptionBesoin: string; urgence?: string }
 ): Promise<string> {
   return fetchApi(`/public/artisans/${slug}/devis`, {
     method: "POST",

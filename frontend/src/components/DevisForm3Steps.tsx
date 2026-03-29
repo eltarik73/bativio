@@ -50,7 +50,8 @@ export default function DevisForm3Steps({ slug, artisanName, ville }: { slug: st
     setLoading(true);
     try {
       const { submitDevis } = await import("@/lib/api");
-      await submitDevis(slug, { nomClient: nom, telephoneClient: tel, emailClient: email, descriptionBesoin: `[${METIERS.find((m) => m.id === metier)?.name} - ${subOpt}] ${delai}. ${desc}` });
+      const isUrgent = delai.toLowerCase().includes("urgent");
+      await submitDevis(slug, { nomClient: nom, telephoneClient: tel, emailClient: email, descriptionBesoin: `[${METIERS.find((m) => m.id === metier)?.name} - ${subOpt}] ${delai}. ${desc}`, urgence: isUrgent ? "urgent" : "normal" });
       setStep(3);
     } catch (err) {
       alert(err instanceof Error ? err.message : "Erreur lors de l'envoi");
