@@ -3,7 +3,29 @@ import { VILLES } from "@/lib/constants";
 import { MOCK_ARTISANS } from "@/lib/mock-data";
 import { TRAVAUX } from "@/lib/travaux-data";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+
+async function fetchActiveArtisans(): Promise<{ slug: string; ville: string; updatedAt?: string }[]> {
+  try {
+    const res = await fetch(`${API_URL}/public/artisans?size=500`, { cache: "no-store" });
+    const json = await res.json();
+    if (json.success && json.data?.content) {
+      return json.data.content.map((a: { slug: string; ville: string }) => ({
+        slug: a.slug,
+        ville: a.ville,
+      }));
+    }
+  } catch {
+    // Fallback to mock data if API is unreachable
+  }
+  return [];
+}
+
+function slugifyVille(ville: string): string {
+  return ville.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "");
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://bativio.fr";
 
   const staticPages: MetadataRoute.Sitemap = [
@@ -20,15 +42,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  const artisanPages: MetadataRoute.Sitemap = MOCK_ARTISANS.filter((a) => a.ville && a.slug).map((a) => {
-    const villeSlug = a.ville.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
-    return {
-      url: `${baseUrl}/${villeSlug}/${a.slug}`,
-      lastModified: new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.6,
-    };
+  // Fetch real artisans from API, merge with mock for SSG
+  const apiArtisans = await fetchActiveArtisans();
+  const mockArtisanPages = MOCK_ARTISANS.filter((a) => a.ville && a.slug).map((a) => ({
+    slug: a.slug,
+    ville: a.ville,
+  }));
+
+  const allSlugs = new Set<string>();
+  const artisanEntries = [...apiArtisans, ...mockArtisanPages].filter((a) => {
+    if (allSlugs.has(a.slug)) return false;
+    allSlugs.add(a.slug);
+    return true;
   });
+
+  const artisanPages: MetadataRoute.Sitemap = artisanEntries.map((a) => ({
+    url: `${baseUrl}/${slugifyVille(a.ville)}/${a.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.6,
+  }));
 
   const travauxPages: MetadataRoute.Sitemap = TRAVAUX.map((t) => ({
     url: `${baseUrl}/travaux/${t.slug}`,

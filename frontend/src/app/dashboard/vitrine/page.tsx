@@ -1,29 +1,82 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 import { PALETTES, TEMPLATES, PHOTO_LAYOUTS } from "@/lib/vitrine-config";
 
 const C: React.CSSProperties = { background: "#fff", borderRadius: 14, border: "1px solid #EDEBE7", padding: 20, marginBottom: 16 };
 
+function slugifyVille(ville: string): string {
+  return ville.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-");
+}
+
 export default function VitrinePage() {
+  const { user, fetchWithAuth, updateUser } = useAuth();
   const [template, setTemplate] = useState("classique");
   const [palette, setPalette] = useState("terre");
   const [photoLayout, setPhotoLayout] = useState("grid");
+  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  const isPro = user?.plan === "PRO" || user?.plan === "PRO_PLUS";
+
+  // Load current settings from user profile
+  useEffect(() => {
+    if (user) {
+      if (user.templateId) setTemplate(user.templateId as string);
+      if (user.photoLayout) setPhotoLayout(user.photoLayout as string);
+      const p = PALETTES.find((p) => p.primary === user.colorPrimary);
+      if (p) setPalette(p.id);
+    }
+  }, [user]);
 
   const currentPalette = PALETTES.find((p) => p.id === palette) || PALETTES[0];
 
-  const handlePublish = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+  const vitrineSlug = user?.slug || "";
+  const vitrineVille = user?.ville ? slugifyVille(user.ville) : "";
+  const vitrineHref = vitrineSlug && vitrineVille ? `/${vitrineVille}/${vitrineSlug}` : "#";
+
+  const handlePublish = async () => {
+    if (!isPro) return;
+    setSaving(true);
+    try {
+      const updated = await fetchWithAuth("/artisans/me", {
+        method: "PUT",
+        body: JSON.stringify({
+          templateId: template,
+          colorPrimary: currentPalette.primary,
+          colorAccent: currentPalette.accent,
+          photoLayout,
+        }),
+      }) as Record<string, unknown>;
+      if (updated && updateUser) {
+        updateUser({ ...user!, ...updated });
+      }
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (e) {
+      console.error("Failed to save vitrine settings", e);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
-    <div style={{ display: "flex", gap: 24, maxWidth: 1200, margin: "0 auto" }}>
+    <div style={{ display: "flex", gap: 24, maxWidth: 1200, margin: "0 auto", position: "relative" }}>
       {/* Sidebar config */}
-      <div style={{ width: 300, flexShrink: 0 }}>
+      <div style={{ width: 300, flexShrink: 0, position: "relative" }}>
         <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#1C1C1E", marginBottom: 24 }}>Ma vitrine</h1>
+
+        {/* Plan gate overlay */}
+        {!isPro && (
+          <div style={{ position: "absolute", inset: "60px 0 0 0", zIndex: 10, background: "rgba(250,248,245,.85)", backdropFilter: "blur(4px)", borderRadius: 14, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 32, textAlign: "center" }}>
+            <div style={{ fontSize: 32, marginBottom: 12 }}>&#128274;</div>
+            <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 8 }}>Passez au plan Pro</h3>
+            <p style={{ fontSize: 14, color: "#6B6560", lineHeight: 1.5, marginBottom: 20 }}>Personnalisez votre vitrine avec 4 templates, 8 palettes de couleurs et 4 dispositions photos.</p>
+            <Link href="/dashboard/parametres" style={{ padding: "12px 24px", background: "#C4531A", color: "#fff", borderRadius: 10, fontSize: 14, fontWeight: 600, textDecoration: "none" }}>D&eacute;couvrir le plan Pro &rarr;</Link>
+          </div>
+        )}
 
         {/* Templates */}
         <div style={C}>
@@ -89,8 +142,8 @@ export default function VitrinePage() {
         </div>
 
         {/* Publish */}
-        <button onClick={handlePublish} style={{ width: "100%", height: 48, borderRadius: 10, background: currentPalette.primary, color: "#fff", fontSize: 15, fontWeight: 600, border: "none", cursor: "pointer", transition: "all .2s" }}>
-          {saved ? "\u2713 Vitrine publi\u00e9e !" : "Publier les modifications"}
+        <button onClick={handlePublish} disabled={saving || !isPro} style={{ width: "100%", height: 48, borderRadius: 10, background: isPro ? currentPalette.primary : "#E0DDD8", color: "#fff", fontSize: 15, fontWeight: 600, border: "none", cursor: isPro ? "pointer" : "not-allowed", transition: "all .2s", opacity: saving ? 0.6 : 1 }}>
+          {saved ? "\u2713 Vitrine publi\u00e9e !" : saving ? "Publication..." : "Publier les modifications"}
         </button>
       </div>
 
@@ -98,7 +151,9 @@ export default function VitrinePage() {
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
           <span style={{ fontSize: 14, fontWeight: 600, color: "#9B9590" }}>Aper&ccedil;u de votre vitrine</span>
-          <Link href="/chambery/martin-plomberie" target="_blank" style={{ fontSize: 13, color: currentPalette.primary, fontWeight: 600, textDecoration: "none" }}>Voir en ligne &rarr;</Link>
+          {vitrineHref !== "#" && (
+            <Link href={vitrineHref} target="_blank" style={{ fontSize: 13, color: currentPalette.primary, fontWeight: 600, textDecoration: "none" }}>Voir en ligne &rarr;</Link>
+          )}
         </div>
         <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #EDEBE7", overflow: "hidden", boxShadow: "0 4px 24px rgba(28,28,30,.06)" }}>
           {/* Browser bar */}
@@ -106,10 +161,10 @@ export default function VitrinePage() {
             <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#E0DDD8" }} />
             <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#E0DDD8" }} />
             <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#E0DDD8" }} />
-            <span style={{ flex: 1, textAlign: "center", fontSize: 11, color: "#C5C0B9" }}>bativio.fr/chambery/martin-plomberie</span>
+            <span style={{ flex: 1, textAlign: "center", fontSize: 11, color: "#C5C0B9" }}>bativio.fr/{vitrineVille}/{vitrineSlug || "mon-entreprise"}</span>
           </div>
 
-          {/* ═══ CLASSIQUE ═══ */}
+          {/* CLASSIQUE */}
           {template === "classique" && (
             <div style={{ padding: 20 }}>
               <div style={{ background: "#1C1C1E", borderRadius: 12, padding: "28px 24px", marginBottom: 12 }}>
@@ -117,11 +172,8 @@ export default function VitrinePage() {
                   <span style={{ background: currentPalette.accent, color: "#1C1C1E", padding: "4px 10px", borderRadius: 12, fontSize: 13, fontWeight: 700, fontFamily: "'Fraunces',serif" }}>4.8</span>
                   <span style={{ fontSize: 11, color: "rgba(255,255,255,.4)" }}>47 avis</span>
                 </div>
-                <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#fff" }}>Martin Plomberie</h2>
-                <p style={{ fontSize: 13, color: "rgba(255,255,255,.4)", marginTop: 4 }}>Plombier &agrave; Chamb&eacute;ry</p>
-                <div style={{ display: "flex", gap: 6, marginTop: 12 }}>
-                  {["RGE", "Qualibat"].map((b) => <span key={b} style={{ background: "rgba(255,255,255,.12)", color: "#fff", padding: "4px 10px", borderRadius: 6, fontSize: 10 }}>{b}</span>)}
-                </div>
+                <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#fff" }}>{user?.nomAffichage || "Mon entreprise"}</h2>
+                <p style={{ fontSize: 13, color: "rgba(255,255,255,.4)", marginTop: 4 }}>{user?.metierNom || "Artisan"} &agrave; {user?.ville || "Chamb\u00e9ry"}</p>
                 <span style={{ display: "inline-block", marginTop: 16, background: currentPalette.primary, color: "#fff", padding: "8px 16px", borderRadius: 8, fontSize: 12, fontWeight: 600 }}>Devis gratuit</span>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8, marginBottom: 12 }}>
@@ -132,25 +184,21 @@ export default function VitrinePage() {
                   </div>
                 ))}
               </div>
-              <p style={{ fontSize: 11, color: "#6B6560", lineHeight: 1.5 }}>Plombier-chauffagiste depuis 15 ans. D&eacute;pannage urgent, r&eacute;novation salle de bain.</p>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 6, marginTop: 12 }}>
                 {[1, 2, 3].map((i) => <div key={i} style={{ background: "#EDEBE7", borderRadius: 6, aspectRatio: "4/3" }} />)}
               </div>
             </div>
           )}
 
-          {/* ═══ PORTFOLIO ═══ */}
+          {/* PORTFOLIO */}
           {template === "portfolio" && (
             <div style={{ padding: 0 }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
                 <div style={{ background: "#EDEBE7", minHeight: 200 }} />
                 <div style={{ padding: 24, display: "flex", flexDirection: "column", justifyContent: "center" }}>
                   <span style={{ background: currentPalette.accent, color: "#1C1C1E", padding: "3px 8px", borderRadius: 8, fontSize: 11, fontWeight: 700, alignSelf: "flex-start", marginBottom: 8 }}>4.8 &#9733;</span>
-                  <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 20, fontWeight: 700 }}>Martin Plomberie</h2>
-                  <p style={{ fontSize: 12, color: "#9B9590", marginTop: 4 }}>Plombier &agrave; Chamb&eacute;ry &middot; 15 ans</p>
-                  <div style={{ display: "flex", gap: 4, marginTop: 10 }}>
-                    {["RGE", "Qualibat"].map((b) => <span key={b} style={{ fontSize: 9, padding: "2px 8px", borderRadius: 4, background: `${currentPalette.primary}10`, color: currentPalette.primary, fontWeight: 600 }}>{b}</span>)}
-                  </div>
+                  <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 20, fontWeight: 700 }}>{user?.nomAffichage || "Mon entreprise"}</h2>
+                  <p style={{ fontSize: 12, color: "#9B9590", marginTop: 4 }}>{user?.metierNom || "Artisan"} &agrave; {user?.ville || "Chamb\u00e9ry"}</p>
                   <span style={{ display: "inline-block", marginTop: 14, background: currentPalette.primary, color: "#fff", padding: "6px 14px", borderRadius: 8, fontSize: 11, fontWeight: 600, alignSelf: "flex-start" }}>Devis gratuit</span>
                 </div>
               </div>
@@ -163,12 +211,12 @@ export default function VitrinePage() {
             </div>
           )}
 
-          {/* ═══ MODERNE ═══ */}
+          {/* MODERNE */}
           {template === "moderne" && (
             <div style={{ padding: 20 }}>
               <div style={{ background: currentPalette.primary, borderRadius: 12, padding: "24px 20px", marginBottom: 12, color: "#fff" }}>
-                <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700 }}>Martin Plomberie</h2>
-                <p style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>Plombier &agrave; Chamb&eacute;ry</p>
+                <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700 }}>{user?.nomAffichage || "Mon entreprise"}</h2>
+                <p style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>{user?.metierNom || "Artisan"} &agrave; {user?.ville || "Chamb\u00e9ry"}</p>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gridTemplateRows: "auto auto", gap: 8 }}>
                 <div style={{ background: "#EDEBE7", borderRadius: 10, gridRow: "1/3", minHeight: 140 }} />
@@ -182,7 +230,7 @@ export default function VitrinePage() {
                 </div>
                 <div style={{ background: "#EDEBE7", borderRadius: 10 }} />
                 <div style={{ background: "#FAF8F5", borderRadius: 10, padding: 14, border: "1px solid #EDEBE7" }}>
-                  <p style={{ fontSize: 10, color: "#6B6560", lineHeight: 1.4 }}>D&eacute;pannage, r&eacute;novation SDB, chauffage...</p>
+                  <p style={{ fontSize: 10, color: "#6B6560", lineHeight: 1.4 }}>D&eacute;pannage, r&eacute;novation, chauffage...</p>
                 </div>
               </div>
               <div style={{ textAlign: "center", marginTop: 14 }}>
@@ -191,7 +239,7 @@ export default function VitrinePage() {
             </div>
           )}
 
-          {/* ═══ VITRINE ═══ */}
+          {/* VITRINE */}
           {template === "vitrine" && (
             <div style={{ padding: 0 }}>
               <div style={{ background: "#EDEBE7", height: 160, position: "relative" }}>
@@ -200,10 +248,7 @@ export default function VitrinePage() {
                 </div>
               </div>
               <div style={{ padding: 20, textAlign: "center" }}>
-                <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700 }}>Martin Plomberie</h2>
-                <div style={{ display: "flex", gap: 6, justifyContent: "center", marginTop: 8 }}>
-                  {["RGE", "Qualibat"].map((b) => <span key={b} style={{ fontSize: 9, padding: "3px 8px", borderRadius: 4, background: `${currentPalette.primary}10`, color: currentPalette.primary, fontWeight: 600 }}>{b}</span>)}
-                </div>
+                <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700 }}>{user?.nomAffichage || "Mon entreprise"}</h2>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, marginTop: 8 }}>
                   <svg width="14" height="14" fill={currentPalette.accent} viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
                   <span style={{ fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700 }}>4.8</span>
@@ -213,7 +258,7 @@ export default function VitrinePage() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0 }}>
                 <div style={{ padding: 16, background: "#FAF8F5" }}>
                   <p style={{ fontSize: 10, fontWeight: 600, color: "#9B9590", marginBottom: 6 }}>PR&Eacute;SENTATION</p>
-                  <p style={{ fontSize: 11, color: "#6B6560", lineHeight: 1.4 }}>Plombier-chauffagiste depuis 15 ans &agrave; Chamb&eacute;ry.</p>
+                  <p style={{ fontSize: 11, color: "#6B6560", lineHeight: 1.4 }}>{user?.metierNom || "Artisan"} &agrave; {user?.ville || "Chamb\u00e9ry"}.</p>
                 </div>
                 <div style={{ background: "#EDEBE7" }} />
               </div>

@@ -7,6 +7,9 @@ import type { ArtisanPublic } from "@/lib/api";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import VitrineClassique from "@/components/vitrines/VitrineClassique";
+import VitrinePortfolio from "@/components/vitrines/VitrinePortfolio";
+import VitrineModerne from "@/components/vitrines/VitrineModerne";
+import VitrineVitrine from "@/components/vitrines/VitrineVitrine";
 import { notFound } from "next/navigation";
 
 // SSG pour les artisans mock, SSR dynamique pour les nouveaux
@@ -70,7 +73,15 @@ export default async function ArtisanPage({ params }: { params: Promise<{ ville:
     <>
       <Navbar />
       <main style={{ ...cssVars }}>
-        <VitrineClassique a={a} photo={photo} primary={primary} accent={accent} villeSlug={villeSlug} />
+        {a.templateId === "portfolio" ? (
+          <VitrinePortfolio a={a} photo={photo} primary={primary} accent={accent} villeSlug={villeSlug} />
+        ) : a.templateId === "moderne" ? (
+          <VitrineModerne a={a} photo={photo} primary={primary} accent={accent} villeSlug={villeSlug} />
+        ) : a.templateId === "vitrine" ? (
+          <VitrineVitrine a={a} photo={photo} primary={primary} accent={accent} villeSlug={villeSlug} />
+        ) : (
+          <VitrineClassique a={a} photo={photo} primary={primary} accent={accent} villeSlug={villeSlug} />
+        )}
 
         <div style={{ padding: 16, textAlign: "center", background: "#F7F5F2", fontSize: 12, color: "#9B9590" }}>
           {a.nomAffichage} &middot; Propuls&eacute; par Bativio

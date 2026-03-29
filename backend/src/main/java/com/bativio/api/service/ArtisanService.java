@@ -85,6 +85,10 @@ public class ArtisanService {
         if (req.getMetierId() != null) {
             metierRepository.findById(UUID.fromString(req.getMetierId())).ifPresent(a::setMetier);
         }
+        if (req.getTemplateId() != null) a.setTemplateId(req.getTemplateId());
+        if (req.getColorPrimary() != null) a.setColorPrimary(req.getColorPrimary());
+        if (req.getColorAccent() != null) a.setColorAccent(req.getColorAccent());
+        if (req.getPhotoLayout() != null) a.setPhotoLayout(req.getPhotoLayout());
         a.setProfilCompletion(calculateCompletion(a));
         return ArtisanPrivateResponse.fromEntity(artisanRepository.save(a));
     }

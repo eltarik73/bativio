@@ -10,6 +10,10 @@ public class UpdateArtisanRequest {
     private Integer zoneRayonKm;
     private Integer experienceAnnees;
     private String metierId;
+    private String templateId;
+    private String colorPrimary;
+    private String colorAccent;
+    private String photoLayout;
 
     public String getNomAffichage() { return nomAffichage; }
     public void setNomAffichage(String nomAffichage) { this.nomAffichage = nomAffichage; }
@@ -29,4 +33,12 @@ public class UpdateArtisanRequest {
     public void setExperienceAnnees(Integer experienceAnnees) { this.experienceAnnees = experienceAnnees; }
     public String getMetierId() { return metierId; }
     public void setMetierId(String metierId) { this.metierId = metierId; }
+    public String getTemplateId() { return templateId; }
+    public void setTemplateId(String templateId) { this.templateId = templateId; }
+    public String getColorPrimary() { return colorPrimary; }
+    public void setColorPrimary(String colorPrimary) { this.colorPrimary = colorPrimary; }
+    public String getColorAccent() { return colorAccent; }
+    public void setColorAccent(String colorAccent) { this.colorAccent = colorAccent; }
+    public String getPhotoLayout() { return photoLayout; }
+    public void setPhotoLayout(String photoLayout) { this.photoLayout = photoLayout; }
 }

@@ -36,6 +36,10 @@ public class ArtisanPrivateResponse {
     private List<PhotoResponse> photos;
     private List<HoraireResponse> horaires;
     private List<String> zones;
+    private String templateId;
+    private String colorPrimary;
+    private String colorAccent;
+    private String photoLayout;
 
     public static ArtisanPrivateResponse fromEntity(Artisan a) {
         ArtisanPrivateResponse r = new ArtisanPrivateResponse();
@@ -68,6 +72,10 @@ public class ArtisanPrivateResponse {
         r.photos = a.getPhotos().stream().map(PhotoResponse::fromEntity).toList();
         r.horaires = a.getHoraires().stream().map(HoraireResponse::fromEntity).toList();
         r.zones = a.getZones().stream().map(z -> z.getVille()).toList();
+        r.templateId = a.getTemplateId();
+        r.colorPrimary = a.getColorPrimary();
+        r.colorAccent = a.getColorAccent();
+        r.photoLayout = a.getPhotoLayout();
         return r;
     }
 
@@ -105,4 +113,8 @@ public class ArtisanPrivateResponse {
     public List<PhotoResponse> getPhotos() { return photos; }
     public List<HoraireResponse> getHoraires() { return horaires; }
     public List<String> getZones() { return zones; }
+    public String getTemplateId() { return templateId; }
+    public String getColorPrimary() { return colorPrimary; }
+    public String getColorAccent() { return colorAccent; }
+    public String getPhotoLayout() { return photoLayout; }
 }
