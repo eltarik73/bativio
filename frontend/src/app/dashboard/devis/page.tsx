@@ -15,6 +15,7 @@ interface Devis {
   emailClient: string;
   descriptionBesoin: string;
   statut: string;
+  urgence?: string;
   createdAt: string;
 }
 
@@ -99,6 +100,7 @@ export default function DevisPage() {
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
                     <span style={{ width: 8, height: 8, borderRadius: "50%", background: DOT[d.statut] || "#C5C0B9", flexShrink: 0, ...(isNew ? { animation: "pulse 1.5s infinite" } : {}) }} />
                     <span style={{ fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 4, background: BG[d.statut] || BG.ARCHIVE, color: DOT[d.statut] || "#9B9590" }}>{LABEL[d.statut] || d.statut}</span>
+                    {d.urgence === "urgent" && <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: "rgba(220,38,38,.1)", color: "#dc2626", textTransform: "uppercase", letterSpacing: 0.5 }}>⚡ Urgent</span>}
                     <span style={{ fontSize: 12, color: "#C5C0B9", marginLeft: "auto" }}>{timeAgo(d.createdAt)}</span>
                   </div>
                   <div style={{ fontSize: 16, fontWeight: 700, color: "#1C1C1E", marginBottom: 4 }}>{d.nomClient}</div>

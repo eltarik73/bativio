@@ -40,7 +40,7 @@ function getCompletionItems(artisan: { description?: string | null; metierNom?: 
   ];
 }
 
-interface DevisRecent { id: string; nomClient: string; descriptionBesoin: string; statut: string; createdAt: string }
+interface DevisRecent { id: string; nomClient: string; descriptionBesoin: string; statut: string; urgence?: string; createdAt: string }
 interface Stats { vuesCeMois: number; demandesCeMois: number; rdvCeMois: number; noteMoyenne: number; nombreAvis: number }
 
 export default function DashboardPage() {
@@ -164,7 +164,10 @@ export default function DashboardPage() {
                   <div style={{ fontSize: 14, fontWeight: 600, color: "#1C1C1E" }}>{d.nomClient}</div>
                   <div style={{ fontSize: 12, color: "#9B9590", marginTop: 2 }}>{d.descriptionBesoin.substring(0, 60)}{d.descriptionBesoin.length > 60 ? "..." : ""}</div>
                 </div>
-                <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 8px", borderRadius: 4, background: d.statut === "NOUVEAU" ? "rgba(220,38,38,.08)" : d.statut === "REPONDU" ? "rgba(37,99,235,.08)" : "rgba(155,149,144,.08)", color: d.statut === "NOUVEAU" ? "#dc2626" : d.statut === "REPONDU" ? "#2563EB" : "#9B9590" }}>{d.statut === "NOUVEAU" ? "Nouveau" : d.statut === "REPONDU" ? "Répondu" : d.statut}</span>
+                <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                  {d.urgence === "urgent" && <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: "rgba(220,38,38,.1)", color: "#dc2626" }}>⚡</span>}
+                  <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 8px", borderRadius: 4, background: d.statut === "NOUVEAU" ? "rgba(220,38,38,.08)" : d.statut === "REPONDU" ? "rgba(37,99,235,.08)" : "rgba(155,149,144,.08)", color: d.statut === "NOUVEAU" ? "#dc2626" : d.statut === "REPONDU" ? "#2563EB" : "#9B9590" }}>{d.statut === "NOUVEAU" ? "Nouveau" : d.statut === "REPONDU" ? "Répondu" : d.statut}</span>
+                </div>
               </Link>
             ))}
           </div>

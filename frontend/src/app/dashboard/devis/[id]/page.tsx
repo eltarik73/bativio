@@ -23,6 +23,7 @@ interface DevisDetail {
   emailClient: string;
   descriptionBesoin: string;
   statut: string;
+  urgence?: string;
   createdAt: string;
   reponduAt: string | null;
   replies: Reply[];
@@ -135,6 +136,7 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
               <span style={{ width: 10, height: 10, borderRadius: "50%", background: DOT[devis.statut] }} />
               <span style={{ fontSize: 13, fontWeight: 600, color: DOT[devis.statut] }}>{LABEL[devis.statut]}</span>
+              {devis.urgence === "urgent" && <span style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: "rgba(220,38,38,.1)", color: "#dc2626" }}>⚡ URGENT</span>}
               <span style={{ fontSize: 13, color: "#C5C0B9", marginLeft: "auto" }}>{formatDate(devis.createdAt)}</span>
             </div>
 
