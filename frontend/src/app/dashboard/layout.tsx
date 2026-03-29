@@ -46,7 +46,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <ProtectedRoute>
       <div style={{ display: "flex", minHeight: "100vh", background: "#FAF8F5" }}>
         {/* Sidebar desktop */}
-        <aside style={{ width: 252, flexShrink: 0, background: "#fff", borderRight: "1.5px solid #EDEBE7", padding: "24px 16px 20px", display: "flex", flexDirection: "column" }} className="hidden md:flex">
+        <aside style={{ width: 252, flexShrink: 0, background: "#fff", borderRight: "1.5px solid #EDEBE7", padding: "24px 16px 20px", display: "flex", flexDirection: "column", height: "100vh", position: "sticky", top: 0 }} className="hidden md:flex">
           <Link href="/" style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#C4531A", textDecoration: "none", marginBottom: 36, paddingLeft: 14, display: "block", letterSpacing: -0.5 }}>Bativio</Link>
           <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
             {NAV.map((item) => {
@@ -64,9 +64,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               );
             })}
           </nav>
-          <div style={{ borderTop: "1.5px solid #F7F5F2", paddingTop: 16, display: "flex", flexDirection: "column", gap: 10, paddingLeft: 14 }}>
-            {vitrineHref !== "#" && (
+          <div style={{ marginTop: "auto", borderTop: "1.5px solid #F7F5F2", paddingTop: 16, display: "flex", flexDirection: "column", gap: 10, paddingLeft: 14 }}>
+            {vitrineHref !== "#" && user?.actif && (
               <Link href={vitrineHref} target="_blank" style={{ fontSize: 13, color: "#C4531A", fontWeight: 600, textDecoration: "none", transition: "color .15s" }}>Voir ma page &rarr;</Link>
+            )}
+            {vitrineHref !== "#" && !user?.actif && (
+              <span style={{ fontSize: 12, color: "#9B9590", fontStyle: "italic" }}>Page visible apr&egrave;s validation</span>
             )}
             <button onClick={handleLogout} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "#DC2626", fontWeight: 600, background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: 0, transition: "color .15s" }}>
               <span dangerouslySetInnerHTML={{ __html: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>' }} style={{ display: "flex", flexShrink: 0, width: 20, height: 20 }} />
