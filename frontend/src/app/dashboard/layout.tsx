@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -31,7 +32,14 @@ function slugifyVille(ville: string): string {
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const p = usePathname();
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user, logout, fetchWithAuth } = useAuth();
+  const [newDevisCount, setNewDevisCount] = useState(0);
+
+  useEffect(() => {
+    fetchWithAuth("/artisans/me/devis/count-new")
+      .then((count) => setNewDevisCount(count as number))
+      .catch(() => {});
+  }, [fetchWithAuth, p]); // re-fetch when navigating
 
   const handleLogout = () => {
     logout();
@@ -59,6 +67,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     {item.label}
                     {item.badge === "Bient\u00f4t" && <span style={{ marginLeft: "auto", fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: "rgba(232,168,76,.12)", color: "#E8A84C", letterSpacing: 0.2 }}>{item.badge}</span>}
                     {item.badge && item.badge !== "Bient\u00f4t" && <span style={{ marginLeft: "auto", fontSize: 10, fontWeight: 600, padding: "3px 10px", borderRadius: 6, background: "rgba(196,83,26,.06)", color: "#C4531A", letterSpacing: 0.2 }}>{item.badge}</span>}
+                    {item.href === "/dashboard/devis" && newDevisCount > 0 && <span style={{ marginLeft: "auto", minWidth: 20, height: 20, borderRadius: 10, background: "#dc2626", color: "#fff", fontSize: 11, fontWeight: 700, display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "0 6px" }}>{newDevisCount}</span>}
                   </Link>
                 </div>
               );

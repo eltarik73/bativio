@@ -5,11 +5,14 @@ import com.bativio.api.dto.response.ApiResponse;
 import com.bativio.api.dto.response.ArtisanPrivateResponse;
 import com.bativio.api.entity.*;
 import com.bativio.api.entity.enums.PhotoType;
+import com.bativio.api.entity.enums.ReplyType;
 import com.bativio.api.entity.enums.StatutDevis;
 import com.bativio.api.service.ArtisanService;
 import com.bativio.api.service.ClaudeApiService;
 import com.bativio.api.service.CloudinaryService;
+import com.bativio.api.service.EmailService;
 import com.bativio.api.service.ImageOptimizationService;
+import com.bativio.api.util.SlugGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -36,13 +39,16 @@ public class ArtisanController {
     private final CloudinaryService cloudinaryService;
     private final ImageOptimizationService imageOptimizationService;
     private final ClaudeApiService claudeApiService;
+    private final EmailService emailService;
 
     public ArtisanController(ArtisanService artisanService, CloudinaryService cloudinaryService,
-                             ImageOptimizationService imageOptimizationService, ClaudeApiService claudeApiService) {
+                             ImageOptimizationService imageOptimizationService, ClaudeApiService claudeApiService,
+                             EmailService emailService) {
         this.artisanService = artisanService;
         this.cloudinaryService = cloudinaryService;
         this.imageOptimizationService = imageOptimizationService;
         this.claudeApiService = claudeApiService;
+        this.emailService = emailService;
     }
 
     @GetMapping
@@ -173,6 +179,57 @@ public class ArtisanController {
             @AuthenticationPrincipal User user, @PathVariable UUID id, @RequestBody Map<String, String> body) {
         return ResponseEntity.ok(ApiResponse.ok(
                 artisanService.updateDevisStatut(user.getId(), id, StatutDevis.valueOf(body.get("statut")))));
+    }
+
+    @GetMapping("/devis/{id}")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getDevisDetail(
+            @AuthenticationPrincipal User user, @PathVariable UUID id) {
+        return ResponseEntity.ok(ApiResponse.ok(artisanService.getDevisDetail(user.getId(), id)));
+    }
+
+    @PutMapping("/devis/{id}/mark-read")
+    public ResponseEntity<ApiResponse<String>> markDevisRead(
+            @AuthenticationPrincipal User user, @PathVariable UUID id) {
+        artisanService.markDevisRead(user.getId(), id);
+        return ResponseEntity.ok(ApiResponse.ok("Demande marquee comme lue"));
+    }
+
+    @PostMapping("/devis/{id}/reply")
+    public ResponseEntity<ApiResponse<String>> replyToDevis(
+            @AuthenticationPrincipal User user, @PathVariable UUID id, @RequestBody Map<String, String> body) {
+        String message = body.get("message");
+        String attachmentUrl = body.get("attachmentUrl");
+        String attachmentFilename = body.get("attachmentFilename");
+        ReplyType type = body.get("type") != null ? ReplyType.valueOf(body.get("type")) : ReplyType.MESSAGE;
+
+        DevisReply reply = artisanService.replyToDevis(user.getId(), id, message, attachmentUrl, attachmentFilename, type);
+
+        // Send email to client
+        try {
+            Map<String, Object> detail = artisanService.getDevisDetail(user.getId(), id);
+            ArtisanPrivateResponse profile = artisanService.getProfile(user.getId());
+            String villeSlug = profile.getVille() != null ? SlugGenerator.slugify(profile.getVille()) : "";
+            String clientEmail = (String) detail.get("emailClient");
+            String responseToken = null;
+            // Get response token from the devis
+            try { responseToken = body.get("responseToken"); } catch (Exception ignored) {}
+            if (clientEmail != null && !clientEmail.isBlank()) {
+                emailService.sendDevisReply(
+                        clientEmail, profile.getNomAffichage(), profile.getTelephone(),
+                        profile.getSlug(), villeSlug,
+                        ((String) detail.get("descriptionBesoin")).substring(0, Math.min(80, ((String) detail.get("descriptionBesoin")).length())),
+                        message, attachmentUrl, attachmentFilename, responseToken);
+            }
+        } catch (Exception e) {
+            log.error("Failed to send reply email: {}", e.getMessage());
+        }
+
+        return ResponseEntity.ok(ApiResponse.ok("Reponse envoyee"));
+    }
+
+    @GetMapping("/devis/count-new")
+    public ResponseEntity<ApiResponse<Long>> countNewDevis(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(ApiResponse.ok(artisanService.countNewDevis(user.getId())));
     }
 
     // --- Notifications ---

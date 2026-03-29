@@ -134,6 +134,54 @@ public class EmailService {
         sendDevisNotification(to, nomAffichage, clientName, null, null, description);
     }
 
+    // --- EMAIL 3b: REPONSE ARTISAN AU CLIENT ---
+    public void sendDevisReply(String clientEmail, String artisanName, String artisanPhone, String artisanSlug, String villeSlug, String demandeSummary, String message, String attachmentUrl, String attachmentFilename, String responseToken) {
+        String profileUrl = "https://bativio.vercel.app/" + villeSlug + "/" + artisanSlug;
+        String html = HEADER
+            + "<h2 style=\"font-size:20px;font-weight:700;color:#1C1C1E;margin:0 0 8px\">" + escapeHtml(artisanName) + " vous a r&eacute;pondu</h2>"
+            + "<p style=\"font-size:13px;color:#9B9590;margin:0 0 20px\">Concernant votre demande : " + escapeHtml(demandeSummary) + "</p>"
+            + "<div style=\"background:#F7F5F2;border-radius:12px;padding:20px;margin-bottom:24px;font-size:14px;color:#1C1C1E;line-height:1.6\">"
+            + escapeHtml(message) + "</div>";
+
+        if (attachmentUrl != null && !attachmentUrl.isBlank()) {
+            html += "<div style=\"background:#FAF8F5;border:1px solid #EDEBE7;border-radius:10px;padding:14px;margin-bottom:24px;display:flex;align-items:center;gap:12px\">"
+                + "<span style=\"font-size:24px\">&#128206;</span><div>"
+                + "<p style=\"font-size:14px;font-weight:600;color:#1C1C1E;margin:0\">Devis en pi&egrave;ce jointe</p>"
+                + "<p style=\"font-size:12px;color:#9B9590;margin:2px 0 0\">" + escapeHtml(attachmentFilename != null ? attachmentFilename : "devis.pdf") + "</p></div>"
+                + "<a href=\"" + attachmentUrl + "\" style=\"margin-left:auto;background:#C4531A;color:#fff;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600\">T&eacute;l&eacute;charger</a></div>";
+        }
+
+        if (artisanPhone != null && !artisanPhone.isBlank()) {
+            html += "<div style=\"background:#FFF7ED;border-radius:10px;padding:14px;margin-bottom:24px\">"
+                + "<p style=\"font-size:13px;color:#92400E;margin:0\">&#128222; Vous pouvez aussi contacter directement " + escapeHtml(artisanName) + " au <strong>" + escapeHtml(artisanPhone) + "</strong></p></div>";
+        }
+
+        if (responseToken != null) {
+            String acceptUrl = "https://bativio.vercel.app/devis/respond?token=" + responseToken + "&action=accept";
+            String refuseUrl = "https://bativio.vercel.app/devis/respond?token=" + responseToken + "&action=refuse";
+            html += "<div style=\"display:flex;gap:12px;justify-content:center;margin-bottom:24px\">"
+                + "<a href=\"" + acceptUrl + "\" style=\"display:inline-block;background:#16a34a;color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px\">&#9989; Accepter ce devis</a>"
+                + "<a href=\"" + refuseUrl + "\" style=\"display:inline-block;background:#fff;color:#dc2626;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px;border:1.5px solid #fca5a5\">&#10060; Refuser</a></div>";
+        }
+
+        html += cta(profileUrl, "Voir le profil de l'artisan &rarr;") + FOOTER;
+        send(clientEmail, escapeHtml(artisanName) + " vous a repondu — Bativio", html);
+    }
+
+    // --- EMAIL 3c: DEVIS ACCEPTE / REFUSE → ARTISAN ---
+    public void sendDevisStatusToArtisan(String artisanEmail, String artisanName, String clientName, String statut, String raison) {
+        boolean accepted = "ACCEPTE".equals(statut);
+        String html = HEADER
+            + "<div style=\"text-align:center;margin-bottom:24px\">"
+            + "<div style=\"width:64px;height:64px;border-radius:50%;background:" + (accepted ? "rgba(22,163,74,.08)" : "rgba(220,38,38,.08)") + ";display:inline-flex;align-items:center;justify-content:center;font-size:32px\">" + (accepted ? "&#9989;" : "&#10060;") + "</div></div>"
+            + "<h2 style=\"font-size:20px;font-weight:700;color:#1C1C1E;margin:0 0 8px;text-align:center\">" + escapeHtml(clientName) + " a " + (accepted ? "accept&eacute;" : "d&eacute;clin&eacute;") + " votre devis</h2>";
+        if (raison != null && !raison.isBlank()) {
+            html += "<p style=\"font-size:14px;color:#6B6560;text-align:center;margin:12px 0\">&laquo; " + escapeHtml(raison) + " &raquo;</p>";
+        }
+        html += cta("https://bativio.vercel.app/dashboard/devis", "Voir mes demandes &rarr;") + FOOTER;
+        send(artisanEmail, escapeHtml(clientName) + " a " + (accepted ? "accepte" : "decline") + " votre devis", html);
+    }
+
     // --- EMAIL 4: MAGIC LINK ---
     public void sendMagicLink(String to, String token) {
         String url = "https://bativio.vercel.app/magic-link/verify?token=" + token + "&email=" + to;

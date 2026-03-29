@@ -16,4 +16,6 @@ public interface DemandeDevisRepository extends JpaRepository<DemandeDevis, UUID
     List<DemandeDevis> findTop3ByArtisanIdOrderByCreatedAtDesc(UUID artisanId);
     long countByArtisanIdAndCreatedAtAfter(UUID artisanId, Instant after);
     long countByCreatedAtAfter(Instant after);
+    long countByArtisanIdAndStatut(UUID artisanId, StatutDevis statut);
+    java.util.Optional<DemandeDevis> findByResponseToken(String token);
 }

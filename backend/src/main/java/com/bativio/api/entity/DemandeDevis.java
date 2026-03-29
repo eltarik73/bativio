@@ -43,6 +43,9 @@ public class DemandeDevis {
 
     private boolean relanceEnvoyee = false;
 
+    @Column(columnDefinition = "varchar(255)")
+    private String responseToken;
+
     @CreationTimestamp
     private Instant createdAt;
 
@@ -69,6 +72,8 @@ public class DemandeDevis {
     public void setReponduAt(Instant reponduAt) { this.reponduAt = reponduAt; }
     public boolean isRelanceEnvoyee() { return relanceEnvoyee; }
     public void setRelanceEnvoyee(boolean relanceEnvoyee) { this.relanceEnvoyee = relanceEnvoyee; }
+    public String getResponseToken() { return responseToken; }
+    public void setResponseToken(String responseToken) { this.responseToken = responseToken; }
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
 }

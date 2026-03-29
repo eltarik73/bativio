@@ -4,5 +4,7 @@ public enum StatutDevis {
     NOUVEAU,
     VU,
     REPONDU,
+    ACCEPTE,
+    REFUSE,
     ARCHIVE
 }

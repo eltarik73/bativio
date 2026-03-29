@@ -4,6 +4,7 @@ import com.bativio.api.dto.request.UpdateArtisanRequest;
 import com.bativio.api.dto.response.ArtisanPrivateResponse;
 import com.bativio.api.entity.*;
 import com.bativio.api.entity.enums.*;
+import com.bativio.api.repository.DevisReplyRepository;
 import com.bativio.api.exception.PlanLimitException;
 import com.bativio.api.exception.ResourceNotFoundException;
 import com.bativio.api.exception.UnauthorizedException;
@@ -34,13 +35,14 @@ public class ArtisanService {
     private final HoraireRepository horaireRepository;
     private final ZoneInterventionRepository zoneRepository;
     private final RendezVousRepository rdvRepository;
+    private final DevisReplyRepository replyRepository;
 
     public ArtisanService(ArtisanRepository artisanRepository, MetierRepository metierRepository,
                           PhotoRepository photoRepository, BadgeRepository badgeRepository,
                           BadgeSystemeRepository badgeSystemeRepository, ServiceArtisanRepository serviceRepository,
                           DemandeDevisRepository devisRepository, NotificationRepository notificationRepository,
                           HoraireRepository horaireRepository, ZoneInterventionRepository zoneRepository,
-                          RendezVousRepository rdvRepository) {
+                          RendezVousRepository rdvRepository, DevisReplyRepository replyRepository) {
         this.artisanRepository = artisanRepository;
         this.metierRepository = metierRepository;
         this.photoRepository = photoRepository;
@@ -52,6 +54,7 @@ public class ArtisanService {
         this.horaireRepository = horaireRepository;
         this.zoneRepository = zoneRepository;
         this.rdvRepository = rdvRepository;
+        this.replyRepository = replyRepository;
     }
 
     private Artisan getArtisanByUserId(UUID userId) {
@@ -296,6 +299,83 @@ public class ArtisanService {
                 .orElseThrow(() -> new ResourceNotFoundException("Zone introuvable"));
         if (!z.getArtisan().getId().equals(a.getId())) throw new UnauthorizedException("Acces non autorise");
         zoneRepository.delete(z);
+    }
+
+    // --- Devis detail & reply ---
+    @Transactional(readOnly = true)
+    public Map<String, Object> getDevisDetail(UUID userId, UUID devisId) {
+        Artisan a = getArtisanByUserId(userId);
+        DemandeDevis d = devisRepository.findById(devisId)
+                .orElseThrow(() -> new ResourceNotFoundException("Demande de devis introuvable"));
+        if (!d.getArtisan().getId().equals(a.getId())) throw new UnauthorizedException("Acces non autorise");
+
+        List<DevisReply> replies = replyRepository.findByDemandeDevisIdOrderByCreatedAtAsc(devisId);
+
+        Map<String, Object> result = new java.util.LinkedHashMap<>();
+        result.put("id", d.getId());
+        result.put("nomClient", d.getNomClient());
+        result.put("telephoneClient", d.getTelephoneClient());
+        result.put("emailClient", d.getEmailClient());
+        result.put("descriptionBesoin", d.getDescriptionBesoin());
+        result.put("statut", d.getStatut().name());
+        result.put("createdAt", d.getCreatedAt());
+        result.put("reponduAt", d.getReponduAt());
+        result.put("replies", replies.stream().map(r -> {
+            Map<String, Object> rm = new java.util.LinkedHashMap<>();
+            rm.put("id", r.getId());
+            rm.put("message", r.getMessage());
+            rm.put("attachmentUrl", r.getAttachmentUrl());
+            rm.put("attachmentFilename", r.getAttachmentFilename());
+            rm.put("type", r.getType().name());
+            rm.put("createdAt", r.getCreatedAt());
+            return rm;
+        }).toList());
+        return result;
+    }
+
+    @Transactional
+    public void markDevisRead(UUID userId, UUID devisId) {
+        Artisan a = getArtisanByUserId(userId);
+        DemandeDevis d = devisRepository.findById(devisId)
+                .orElseThrow(() -> new ResourceNotFoundException("Demande de devis introuvable"));
+        if (!d.getArtisan().getId().equals(a.getId())) throw new UnauthorizedException("Acces non autorise");
+        if (d.getStatut() == StatutDevis.NOUVEAU) {
+            d.setStatut(StatutDevis.VU);
+            devisRepository.save(d);
+        }
+    }
+
+    @Transactional
+    public DevisReply replyToDevis(UUID userId, UUID devisId, String message, String attachmentUrl, String attachmentFilename, ReplyType type) {
+        Artisan a = getArtisanByUserId(userId);
+        DemandeDevis d = devisRepository.findById(devisId)
+                .orElseThrow(() -> new ResourceNotFoundException("Demande de devis introuvable"));
+        if (!d.getArtisan().getId().equals(a.getId())) throw new UnauthorizedException("Acces non autorise");
+
+        DevisReply reply = new DevisReply();
+        reply.setDemandeDevis(d);
+        reply.setArtisan(a);
+        reply.setMessage(message);
+        reply.setAttachmentUrl(attachmentUrl);
+        reply.setAttachmentFilename(attachmentFilename);
+        reply.setType(type);
+        reply = replyRepository.save(reply);
+
+        // Generate response token for accept/refuse
+        if (d.getResponseToken() == null) {
+            d.setResponseToken(java.util.UUID.randomUUID().toString());
+        }
+        d.setStatut(StatutDevis.REPONDU);
+        d.setReponduAt(Instant.now());
+        devisRepository.save(d);
+
+        return reply;
+    }
+
+    @Transactional(readOnly = true)
+    public long countNewDevis(UUID userId) {
+        Artisan a = getArtisanByUserId(userId);
+        return devisRepository.countByArtisanIdAndStatut(a.getId(), StatutDevis.NOUVEAU);
     }
 
     // --- SEO IA ---
