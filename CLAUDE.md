@@ -14,18 +14,15 @@ Modèle : abonnement uniquement, zéro commission, zéro frais cachés.
 
 | Couche | Technologie | Hébergement |
 |--------|------------|-------------|
-| Frontend | Next.js (App Router) | Vercel |
-| Backend | Spring Boot (Java) | Railway |
+| App (frontend + API) | Next.js 16 (App Router + API Routes) | Vercel |
+| ORM | Prisma 6 | — |
+| Auth | JWT cookie HttpOnly (jose + bcryptjs) | — |
 | Base de données | PostgreSQL | Railway |
 | Photos | Cloudinary | — |
-| Documents PDF | S3 compatible | Railway / autre |
 | Emails | Resend | — |
-| SMS | OVH SMS | — |
-| Monitoring | Sentry | — |
 | Paiements | Stripe | — |
 | IA | Anthropic Claude API | — |
-| SIRET auto-fill | Pappers API (10K req/mois gratuit) | — |
-| Cartes | Google Maps Embed (gratuit) | — |
+| SIRET auto-fill | recherche-entreprises.api.gouv.fr | — |
 
 ---
 
@@ -212,7 +209,7 @@ Principe : capturer le minimum pour mettre en ligne. L'artisan complète ensuite
 - Tous les échanges regroupés dans la fiche
 
 ### Photos
-- Upload via backend Spring Boot → Cloudinary
+- Upload via API Route Next.js → Cloudinary
 - Validation côté backend : taille max 10 Mo, formats JPG/PNG/WebP
 - Compression automatique
 - Deux modes : photo simple OU paire avant/après avec titre commun
@@ -248,7 +245,7 @@ Principe : capturer le minimum pour mettre en ligne. L'artisan complète ensuite
 
 - Stripe Checkout pour la souscription
 - Stripe Customer Portal pour que l'artisan gère son abo (upgrade/downgrade/annulation)
-- Webhooks Stripe → Spring Boot : `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_failed`
+- Webhooks Stripe → API Route Next.js : `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_failed`
 - L'artisan peut activer/changer de plan depuis son dashboard
 - Le webmaster peut depuis l'admin :
   - Voir le statut d'abonnement de chaque artisan
@@ -361,25 +358,24 @@ Mandat PA : reporté à V3 (intégré dans l'onboarding quand Invoquo est prêt)
 - `generateMetadata()` sur chaque page publique
 - `generateStaticParams()` pour les pages villes
 
-### Backend (Spring Boot)
-- Java 21
-- Architecture en couches : Controller → Service → Repository
-- DTOs séparés des entités
-- Validation avec Jakarta Bean Validation
-- Réponses API standardisées : `{ success, data, error, timestamp }`
-- Logs structurés (JSON)
-- Tests unitaires sur les services
+### API Routes (Next.js)
+- Toutes dans `src/app/api/v1/`
+- Auth : JWT cookie HttpOnly (jose), pas de header Authorization
+- Validation : Zod
+- ORM : Prisma
+- Réponses standardisées : `{ success, data, error, timestamp }`
+- Middleware Next.js pour protection des routes /dashboard et /admin
 
-### Base de données
-- Nommage : snake_case
-- Toutes les tables avec `id` (UUID), `created_at`, `updated_at`
+### Base de données (Prisma)
+- Nommage : snake_case via `@@map`
+- Toutes les tables avec `id` (cuid), `created_at`, `updated_at`
 - Soft delete (`deleted_at`) sur les entités principales
-- Multi-tenant par `tenant_id` (pour l'artisan)
 - Indexes sur les colonnes de recherche fréquente
+- Schema dans `prisma/schema.prisma`
 
 ### API REST
 - Préfixe : `/api/v1/`
-- Auth : header `Authorization: Bearer <token>`
+- Auth : cookie HttpOnly `bativio-session` (JWT 7j)
 - Pagination : `?page=0&size=20`
 - Filtres : query params (`?ville=chambery&metier=plombier`)
 - Codes HTTP standards : 200, 201, 400, 401, 403, 404, 500
@@ -388,28 +384,15 @@ Mandat PA : reporté à V3 (intégré dans l'onboarding quand Invoquo est prêt)
 
 ## Variables d'environnement requises
 
-### Frontend (.env.local)
-```
-NEXT_PUBLIC_API_URL=
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
-NEXT_PUBLIC_STRIPE_PUBLIC_KEY=
-NEXT_PUBLIC_GOOGLE_MAPS_KEY=
-```
-
-### Backend (application.yml)
+### .env.local
 ```
 DATABASE_URL=
 JWT_SECRET=
-JWT_REFRESH_SECRET=
-PAPPERS_API_KEY=
-CLOUDINARY_URL=
 RESEND_API_KEY=
-OVH_SMS_APP_KEY=
-OVH_SMS_APP_SECRET=
-OVH_SMS_CONSUMER_KEY=
+CLOUDINARY_URL=
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
 STRIPE_SECRET_KEY=
-STRIPE_WEBHOOK_SECRET=
-ANTHROPIC_API_KEY=
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 SENTRY_DSN=
 ```
 

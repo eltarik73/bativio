@@ -13,10 +13,6 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "bativio-production.up.railway.app",
-      },
-      {
-        protocol: "https",
         hostname: "placehold.co",
       },
     ],
