@@ -124,6 +124,9 @@ model Artisan {
   devisList       Devis[]
   smsUsage        SmsUsage[]
   smsRecharges    SmsRecharge[]
+  disponibilites  DisponibiliteHebdo[]
+  joursFeries     JourFerie[]
+  rdvList         RendezVousBativio[]
 
   @@index([ville, metierId])
   @@index([slug])
@@ -421,4 +424,76 @@ model SmsRecharge {
   artisan         Artisan  @relation(fields: [artisanId], references: [id], onDelete: Cascade)
 
   @@map("sms_recharges")
+}
+
+enum JourSemaine {
+  LUNDI
+  MARDI
+  MERCREDI
+  JEUDI
+  VENDREDI
+  SAMEDI
+  DIMANCHE
+}
+
+enum RdvStatut {
+  CONFIRME
+  EN_ATTENTE
+  ANNULE
+  TERMINE
+  NO_SHOW
+}
+
+model DisponibiliteHebdo {
+  id         String       @id @default(cuid())
+  artisanId  String       @map("artisan_id")
+  jour       JourSemaine
+  heureDebut String       @map("heure_debut")
+  heureFin   String       @map("heure_fin")
+  pauseDebut String?      @map("pause_debut")
+  pauseFin   String?      @map("pause_fin")
+  isActive   Boolean      @default(true) @map("is_active")
+  dureeSlot  Int          @default(60) @map("duree_slot")
+
+  artisan    Artisan      @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+
+  @@unique([artisanId, jour])
+  @@map("disponibilites_hebdo")
+}
+
+model JourFerie {
+  id        String   @id @default(cuid())
+  artisanId String   @map("artisan_id")
+  date      DateTime
+  motif     String?
+
+  artisan   Artisan  @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+
+  @@index([artisanId, date])
+  @@map("jours_feries")
+}
+
+model RendezVousBativio {
+  id              String    @id @default(cuid())
+  artisanId       String    @map("artisan_id")
+  clientNom       String    @map("client_nom")
+  clientEmail     String?   @map("client_email")
+  clientTelephone String    @map("client_telephone")
+  dateDebut       DateTime  @map("date_debut")
+  dateFin         DateTime  @map("date_fin")
+  dureeMinutes    Int       @default(60) @map("duree_minutes")
+  objet           String?
+  adresse         String?
+  notes           String?   @db.Text
+  statut          RdvStatut @default(EN_ATTENTE)
+  devisId         String?   @map("devis_id")
+  rappelSmsEnvoye Boolean   @default(false) @map("rappel_sms_envoye")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  artisan         Artisan   @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+
+  @@index([artisanId, dateDebut])
+  @@index([artisanId, statut])
+  @@map("rendez_vous_bativio")
 }
