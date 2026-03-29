@@ -11,6 +11,8 @@ export default function ParametresPage() {
   const [newPw, setNewPw] = useState("");
   const [pwMsg, setPwMsg] = useState("");
   const [pwLoading, setPwLoading] = useState(false);
+  const [planLoading, setPlanLoading] = useState<string | null>(null);
+  const [showPlans, setShowPlans] = useState(false);
   const router = useRouter();
   const { user, logout, fetchWithAuth } = useAuth();
 
@@ -49,6 +51,32 @@ export default function ParametresPage() {
       setPwMsg(err instanceof Error ? err.message : "Erreur");
     } finally {
       setPwLoading(false);
+    }
+  };
+
+  const handleChangePlan = async (newPlan: string) => {
+    setPlanLoading(newPlan);
+    try {
+      const data = await fetchWithAuth("/stripe/checkout", {
+        method: "POST",
+        body: JSON.stringify({ plan: newPlan }),
+      }) as { url: string; type: string };
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Erreur");
+    } finally {
+      setPlanLoading(null);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    try {
+      const data = await fetchWithAuth("/stripe/portal", { method: "POST" }) as { url: string };
+      if (data.url) window.location.href = data.url;
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Erreur");
     }
   };
 
@@ -129,7 +157,41 @@ export default function ParametresPage() {
             </div>
           ))}
         </div>
-        <p style={{ fontSize: 12, color: "#9B9590" }}>Pour changer de plan, contactez-nous à support@bativio.fr</p>
+        {plan !== "GRATUIT" && (
+          <button onClick={handleManageSubscription} style={{ border: "1.5px solid #E0DDD8", color: "#1C1C1E", background: "transparent", height: 40, borderRadius: 8, padding: "0 20px", fontSize: 13, fontWeight: 600, cursor: "pointer", marginBottom: 12 }}>
+            Gérer mon abonnement
+          </button>
+        )}
+        {!showPlans ? (
+          <button onClick={() => setShowPlans(true)} style={{ border: "1.5px solid #C4531A", color: "#C4531A", background: "transparent", height: 40, borderRadius: 8, padding: "0 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+            {plan === "GRATUIT" ? "Passer à un plan payant" : "Changer de plan"}
+          </button>
+        ) : (
+          <div style={{ background: "#FAF8F5", borderRadius: 12, padding: 20, marginTop: 12 }}>
+            <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1C1C1E", marginBottom: 16 }}>Choisir un plan</h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {[
+                { id: "ESSENTIEL", name: "Essentiel", price: "19€/mois", desc: "Agenda + RDV + SMS" },
+                { id: "PRO", name: "Pro", price: "49€/mois", desc: "Vitrine complète + QR Code", pop: true },
+                { id: "PRO_PLUS", name: "Pro+", price: "79€/mois", desc: "IA + Devis automatique" },
+              ].filter((p) => p.id !== plan).map((p) => (
+                <button key={p.id} onClick={() => handleChangePlan(p.id)} disabled={planLoading === p.id} style={{
+                  display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 18px",
+                  borderRadius: 10, border: p.pop ? "2px solid #C4531A" : "1.5px solid #E0DDD8",
+                  background: p.pop ? "rgba(196,83,26,.03)" : "#fff", cursor: "pointer", transition: "all .15s",
+                  opacity: planLoading === p.id ? 0.5 : 1,
+                }}>
+                  <div style={{ textAlign: "left" }}>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: "#1C1C1E" }}>{p.name} <span style={{ fontWeight: 500, color: "#9B9590" }}>{p.price}</span></div>
+                    <div style={{ fontSize: 12, color: "#9B9590", marginTop: 2 }}>{p.desc}</div>
+                  </div>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "#C4531A" }}>{planLoading === p.id ? "..." : "Choisir →"}</span>
+                </button>
+              ))}
+            </div>
+            <button onClick={() => setShowPlans(false)} style={{ marginTop: 12, fontSize: 13, color: "#9B9590", background: "none", border: "none", cursor: "pointer" }}>Annuler</button>
+          </div>
+        )}
       </div>
 
       {/* Ma page */}
