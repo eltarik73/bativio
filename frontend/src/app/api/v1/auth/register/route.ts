@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     const password = data.password;
     const nom = data.nomAffichage || data.nom || email.split("@")[0];
     const telephone = data.telephone || "";
-    const siret = data.siret && data.siret.length >= 9 ? data.siret : `TEMP${Date.now()}`;
+    const siret = data.siret && data.siret.length >= 9 ? data.siret : `TEMP${Date.now()}${Math.random().toString(36).slice(2, 6)}`;
     const { metierId, ville, zoneRayonKm } = data;
 
     // Check email uniqueness
@@ -145,8 +145,16 @@ export async function POST(request: NextRequest) {
       },
       201
     );
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Register error:", error);
+    const err = error as { code?: string; meta?: { target?: string[] } };
+    if (err.code === "P2002") {
+      const field = err.meta?.target?.[0] || "champ";
+      if (field === "email") return apiError("Un compte existe déjà avec cet email", 409);
+      if (field === "siret") return apiError("Un compte existe déjà avec ce SIRET", 409);
+      if (field === "slug") return apiError("Ce nom est déjà pris, essayez un autre", 409);
+      return apiError(`Ce ${field} est déjà utilisé`, 409);
+    }
     return apiError("Erreur interne du serveur", 500);
   }
 }

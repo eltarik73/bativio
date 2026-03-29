@@ -18,9 +18,14 @@ export async function GET(request: NextRequest) {
       deletedAt: null,
     };
 
-    // Filter by ville (case-insensitive)
+    // Filter by ville — resolve slug to display name first
     if (ville) {
-      where.ville = { equals: ville, mode: "insensitive" };
+      const villeRecord = await prisma.ville.findUnique({ where: { slug: ville } });
+      if (villeRecord) {
+        where.ville = { equals: villeRecord.nom, mode: "insensitive" };
+      } else {
+        where.ville = { equals: ville, mode: "insensitive" };
+      }
     }
 
     // Filter by metier slug
