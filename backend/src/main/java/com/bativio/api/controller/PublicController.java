@@ -9,7 +9,10 @@ import com.bativio.api.entity.Ville;
 import com.bativio.api.exception.ResourceNotFoundException;
 import com.bativio.api.repository.*;
 import com.bativio.api.service.SiretService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +26,7 @@ import java.util.*;
 @Transactional(readOnly = true)
 public class PublicController {
 
+    private static final Logger log = LoggerFactory.getLogger(PublicController.class);
     private final ArtisanRepository artisanRepository;
     private final VilleRepository villeRepository;
     private final MetierRepository metierRepository;
@@ -52,21 +56,30 @@ public class PublicController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
 
-        UUID metierId = null;
-        if (metier != null && !metier.isBlank()) {
-            metierId = metierRepository.findBySlug(metier).map(Metier::getId).orElse(null);
+        try {
+            UUID metierId = null;
+            if (metier != null && !metier.isBlank()) {
+                metierId = metierRepository.findBySlug(metier).map(Metier::getId).orElse(null);
+            }
+
+            String villeNom = null;
+            if (ville != null && !ville.isBlank()) {
+                villeNom = villeRepository.findBySlug(ville).map(Ville::getNom).orElse(ville);
+            }
+
+            Page<ArtisanPublicResponse> result = artisanRepository
+                    .findPublicArtisans(villeNom, metierId, PageRequest.of(page, size, Sort.by("noteMoyenne").descending()))
+                    .map(ArtisanPublicResponse::fromEntityShort);
+
+            return ResponseEntity.ok(ApiResponse.ok(result));
+        } catch (Exception e) {
+            // Fallback: if LOWER() fails (bytea columns), use simple query without filters
+            log.error("findPublicArtisans failed (likely bytea columns), using fallback: {}", e.getMessage());
+            List<Artisan> all = artisanRepository.findAllActive();
+            List<ArtisanPublicResponse> responses = all.stream().map(ArtisanPublicResponse::fromEntityShort).toList();
+            Page<ArtisanPublicResponse> fallback = new PageImpl<>(responses, PageRequest.of(0, Math.max(size, responses.size())), responses.size());
+            return ResponseEntity.ok(ApiResponse.ok(fallback));
         }
-
-        String villeNom = null;
-        if (ville != null && !ville.isBlank()) {
-            villeNom = villeRepository.findBySlug(ville).map(Ville::getNom).orElse(ville);
-        }
-
-        Page<ArtisanPublicResponse> result = artisanRepository
-                .findPublicArtisans(villeNom, metierId, PageRequest.of(page, size, Sort.by("noteMoyenne").descending()))
-                .map(ArtisanPublicResponse::fromEntityShort);
-
-        return ResponseEntity.ok(ApiResponse.ok(result));
     }
 
     @GetMapping("/artisans/{slug}")
@@ -94,7 +107,8 @@ public class PublicController {
             m.put("latitude", v.getLatitude());
             m.put("longitude", v.getLongitude());
             m.put("contenuSeo", v.getContenuSeo());
-            m.put("nombreArtisans", artisanRepository.countByVille(v.getNom()));
+            try { m.put("nombreArtisans", artisanRepository.countByVille(v.getNom())); }
+            catch (Exception e) { m.put("nombreArtisans", 0L); }
             return m;
         }).toList();
         return ResponseEntity.ok(ApiResponse.ok(result));

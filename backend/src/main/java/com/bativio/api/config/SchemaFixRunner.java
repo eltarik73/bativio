@@ -68,8 +68,16 @@ public class SchemaFixRunner implements CommandLineRunner {
                 if (type == null) continue; // column doesn't exist yet
                 if ("bytea".equals(type)) {
                     log.warn("Fixing {}.{}: bytea -> {}", table, col, targetType);
-                    jdbc.execute("ALTER TABLE " + table + " ALTER COLUMN " + col
-                            + " TYPE " + targetType + " USING encode(" + col + ", 'escape')");
+                    // Use convert_from to preserve UTF-8 accented characters (Chambéry, etc.)
+                    // Fallback to encode if convert_from fails (corrupted data)
+                    try {
+                        jdbc.execute("ALTER TABLE " + table + " ALTER COLUMN " + col
+                                + " TYPE " + targetType + " USING convert_from(" + col + ", 'UTF8')");
+                    } catch (Exception utf8Err) {
+                        log.warn("convert_from failed for {}.{}, trying encode: {}", table, col, utf8Err.getMessage());
+                        jdbc.execute("ALTER TABLE " + table + " ALTER COLUMN " + col
+                                + " TYPE " + targetType + " USING encode(" + col + ", 'escape')");
+                    }
                     log.info("Fixed {}.{} to {}", table, col, targetType);
                 }
             } catch (Exception e) {

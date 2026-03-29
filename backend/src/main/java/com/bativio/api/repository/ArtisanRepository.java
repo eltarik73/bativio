@@ -44,6 +44,10 @@ public interface ArtisanRepository extends JpaRepository<Artisan, UUID> {
     @Query("SELECT COUNT(a) FROM Artisan a WHERE a.actif = true AND a.visible = true AND a.deletedAt IS NULL AND a.metier.id = :metierId")
     long countByMetierId(@Param("metierId") UUID metierId);
 
+    // Simple fallback query — no LOWER(), no joins, works even if columns are bytea
+    @Query("SELECT a FROM Artisan a WHERE a.actif = true AND a.visible = true AND a.deletedAt IS NULL")
+    List<Artisan> findAllActive();
+
     long countByActifTrueAndDeletedAtIsNull();
     long countByPlanAndDeletedAtIsNull(Plan plan);
 
