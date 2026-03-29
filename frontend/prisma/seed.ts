@@ -76,6 +76,10 @@ async function main() {
   });
   console.log("  Admin: admin@bativio.fr / Bativio2026!");
 
+  // Seed configs
+  const { seedConfig } = require("./seed-config");
+  await seedConfig();
+
   console.log("Seed termine !");
 }
 

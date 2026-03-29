@@ -122,6 +122,8 @@ model Artisan {
   tarification    Tarification?
   prestationTypes PrestationType[]
   devisList       Devis[]
+  smsUsage        SmsUsage[]
+  smsRecharges    SmsRecharge[]
 
   @@index([ville, metierId])
   @@index([slug])
@@ -226,6 +228,7 @@ model DemandeDevis {
   statut           StatutDevis @default(NOUVEAU)
   reponduAt        DateTime?   @map("repondu_at")
   relanceEnvoyee   Boolean     @default(false) @map("relance_envoyee")
+  urgence          String      @default("normal") // "normal" | "urgent"
   responseToken    String?     @map("response_token")
   createdAt        DateTime    @default(now()) @map("created_at")
   updatedAt        DateTime    @updatedAt @map("updated_at")
@@ -377,4 +380,45 @@ model Devis {
   @@index([artisanId, statut])
   @@index([artisanId, createdAt])
   @@map("devis")
+}
+
+model SiteConfig {
+  id          String   @id @default(cuid())
+  cle         String   @unique
+  valeur      String
+  type        String   @default("string")
+  categorie   String
+  label       String
+  description String?
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  updatedBy   String?  @map("updated_by")
+
+  @@index([categorie])
+  @@map("site_config")
+}
+
+model SmsUsage {
+  id        String  @id @default(cuid())
+  artisanId String  @map("artisan_id")
+  mois      String
+  count     Int     @default(0)
+  quota     Int     @default(30)
+
+  artisan   Artisan @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+
+  @@unique([artisanId, mois])
+  @@map("sms_usage")
+}
+
+model SmsRecharge {
+  id              String   @id @default(cuid())
+  artisanId       String   @map("artisan_id")
+  quantite        Int
+  prix            Float
+  stripePaymentId String?  @map("stripe_payment_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  artisan         Artisan  @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+
+  @@map("sms_recharges")
 }
