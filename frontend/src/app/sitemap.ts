@@ -3,7 +3,8 @@ import { VILLES } from "@/lib/constants";
 import { MOCK_ARTISANS } from "@/lib/mock-data";
 import { TRAVAUX } from "@/lib/travaux-data";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://bativio.vercel.app";
+const API_URL = `${SITE_URL}/api/v1`;
 
 async function fetchActiveArtisans(): Promise<{ slug: string; ville: string; updatedAt?: string }[]> {
   try {

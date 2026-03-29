@@ -88,7 +88,7 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
       formData.append("file", pdfFile);
       formData.append("titre", pdfFile.name);
 
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+      const API_URL = "/api/v1";
       const token = localStorage.getItem("bativio_token");
       const uploadRes = await fetch(`${API_URL}/artisans/me/devis/${id}/upload-quote`, {
         method: "POST",

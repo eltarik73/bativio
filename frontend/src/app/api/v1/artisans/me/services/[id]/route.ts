@@ -1,0 +1,89 @@
+import { NextRequest } from "next/server";
+import { z } from "zod";
+import { prisma } from "@/lib/prisma";
+import { apiSuccess, apiError } from "@/lib/api-response";
+import { requireAuth } from "@/lib/auth-server";
+
+const updateServiceSchema = z.object({
+  titre: z.string().min(1).optional(),
+  description: z.string().optional(),
+  prixIndicatif: z.string().optional(),
+});
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await requireAuth();
+    const { id } = await params;
+
+    const artisan = await prisma.artisan.findUnique({
+      where: { userId: session.userId },
+    });
+
+    if (!artisan || artisan.deletedAt) {
+      return apiError("Artisan introuvable", 404);
+    }
+
+    const service = await prisma.serviceArtisan.findUnique({ where: { id } });
+
+    if (!service || service.artisanId !== artisan.id) {
+      return apiError("Service introuvable", 404);
+    }
+
+    const body = await request.json();
+    const parsed = updateServiceSchema.safeParse(body);
+    if (!parsed.success) {
+      const firstError = parsed.error.issues[0]?.message || "Données invalides";
+      return apiError(firstError, 400);
+    }
+
+    const updatedService = await prisma.serviceArtisan.update({
+      where: { id },
+      data: parsed.data,
+    });
+
+    return apiSuccess(updatedService);
+  } catch (error: unknown) {
+    const err = error as Error;
+    if (err.message === "UNAUTHORIZED") return apiError("Non autorisé", 401);
+    if (err.message === "FORBIDDEN") return apiError("Accès interdit", 403);
+    console.error("Update service error:", err);
+    return apiError("Erreur interne du serveur", 500);
+  }
+}
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await requireAuth();
+    const { id } = await params;
+
+    const artisan = await prisma.artisan.findUnique({
+      where: { userId: session.userId },
+    });
+
+    if (!artisan || artisan.deletedAt) {
+      return apiError("Artisan introuvable", 404);
+    }
+
+    const service = await prisma.serviceArtisan.findUnique({ where: { id } });
+
+    if (!service || service.artisanId !== artisan.id) {
+      return apiError("Service introuvable", 404);
+    }
+
+    await prisma.serviceArtisan.delete({ where: { id } });
+
+    return apiSuccess({ deleted: true });
+  } catch (error: unknown) {
+    const err = error as Error;
+    if (err.message === "UNAUTHORIZED") return apiError("Non autorisé", 401);
+    if (err.message === "FORBIDDEN") return apiError("Accès interdit", 403);
+    console.error("Delete service error:", err);
+    return apiError("Erreur interne du serveur", 500);
+  }
+}

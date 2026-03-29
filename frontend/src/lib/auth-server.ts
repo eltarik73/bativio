@@ -1,0 +1,70 @@
+import { SignJWT, jwtVerify } from "jose";
+import { cookies } from "next/headers";
+import bcrypt from "bcryptjs";
+
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "dev-secret-change-in-production");
+const COOKIE_NAME = "bativio-session";
+
+export async function createToken(userId: string, role: string) {
+  return new SignJWT({ sub: userId, role })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("7d")
+    .sign(JWT_SECRET);
+}
+
+export async function verifyToken(token: string) {
+  try {
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+    return payload as { sub: string; role: string; exp: number };
+  } catch {
+    return null;
+  }
+}
+
+export async function setAuthCookie(userId: string, role: string) {
+  const token = await createToken(userId, role);
+  const cookieStore = await cookies();
+  cookieStore.set(COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7,
+  });
+  return token;
+}
+
+export async function getSession() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(COOKIE_NAME)?.value;
+  if (!token) return null;
+  const payload = await verifyToken(token);
+  if (!payload) return null;
+  return { userId: payload.sub, role: payload.role };
+}
+
+export async function requireAuth() {
+  const session = await getSession();
+  if (!session) throw new Error("UNAUTHORIZED");
+  return session;
+}
+
+export async function requireAdmin() {
+  const session = await requireAuth();
+  if (session.role !== "ADMIN") throw new Error("FORBIDDEN");
+  return session;
+}
+
+export async function clearAuthCookie() {
+  const cookieStore = await cookies();
+  cookieStore.delete(COOKIE_NAME);
+}
+
+export async function hashPassword(password: string) {
+  return bcrypt.hash(password, 12);
+}
+
+export async function verifyPassword(password: string, hash: string) {
+  return bcrypt.compare(password, hash);
+}

@@ -19,7 +19,7 @@ function VerifyContent() {
       return;
     }
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+    const apiUrl = "/api/v1";
     fetch(`${apiUrl}/auth/magic-link/verify?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`, {
       method: "POST",
     })

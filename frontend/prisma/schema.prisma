@@ -1,0 +1,292 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ARTISAN
+  ADMIN
+}
+
+enum Plan {
+  GRATUIT
+  ESSENTIEL
+  PRO
+  PRO_PLUS
+}
+
+enum PhotoType {
+  SIMPLE
+  AVANT
+  APRES
+}
+
+enum BadgeType {
+  SYSTEME
+  CUSTOM
+}
+
+enum StatutDevis {
+  NOUVEAU
+  VU
+  REPONDU
+  ACCEPTE
+  REFUSE
+  ARCHIVE
+}
+
+enum ReplyType {
+  MESSAGE
+  QUOTE_UPLOAD
+  QUOTE_INVOQUO
+}
+
+enum NotificationType {
+  DEMANDE_DEVIS
+  RDV_NOUVEAU
+  RDV_CONFIRME
+  RDV_ANNULE
+  RELANCE
+  AVIS
+}
+
+model User {
+  id               String   @id @default(cuid())
+  email            String   @unique
+  passwordHash     String   @map("password_hash")
+  role             Role     @default(ARTISAN)
+  emailVerified    Boolean  @default(false) @map("email_verified")
+  magicLinkToken   String?  @map("magic_link_token")
+  magicLinkExpiresAt DateTime? @map("magic_link_expires_at")
+  refreshTokenHash String?  @map("refresh_token_hash")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  artisan          Artisan?
+
+  @@map("users")
+}
+
+model Artisan {
+  id              String   @id @default(cuid())
+  userId          String   @unique @map("user_id")
+  siret           String   @unique
+  raisonSociale   String?  @map("raison_sociale")
+  nomAffichage    String   @map("nom_affichage")
+  prenom          String?
+  nom             String?
+  metierId        String?  @map("metier_id")
+  description     String?  @db.Text
+  telephone       String
+  adresse         String?
+  codePostal      String?  @map("code_postal")
+  ville           String?
+  latitude        Float?
+  longitude       Float?
+  zoneRayonKm     Int      @default(15) @map("zone_rayon_km")
+  experienceAnnees Int?    @map("experience_annees")
+  noteMoyenne     Float    @default(0) @map("note_moyenne")
+  nombreAvis      Int      @default(0) @map("nombre_avis")
+  plan            Plan     @default(GRATUIT)
+  stripeCustomerId    String?  @unique @map("stripe_customer_id")
+  stripeSubscriptionId String? @unique @map("stripe_subscription_id")
+  profilCompletion Int     @default(0) @map("profil_completion")
+  templateId      String   @default("classique") @map("template_id")
+  colorPrimary    String   @default("#C4531A") @map("color_primary")
+  colorAccent     String   @default("#E8A84C") @map("color_accent")
+  photoLayout     String   @default("grid") @map("photo_layout")
+  seoDescription  String?  @map("seo_description") @db.Text
+  seoKeywords     String?  @map("seo_keywords") @db.Text
+  actif           Boolean  @default(false)
+  visible         Boolean  @default(true)
+  slug            String   @unique
+  deletedAt       DateTime? @map("deleted_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  user            User     @relation(fields: [userId], references: [id])
+  metier          Metier?  @relation(fields: [metierId], references: [id])
+  photos          Photo[]
+  badges          Badge[]
+  services        ServiceArtisan[]
+  demandesDevis   DemandeDevis[]
+  horaires        Horaire[]
+  zones           ZoneIntervention[]
+  notifications   Notification[]
+  devisReplies    DevisReply[]
+
+  @@index([ville, metierId])
+  @@index([slug])
+  @@index([plan])
+  @@index([actif, visible])
+  @@map("artisans")
+}
+
+model Metier {
+  id        String   @id @default(cuid())
+  nom       String   @unique
+  slug      String   @unique
+  icone     String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  artisans  Artisan[]
+
+  @@map("metiers")
+}
+
+model Ville {
+  id          String   @id @default(cuid())
+  nom         String   @unique
+  slug        String   @unique
+  codePostal  String?  @map("code_postal")
+  departement String?
+  latitude    Float?
+  longitude   Float?
+  contenuSeo  String?  @map("contenu_seo") @db.Text
+  actif       Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("villes")
+}
+
+model Photo {
+  id                 String    @id @default(cuid())
+  artisanId          String    @map("artisan_id")
+  cloudinaryPublicId String?   @map("cloudinary_public_id")
+  url                String
+  titre              String?
+  type               PhotoType @default(SIMPLE)
+  paireId            String?   @map("paire_id")
+  ordre              Int       @default(0)
+  createdAt          DateTime  @default(now()) @map("created_at")
+
+  artisan            Artisan   @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+
+  @@index([artisanId, ordre])
+  @@map("photos")
+}
+
+model Badge {
+  id        String    @id @default(cuid())
+  artisanId String    @map("artisan_id")
+  type      BadgeType @default(SYSTEME)
+  nom       String
+  icone     String?
+  couleur   String?
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  artisan   Artisan   @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+
+  @@index([artisanId])
+  @@map("badges")
+}
+
+model BadgeSysteme {
+  id          String   @id @default(cuid())
+  nom         String   @unique
+  description String?
+  icone       String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("badges_systeme")
+}
+
+model ServiceArtisan {
+  id            String   @id @default(cuid())
+  artisanId     String   @map("artisan_id")
+  titre         String
+  description   String?  @db.Text
+  prixIndicatif String?  @map("prix_indicatif")
+  ordre         Int      @default(0)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  artisan       Artisan  @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+
+  @@index([artisanId])
+  @@map("services_artisan")
+}
+
+model DemandeDevis {
+  id               String      @id @default(cuid())
+  artisanId        String      @map("artisan_id")
+  nomClient        String      @map("nom_client")
+  telephoneClient  String      @map("telephone_client")
+  emailClient      String?     @map("email_client")
+  descriptionBesoin String     @map("description_besoin") @db.Text
+  statut           StatutDevis @default(NOUVEAU)
+  reponduAt        DateTime?   @map("repondu_at")
+  relanceEnvoyee   Boolean     @default(false) @map("relance_envoyee")
+  responseToken    String?     @map("response_token")
+  createdAt        DateTime    @default(now()) @map("created_at")
+  updatedAt        DateTime    @updatedAt @map("updated_at")
+
+  artisan          Artisan     @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  replies          DevisReply[]
+
+  @@index([artisanId, statut])
+  @@index([artisanId, createdAt])
+  @@map("demandes_devis")
+}
+
+model DevisReply {
+  id                 String    @id @default(cuid())
+  demandeDevisId     String    @map("demande_devis_id")
+  artisanId          String    @map("artisan_id")
+  message            String?   @db.Text
+  attachmentUrl      String?   @map("attachment_url")
+  attachmentFilename String?   @map("attachment_filename")
+  type               ReplyType @default(MESSAGE)
+  createdAt          DateTime  @default(now()) @map("created_at")
+
+  demandeDevis       DemandeDevis @relation(fields: [demandeDevisId], references: [id], onDelete: Cascade)
+  artisan            Artisan      @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+
+  @@index([demandeDevisId, createdAt])
+  @@map("devis_replies")
+}
+
+model Horaire {
+  id             String    @id @default(cuid())
+  artisanId      String    @map("artisan_id")
+  jourSemaine    Int       @map("jour_semaine")
+  ouvert         Boolean   @default(true)
+  heureOuverture String?   @map("heure_ouverture")
+  heureFermeture String?   @map("heure_fermeture")
+
+  artisan        Artisan   @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+
+  @@index([artisanId])
+  @@map("horaires")
+}
+
+model ZoneIntervention {
+  id        String  @id @default(cuid())
+  artisanId String  @map("artisan_id")
+  ville     String
+
+  artisan   Artisan @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+
+  @@index([artisanId])
+  @@map("zones_intervention")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  artisanId String           @map("artisan_id")
+  type      NotificationType
+  titre     String
+  message   String?          @db.Text
+  lu        Boolean          @default(false)
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  artisan   Artisan          @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+
+  @@index([artisanId, createdAt])
+  @@map("notifications")
+}
