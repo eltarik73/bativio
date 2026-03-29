@@ -13,7 +13,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ArtisanRepository extends JpaRepository<Artisan, UUID> {
-    Optional<Artisan> findBySlugAndActifTrueAndVisibleTrueAndDeletedAtIsNull(String slug);
+    @Query("SELECT a FROM Artisan a LEFT JOIN FETCH a.metier LEFT JOIN FETCH a.user " +
+           "WHERE a.slug = :slug AND a.actif = true AND a.visible = true AND a.deletedAt IS NULL")
+    Optional<Artisan> findBySlugAndActifTrueAndVisibleTrueAndDeletedAtIsNull(@Param("slug") String slug);
     Optional<Artisan> findByUserIdAndDeletedAtIsNull(UUID userId);
 
     @Query("SELECT DISTINCT a FROM Artisan a LEFT JOIN FETCH a.user LEFT JOIN FETCH a.metier LEFT JOIN FETCH a.badges " +
@@ -23,12 +25,18 @@ public interface ArtisanRepository extends JpaRepository<Artisan, UUID> {
     boolean existsBySiret(String siret);
     boolean existsBySlug(String slug);
 
-    @Query("SELECT a FROM Artisan a WHERE a.actif = true AND a.visible = true AND a.deletedAt IS NULL " +
+    @Query(value = "SELECT a FROM Artisan a LEFT JOIN FETCH a.metier LEFT JOIN FETCH a.user " +
+           "WHERE a.actif = true AND a.visible = true AND a.deletedAt IS NULL " +
+           "AND (:ville IS NULL OR LOWER(a.ville) = LOWER(:ville)) " +
+           "AND (:metierId IS NULL OR a.metier.id = :metierId)",
+           countQuery = "SELECT COUNT(a) FROM Artisan a WHERE a.actif = true AND a.visible = true AND a.deletedAt IS NULL " +
            "AND (:ville IS NULL OR LOWER(a.ville) = LOWER(:ville)) " +
            "AND (:metierId IS NULL OR a.metier.id = :metierId)")
     Page<Artisan> findPublicArtisans(@Param("ville") String ville, @Param("metierId") UUID metierId, Pageable pageable);
 
-    List<Artisan> findByVilleIgnoreCaseAndActifTrueAndVisibleTrueAndDeletedAtIsNull(String ville);
+    @Query("SELECT a FROM Artisan a LEFT JOIN FETCH a.metier LEFT JOIN FETCH a.user " +
+           "WHERE LOWER(a.ville) = LOWER(:ville) AND a.actif = true AND a.visible = true AND a.deletedAt IS NULL")
+    List<Artisan> findByVilleIgnoreCaseAndActifTrueAndVisibleTrueAndDeletedAtIsNull(@Param("ville") String ville);
 
     @Query("SELECT COUNT(a) FROM Artisan a WHERE a.actif = true AND a.visible = true AND a.deletedAt IS NULL AND LOWER(a.ville) = LOWER(:ville)")
     long countByVille(@Param("ville") String ville);

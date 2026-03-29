@@ -62,17 +62,31 @@ public class ArtisanPublicResponse {
         r.id = a.getId();
         r.nomAffichage = a.getNomAffichage();
         r.slug = a.getSlug();
-        r.metierNom = a.getMetier() != null ? a.getMetier().getNom() : null;
-        r.metierIcone = a.getMetier() != null ? a.getMetier().getIcone() : null;
+        try {
+            r.metierNom = a.getMetier() != null ? a.getMetier().getNom() : null;
+            r.metierIcone = a.getMetier() != null ? a.getMetier().getIcone() : null;
+        } catch (Exception e) {
+            r.metierNom = null;
+            r.metierIcone = null;
+        }
         r.ville = a.getVille();
         r.noteMoyenne = a.getNoteMoyenne();
         r.nombreAvis = a.getNombreAvis();
         r.description = a.getDescription() != null && a.getDescription().length() > 150
             ? a.getDescription().substring(0, 150) + "..."
             : a.getDescription();
+        r.telephone = a.getTelephone();
+        r.adresse = a.getAdresse();
+        r.codePostal = a.getCodePostal();
+        r.zoneRayonKm = a.getZoneRayonKm();
+        r.experienceAnnees = a.getExperienceAnnees();
         r.plan = a.getPlan().name();
         r.actif = a.isActif();
-        r.email = a.getUser() != null ? a.getUser().getEmail() : null;
+        try {
+            r.email = a.getUser() != null ? a.getUser().getEmail() : null;
+        } catch (Exception e) {
+            r.email = null;
+        }
         try {
             r.badgesNoms = a.getBadges() != null ? a.getBadges().stream().map(b -> b.getNom()).limit(3).toList() : List.of();
         } catch (Exception e) {

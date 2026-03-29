@@ -10,6 +10,8 @@ import com.bativio.api.exception.ResourceNotFoundException;
 import com.bativio.api.repository.*;
 import com.bativio.api.service.EmailService;
 import com.bativio.api.util.SlugGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -30,6 +32,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1/admin")
 public class AdminController {
 
+    private static final Logger log = LoggerFactory.getLogger(AdminController.class);
     private final ArtisanRepository artisanRepository;
     private final VilleRepository villeRepository;
     private final MetierRepository metierRepository;
@@ -121,8 +124,9 @@ public class AdminController {
             try {
                 String villeSlug = a.getVille() != null ? SlugGenerator.slugify(a.getVille()) : "";
                 emailService.sendValidation(a.getUser().getEmail(), a.getNomAffichage(), villeSlug, a.getSlug());
+                log.info("Validation email sent to {} (artisan: {})", a.getUser().getEmail(), a.getNomAffichage());
             } catch (Exception e) {
-                // Don't fail the status update if email fails
+                log.error("Failed to send validation email to artisan {}: {}", a.getNomAffichage(), e.getMessage(), e);
             }
         } else if ("INACTIVE".equalsIgnoreCase(statut)) {
             a.setActif(false);

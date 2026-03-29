@@ -91,12 +91,16 @@ public class AuthService {
 
         if (request.getMetierId() != null && !request.getMetierId().isBlank()) {
             // Accepter slug ou UUID
-            metierRepository.findBySlug(request.getMetierId())
+            var metierOpt = metierRepository.findBySlug(request.getMetierId())
                 .or(() -> {
                     try { return metierRepository.findById(UUID.fromString(request.getMetierId())); }
                     catch (IllegalArgumentException e) { return java.util.Optional.empty(); }
-                })
-                .ifPresent(artisan::setMetier);
+                });
+            if (metierOpt.isPresent()) {
+                artisan.setMetier(metierOpt.get());
+            } else {
+                log.warn("Metier not found for registration: '{}' (artisan: {})", request.getMetierId(), request.getNomAffichage());
+            }
         }
 
         String slug = SlugGenerator.slugify(request.getNomAffichage());

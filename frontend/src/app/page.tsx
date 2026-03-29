@@ -47,10 +47,10 @@ export default function Home() {
   }, []);
 
   const filtered = allArtisans.filter((a) => {
-    if (!a.ville || !a.metierNom) return false;
     const vs = (a.ville || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
-    if (villeFilter && vs !== villeFilter) return false;
+    if (villeFilter && (!a.ville || vs !== villeFilter)) return false;
     if (metierFilter !== "all") {
+      if (!a.metierNom) return false;
       const ms = (a.metierNom || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
       if (ms !== metierFilter) return false;
     }

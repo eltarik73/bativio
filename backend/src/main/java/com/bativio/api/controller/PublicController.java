@@ -73,6 +73,12 @@ public class PublicController {
     public ResponseEntity<ApiResponse<ArtisanPublicResponse>> getArtisanBySlug(@PathVariable String slug) {
         Artisan artisan = artisanRepository.findBySlugAndActifTrueAndVisibleTrueAndDeletedAtIsNull(slug)
                 .orElseThrow(() -> new ResourceNotFoundException("Artisan introuvable"));
+        // Initialize lazy collections within this transaction to avoid LazyInitializationException
+        artisan.getBadges().size();
+        artisan.getServices().size();
+        artisan.getPhotos().size();
+        artisan.getHoraires().size();
+        artisan.getZones().size();
         return ResponseEntity.ok(ApiResponse.ok(ArtisanPublicResponse.fromEntity(artisan)));
     }
 
