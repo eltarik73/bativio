@@ -73,7 +73,11 @@ public class ArtisanPublicResponse {
         r.plan = a.getPlan().name();
         r.actif = a.isActif();
         r.email = a.getUser() != null ? a.getUser().getEmail() : null;
-        r.badgesNoms = a.getBadges().stream().map(b -> b.getNom()).limit(3).toList();
+        try {
+            r.badgesNoms = a.getBadges() != null ? a.getBadges().stream().map(b -> b.getNom()).limit(3).toList() : List.of();
+        } catch (Exception e) {
+            r.badgesNoms = List.of();
+        }
         return r;
     }
 
