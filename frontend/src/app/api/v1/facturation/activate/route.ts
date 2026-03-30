@@ -2,6 +2,9 @@ import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth-server";
 import { apiSuccess, apiError } from "@/lib/api-response";
 
+const INVOQUO_URL = process.env.INVOQUO_URL || "https://invoquo.vercel.app";
+const PROVISION_SECRET = process.env.PROVISION_SECRET;
+
 export async function POST() {
   try {
     const session = await requireAuth();
@@ -11,13 +14,50 @@ export async function POST() {
       include: { user: { select: { email: true } } },
     });
     if (!artisan) return apiError("Artisan introuvable", 404);
-    if (artisan.invoquoEnabled) return apiError("Déjà activé", 409);
 
-    // Créer un vrai compte sur Invoquo
+    // Deja active
+    if (artisan.invoquoEnabled && artisan.invoquoApiKey) {
+      return apiSuccess({ message: "Déjà activé" });
+    }
+
+    // Option 1: Via provisioning API (si PROVISION_SECRET configure)
+    if (PROVISION_SECRET) {
+      const res = await fetch(`${INVOQUO_URL}/api/v1/tenants`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Provision-Secret": PROVISION_SECRET,
+        },
+        body: JSON.stringify({
+          email: artisan.user.email,
+          siret: artisan.siret,
+          companyName: artisan.nomAffichage,
+          source: "bativio",
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.data?.apiKey) {
+          await prisma.artisan.update({
+            where: { id: artisan.id },
+            data: {
+              invoquoApiKey: data.data.apiKey,
+              invoquoSiret: data.data.siret || artisan.siret,
+              invoquoEnabled: true,
+            },
+          });
+          return apiSuccess({ message: "Facturation activée" });
+        }
+      }
+    }
+
+    // Option 2: Via register + login (fallback)
     const invoquoEmail = `bativio-${artisan.id}@bativio.fr`;
     const invoquoPassword = `InvBtv_${artisan.id.slice(-8)}!2026`;
 
-    const registerRes = await fetch("https://invoquo.vercel.app/api/auth/register", {
+    // Tenter register
+    const registerRes = await fetch(`${INVOQUO_URL}/api/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -28,46 +68,13 @@ export async function POST() {
       }),
     });
 
-    if (!registerRes.ok) {
-      const err = await registerRes.json().catch(() => ({ error: "Erreur Invoquo" }));
-      console.error("Invoquo register error:", err);
-
-      // Si le compte existe deja, essayer de se connecter
-      if (registerRes.status === 409) {
-        const loginRes = await fetch("https://invoquo.vercel.app/api/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: invoquoEmail, password: invoquoPassword }),
-        });
-        if (!loginRes.ok) {
-          return apiError("Impossible de se connecter à Invoquo", 502);
-        }
-        const loginData = await loginRes.json();
-        const accessToken = loginData.data?.accessToken;
-        if (!accessToken) return apiError("Token Invoquo manquant", 502);
-
-        await prisma.artisan.update({
-          where: { id: artisan.id },
-          data: {
-            invoquoApiKey: invoquoPassword,
-            invoquoSiret: artisan.siret,
-            invoquoEnabled: true,
-          },
-        });
-        return apiSuccess({ message: "Facturation activée" });
-      }
-
-      return apiError("Erreur lors de l'activation Invoquo", 502);
+    // Si 409 (existe deja), pas grave, on continue
+    if (!registerRes.ok && registerRes.status !== 409) {
+      console.error("Invoquo register failed:", registerRes.status);
+      return apiError("Erreur lors de l'activation", 502);
     }
 
-    const registerData = await registerRes.json();
-    const accessToken = registerData.data?.accessToken;
-
-    if (!accessToken) {
-      return apiError("Token Invoquo manquant", 502);
-    }
-
-    // Stocker le password Invoquo (pour re-login auto)
+    // Stocker le password pour les futurs logins
     await prisma.artisan.update({
       where: { id: artisan.id },
       data: {

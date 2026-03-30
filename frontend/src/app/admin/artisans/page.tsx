@@ -11,6 +11,7 @@ interface ArtisanAdmin {
   ville: string;
   plan: string;
   actif: boolean;
+  visible: boolean;
   slug: string;
 }
 
@@ -112,19 +113,20 @@ export default function AdminArtisansPage() {
                 <th style={{ textAlign: "left", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Ville</th>
                 <th style={{ textAlign: "left", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Plan</th>
                 <th style={{ textAlign: "left", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Statut</th>
+                <th style={{ textAlign: "center", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Visible</th>
                 <th style={{ textAlign: "right", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} style={{ padding: "32px 24px", textAlign: "center", fontSize: 14, color: "#9B9590" }}>
+                  <td colSpan={7} style={{ padding: "32px 24px", textAlign: "center", fontSize: 14, color: "#9B9590" }}>
                     Chargement...
                   </td>
                 </tr>
               ) : artisans.length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ padding: "32px 24px", textAlign: "center", fontSize: 14, color: "#9B9590" }}>
+                  <td colSpan={7} style={{ padding: "32px 24px", textAlign: "center", fontSize: 14, color: "#9B9590" }}>
                     Aucun artisan trouve
                   </td>
                 </tr>
@@ -158,6 +160,20 @@ export default function AdminArtisansPage() {
                           <span style={{ fontSize: 12, color: "#b45309", fontWeight: 600 }}>En attente</span>
                         </span>
                       )}
+                    </td>
+                    <td style={{ padding: "14px 16px", textAlign: "center" }}>
+                      <button
+                        onClick={async () => {
+                          try {
+                            await fetchWithAuth(`/admin/artisans/${a.id}/visibility`, { method: "PATCH", body: JSON.stringify({ visible: !a.visible }) });
+                            setArtisans((prev) => prev.map((x) => x.id === a.id ? { ...x, visible: !x.visible } : x));
+                          } catch { /* empty */ }
+                        }}
+                        style={{ width: 36, height: 20, borderRadius: 10, padding: 2, border: "none", cursor: "pointer", background: a.visible !== false ? "#22c55e" : "#E0DDD8", transition: "background .2s", position: "relative" }}
+                        title={a.visible !== false ? "Visible dans l'annuaire" : "Masqué de l'annuaire"}
+                      >
+                        <span style={{ display: "block", width: 16, height: 16, borderRadius: 8, background: "#fff", transition: "transform .2s", transform: a.visible !== false ? "translateX(16px)" : "translateX(0)" }} />
+                      </button>
                     </td>
                     <td style={{ padding: "14px 16px", textAlign: "right" }}>
                       <button
