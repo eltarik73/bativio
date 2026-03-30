@@ -2,19 +2,14 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { requireAuth } from "@/lib/auth-server";
+import { checkLimit } from "@/lib/plans";
+import type { PlanType } from "@/lib/plans";
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({ secure: true });
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
-
-const PHOTO_LIMITS: Record<string, number> = {
-  GRATUIT: 3,
-  ESSENTIEL: 10,
-  PRO: Infinity,
-  PRO_PLUS: Infinity,
-};
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,11 +24,11 @@ export async function POST(request: NextRequest) {
       return apiError("Artisan introuvable", 404);
     }
 
-    // Check plan photo limits
-    const limit = PHOTO_LIMITS[artisan.plan] ?? 3;
-    if (artisan._count.photos >= limit) {
+    // Check plan photo limits via centralized plans.ts
+    const { allowed, limit } = checkLimit((artisan.plan || "GRATUIT") as PlanType, "photosMax", artisan._count.photos);
+    if (!allowed) {
       return apiError(
-        `Limite de photos atteinte pour votre plan (${limit} max). Passez à un plan supérieur pour en ajouter davantage.`,
+        `Limite de ${limit} photos atteinte pour votre plan. Passez au plan supérieur pour en ajouter davantage.`,
         403
       );
     }

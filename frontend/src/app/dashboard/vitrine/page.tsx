@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { DashboardFeatureGate } from "@/components/DashboardFeatureGate";
 import { PALETTES, TEMPLATES, PHOTO_LAYOUTS } from "@/lib/vitrine-config";
 
 const C: React.CSSProperties = { background: "#fff", borderRadius: 14, border: "1px solid #EDEBE7", padding: 20, marginBottom: 16 };
@@ -12,6 +13,10 @@ function slugifyVille(ville: string): string {
 }
 
 export default function VitrinePage() {
+  return <DashboardFeatureGate feature="vitrine"><VitrinePageContent /></DashboardFeatureGate>;
+}
+
+function VitrinePageContent() {
   const { user, fetchWithAuth, updateUser } = useAuth();
   const [template, setTemplate] = useState("classique");
   const [palette, setPalette] = useState("terre");

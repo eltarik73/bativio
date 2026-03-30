@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { DashboardFeatureGate } from "@/components/DashboardFeatureGate";
 
 /* ── Types ── */
 interface Rdv {
@@ -65,6 +66,10 @@ const STATUT_STYLES: Record<string, { bg: string; border: string; text: string; 
 
 /* ── Component ── */
 export default function AgendaPage() {
+  return <DashboardFeatureGate feature="agenda"><AgendaPageContent /></DashboardFeatureGate>;
+}
+
+function AgendaPageContent() {
   const { fetchWithAuth } = useAuth();
 
   const [monday, setMonday] = useState<Date>(() => getMonday(new Date()));

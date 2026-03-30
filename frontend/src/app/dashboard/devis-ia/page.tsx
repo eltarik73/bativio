@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { DashboardFeatureGate } from "@/components/DashboardFeatureGate";
 
 const STATUT_BADGE: Record<string, { bg: string; color: string; label: string }> = {
   BROUILLON: { bg: "rgba(155,149,144,.1)", color: "#6B6560", label: "Brouillon" },
@@ -39,6 +40,10 @@ function formatEuros(amount: number): string {
 }
 
 export default function DevisIAListPage() {
+  return <DashboardFeatureGate feature="devis_ia"><DevisIAListContent /></DashboardFeatureGate>;
+}
+
+function DevisIAListContent() {
   const { fetchWithAuth } = useAuth();
   const [devisList, setDevisList] = useState<DevisIA[]>([]);
   const [loading, setLoading] = useState(true);

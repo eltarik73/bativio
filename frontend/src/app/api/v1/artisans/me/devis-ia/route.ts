@@ -3,6 +3,8 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { requireAuth } from "@/lib/auth-server";
+import { hasFeature } from "@/lib/plans";
+import type { PlanType } from "@/lib/plans";
 import crypto from "crypto";
 
 const devisIASchema = z.object({
@@ -59,6 +61,10 @@ export async function POST(request: NextRequest) {
 
     if (!artisan || artisan.deletedAt) {
       return apiError("Artisan introuvable", 404);
+    }
+
+    if (!hasFeature((artisan.plan || "GRATUIT") as PlanType, "devis_ia")) {
+      return apiError("Le devis IA est disponible avec le plan Pro+. Passez à Pro+ pour en profiter.", 403);
     }
 
     if (!artisan.tarification) {
