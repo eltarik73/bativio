@@ -1,27 +1,27 @@
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth-server";
-import { getStripe, PLAN_CONFIG, PaidPlan } from "@/lib/stripe";
+import { getStripe, PLAN_CONFIG, getStripePriceId } from "@/lib/stripe";
 import { apiSuccess, apiError } from "@/lib/api-response";
 
 export async function POST(request: Request) {
   try {
     const session = await requireAuth();
     const body = await request.json();
-    const plan = body.plan as string;
+    const plan = (body.plan || body.priceId || "").toUpperCase() as string;
+    const annual = body.annual === true || body.billing === "yearly";
 
     if (!plan || !(plan in PLAN_CONFIG)) {
-      return apiError("Plan invalide. Choisissez ESSENTIEL, PRO ou PRO_PLUS", 400);
+      return apiError("Plan invalide", 400);
     }
 
     const artisan = await prisma.artisan.findUnique({
       where: { userId: session.userId },
       include: { user: { select: { email: true } } },
     });
-
     if (!artisan) return apiError("Artisan introuvable", 404);
 
     const stripe = getStripe();
-    const config = PLAN_CONFIG[plan as PaidPlan];
+    const config = PLAN_CONFIG[plan as keyof typeof PLAN_CONFIG];
     const appUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://bativio.vercel.app";
 
     // Create or retrieve Stripe customer
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
       });
     }
 
-    // If artisan already has a subscription, redirect to customer portal instead
+    // If already subscribed, redirect to customer portal
     if (artisan.stripeSubscriptionId) {
       const portalSession = await stripe.billingPortal.sessions.create({
         customer: customerId,
@@ -48,33 +48,28 @@ export async function POST(request: Request) {
       return apiSuccess({ url: portalSession.url, type: "portal" });
     }
 
-    // Use real Stripe Price IDs if configured, otherwise create ad-hoc
-    const priceEnvKey = `STRIPE_PRICE_${plan}`;
-    const stripePriceId = process.env[priceEnvKey];
+    // Try to get a real Stripe Price ID from env
+    const stripePriceId = getStripePriceId(plan, annual);
 
     const lineItems = stripePriceId
       ? [{ price: stripePriceId, quantity: 1 }]
       : [{
           price_data: {
             currency: "eur" as const,
-            product_data: { name: `Bativio ${config.name}`, description: `Abonnement mensuel Bativio ${config.name}` },
-            unit_amount: config.price,
-            recurring: { interval: "month" as const },
+            product_data: { name: `Bativio ${config.name}`, description: `Abonnement ${annual ? "annuel" : "mensuel"} Bativio ${config.name}` },
+            unit_amount: annual ? Math.round(config.price * 0.83) : config.price,
+            recurring: { interval: (annual ? "year" : "month") as "year" | "month" },
           },
           quantity: 1,
         }];
 
-    // Create Checkout Session
     const checkoutSession = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: "subscription",
       line_items: lineItems,
       success_url: `${appUrl}/dashboard/parametres?success=true&plan=${plan}`,
-      cancel_url: `${appUrl}/dashboard/parametres?canceled=true`,
-      metadata: {
-        artisanId: artisan.id,
-        plan: plan,
-      },
+      cancel_url: `${appUrl}/tarifs?canceled=true`,
+      metadata: { artisanId: artisan.id, plan },
     });
 
     return apiSuccess({ url: checkoutSession.url, type: "checkout" });

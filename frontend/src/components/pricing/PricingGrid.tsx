@@ -4,211 +4,227 @@ import { useState } from "react";
 import Link from "next/link";
 import s from "./PricingGrid.module.css";
 
-/* ── SVG helpers ── */
-const CheckTerre = () => (
-  <svg className={s.featureCheck} viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="rgba(196,83,26,.1)" /><path d="M5 8.2l2 2 4-4" stroke="#C4531A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
-);
-const CheckGreen = () => (
-  <svg className={s.featureCheck} viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="rgba(5,150,105,.1)" /><path d="M5 8.2l2 2 4-4" stroke="#059669" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
-);
-const Arrow = () => (
-  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-);
-const FlagFR = () => (
-  <svg width="18" height="13" viewBox="0 0 18 13"><rect width="6" height="13" fill="#002395" /><rect x="6" width="6" height="13" fill="#fff" /><rect x="12" width="6" height="13" fill="#ED2939" /></svg>
-);
-const FlagEU = () => (
-  <svg width="18" height="13" viewBox="0 0 18 13"><rect width="18" height="13" fill="#003399" rx="1" />{[...Array(12)].map((_, i) => { const a = (i * 30 - 90) * Math.PI / 180; return <circle key={i} cx={9 + 4 * Math.cos(a)} cy={6.5 + 4 * Math.sin(a)} r=".8" fill="#FFCC00" />; })}</svg>
-);
+/* ── SVGs exact from pricing-bativio-v8.html ── */
+const Chk = () => <svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+const Arrow = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>;
 
-/* ── Badge icons ── */
-const IconStar = () => <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>;
-const IconFile = () => <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><path d="M14 2v6h6" /></svg>;
-const IconSparkles = () => <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.09 6.26L20.18 10l-6.09 1.74L12 18l-2.09-6.26L3.82 10l6.09-1.74z" /></svg>;
-const IconSms = () => <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg>;
+const FlagFR = () => <svg width="22" height="16" viewBox="0 0 22 16" fill="none"><rect x="0.5" y="0.5" width="21" height="15" rx="2" fill="#fff" stroke="#E5E7EB" strokeWidth="0.5" /><rect x="1" y="1" width="6.67" height="14" fill="#002395" /><rect x="7.67" y="1" width="6.67" height="14" fill="#fff" /><rect x="14.33" y="1" width="6.67" height="14" fill="#ED2939" /></svg>;
+const FlagEU = () => <svg width="22" height="16" viewBox="0 0 22 16" fill="none"><rect x="0.5" y="0.5" width="21" height="15" rx="2" fill="#003399" stroke="#E5E7EB" strokeWidth="0.5" /><circle cx="11" cy="3.2" r="0.7" fill="#FFCC00" /><circle cx="13.5" cy="3.9" r="0.7" fill="#FFCC00" /><circle cx="15.1" cy="5.5" r="0.7" fill="#FFCC00" /><circle cx="15.8" cy="8" r="0.7" fill="#FFCC00" /><circle cx="15.1" cy="10.5" r="0.7" fill="#FFCC00" /><circle cx="13.5" cy="12.1" r="0.7" fill="#FFCC00" /><circle cx="11" cy="12.8" r="0.7" fill="#FFCC00" /><circle cx="8.5" cy="12.1" r="0.7" fill="#FFCC00" /><circle cx="6.9" cy="10.5" r="0.7" fill="#FFCC00" /><circle cx="6.2" cy="8" r="0.7" fill="#FFCC00" /><circle cx="6.9" cy="5.5" r="0.7" fill="#FFCC00" /><circle cx="8.5" cy="3.9" r="0.7" fill="#FFCC00" /></svg>;
 
-const BADGE_ICONS: Record<string, React.FC> = { star: IconStar, file: IconFile, sparkles: IconSparkles, sms: IconSms };
-const BADGE_STYLES: Record<string, string> = { free: s.badgeFree, popular: s.badgePopular, factu: s.badgeFactu, ia: s.badgeIa, sms: s.badgeSms };
+/* ── Badge icons from v8 ── */
+const IFile = () => <svg viewBox="0 0 12 12" fill="none"><path d="M2 2h8v8H2z" stroke="currentColor" strokeWidth="1" /><path d="M4 5h4M4 7h3" stroke="currentColor" strokeWidth="0.8" /></svg>;
+const IPlus = () => <svg viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>;
+const IStar = () => <svg viewBox="0 0 12 12" fill="none"><path d="M6 1l1.5 3.1 3.4.5-2.5 2.4.6 3.4L6 8.8 3 10.4l.6-3.4L1.1 4.6l3.4-.5z" fill="#fff" /></svg>;
+const IBrowser = () => <svg viewBox="0 0 12 12" fill="none"><rect x="1" y="2" width="10" height="8" rx="1" stroke="currentColor" strokeWidth="1" /><path d="M1 5h10" stroke="currentColor" strokeWidth="0.8" /></svg>;
+const ISparkles = () => <svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="4" r="2" stroke="currentColor" strokeWidth="1" /><path d="M2 10c0-2.2 1.8-4 4-4s4 1.8 4 4" stroke="currentColor" strokeWidth="1" /></svg>;
+const ISearch = () => <svg viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3" stroke="currentColor" strokeWidth="1" /><path d="M7.5 7.5L10 10" stroke="currentColor" strokeWidth="1" strokeLinecap="round" /></svg>;
+const IPhone = () => <svg viewBox="0 0 12 12" fill="none"><rect x="2" y="1" width="8" height="10" rx="1" stroke="currentColor" strokeWidth="1" /><path d="M5 9h2" stroke="currentColor" strokeWidth="0.8" /></svg>;
 
-/* ── Plans data ── */
-interface Feature { label: string; detail?: string; soon?: boolean }
+const BADGE_ICONS: Record<string, React.FC> = { file: IFile, plus: IPlus, star: IStar, browser: IBrowser, sparkles: ISparkles, search: ISearch, phone: IPhone };
+const BADGE_CLS: Record<string, string> = { free: s.fbFree, starter: s.fbStarter, pop: s.fbPop, site: s.fbSite, ia: s.fbIa, ft: s.fbFt, seo: s.fbSeo };
+const PT_CLS: Record<string, string> = { free: s.ptFree, green: s.ptGreen, blue: s.ptBlue, purple: s.ptPurple };
+const CK_CLS: Record<string, string> = { g: s.ckG, t: s.ckT, b: s.ckB, p: s.ckP };
+const SL_CLS: Record<string, string> = { default: "", ft: s.slFt, biz: s.slBiz, ia: s.slIa };
+const CTA_CLS: Record<string, string> = { outline: s.ctaO, green: s.ctaG, blue: s.ctaB, purple: s.ctaP };
+
+interface Feature { label: string; check: string; detail?: string; soon?: boolean }
+interface Section { label: string; variant: string; features: Feature[] }
 interface Badge { label: string; variant: string; icon?: string }
 interface Plan {
   id: string; name: string; price: number; description: string;
+  promiseTag: { label: string; variant: string };
   badges: Badge[]; featured: boolean;
   cta: { label: string; variant: string };
-  visibilityLabel: string; visibility: Feature[]; invoicing: Feature[];
+  sections: Section[];
 }
 
 const PLANS: Plan[] = [
   {
-    id: "gratuit", name: "Gratuit", price: 0, description: "Pour découvrir Bativio",
+    id: "gratuit", name: "Gratuit", price: 0,
+    description: "Testez Bativio et commencez à facturer gratuitement",
+    promiseTag: { label: "Je découvre", variant: "free" },
     badges: [{ label: "Découverte", variant: "free" }], featured: false,
     cta: { label: "Commencer gratuitement", variant: "outline" },
-    visibilityLabel: "Visibilité",
-    visibility: [
-      { label: "Fiche annuaire" }, { label: "Formulaire de devis" },
-      { label: "Photos chantiers", detail: "3 max" }, { label: "Badges qualifications", detail: "2 max" },
+    sections: [
+      { label: "Visibilité", variant: "default", features: [
+        { label: "Fiche annuaire", check: "g" },
+        { label: "Réception demandes de devis", check: "g" },
+        { label: "3 photos chantiers", check: "g" },
+      ]},
+      { label: "Facturation", variant: "ft", features: [
+        { label: "5 factures / mois", check: "t" },
+      ]},
     ],
-    invoicing: [],
   },
   {
-    id: "essentiel", name: "Essentiel", price: 19, description: "Pour être visible, joignable et en règle",
-    badges: [{ label: "Réception PA", variant: "factu", icon: "file" }], featured: false,
-    cta: { label: "Choisir Essentiel", variant: "outline" },
-    visibilityLabel: "Visibilité",
-    visibility: [
-      { label: "Fiche annuaire" }, { label: "Formulaire de devis" },
-      { label: "Photos chantiers", detail: "10" }, { label: "Badges qualifications", detail: "illimité" },
-      { label: "Agenda & RDV en ligne" }, { label: "Support", detail: "email" },
-    ],
-    invoicing: [{ label: "Réception factures PA" }],
-  },
-  {
-    id: "pro", name: "Pro", price: 49, description: "Votre vitrine complète avec facturation",
+    id: "starter", name: "Starter", price: 19,
+    description: "Votre présence en ligne et facturation illimitée, en conformité",
+    promiseTag: { label: "J'existe en ligne", variant: "green" },
     badges: [
-      { label: "Le + populaire", variant: "popular", icon: "star" },
-      { label: "Facturation complète", variant: "factu", icon: "file" },
-    ],
-    featured: true,
-    cta: { label: "Choisir Pro", variant: "filled" },
-    visibilityLabel: "Visibilité",
-    visibility: [
-      { label: "Fiche annuaire" }, { label: "Formulaire de devis" },
-      { label: "Photos chantiers", detail: "illimité" }, { label: "Badges qualifications", detail: "illimité" },
-      { label: "Vitrine personnalisée" }, { label: "Agenda & RDV en ligne" }, { label: "Support", detail: "prioritaire" },
-    ],
-    invoicing: [
-      { label: "Réception factures PA" }, { label: "Émission factures PA" }, { label: "E-reporting automatique" },
+      { label: "Conformité PA", variant: "starter", icon: "file" },
+      { label: "Factures illimitées", variant: "ft", icon: "plus" },
+    ], featured: false,
+    cta: { label: "Choisir Starter", variant: "green" },
+    sections: [
+      { label: "Visibilité", variant: "default", features: [
+        { label: "Fiche annuaire optimisée", check: "g" },
+        { label: "10 photos chantiers", check: "g" },
+        { label: "Badges qualifications illimités", check: "g" },
+        { label: "Support email", check: "g" },
+      ]},
+      { label: "Facturation électronique", variant: "ft", features: [
+        { label: "Factures + devis illimités", check: "t" },
+        { label: "Réception PA", check: "t" },
+        { label: "Émission PA", check: "t" },
+        { label: "E-reporting automatique", check: "t" },
+      ]},
     ],
   },
   {
-    id: "proplus", name: "Pro+", price: 79, description: "L'artisan boosté par l'IA + facturation pro",
+    id: "pro", name: "Pro", price: 39,
+    description: "Votre site internet pro + CRM pour gagner des clients",
+    promiseTag: { label: "Je trouve des clients", variant: "blue" },
+    badges: [
+      { label: "Le + populaire", variant: "pop", icon: "star" },
+      { label: "Site internet inclus", variant: "site", icon: "browser" },
+    ], featured: true,
+    cta: { label: "Choisir Pro", variant: "blue" },
+    sections: [
+      { label: "Acquisition clients", variant: "biz", features: [
+        { label: "Site internet Bativio personnalisé", check: "b" },
+        { label: "Avis clients vérifiés", check: "b" },
+        { label: "Relances devis automatiques", check: "b" },
+        { label: "Agenda & RDV en ligne", check: "b" },
+        { label: "CRM clients", check: "b" },
+        { label: "Photos illimitées", check: "g" },
+        { label: "Support prioritaire", check: "g" },
+      ]},
+      { label: "Facturation", variant: "ft", features: [
+        { label: "Tout Starter inclus", check: "t" },
+        { label: "Export comptable (FEC)", check: "t" },
+        { label: "Création factures in-app", check: "t" },
+      ]},
+    ],
+  },
+  {
+    id: "business", name: "Business", price: 59,
+    description: "L'IA et le SEO travaillent pour vous, même quand vous êtes sur chantier",
+    promiseTag: { label: "Je scale mon activité", variant: "purple" },
     badges: [
       { label: "IA intégrée", variant: "ia", icon: "sparkles" },
-      { label: "Facturation pro", variant: "factu", icon: "file" },
-      { label: "SMS inclus", variant: "sms", icon: "sms" },
-    ],
-    featured: false,
-    cta: { label: "Choisir Pro+", variant: "dark" },
-    visibilityLabel: "Visibilité & IA",
-    visibility: [
-      { label: "Fiche annuaire" }, { label: "Formulaire de devis" },
-      { label: "Photos chantiers", detail: "illimité" }, { label: "Badges qualifications", detail: "illimité" },
-      { label: "Vitrine personnalisée" }, { label: "Agenda & RDV en ligne" },
-      { label: "SMS notifications", detail: "30/mois" }, { label: "Devis IA" },
-      { label: "Agent IA répondeur", soon: true }, { label: "Support", detail: "dédié" },
-    ],
-    invoicing: [
-      { label: "Réception factures PA" }, { label: "Émission factures PA" },
-      { label: "E-reporting automatique" }, { label: "Création factures / devis" }, { label: "Export comptable (FEC)" },
+      { label: "SEO local", variant: "seo", icon: "search" },
+      { label: "SMS inclus", variant: "ft", icon: "phone" },
+    ], featured: false,
+    cta: { label: "Choisir Business", variant: "purple" },
+    sections: [
+      { label: "Croissance", variant: "biz", features: [
+        { label: "Tout Pro inclus", check: "b" },
+        { label: "SEO local optimisé", check: "b" },
+        { label: "Mise en avant dans l'annuaire", check: "b" },
+        { label: "Multi-utilisateurs", check: "b", soon: true },
+        { label: "Stats CA + conversion", check: "b" },
+        { label: "SMS notifications", check: "b", detail: "50/mois" },
+        { label: "Support prioritaire", check: "g" },
+      ]},
+      { label: "Intelligence artificielle", variant: "ia", features: [
+        { label: "Devis IA automatisé", check: "p" },
+        { label: "Agent IA répondeur", check: "p" },
+        { label: "Reporting intelligent", check: "p" },
+      ]},
+      { label: "Facturation", variant: "ft", features: [
+        { label: "Tout Pro inclus", check: "t" },
+      ]},
     ],
   },
 ];
 
 export default function PricingGrid() {
-  const [isAnnual, setIsAnnual] = useState(false);
+  const [annual, setAnnual] = useState(false);
 
-  const getPrice = (monthly: number) => isAnnual ? Math.round(monthly * 0.83) : monthly;
-  const getAnnualTotal = (monthly: number) => getPrice(monthly) * 12;
-  const getAnnualSaving = (monthly: number) => monthly * 12 - getAnnualTotal(monthly);
+  const getPrice = (m: number) => annual ? Math.round(m * 0.83) : m;
 
   return (
-    <div className={s.wrapper}>
-      {/* Toggle */}
-      <div className={s.toggleWrap}>
-        <div className={s.toggle}>
-          <button className={`${s.toggleBtn} ${!isAnnual ? s.toggleBtnActive : ""}`} onClick={() => setIsAnnual(false)}>Mensuel</button>
-          <button className={`${s.toggleBtn} ${isAnnual ? s.toggleBtnActive : ""}`} onClick={() => setIsAnnual(true)}>
-            Annuel <span className={s.saveBadge}>-17%</span>
-          </button>
+    <section className={s.pg}>
+      {/* Conformity bar */}
+      <div className={s.cb}>
+        <div className={s.ci}><FlagFR /> Conforme réforme 2026</div>
+        <div className={s.ci}><FlagEU /> Norme européenne e-invoicing</div>
+        <div className={s.ci}>
+          <span className={s.cick}><Chk /></span>
+          Connecté PA certifiée par l&apos;État
         </div>
       </div>
 
-      {/* Conformity bar */}
-      <div className={s.conformBar}>
-        <svg width="18" height="18" fill="none" stroke="#059669" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-        <p className={s.conformText}>
-          <span className={s.conformBold}>Conforme réforme sept. 2026</span> — Facturation électronique incluse dès le pack Essentiel
-          <span className={s.flags}><FlagFR /><FlagEU /></span>
-        </p>
+      {/* Toggle */}
+      <div className={s.tw}>
+        <span className={`${s.tl} ${!annual ? s.tlOn : ""}`} onClick={() => setAnnual(false)}>Mensuel</span>
+        <div className={`${s.tr} ${annual ? s.trOn : ""}`} onClick={() => setAnnual(!annual)}>
+          <div className={`${s.th} ${annual ? s.thOn : ""}`} />
+        </div>
+        <span className={`${s.tl} ${annual ? s.tlOn : ""}`} onClick={() => setAnnual(true)}>Annuel</span>
+        <span className={`${s.sv} ${annual ? s.svShow : ""}`}>2 mois offerts</span>
       </div>
 
-      {/* Grid */}
-      <div className={s.grid}>
+      {/* Plans grid */}
+      <div className={s.plans}>
         {PLANS.map((plan) => {
           const price = getPrice(plan.price);
-          const ctaCls = plan.cta.variant === "filled" ? s.ctaFilled : plan.cta.variant === "dark" ? s.ctaDark : s.ctaOutline;
-
           return (
-            <div key={plan.id} className={`${s.card} ${plan.featured ? s.cardFeatured : ""}`}>
-              {plan.featured && <div className={s.recommendedBadge}>Recommandé</div>}
+            <div key={plan.id} className={`${s.plan} ${plan.featured ? s.planFeat : ""}`}>
+              {plan.featured && <div className={s.ptop}>Recommandé</div>}
 
-              <h3 className={s.planName}>{plan.name}</h3>
-              <p className={s.planDesc}>{plan.description}</p>
-
-              {/* Price */}
-              <div className={s.priceRow}>
-                <span className={s.priceValue}>{plan.price === 0 ? "0€" : `${price}€`}</span>
-                {plan.price > 0 && <span className={s.priceSuffix}>/mois</span>}
+              <div className={`${s.pt} ${PT_CLS[plan.promiseTag.variant] || ""}`} style={plan.featured ? { marginTop: 6 } : undefined}>
+                {plan.promiseTag.label}
               </div>
-              <div className={s.savingText}>
-                {isAnnual && plan.price > 0 ? `2 mois offerts · ${getAnnualTotal(plan.price)}€/an au lieu de ${plan.price * 12}€` : "\u00A0"}
+              <div className={s.pn}>{plan.name}</div>
+              <div className={s.pp}>
+                <span className={s.am}>{plan.price === 0 ? "0€" : `${price}€`}</span>
+                {plan.price > 0 && <span className={s.pe}>/mois</span>}
               </div>
+              <div className={s.ps}>
+                {annual && plan.price > 0
+                  ? `2 mois offerts · ${price * 12}€/an au lieu de ${plan.price * 12}€`
+                  : "\u00A0"}
+              </div>
+              <div className={s.pd}>{plan.description}</div>
 
               {/* Badges */}
-              <div className={s.badges}>
+              <div className={s.br}>
                 {plan.badges.map((b) => {
                   const Icon = b.icon ? BADGE_ICONS[b.icon] : null;
-                  return (
-                    <span key={b.label} className={`${s.badge} ${BADGE_STYLES[b.variant] || ""}`}>
-                      {Icon && <Icon />}
-                      {b.label}
-                    </span>
-                  );
+                  return <span key={b.label} className={`${s.fb} ${BADGE_CLS[b.variant] || ""}`}>{Icon && <Icon />} {b.label}</span>;
                 })}
               </div>
 
-              {/* Visibility features */}
-              <div className={s.sectionLabel}>{plan.visibilityLabel}</div>
-              <ul className={s.featureList}>
-                {plan.visibility.map((f) => (
-                  <li key={f.label} className={s.featureItem}>
-                    <CheckTerre />
-                    <span>{f.label}</span>
-                    {f.soon && <span className={s.featureSoon}>bientôt</span>}
-                    {f.detail && !f.soon && <span className={s.featureDetail}>{f.detail}</span>}
-                  </li>
-                ))}
-
-                {/* Invoicing section */}
-                {plan.invoicing.length > 0 && (
-                  <>
-                    <hr className={s.invoicingSep} />
-                    <div className={s.sectionLabel}>Facturation électronique</div>
-                    {plan.invoicing.map((f) => (
-                      <li key={f.label} className={s.featureItem}>
-                        <CheckGreen />
-                        <span>{f.label}</span>
-                        {f.detail && <span className={s.featureDetail}>{f.detail}</span>}
+              {/* Sections */}
+              {plan.sections.map((sec, si) => (
+                <div key={si}>
+                  <div className={`${s.sl} ${SL_CLS[sec.variant] || ""}`}>{sec.label}</div>
+                  <ul className={s.fl}>
+                    {sec.features.map((f) => (
+                      <li key={f.label} className={s.fi}>
+                        <span className={`${s.ck} ${CK_CLS[f.check] || ""}`}><Chk /></span>
+                        {f.label}
+                        {f.soon && <span className={s.soon}>bientôt</span>}
+                        {f.detail && !f.soon && <span className={s.fd}>{f.detail}</span>}
                       </li>
                     ))}
-                  </>
-                )}
-              </ul>
+                  </ul>
+                </div>
+              ))}
 
               {/* CTA */}
-              <Link href="/inscription" className={`${s.cta} ${ctaCls}`}>
-                {plan.cta.label} <Arrow />
-              </Link>
+              <div className={s.pcta}>
+                <Link href={plan.id === "gratuit" ? "/inscription" : "/inscription"} className={`${s.ctaBtn} ${CTA_CLS[plan.cta.variant] || ""}`}>
+                  {plan.cta.label} <Arrow />
+                </Link>
+              </div>
             </div>
           );
         })}
       </div>
 
-      <p className={s.bottomNote}>
-        Pas de commission. Pas de coût par devis. Pas de frais cachés. <span className={s.bottomBold}>Jamais.</span>
-      </p>
-    </div>
+      <p className={s.pf}>Sans engagement · Sans commission · Zéro frais cachés · Annulable à tout moment</p>
+    </section>
   );
 }

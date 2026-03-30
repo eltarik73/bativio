@@ -17,6 +17,9 @@ enum Plan {
   ESSENTIEL
   PRO
   PRO_PLUS
+  // Nouveaux plans V2
+  STARTER
+  BUSINESS
 }
 
 enum PhotoType {
@@ -92,8 +95,12 @@ model Artisan {
   noteMoyenne     Float    @default(0) @map("note_moyenne")
   nombreAvis      Int      @default(0) @map("nombre_avis")
   plan            Plan     @default(GRATUIT)
-  stripeCustomerId    String?  @unique @map("stripe_customer_id")
-  stripeSubscriptionId String? @unique @map("stripe_subscription_id")
+  stripeCustomerId     String?  @unique @map("stripe_customer_id")
+  stripeSubscriptionId String?  @unique @map("stripe_subscription_id")
+  stripePriceId        String?  @map("stripe_price_id")
+  subscriptionStatus   String?  @map("subscription_status")
+  invoiceCount         Int      @default(0) @map("invoice_count")
+  invoiceCountResetAt  DateTime? @map("invoice_count_reset_at")
   profilCompletion Int     @default(0) @map("profil_completion")
   templateId      String   @default("classique") @map("template_id")
   colorPrimary    String   @default("#C4531A") @map("color_primary")
