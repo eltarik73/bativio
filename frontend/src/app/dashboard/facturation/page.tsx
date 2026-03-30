@@ -1,18 +1,29 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { hasFeature } from "@/lib/plans";
+import type { PlanType } from "@/lib/plans";
 
 export default function FacturationPage() {
   const { user, fetchWithAuth } = useAuth();
-  const [state, setState] = useState<"loading" | "onboarding" | "iframe" | "error">("loading");
+  const [state, setState] = useState<"loading" | "upsell" | "onboarding" | "iframe" | "error">("loading");
   const [embedToken, setEmbedToken] = useState("");
   const [siret, setSiret] = useState("");
   const [activating, setActivating] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
+  const plan = ((user?.plan as string) || "GRATUIT") as PlanType;
+  const hasReception = hasFeature(plan, "invoquo_reception");
+
   useEffect(() => {
     if (!user) return;
+    // Si le plan ne donne pas acces a la facturation → upsell
+    if (!hasReception) {
+      setState("upsell");
+      return;
+    }
     const inv = user as unknown as { invoquoEnabled?: boolean; invoquoSiret?: string; siret?: string };
     if (!inv.invoquoEnabled) {
       setState("onboarding");
@@ -26,7 +37,7 @@ export default function FacturationPage() {
         setState("iframe");
       })
       .catch(() => setState("error"));
-  }, [user, fetchWithAuth]);
+  }, [user, fetchWithAuth, hasReception]);
 
   const handleActivate = async () => {
     setActivating(true);
@@ -78,7 +89,50 @@ export default function FacturationPage() {
     );
   }
 
-  // Onboarding
+  // Upsell — plan insuffisant
+  if (state === "upsell") {
+    return (
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh", padding: 32 }}>
+        <div style={{ maxWidth: 560, textAlign: "center" }}>
+          <div style={{ width: 64, height: 64, borderRadius: "50%", background: "rgba(196,83,26,.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px", fontSize: 32 }}>📄</div>
+          <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 26, fontWeight: 700, color: "#1C1C1E", marginBottom: 8 }}>Facturation électronique</h1>
+          <p style={{ fontSize: 15, color: "#6B6560", lineHeight: 1.6, marginBottom: 24 }}>
+            À partir de septembre 2026, toutes les entreprises doivent pouvoir recevoir des factures électroniques. Le module facturation est disponible dès le plan Essentiel.
+          </p>
+
+          <div style={{ background: "#FAF8F5", borderRadius: 14, padding: 24, marginBottom: 28, textAlign: "left" }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1C1C1E", marginBottom: 16 }}>Ce que vous obtenez :</h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {[
+                { plan: "Essentiel (19€/mois)", features: ["Réception des factures fournisseurs", "Conformité réglementaire assurée", "Stockage sécurisé"] },
+                { plan: "Pro (49€/mois)", features: ["Tout Essentiel +", "Dépôt et transmission de vos factures", "Export comptable CSV/Excel"] },
+                { plan: "Pro+ (79€/mois)", features: ["Tout Pro +", "Création de factures directement dans Bativio", "Devis IA + envoi automatique"] },
+              ].map((tier) => (
+                <div key={tier.plan} style={{ background: "#fff", borderRadius: 10, padding: 16, border: "1px solid #E5E0DB" }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: "#C4531A", marginBottom: 8 }}>{tier.plan}</div>
+                  {tier.features.map((f) => (
+                    <div key={f} style={{ display: "flex", alignItems: "center", gap: 6, padding: "3px 0" }}>
+                      <span style={{ color: "#16a34a", fontSize: 14 }}>✓</span>
+                      <span style={{ fontSize: 13, color: "#6B6560" }}>{f}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <Link href="/dashboard/parametres" style={{ display: "inline-block", padding: "14px 32px", borderRadius: 12, background: "#C4531A", color: "#fff", fontSize: 16, fontWeight: 600, textDecoration: "none" }}>
+            Changer de plan
+          </Link>
+          <Link href="/tarifs" style={{ display: "block", marginTop: 12, fontSize: 13, color: "#9B9590", textDecoration: "none" }}>
+            Voir tous les plans →
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Onboarding — plan OK mais pas encore active
   if (state === "onboarding") {
     return (
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh", padding: 32 }}>
