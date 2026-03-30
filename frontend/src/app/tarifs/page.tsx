@@ -5,11 +5,14 @@ import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Tarifs Bativio — Abonnements artisans du bâtiment",
-  description: "Découvrez nos offres : Gratuit, Essentiel 19€, Pro 49€, Pro+ 79€. Zéro commission, zéro frais cachés.",
+  description: "Découvrez nos offres : Gratuit, Essentiel 19€, Pro 49€, Pro+ 79€. Facturation électronique incluse. Zéro commission.",
   alternates: { canonical: "https://bativio.fr/tarifs" },
 };
 
-const PLANS = [
+interface Feature { label: string; ok: boolean; detail?: string }
+interface Plan { name: string; price: string; per: string; desc: string; pop: boolean; features: Feature[]; factures: Feature[] }
+
+const PLANS: Plan[] = [
   {
     name: "Gratuit", price: "0€", per: "", desc: "Pour découvrir Bativio", pop: false,
     features: [
@@ -24,9 +27,15 @@ const PLANS = [
       { label: "Agent IA répondeur", ok: false },
       { label: "Support", ok: false, detail: "—" },
     ],
+    factures: [
+      { label: "Réception factures PA", ok: false },
+      { label: "Émission factures PA", ok: false },
+      { label: "Création factures / devis", ok: false },
+      { label: "Export comptable (FEC)", ok: false },
+    ],
   },
   {
-    name: "Essentiel", price: "19€", per: "/mois", desc: "Pour être visible et joignable", pop: false,
+    name: "Essentiel", price: "19€", per: "/mois", desc: "Pour être visible, joignable et en règle", pop: false,
     features: [
       { label: "Fiche annuaire", ok: true },
       { label: "Formulaire de devis", ok: true },
@@ -39,9 +48,15 @@ const PLANS = [
       { label: "Agent IA répondeur", ok: false },
       { label: "Support", ok: true, detail: "Email" },
     ],
+    factures: [
+      { label: "Réception factures PA", ok: true },
+      { label: "Émission factures PA", ok: false },
+      { label: "Création factures / devis", ok: false },
+      { label: "Export comptable (FEC)", ok: false },
+    ],
   },
   {
-    name: "Pro", price: "49€", per: "/mois", desc: "Votre site vitrine complet", pop: true,
+    name: "Pro", price: "49€", per: "/mois", desc: "Votre vitrine complète avec facturation", pop: true,
     features: [
       { label: "Fiche annuaire", ok: true },
       { label: "Formulaire de devis", ok: true },
@@ -54,9 +69,16 @@ const PLANS = [
       { label: "Agent IA répondeur", ok: false },
       { label: "Support", ok: true, detail: "Prioritaire" },
     ],
+    factures: [
+      { label: "Réception factures PA", ok: true },
+      { label: "Émission factures PA", ok: true },
+      { label: "E-reporting automatique", ok: true },
+      { label: "Création factures / devis", ok: false },
+      { label: "Export comptable (FEC)", ok: false },
+    ],
   },
   {
-    name: "Pro+", price: "79€", per: "/mois", desc: "L'artisan boosté par l'IA", pop: false,
+    name: "Pro+", price: "79€", per: "/mois", desc: "L'artisan boosté par l'IA + facturation pro", pop: false,
     features: [
       { label: "Fiche annuaire", ok: true },
       { label: "Formulaire de devis", ok: true },
@@ -69,6 +91,14 @@ const PLANS = [
       { label: "Agent IA répondeur", ok: true, detail: "Bientôt" },
       { label: "Support", ok: true, detail: "Dédié" },
     ],
+    factures: [
+      { label: "Réception factures PA", ok: true },
+      { label: "Émission factures PA", ok: true },
+      { label: "E-reporting automatique", ok: true },
+      { label: "Création factures / devis", ok: true },
+      { label: "Export comptable (FEC)", ok: true },
+      { label: "Relances automatiques", ok: true },
+    ],
   },
 ];
 
@@ -77,8 +107,18 @@ const FAQ = [
   { q: "Puis-je changer de plan ?", a: "Oui, à tout moment depuis votre dashboard. Upgrade instantané, downgrade en fin de période." },
   { q: "Y a-t-il un engagement ?", a: "Non, sans engagement. Vous pouvez annuler à tout moment. Pas de frais cachés." },
   { q: "Comment fonctionne le devis IA ?", a: "Décrivez les travaux du client, l'IA génère un devis structuré avec les bons postes et prix du marché. Vous ajustez et envoyez." },
-  { q: "Comment fonctionne la facturation électronique ?", a: "Bativio sera connecté à une plateforme certifiée par l'État via Invoquo. Disponible prochainement." },
+  { q: "Comment fonctionne la facturation électronique ?", a: "À partir de septembre 2026, toutes les entreprises devront recevoir leurs factures au format électronique via une Plateforme Agréée (PA). Bativio intègre directement cette fonctionnalité — c'est inclus dans votre abonnement, pas de coût supplémentaire. Dès le pack Essentiel, vous pouvez recevoir vos factures fournisseurs. Le pack Pro permet aussi d'émettre vos factures. Et le pack Pro+ donne accès à la création complète de factures, devis et avoirs." },
 ];
+
+function FeatureRow({ f }: { f: Feature }) {
+  return (
+    <li style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0", fontSize: 14, color: f.ok ? "#1C1C1E" : "#C5C0B9" }}>
+      <span style={{ fontSize: 14, flexShrink: 0 }}>{f.ok ? "✅" : "—"}</span>
+      <span>{f.label}</span>
+      {f.detail && <span style={{ marginLeft: "auto", fontSize: 12, color: "#9B9590", fontWeight: 500 }}>{f.detail}</span>}
+    </li>
+  );
+}
 
 export default function TarifsPage() {
   return (
@@ -95,6 +135,16 @@ export default function TarifsPage() {
           </p>
         </section>
 
+        {/* Bandeau conforme */}
+        <div style={{ maxWidth: 640, margin: "0 auto 28px", padding: "0 32px" }}>
+          <div style={{ background: "rgba(5,150,105,.06)", border: "1px solid rgba(5,150,105,.2)", borderRadius: 12, padding: "14px 20px", textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+            <svg width="18" height="18" fill="none" stroke="#059669" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+            <p style={{ fontSize: 14, color: "#065f46" }}>
+              <strong>Facturation électronique incluse</strong> — Tous nos packs à partir de l&apos;Essentiel vous mettent en conformité avec la réforme de septembre 2026.
+            </p>
+          </div>
+        </div>
+
         {/* Plans */}
         <section style={{ padding: "0 32px 64px", maxWidth: 1100, margin: "0 auto" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 20 }} className="max-md:grid-cols-2 max-[640px]:grid-cols-1">
@@ -103,6 +153,7 @@ export default function TarifsPage() {
                 background: "#fff", borderRadius: 16, padding: "28px 24px", position: "relative",
                 border: p.pop ? "2px solid #C4531A" : "1px solid #E5E0DB",
                 boxShadow: p.pop ? "0 4px 20px rgba(196,83,26,.12)" : "0 1px 3px rgba(0,0,0,.06)",
+                display: "flex", flexDirection: "column",
               }}>
                 {p.pop && (
                   <div style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: "#C4531A", color: "#fff", padding: "4px 16px", borderRadius: 20, fontSize: 12, fontWeight: 600 }}>Le + populaire</div>
@@ -113,16 +164,19 @@ export default function TarifsPage() {
                   {p.per && <span style={{ fontSize: 15, color: "#9B9590" }}>{p.per}</span>}
                 </div>
                 <p style={{ fontSize: 13, color: "#9B9590", marginTop: 4 }}>{p.desc}</p>
-                <div style={{ margin: "20px 0", height: 1, background: "#F0EDEA" }} />
-                <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                  {p.features.map((f) => (
-                    <li key={f.label} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0", fontSize: 14, color: f.ok ? "#1C1C1E" : "#C5C0B9" }}>
-                      <span style={{ fontSize: 14, flexShrink: 0 }}>{f.ok ? "✅" : "—"}</span>
-                      <span>{f.label}</span>
-                      {f.detail && <span style={{ marginLeft: "auto", fontSize: 12, color: "#9B9590", fontWeight: 500 }}>{f.detail}</span>}
-                    </li>
-                  ))}
+
+                {/* Features principales */}
+                <div style={{ margin: "20px 0 0", height: 1, background: "#F0EDEA" }} />
+                <ul style={{ listStyle: "none", padding: 0, margin: 0, flex: 1 }}>
+                  {p.features.map((f) => <FeatureRow key={f.label} f={f} />)}
+
+                  {/* Separator facturation */}
+                  <li style={{ padding: "10px 0 4px" }}>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: "#9B9590", textTransform: "uppercase", letterSpacing: 1 }}>Facturation électronique</span>
+                  </li>
+                  {p.factures.map((f) => <FeatureRow key={f.label} f={f} />)}
                 </ul>
+
                 <Link href="/inscription" style={{
                   display: "block", textAlign: "center", marginTop: 20, padding: "12px 0", borderRadius: 12, fontSize: 14, fontWeight: 600, textDecoration: "none",
                   background: p.pop ? "#C4531A" : "transparent", color: p.pop ? "#fff" : "#C4531A",
