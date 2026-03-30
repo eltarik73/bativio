@@ -26,6 +26,15 @@ function slugifyVille(ville: string): string {
   return ville.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "");
 }
 
+const METIERS_SLUGS = [
+  "plombier", "electricien", "peintre", "macon",
+  "carreleur", "menuisier", "couvreur", "chauffagiste",
+] as const;
+
+const VILLES_SLUGS = [
+  "chambery", "annecy", "grenoble", "lyon", "valence",
+] as const;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://bativio.fr";
 
@@ -34,6 +43,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/rejoindre`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
     { url: `${baseUrl}/inscription`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
     { url: `${baseUrl}/connexion`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
+    { url: `${baseUrl}/facturation-electronique`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
+    { url: `${baseUrl}/tarifs`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
   ];
 
   const villePages: MetadataRoute.Sitemap = VILLES.map((v) => ({
@@ -71,5 +82,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  return [...staticPages, ...villePages, ...artisanPages, ...travauxPages];
+  const villeMetierPages: MetadataRoute.Sitemap = VILLES_SLUGS.flatMap((ville) =>
+    METIERS_SLUGS.map((metier) => ({
+      url: `${baseUrl}/${ville}/${metier}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    }))
+  );
+
+  return [...staticPages, ...villePages, ...villeMetierPages, ...artisanPages, ...travauxPages];
 }
