@@ -114,13 +114,13 @@ export default function FacturationPage() {
         {/* Avantages */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 14, marginBottom: 28 }}>
           {[
-            { icon: "🛡️", title: "Conforme", desc: "Connecté à une plateforme agréée par l'État" },
-            { icon: "⚡", title: "Instantané", desc: "Activez en 1 clic depuis votre dashboard" },
-            { icon: "🔄", title: "Automatique", desc: "Factures reçues et classées automatiquement" },
-            { icon: "📊", title: "Export", desc: "CSV/Excel pour votre comptable en 1 clic" },
+            { icon: <svg width="24" height="24" fill="none" stroke="#059669" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>, title: "Conforme", desc: "Connecté à une plateforme agréée par l'État", bg: "rgba(5,150,105,.08)" },
+            { icon: <svg width="24" height="24" fill="none" stroke="#E8A84C" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>, title: "Instantané", desc: "Activez en 1 clic depuis votre dashboard", bg: "rgba(232,168,76,.08)" },
+            { icon: <svg width="24" height="24" fill="none" stroke="#2563EB" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>, title: "Automatique", desc: "Factures reçues et classées automatiquement", bg: "rgba(37,99,235,.08)" },
+            { icon: <svg width="24" height="24" fill="none" stroke="#C4531A" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>, title: "Export", desc: "CSV/Excel pour votre comptable en 1 clic", bg: "rgba(196,83,26,.08)" },
           ].map((f) => (
             <div key={f.title} style={{ background: "#fff", borderRadius: 14, border: "1px solid #EDEBE7", padding: "24px 18px", textAlign: "center", transition: "transform .2s, box-shadow .2s", cursor: "default" }} className="stat-card-hover">
-              <div style={{ fontSize: 28, marginBottom: 10 }}>{f.icon}</div>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: f.bg, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>{f.icon}</div>
               <div style={{ fontFamily: "'Fraunces',serif", fontSize: 15, fontWeight: 700, color: "#1C1C1E", marginBottom: 4 }}>{f.title}</div>
               <div style={{ fontSize: 12, color: "#9B9590", lineHeight: 1.4 }}>{f.desc}</div>
             </div>
@@ -131,13 +131,25 @@ export default function FacturationPage() {
         <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#1C1C1E", marginBottom: 16 }}>Choisissez votre niveau de protection</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16, marginBottom: 32 }}>
           {[
-            { name: "Essentiel", price: "19", icon: "📥", desc: "Réception conforme", pop: false, features: ["Réception factures fournisseurs", "Conformité sept. 2026 garantie", "Stockage sécurisé illimité", "Notifications automatiques"], cta: "Commencer" },
-            { name: "Pro", price: "49", icon: "📤", desc: "Réception + Envoi", pop: true, features: ["Tout Essentiel +", "Envoi de vos factures clients", "Transmission automatique PA", "Suivi des statuts temps réel", "Export comptable CSV/Excel"], cta: "Le + populaire" },
-            { name: "Pro+", price: "79", icon: "🤖", desc: "Tout-en-un + IA", pop: false, features: ["Tout Pro +", "Création de factures dans Bativio", "Devis IA avec envoi auto", "Assistant IA pour les clients", "Modèles personnalisables"], cta: "Maximum" },
+            {
+              name: "Essentiel", price: "19", desc: "Réception conforme", pop: false, color: "#059669", bg: "rgba(5,150,105,.08)",
+              icon: <svg width="28" height="28" fill="none" stroke="#059669" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4" /><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" /></svg>,
+              features: ["Réception factures fournisseurs", "Conformité sept. 2026 garantie", "Stockage sécurisé illimité", "Notifications automatiques"], cta: "Commencer",
+            },
+            {
+              name: "Pro", price: "49", desc: "Réception + Envoi", pop: true, color: "#C4531A", bg: "rgba(196,83,26,.08)",
+              icon: <svg width="28" height="28" fill="none" stroke="#C4531A" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M7 17l5-5-5-5M13 17l5-5-5-5" /></svg>,
+              features: ["Tout Essentiel +", "Envoi de vos factures clients", "Transmission automatique PA", "Suivi des statuts temps réel", "Export comptable CSV/Excel"], cta: "Le + populaire",
+            },
+            {
+              name: "Pro+", price: "79", desc: "Tout-en-un + IA", pop: false, color: "#7C3AED", bg: "rgba(124,58,237,.08)",
+              icon: <svg width="28" height="28" fill="none" stroke="#7C3AED" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6z" /></svg>,
+              features: ["Tout Pro +", "Création de factures dans Bativio", "Devis IA avec envoi auto", "Assistant IA pour les clients", "Modèles personnalisables"], cta: "Maximum",
+            },
           ].map((p) => (
             <div key={p.name} style={{ background: "#fff", borderRadius: 16, padding: "28px 22px", border: p.pop ? "2px solid #C4531A" : "1px solid #EDEBE7", position: "relative", boxShadow: p.pop ? "0 4px 20px rgba(196,83,26,.12)" : "0 1px 3px rgba(0,0,0,.04)", display: "flex", flexDirection: "column" }}>
               {p.pop && <div style={{ position: "absolute", top: -11, left: "50%", transform: "translateX(-50%)", background: "#C4531A", color: "#fff", padding: "4px 14px", borderRadius: 20, fontSize: 11, fontWeight: 600 }}>Recommandé</div>}
-              <div style={{ fontSize: 28, marginBottom: 8 }}>{p.icon}</div>
+              <div style={{ width: 48, height: 48, borderRadius: 12, background: p.bg, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>{p.icon}</div>
               <div style={{ fontFamily: "'Fraunces',serif", fontSize: 20, fontWeight: 700, color: "#1C1C1E" }}>{p.name}</div>
               <div style={{ marginTop: 4 }}>
                 <span style={{ fontFamily: "'Fraunces',serif", fontSize: 32, fontWeight: 700, color: "#C4531A" }}>{p.price}€</span>
