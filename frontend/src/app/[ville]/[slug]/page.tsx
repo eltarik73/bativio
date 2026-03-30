@@ -136,7 +136,7 @@ export async function generateMetadata({
     seoDesc ||
     `${a.nomAffichage}, ${(a.metierNom || "artisan").toLowerCase()} \u00e0 ${a.ville || villeParam}. ${a.description || ""} Devis gratuit.`;
   return {
-    title: `${a.nomAffichage} \u2014 ${a.metierNom || "Artisan"} \u00e0 ${a.ville || villeParam} | Bativio`,
+    title: `${a.nomAffichage} — ${a.metierNom || "Artisan"} à ${a.ville || villeParam}`,
     description:
       metaDesc.length > 160 ? metaDesc.substring(0, 157) + "..." : metaDesc,
     alternates: {
