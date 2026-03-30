@@ -8,9 +8,9 @@ export default function AdminDashboard() {
 
   const planData = [
     { plan: "Gratuit", count: 1, color: "#C5C0B9" },
-    { plan: "Essentiel", count: 2, color: "#E8A84C" },
-    { plan: "Pro", count: 1, color: "#C4531A" },
-    { plan: "Pro+", count: 1, color: "#1C1C1E" },
+    { plan: "Starter", count: 2, color: "#0F6E56" },
+    { plan: "Pro", count: 1, color: "#185FA5" },
+    { plan: "Business", count: 1, color: "#534AB7" },
   ];
 
   const total = planData.reduce((s, p) => s + p.count, 0);

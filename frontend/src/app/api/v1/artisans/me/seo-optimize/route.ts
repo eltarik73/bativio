@@ -20,10 +20,10 @@ export async function POST(_request: NextRequest) {
       return apiError("Artisan introuvable", 404);
     }
 
-    // Check plan — PRO_PLUS only
-    if (artisan.plan !== "PRO_PLUS") {
+    // Check plan — BUSINESS only
+    if (artisan.plan !== "BUSINESS" && artisan.plan !== "PRO_PLUS") {
       return apiError(
-        "L'optimisation SEO est réservée au plan Pro+. Passez au plan supérieur pour en profiter.",
+        "L'optimisation SEO est réservée au plan Business. Passez au plan supérieur pour en profiter.",
         403
       );
     }

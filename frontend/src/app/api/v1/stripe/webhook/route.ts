@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
           await prisma.artisan.update({
             where: { id: artisanId },
             data: {
-              plan: plan as "ESSENTIEL" | "PRO" | "PRO_PLUS",
+              plan: plan as "STARTER" | "PRO" | "BUSINESS" | "ESSENTIEL" | "PRO_PLUS",
               stripeSubscriptionId: subscriptionId,
             },
           });

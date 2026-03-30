@@ -8,9 +8,9 @@ export const metadata: Metadata = {
 
 const PLANS = [
   { name: "Gratuit", price: "0€", per: "", desc: "Pour démarrer", feats: ["Fiche annuaire", "Formulaire devis", "3 photos", "2 badges"], pop: false },
-  { name: "Essentiel", price: "19€", per: "/mois", desc: "Visible et joignable", feats: ["10 photos + avant/après", "Agenda + RDV", "SMS rappel", "Badges illimités"], pop: false },
-  { name: "Pro", price: "49€", per: "/mois", desc: "Vitrine complète", feats: ["URL perso (site vitrine)", "Photos illimitées", "Mini-CRM", "Facturation PA", "Export comptable"], pop: true },
-  { name: "Pro+", price: "79€", per: "/mois", desc: "Augmenté par l’IA", feats: ["Agent IA répondeur", "Devis IA automatique", "Création factures", "Support dédié"], pop: false },
+  { name: "Starter", price: "19€", per: "/mois", desc: "Conformité PA + facturation", feats: ["Conformité facture PA", "Factures illimitées", "Badges illimités", "Support email"], pop: false },
+  { name: "Pro", price: "39€", per: "/mois", desc: "Site internet + CRM", feats: ["Site internet inclus", "CRM clients", "Avis vérifiés", "Agenda + RDV", "Export comptable"], pop: true },
+  { name: "Business", price: "59€", per: "/mois", desc: "IA + SEO pour scaler", feats: ["IA intégrée", "SEO local optimisé", "SMS notifications", "Stats CA + conversion"], pop: false },
 ];
 
 const FAQ = [

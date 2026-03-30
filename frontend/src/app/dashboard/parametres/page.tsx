@@ -104,14 +104,16 @@ export default function ParametresPage() {
     background: "#fff", borderRadius: 16, border: "1.5px solid #EDEBE7", padding: 28, marginBottom: 20,
   };
 
-  const planLabel = plan === "PRO_PLUS" ? "Pro+" : plan === "PRO" ? "Pro" : plan === "ESSENTIEL" ? "Essentiel" : "Gratuit";
-  const planPrice = plan === "PRO_PLUS" ? "79" : plan === "PRO" ? "49" : plan === "ESSENTIEL" ? "19" : "0";
+  const planLabel = plan === "BUSINESS" ? "Business" : plan === "PRO_PLUS" ? "Business" : plan === "PRO" ? "Pro" : plan === "STARTER" ? "Starter" : plan === "ESSENTIEL" ? "Starter" : "Gratuit";
+  const planPrice = plan === "BUSINESS" ? "59" : plan === "PRO_PLUS" ? "59" : plan === "PRO" ? "39" : plan === "STARTER" ? "19" : plan === "ESSENTIEL" ? "19" : "0";
 
   const features: Record<string, string[]> = {
     GRATUIT: ["Fiche annuaire", "Formulaire devis", "3 photos max"],
-    ESSENTIEL: ["10 photos + avant/après", "Badges illimités", "Agenda + RDV en ligne", "SMS rappel"],
-    PRO: ["URL perso (vitrine complète)", "Photos illimitées", "QR Code vitrine", "Mini-CRM clients", "Support prioritaire"],
-    PRO_PLUS: ["URL perso (vitrine complète)", "Photos illimitées", "QR Code vitrine", "Agent IA répondeur", "Devis IA automatique", "Support dédié"],
+    STARTER: ["Conformité PA", "Factures illimitées", "Badges illimités", "Support email"],
+    ESSENTIEL: ["Conformité PA", "Factures illimitées", "Badges illimités", "Support email"],
+    PRO: ["Site internet inclus", "Photos illimitées", "CRM clients", "Avis vérifiés", "Support prioritaire"],
+    BUSINESS: ["Tout Pro inclus", "IA intégrée", "SEO local", "SMS notifications", "Stats CA + conversion"],
+    PRO_PLUS: ["Tout Pro inclus", "IA intégrée", "SEO local", "SMS notifications", "Stats CA + conversion"],
   };
 
   return (
@@ -171,9 +173,9 @@ export default function ParametresPage() {
             <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1C1C1E", marginBottom: 16 }}>Choisir un plan</h3>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {[
-                { id: "ESSENTIEL", name: "Essentiel", price: "19€/mois", desc: "Agenda + RDV + SMS" },
-                { id: "PRO", name: "Pro", price: "49€/mois", desc: "Vitrine complète + QR Code", pop: true },
-                { id: "PRO_PLUS", name: "Pro+", price: "79€/mois", desc: "IA + Devis automatique" },
+                { id: "STARTER", name: "Starter", price: "19€/mois", desc: "Conformité PA + facturation" },
+                { id: "PRO", name: "Pro", price: "39€/mois", desc: "Site internet + CRM", pop: true },
+                { id: "BUSINESS", name: "Business", price: "59€/mois", desc: "IA + SEO + SMS" },
               ].filter((p) => p.id !== plan).map((p) => (
                 <button key={p.id} onClick={() => handleChangePlan(p.id)} disabled={planLoading === p.id} style={{
                   display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 18px",
@@ -202,7 +204,7 @@ export default function ParametresPage() {
             <span style={{ fontSize: 14, fontFamily: "monospace", color: "#1C1C1E" }}>{url}</span>
             <button onClick={copyUrl} style={{ background: "#C4531A", color: "#fff", padding: "6px 14px", borderRadius: 6, fontSize: 12, fontWeight: 600, border: "none", cursor: "pointer" }}>{copied ? "Copié !" : "Copier"}</button>
           </div>
-          {(plan === "PRO" || plan === "PRO_PLUS") && (
+          {(plan === "PRO" || plan === "PRO_PLUS" || plan === "BUSINESS") && (
             <button onClick={downloadQR} style={{ border: "1.5px solid #C4531A", color: "#C4531A", background: "transparent", height: 40, borderRadius: 8, padding: "0 20px", fontSize: 13, fontWeight: 600, cursor: "pointer", marginTop: 8 }}>
               Télécharger mon QR Code
             </button>

@@ -6,8 +6,10 @@ import { requireAuth } from "@/lib/auth-server";
 
 const BADGE_LIMITS: Record<string, number> = {
   GRATUIT: 2,
+  STARTER: Infinity,
   ESSENTIEL: Infinity,
   PRO: Infinity,
+  BUSINESS: Infinity,
   PRO_PLUS: Infinity,
 };
 

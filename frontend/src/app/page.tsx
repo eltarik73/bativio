@@ -13,12 +13,12 @@ import { VILLES } from "@/lib/constants";
 const PLANS_DATA = [
   { name: "Gratuit", price: "0€", per: "", desc: "Pour découvrir Bativio", pop: false, btn: "ghost",
     feats: ["Fiche sur l’annuaire", "Formulaire de devis", "3 photos max", "2 badges"] },
-  { name: "Essentiel", price: "19€", per: "/mois", desc: "Pour être visible et joignable", pop: false, btn: "ghost",
-    feats: ["10 photos + avant/après", "Badges illimités", "Agenda + RDV en ligne", "SMS rappel + relance 20min", "Réception factures PA"] },
-  { name: "Pro", price: "49€", per: "/mois", desc: "Votre site vitrine complet", pop: true, btn: "fill",
-    feats: ["<strong>URL perso (site vitrine)</strong>", "Photos illimitées", "QR Code + bouton Google", "Mini-CRM clients", "Transmission PA", "Export comptable"] },
-  { name: "Pro+", price: "79€", per: "/mois", desc: "L’artisan boosté par l’IA", pop: false, btn: "ghost",
-    feats: ["<strong>Agent IA répondeur</strong>", "<strong>Devis IA automatique</strong>", "Création factures", "Support dédié"] },
+  { name: "Starter", price: "19€", per: "/mois", desc: "Votre présence en ligne conforme", pop: false, btn: "ghost",
+    feats: ["Conformité facture PA", "Factures + devis illimités", "Badges illimités", "Support email"] },
+  { name: "Pro", price: "39€", per: "/mois", desc: "Site internet pro + CRM", pop: true, btn: "fill",
+    feats: ["<strong>Site internet inclus</strong>", "Avis clients vérifiés", "CRM clients", "Agenda + RDV en ligne", "Export comptable"] },
+  { name: "Business", price: "59€", per: "/mois", desc: "IA + SEO pour scaler", pop: false, btn: "ghost",
+    feats: ["<strong>IA intégrée</strong>", "<strong>SEO local optimisé</strong>", "SMS notifications", "Stats CA + conversion", "Support prioritaire"] },
 ];
 
 const TESTIMONIALS = [
@@ -164,16 +164,16 @@ export default function Home() {
               <div className="pricing-mini-price">0&euro;</div>
             </div>
             <div className="pricing-mini">
-              <div className="pricing-mini-name">Essentiel</div>
+              <div className="pricing-mini-name">Starter</div>
               <div className="pricing-mini-price">19&euro;<small>/mois</small></div>
             </div>
             <div className="pricing-mini highlight">
               <div className="pricing-mini-name">Pro</div>
-              <div className="pricing-mini-price">49&euro;<small>/mois</small></div>
+              <div className="pricing-mini-price">39&euro;<small>/mois</small></div>
             </div>
             <div className="pricing-mini">
-              <div className="pricing-mini-name">Pro+</div>
-              <div className="pricing-mini-price">79&euro;<small>/mois</small></div>
+              <div className="pricing-mini-name">Business</div>
+              <div className="pricing-mini-price">59&euro;<small>/mois</small></div>
             </div>
           </div>
           <button className={`toggle-btn ${pricingOpen ? "open" : ""}`} onClick={(e) => { e.stopPropagation(); togglePricing(); }}>

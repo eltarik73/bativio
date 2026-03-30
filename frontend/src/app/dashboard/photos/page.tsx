@@ -17,8 +17,8 @@ export default function PhotosPage() {
 
   const planLimit = (() => {
     const p = user?.plan?.toUpperCase() || "GRATUIT";
-    if (p === "PRO" || p === "PRO_PLUS") return Infinity;
-    if (p === "ESSENTIEL") return 10;
+    if (p === "PRO" || p === "PRO_PLUS" || p === "BUSINESS") return Infinity;
+    if (p === "STARTER" || p === "ESSENTIEL") return 10;
     return 3;
   })();
   const planLabel = planLimit === Infinity ? "Illimite" : `${planLimit}`;

@@ -9,7 +9,7 @@ export default function RdvPage() {
           Gerez vos rendez-vous directement depuis Bativio. Agenda visible 24/7, prise de RDV en ligne, rappels SMS automatiques.
         </p>
         <div className="mt-6 inline-block px-4 py-2 bg-g50 rounded-lg text-sm text-g400">
-          Disponible avec le plan Essentiel et superieur
+          Disponible avec le plan Starter et superieur
         </div>
       </div>
     </div>

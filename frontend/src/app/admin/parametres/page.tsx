@@ -149,7 +149,7 @@ export default function AdminParametresPage() {
   };
 
   const renderPlans = () => {
-    const plans = ["GRATUIT", "ESSENTIEL", "PRO", "PRO_PLUS"];
+    const plans = ["GRATUIT", "STARTER", "PRO", "BUSINESS"];
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
         {plans.map((plan) => {
@@ -466,7 +466,7 @@ function ConfigRow({ item, onUpdate }: { item: ConfigItem; onUpdate: (cle: strin
 }
 
 function FeaturePlansRow({ item, onUpdate }: { item: ConfigItem; onUpdate: (cle: string, val: string) => void }) {
-  const plans = ["GRATUIT", "ESSENTIEL", "PRO", "PRO_PLUS"];
+  const plans = ["GRATUIT", "STARTER", "PRO", "BUSINESS"];
   let current: string[] = [];
   try {
     current = JSON.parse(item.valeur);

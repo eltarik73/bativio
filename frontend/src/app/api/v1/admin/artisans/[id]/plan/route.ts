@@ -5,7 +5,7 @@ import { apiSuccess, apiError } from "@/lib/api-response";
 import { requireAdmin } from "@/lib/auth-server";
 
 const planSchema = z.object({
-  plan: z.enum(["GRATUIT", "ESSENTIEL", "PRO", "PRO_PLUS"]),
+  plan: z.enum(["GRATUIT", "STARTER", "PRO", "BUSINESS", "ESSENTIEL", "PRO_PLUS"]),
 });
 
 export async function PUT(
@@ -19,7 +19,7 @@ export async function PUT(
     const body = await request.json();
     const parsed = planSchema.safeParse(body);
     if (!parsed.success) {
-      return apiError("Plan invalide. Valeurs acceptées : GRATUIT, ESSENTIEL, PRO, PRO_PLUS", 400);
+      return apiError("Plan invalide. Valeurs acceptées : GRATUIT, STARTER, PRO, BUSINESS", 400);
     }
 
     const { plan } = parsed.data;

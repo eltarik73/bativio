@@ -30,14 +30,14 @@ export const METIERS = [
   { nom: "Cuisiniste", slug: "cuisiniste", icone: "\u{1F373}" },
 ] as const;
 
-export type PlanId = "GRATUIT" | "ESSENTIEL" | "PRO" | "PRO_PLUS";
+export type PlanId = "GRATUIT" | "STARTER" | "PRO" | "BUSINESS";
 
 export interface PlanFeature {
   nom: string;
   gratuit: boolean | string;
-  essentiel: boolean | string;
+  starter: boolean | string;
   pro: boolean | string;
-  proPlus: boolean | string;
+  business: boolean | string;
 }
 
 export const PLANS = [
@@ -45,61 +45,60 @@ export const PLANS = [
     id: "GRATUIT" as PlanId,
     nom: "Gratuit",
     prix: 0,
-    description: "Pour commencer sur Bativio",
+    description: "Testez Bativio et commencez à facturer gratuitement",
     features: [
       "Fiche annuaire",
-      "Formulaire devis",
-      "3 photos max",
-      "2 badges max",
-      "Stats basiques",
+      "Réception demandes de devis",
+      "3 photos chantiers",
     ],
   },
   {
-    id: "ESSENTIEL" as PlanId,
-    nom: "Essentiel",
+    id: "STARTER" as PlanId,
+    nom: "Starter",
     prix: 19,
-    description: "Pour être visible et joignable",
+    description: "Votre présence en ligne et facturation illimitée, en conformité",
     features: [
-      "Fiche annuaire",
-      "Formulaire devis",
-      "10 photos",
-      "Badges illimités",
-      "Photos avant/après",
-      "Agenda visible 24/7",
-      "Prise de RDV en ligne",
-      "SMS rappel RDV",
-      "Notifications email + SMS",
+      "Fiche annuaire optimisée",
+      "10 photos chantiers",
+      "Badges qualifications illimités",
+      "Factures + devis illimités",
+      "Réception PA",
+      "Émission PA",
+      "E-reporting automatique",
+      "Support email",
     ],
   },
   {
     id: "PRO" as PlanId,
     nom: "Pro",
-    prix: 49,
+    prix: 39,
     populaire: true,
-    description: "La vitrine complète pour les pros",
+    description: "Votre site internet pro + CRM pour gagner des clients",
     features: [
-      "Tout Essentiel +",
-      "URL perso (vitrine complète)",
+      "Site internet Bativio personnalisé",
+      "Avis clients vérifiés",
+      "Relances devis automatiques",
+      "Agenda & RDV en ligne",
+      "CRM clients",
       "Photos illimitées",
-      "QR Code vitrine",
-      "Bouton RDV Google",
-      "Mini-CRM clients",
-      "Dashboard complet",
-      "Export comptable",
+      "Export comptable (FEC)",
       "Support prioritaire",
     ],
   },
   {
-    id: "PRO_PLUS" as PlanId,
-    nom: "Pro+",
-    prix: 79,
-    description: "L'artisan augmenté par l'IA",
+    id: "BUSINESS" as PlanId,
+    nom: "Business",
+    prix: 59,
+    description: "L'IA et le SEO travaillent pour vous",
     features: [
-      "Tout Pro +",
-      "Agent IA répondeur client",
-      "Devis IA",
-      "Création factures Bativio",
-      "Support dédié",
+      "Tout Pro inclus",
+      "SEO local optimisé",
+      "Mise en avant dans l'annuaire",
+      "Stats CA + conversion",
+      "SMS notifications",
+      "Devis IA automatisé",
+      "Agent IA répondeur",
+      "Reporting intelligent",
     ],
   },
 ] as const;

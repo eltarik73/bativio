@@ -26,8 +26,8 @@ function VitrinePageContent() {
   const [seoLoading, setSeoLoading] = useState(false);
   const [seoResult, setSeoResult] = useState<{ metaDescription: string; keywords: string } | null>(null);
 
-  const isPro = user?.plan === "PRO" || user?.plan === "PRO_PLUS";
-  const isProPlus = user?.plan === "PRO_PLUS";
+  const isPro = user?.plan === "PRO" || user?.plan === "PRO_PLUS" || user?.plan === "BUSINESS";
+  const isProPlus = user?.plan === "PRO_PLUS" || user?.plan === "BUSINESS";
 
   // Load current settings from user profile
   useEffect(() => {
@@ -149,7 +149,7 @@ function VitrinePageContent() {
           ))}
         </div>
 
-        {/* SEO IA (Pro+ only) */}
+        {/* SEO IA (Business only) */}
         <div style={C}>
           <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1C1C1E", marginBottom: 8 }}>SEO par IA</h3>
           {isProPlus ? (
@@ -180,7 +180,7 @@ function VitrinePageContent() {
             </>
           ) : (
             <div style={{ padding: 12, background: "#FAF8F5", borderRadius: 8, textAlign: "center" }}>
-              <p style={{ fontSize: 12, color: "#9B9590" }}>Disponible avec le plan Pro+</p>
+              <p style={{ fontSize: 12, color: "#9B9590" }}>Disponible avec le plan Business</p>
             </div>
           )}
         </div>

@@ -75,7 +75,7 @@ export const MOCK_ARTISANS: ArtisanPublic[] = [
     id: "4", nomAffichage: "Alpes Maçonnerie", slug: "alpes-maconnerie", metierNom: "Maçon", metierIcone: "\u{1F9F1}",
     ville: "Chambéry", noteMoyenne: 4.6, nombreAvis: 53,
     description: "Construction traditionnelle savoyarde et rénovation du bâti ancien depuis 20 ans.",
-    telephone: "04 79 45 67 89", adresse: "Chambéry", codePostal: "73000", zoneRayonKm: 25, experienceAnnees: 20, plan: "PRO_PLUS",
+    telephone: "04 79 45 67 89", adresse: "Chambéry", codePostal: "73000", zoneRayonKm: 25, experienceAnnees: 20, plan: "BUSINESS",
     badgesNoms: ["Qualibat", "CAPEB"],
     services: [
       { id: "s10", titre: "Construction", description: "Gros œuvre complet : fondations, murs, dalles.", prixIndicatif: "Sur devis", ordre: 0 },

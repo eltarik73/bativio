@@ -1,4 +1,4 @@
-export type PlanType = "GRATUIT" | "ESSENTIEL" | "PRO" | "PRO_PLUS";
+export type PlanType = "GRATUIT" | "STARTER" | "PRO" | "BUSINESS" | "ESSENTIEL" | "PRO_PLUS";
 
 export type FeatureKey =
   | "annuaire" | "vitrine" | "badge_verifie" | "qrcode" | "google_business"
@@ -6,25 +6,29 @@ export type FeatureKey =
   | "fiche_client" | "reporting" | "devis_ia" | "agent_ia"
   | "invoquo_reception" | "invoquo_depot" | "invoquo_creation";
 
-const PLAN_FEATURES: Record<PlanType, FeatureKey[]> = {
+const PLAN_FEATURES: Record<string, FeatureKey[]> = {
   GRATUIT: ["annuaire", "demande_devis", "avis", "fiche_client"],
+  STARTER: ["annuaire", "demande_devis", "avis", "fiche_client", "agenda", "invoquo_reception"],
   ESSENTIEL: ["annuaire", "demande_devis", "avis", "fiche_client", "agenda", "invoquo_reception"],
   PRO: ["annuaire", "demande_devis", "avis", "fiche_client", "agenda", "invoquo_reception", "vitrine", "badge_verifie", "qrcode", "google_business", "reporting", "invoquo_depot"],
+  BUSINESS: ["annuaire", "demande_devis", "avis", "fiche_client", "agenda", "invoquo_reception", "vitrine", "badge_verifie", "qrcode", "google_business", "reporting", "invoquo_depot", "sms", "devis_ia", "agent_ia", "invoquo_creation"],
   PRO_PLUS: ["annuaire", "demande_devis", "avis", "fiche_client", "agenda", "invoquo_reception", "vitrine", "badge_verifie", "qrcode", "google_business", "reporting", "invoquo_depot", "sms", "devis_ia", "agent_ia", "invoquo_creation"],
 };
 
-export const PLAN_LIMITS: Record<PlanType, { photosMax: number; badgesMax: number; smsParMois: number; devisIaParJour: number }> = {
+export const PLAN_LIMITS: Record<string, { photosMax: number; badgesMax: number; smsParMois: number; devisIaParJour: number }> = {
   GRATUIT:   { photosMax: 3,  badgesMax: 2,  smsParMois: 0,  devisIaParJour: 0 },
+  STARTER:   { photosMax: 10, badgesMax: -1, smsParMois: 0,  devisIaParJour: 0 },
   ESSENTIEL: { photosMax: 10, badgesMax: -1, smsParMois: 0,  devisIaParJour: 0 },
   PRO:       { photosMax: -1, badgesMax: -1, smsParMois: 0,  devisIaParJour: 0 },
+  BUSINESS:  { photosMax: -1, badgesMax: -1, smsParMois: 30, devisIaParJour: 10 },
   PRO_PLUS:  { photosMax: -1, badgesMax: -1, smsParMois: 30, devisIaParJour: 10 },
 };
 
 export const FEATURE_MIN_PLAN: Record<FeatureKey, PlanType> = {
   annuaire: "GRATUIT", demande_devis: "GRATUIT", avis: "GRATUIT", fiche_client: "GRATUIT",
-  agenda: "ESSENTIEL", invoquo_reception: "ESSENTIEL",
+  agenda: "STARTER", invoquo_reception: "STARTER",
   vitrine: "PRO", badge_verifie: "PRO", qrcode: "PRO", google_business: "PRO", reporting: "PRO", invoquo_depot: "PRO",
-  sms: "PRO_PLUS", devis_ia: "PRO_PLUS", agent_ia: "PRO_PLUS", invoquo_creation: "PRO_PLUS",
+  sms: "BUSINESS", devis_ia: "BUSINESS", agent_ia: "BUSINESS", invoquo_creation: "BUSINESS",
 };
 
 export const FEATURE_LABELS: Record<FeatureKey, string> = {
@@ -34,8 +38,8 @@ export const FEATURE_LABELS: Record<FeatureKey, string> = {
   sms: "SMS notifications", devis_ia: "Devis IA intelligent", agent_ia: "Agent IA répondeur", invoquo_creation: "Création de factures",
 };
 
-export const PLAN_LABELS: Record<PlanType, string> = { GRATUIT: "Gratuit", ESSENTIEL: "Essentiel", PRO: "Pro", PRO_PLUS: "Pro+" };
-export const PLAN_PRICES: Record<PlanType, number> = { GRATUIT: 0, ESSENTIEL: 19, PRO: 49, PRO_PLUS: 79 };
+export const PLAN_LABELS: Record<string, string> = { GRATUIT: "Gratuit", STARTER: "Starter", ESSENTIEL: "Starter", PRO: "Pro", BUSINESS: "Business", PRO_PLUS: "Business" };
+export const PLAN_PRICES: Record<string, number> = { GRATUIT: 0, STARTER: 19, ESSENTIEL: 19, PRO: 39, BUSINESS: 59, PRO_PLUS: 59 };
 
 export function hasFeature(plan: PlanType, feature: FeatureKey): boolean {
   return PLAN_FEATURES[plan]?.includes(feature) ?? false;

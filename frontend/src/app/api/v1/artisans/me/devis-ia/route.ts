@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!hasFeature((artisan.plan || "GRATUIT") as PlanType, "devis_ia")) {
-      return apiError("Le devis IA est disponible avec le plan Pro+. Passez à Pro+ pour en profiter.", 403);
+      return apiError("Le devis IA est disponible avec le plan Business. Passez à Business pour en profiter.", 403);
     }
 
     if (!artisan.tarification) {

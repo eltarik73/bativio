@@ -123,7 +123,7 @@ const FAQ = [
   },
   {
     q: "Combien ça coûte ?",
-    a: "La réception de factures est incluse dès le plan Essentiel à 19€/mois. L'émission et la création de factures sont disponibles dans les plans Pro (49€) et Pro+ (79€). Zéro commission, zéro frais par facture.",
+    a: "La réception de factures est incluse dès le plan Starter à 19€/mois. L'émission et la création de factures sont disponibles dans les plans Pro (39€) et Business (59€). Zéro commission, zéro frais par facture.",
   },
   {
     q: "Bativio est-il conforme ?",

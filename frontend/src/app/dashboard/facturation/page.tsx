@@ -132,17 +132,17 @@ export default function FacturationPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16, marginBottom: 32 }}>
           {[
             {
-              name: "Essentiel", price: "19", desc: "Réception conforme", pop: false, color: "#059669", bg: "rgba(5,150,105,.08)",
+              name: "Starter", price: "19", desc: "Réception conforme", pop: false, color: "#059669", bg: "rgba(5,150,105,.08)",
               icon: <svg width="28" height="28" fill="none" stroke="#059669" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4" /><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" /></svg>,
               features: ["Réception factures fournisseurs", "Conformité sept. 2026 garantie", "Stockage sécurisé illimité", "Notifications automatiques"], cta: "Commencer",
             },
             {
-              name: "Pro", price: "49", desc: "Réception + Envoi", pop: true, color: "#C4531A", bg: "rgba(196,83,26,.08)",
+              name: "Pro", price: "39", desc: "Réception + Envoi", pop: true, color: "#C4531A", bg: "rgba(196,83,26,.08)",
               icon: <svg width="28" height="28" fill="none" stroke="#C4531A" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M7 17l5-5-5-5M13 17l5-5-5-5" /></svg>,
-              features: ["Tout Essentiel +", "Envoi de vos factures clients", "Transmission automatique PA", "Suivi des statuts temps réel", "Export comptable CSV/Excel"], cta: "Le + populaire",
+              features: ["Tout Starter +", "Envoi de vos factures clients", "Transmission automatique PA", "Suivi des statuts temps réel", "Export comptable CSV/Excel"], cta: "Le + populaire",
             },
             {
-              name: "Pro+", price: "79", desc: "Tout-en-un + IA", pop: false, color: "#7C3AED", bg: "rgba(124,58,237,.08)",
+              name: "Business", price: "59", desc: "Tout-en-un + IA", pop: false, color: "#7C3AED", bg: "rgba(124,58,237,.08)",
               icon: <svg width="28" height="28" fill="none" stroke="#7C3AED" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6z" /></svg>,
               features: ["Tout Pro +", "Création de factures dans Bativio", "Devis IA avec envoi auto", "Assistant IA pour les clients", "Modèles personnalisables"], cta: "Maximum",
             },

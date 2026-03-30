@@ -25,9 +25,11 @@ interface PageResponse {
 
 const planBadge: Record<string, string> = {
   GRATUIT: "bg-gray-100 text-gray-600",
-  ESSENTIEL: "bg-or/10 text-or",
-  PRO: "bg-terre/10 text-terre",
-  PRO_PLUS: "bg-anthracite/10 text-anthracite",
+  STARTER: "bg-green-100 text-green-700",
+  ESSENTIEL: "bg-green-100 text-green-700",
+  PRO: "bg-blue-100 text-blue-700",
+  BUSINESS: "bg-purple-100 text-purple-700",
+  PRO_PLUS: "bg-purple-100 text-purple-700",
 };
 
 export default function AdminArtisansPage() {
@@ -142,8 +144,8 @@ export default function AdminArtisansPage() {
                     <td style={{ padding: "14px 16px" }}>
                       <span style={{
                         padding: "4px 12px", borderRadius: 20, fontSize: 12, fontWeight: 600,
-                        background: a.plan === "PRO_PLUS" ? "rgba(28,28,30,.06)" : a.plan === "PRO" ? "rgba(196,83,26,.08)" : a.plan === "ESSENTIEL" ? "rgba(232,168,76,.1)" : "#F7F5F2",
-                        color: a.plan === "PRO_PLUS" ? "#1C1C1E" : a.plan === "PRO" ? "#C4531A" : a.plan === "ESSENTIEL" ? "#E8A84C" : "#6B6560",
+                        background: (a.plan === "BUSINESS" || a.plan === "PRO_PLUS") ? "rgba(83,74,183,.08)" : a.plan === "PRO" ? "rgba(24,95,165,.08)" : (a.plan === "STARTER" || a.plan === "ESSENTIEL") ? "rgba(5,150,105,.08)" : "#F7F5F2",
+                        color: (a.plan === "BUSINESS" || a.plan === "PRO_PLUS") ? "#534AB7" : a.plan === "PRO" ? "#185FA5" : (a.plan === "STARTER" || a.plan === "ESSENTIEL") ? "#0F6E56" : "#6B6560",
                       }}>
                         {a.plan?.replace("_", " ") || "GRATUIT"}
                       </span>

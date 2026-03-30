@@ -16,8 +16,10 @@ function formatPlan(plan: string): string {
   if (!plan) return "Gratuit";
   const p = plan.toLowerCase();
   if (p === "gratuit" || p === "free") return "Gratuit";
-  if (p === "essentiel" || p === "essential") return "Essentiel";
-  if (p === "pro_plus" || p === "proplus" || p === "pro+") return "Pro+";
+  if (p === "starter") return "Starter";
+  if (p === "essentiel" || p === "essential") return "Starter";
+  if (p === "business") return "Business";
+  if (p === "pro_plus" || p === "proplus" || p === "pro+") return "Business";
   if (p === "pro") return "Pro";
   return plan.charAt(0).toUpperCase() + plan.slice(1).toLowerCase();
 }
