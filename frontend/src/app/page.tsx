@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import ArtisanCard from "@/components/ArtisanCard";
 import Navbar from "@/components/Navbar";
@@ -10,48 +10,47 @@ import { getArtisans, getMetiers } from "@/lib/api";
 import type { ArtisanPublic, MetierData } from "@/lib/api";
 import { VILLES } from "@/lib/constants";
 
-const PLANS_DATA = [
-  { name: "Gratuit", price: "0€", per: "", desc: "Pour découvrir Bativio", pop: false, btn: "ghost",
-    feats: ["Fiche sur l’annuaire", "Formulaire de devis", "3 photos max", "2 badges"] },
-  { name: "Starter", price: "19€", per: "/mois", desc: "Votre présence en ligne conforme", pop: false, btn: "ghost",
-    feats: ["Conformité facture PA", "Factures + devis illimités", "Badges illimités", "Support email"] },
-  { name: "Pro", price: "39€", per: "/mois", desc: "Site internet pro + CRM", pop: true, btn: "fill",
-    feats: ["<strong>Site internet inclus</strong>", "Avis clients vérifiés", "CRM clients", "Agenda + RDV en ligne", "Export comptable"] },
-  { name: "Business", price: "59€", per: "/mois", desc: "IA + SEO pour scaler", pop: false, btn: "ghost",
-    feats: ["<strong>IA intégrée</strong>", "<strong>SEO local optimisé</strong>", "SMS notifications", "Stats CA + conversion", "Support prioritaire"] },
+const TESTIMONIALS = [
+  { text: "J'ai trouvé un électricien de confiance en 5 minutes. Travaux impeccables.", name: "Sophie L.", role: "Particulier, Annecy", initials: "SL" },
+  { text: "Depuis que je suis sur Bativio, j'ai 30% de demandes de devis en plus.", name: "Jean M.", role: "Plombier, Chambéry", initials: "JM" },
+  { text: "Simple, rapide, et surtout gratuit. Je recommande à tous les artisans du coin.", name: "Pierre D.", role: "Peintre, Grenoble", initials: "PD" },
 ];
 
-const TESTIMONIALS = [
-  { text: "Depuis que je suis sur Bativio, j’ai 30% de demandes de devis en plus.", name: "Jean M.", role: "plombier à Chambéry", initials: "JM" },
-  { text: "J’ai trouvé un électricien de confiance en 5 minutes. Travaux impeccables.", name: "Sophie L.", role: "Annecy", initials: "SL" },
-  { text: "Simple, rapide, et surtout gratuit. Je recommande à tous les artisans du coin.", name: "Pierre D.", role: "peintre à Grenoble", initials: "PD" },
+const TRUST = [
+  { icon: <svg width="24" height="24" fill="none" stroke="#4A6741" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>, label: "Artisans vérifiés", bg: "#E8F0E6" },
+  { icon: <svg width="24" height="24" fill="none" stroke="#C9943A" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6z" /></svg>, label: "Avis réels", bg: "#FDF5E8" },
+  { icon: <svg width="24" height="24" fill="none" stroke="#C4531A" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>, label: "Devis en 24h", bg: "rgba(196,83,26,.08)" },
+  { icon: <svg width="24" height="24" fill="none" stroke="#3D2E1F" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg>, label: "Zéro commission", bg: "rgba(61,46,31,.06)" },
+];
+
+const STEPS = [
+  { n: "1", title: "Décrivez votre besoin", desc: "Choisissez un métier, une ville, et décrivez votre projet en quelques mots." },
+  { n: "2", title: "Comparez les artisans", desc: "Consultez les profils, photos, avis et badges de qualification." },
+  { n: "3", title: "Recevez votre devis", desc: "Contactez l'artisan de votre choix. Réponse sous 24h garantie." },
 ];
 
 export default function Home() {
   const [villeFilter, setVilleFilter] = useState("");
   const [metierFilter, setMetierFilter] = useState("all");
   const [search, setSearch] = useState("");
-  const [pricingOpen, setPricingOpen] = useState(false);
-  const ppRef = useRef<HTMLDivElement>(null);
   const [allArtisans, setAllArtisans] = useState<ArtisanPublic[]>(MOCK_ARTISANS);
   const [allMetiers, setAllMetiers] = useState<MetierData[]>(MOCK_METIERS);
 
-  // Charger les vrais artisans depuis le backend
   useEffect(() => {
     getArtisans({ size: 100 })
       .then((page) => { if (page.content && page.content.length > 0) setAllArtisans(page.content); })
-      .catch(() => {}); // fallback mock
+      .catch(() => {});
     getMetiers()
       .then((m) => { if (m && m.length > 0) setAllMetiers(m); })
       .catch(() => {});
   }, []);
 
   const filtered = allArtisans.filter((a) => {
-    const vs = (a.ville || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z]/g, "");
+    const vs = (a.ville || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
     if (villeFilter && (!a.ville || vs !== villeFilter)) return false;
     if (metierFilter !== "all") {
       if (!a.metierNom) return false;
-      const ms = (a.metierNom || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z]/g, "");
+      const ms = (a.metierNom || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
       if (ms !== metierFilter) return false;
     }
     if (search) {
@@ -61,22 +60,20 @@ export default function Home() {
     return true;
   });
 
-  const togglePricing = () => {
-    const next = !pricingOpen;
-    setPricingOpen(next);
-    if (next) setTimeout(() => ppRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 80);
-  };
-
   return (
     <>
       <Navbar />
 
-      <section className="hero">
-        <div className="hero-inner">
-          <div className="hero-badge">&#10022; Plus de 50 artisans v&eacute;rifi&eacute;s en Rh&ocirc;ne-Alpes</div>
-          <h1>Trouvez l&apos;artisan <span style={{ color: "var(--terre)" }}>id&eacute;al</span> pr&egrave;s de chez vous</h1>
-          <p className="hero-sub">Des artisans de confiance, v&eacute;rifi&eacute;s et not&eacute;s par leurs clients. Devis gratuit en 24h.</p>
-          <div className="search-bar">
+      {/* ─── HERO ─── */}
+      <section style={{ background: "var(--blanc)", padding: "72px 32px 56px", textAlign: "center" }}>
+        <div style={{ maxWidth: 720, margin: "0 auto" }}>
+          <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(30px,5vw,46px)", fontWeight: 700, color: "var(--bois)", lineHeight: 1.12, letterSpacing: -0.5, marginBottom: 16 }}>
+            Trouvez l&apos;artisan{" "}<span className="calli">id&eacute;al</span>{" "}pr&egrave;s de chez vous
+          </h1>
+          <p style={{ fontSize: 17, color: "var(--bois-mid)", marginBottom: 32, lineHeight: 1.6 }}>
+            Des artisans de confiance, v&eacute;rifi&eacute;s et not&eacute;s par leurs clients. Devis gratuit en 24h.
+          </p>
+          <div className="search-bar" style={{ background: "var(--g50)", border: "1px solid var(--sable)", maxWidth: 640 }}>
             <select value={villeFilter} onChange={(e) => setVilleFilter(e.target.value)}>
               <option value="">Toutes les villes</option>
               {VILLES.map((v) => <option key={v.slug} value={v.slug}>{v.nom}</option>)}
@@ -92,10 +89,25 @@ export default function Home() {
               Rechercher
             </button>
           </div>
-          <p className="hero-popular">&#128269; Recherches populaires : r&eacute;novation salle de bain, plombier urgent, peinture int&eacute;rieure</p>
+          <p style={{ fontSize: 13, color: "var(--pierre)", marginTop: 16 }}>
+            Recherches populaires : <Link href="/chambery" style={{ color: "var(--argile)", fontWeight: 500 }}>r&eacute;novation salle de bain</Link>, <Link href="/chambery" style={{ color: "var(--argile)", fontWeight: 500 }}>plombier urgent</Link>, <Link href="/chambery" style={{ color: "var(--argile)", fontWeight: 500 }}>peinture int&eacute;rieure</Link>
+          </p>
         </div>
       </section>
 
+      {/* ─── TRUST BAR ─── */}
+      <section style={{ background: "var(--creme)", padding: "24px 32px", borderTop: "1px solid var(--sable)", borderBottom: "1px solid var(--sable)" }}>
+        <div style={{ maxWidth: 800, margin: "0 auto", display: "flex", justifyContent: "center", gap: 32, flexWrap: "wrap" }}>
+          {TRUST.map((t) => (
+            <div key={t.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ width: 40, height: 40, borderRadius: 10, background: t.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>{t.icon}</div>
+              <span style={{ fontSize: 14, fontWeight: 600, color: "var(--bois)" }}>{t.label}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── FILTERS ─── */}
       <div className="filters">
         <div className="filters-inner hide-scroll">
           <button className={`pill ${metierFilter === "all" ? "active" : ""}`} onClick={() => setMetierFilter("all")}>Tous</button>
@@ -106,7 +118,13 @@ export default function Home() {
         </div>
       </div>
 
+      {/* ─── ARTISANS GRID ─── */}
       <div className="grid-wrap">
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "var(--bois)" }}>
+            Artisans &agrave; <span className="calli">Chamb&eacute;ry</span>
+          </h2>
+        </div>
         <div className="grid">
           {filtered.length > 0 ? (
             filtered.map((a) => <ArtisanCard key={a.id} artisan={a} />)
@@ -119,24 +137,48 @@ export default function Home() {
         </div>
       </div>
 
-      <section className="testimonials">
-        <div className="testimonials-inner">
-          <h2 className="testimonials-title">La confiance de nos artisans et de leurs clients</h2>
-          <div className="testimonials-grid">
+      {/* ─── COMMENT ÇA MARCHE ─── */}
+      <section style={{ background: "var(--blanc)", padding: "72px 32px" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 48 }}>
+            <div style={{ width: 40, height: 2, background: "var(--terre)", margin: "0 auto 16px", borderRadius: 1 }} />
+            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(24px,4vw,32px)", fontWeight: 700, color: "var(--bois)" }}>Comment &ccedil;a marche</h2>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 28 }}>
+            {STEPS.map((s) => (
+              <div key={s.n} style={{ textAlign: "center" }}>
+                <div style={{ width: 52, height: 52, borderRadius: "50%", border: "2px solid var(--terre)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "var(--terre)", marginBottom: 16 }}>{s.n}</div>
+                <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 17, fontWeight: 700, color: "var(--bois)", marginBottom: 8 }}>{s.title}</h3>
+                <p style={{ fontSize: 14, color: "var(--bois-mid)", lineHeight: 1.6 }}>{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── TÉMOIGNAGES ─── */}
+      <section style={{ background: "var(--creme)", padding: "72px 32px" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 48 }}>
+            <div style={{ width: 40, height: 2, background: "var(--terre)", margin: "0 auto 16px", borderRadius: 1 }} />
+            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(24px,4vw,32px)", fontWeight: 700, color: "var(--bois)" }}>
+              La confiance de nos clients
+            </h2>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 20 }}>
             {TESTIMONIALS.map((t) => (
-              <div key={t.name} className="testimonial-card">
-                <div className="testimonial-quote">&ldquo;&rdquo;</div>
-                <p className="testimonial-text">&ldquo;{t.text}&rdquo;</p>
-                <div className="testimonial-author">
-                  <div className="testimonial-avatar">{t.initials}</div>
-                  <div className="testimonial-info">
-                    <div className="testimonial-name">{t.name}</div>
-                    <div className="testimonial-role">{t.role}</div>
-                  </div>
-                  <div className="testimonial-stars">
-                    {[1,2,3,4,5].map((s) => (
-                      <svg key={s} viewBox="0 0 20 20"><path d="M10 1l2.39 4.84 5.34.78-3.87 3.77.91 5.33L10 13.27l-4.77 2.51.91-5.33L2.27 6.68l5.34-.78L10 1z" /></svg>
-                    ))}
+              <div key={t.name} style={{ background: "var(--blanc)", borderRadius: 14, border: "1px solid var(--sable)", padding: 28, display: "flex", flexDirection: "column" }}>
+                <div style={{ display: "flex", gap: 2, marginBottom: 14 }}>
+                  {[1,2,3,4,5].map((s) => (
+                    <svg key={s} width="16" height="16" viewBox="0 0 20 20" fill="var(--or)"><path d="M10 1l2.39 4.84 5.34.78-3.87 3.77.91 5.33L10 13.27l-4.77 2.51.91-5.33L2.27 6.68l5.34-.78L10 1z" /></svg>
+                  ))}
+                </div>
+                <p style={{ fontSize: 15, color: "var(--bois-mid)", lineHeight: 1.6, fontStyle: "italic", flex: 1 }}>&ldquo;{t.text}&rdquo;</p>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 16 }}>
+                  <div style={{ width: 38, height: 38, borderRadius: "50%", background: "linear-gradient(135deg, var(--terre), var(--argile))", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Fraunces',serif", fontSize: 13, fontWeight: 700, color: "#fff" }}>{t.initials}</div>
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "var(--bois)" }}>{t.name}</div>
+                    <div style={{ fontSize: 12, color: "var(--pierre)" }}>{t.role}</div>
                   </div>
                 </div>
               </div>
@@ -145,70 +187,44 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="cta-artisan">
-        <div className="cta-artisan-inner">
-          <h2>Vous &ecirc;tes artisan ? Rejoignez la 1&egrave;re plateforme de confiance en <em>Rh&ocirc;ne-Alpes</em></h2>
-          <p className="cta-artisan-sub">Gratuit &middot; Sans engagement &middot; Sans carte bancaire</p>
-          <Link href="/inscription" className="cta-artisan-btn">Cr&eacute;er ma page gratuitement</Link>
-        </div>
-      </section>
-
-      <section className="artisan-banner" onClick={togglePricing}>
-        <div className="artisan-inner">
-          <div className="zero-chip">&#10022; Z&eacute;ro commission &mdash; Abonnement fixe</div>
-          <h2>D&eacute;couvrez nos <em>offres</em></h2>
-          <p>Choisissez le plan adapt&eacute; &agrave; votre activit&eacute;. &Eacute;voluez &agrave; tout moment.</p>
-          <div className="pricing-preview">
-            <div className="pricing-mini">
-              <div className="pricing-mini-name">Gratuit</div>
-              <div className="pricing-mini-price">0&euro;</div>
-            </div>
-            <div className="pricing-mini">
-              <div className="pricing-mini-name">Starter</div>
-              <div className="pricing-mini-price">19&euro;<small>/mois</small></div>
-            </div>
-            <div className="pricing-mini highlight">
-              <div className="pricing-mini-name">Pro</div>
-              <div className="pricing-mini-price">39&euro;<small>/mois</small></div>
-            </div>
-            <div className="pricing-mini">
-              <div className="pricing-mini-name">Business</div>
-              <div className="pricing-mini-price">59&euro;<small>/mois</small></div>
-            </div>
-          </div>
-          <button className={`toggle-btn ${pricingOpen ? "open" : ""}`} onClick={(e) => { e.stopPropagation(); togglePricing(); }}>
-            {pricingOpen ? "Masquer les offres" : "Découvrir les offres"}
-            <svg fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" /></svg>
-          </button>
-        </div>
-      </section>
-
-      <div ref={ppRef} className={`pricing-panel ${pricingOpen ? "open" : ""}`}>
-        <div className="pricing-inner">
-          {PLANS_DATA.map((p) => (
-            <div key={p.name} className={`plan ${p.pop ? "pop" : ""}`}>
-              {p.pop && <div className="plan-badge">Le + populaire</div>}
-              <div className="plan-name">{p.name}</div>
-              <div className="plan-price"><span className="n">{p.price}</span>{p.per && <span className="p">{p.per}</span>}</div>
-              <div className="plan-desc">{p.desc}</div>
-              <ul className="plan-feat">
-                {p.feats.map((f) => (
-                  <li key={f}>
-                    <svg fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg>
-                    <span dangerouslySetInnerHTML={{ __html: f }} />
-                  </li>
-                ))}
-              </ul>
-              <Link href="/inscription" className={`plan-btn ${p.btn}`}>
-                {p.price === "0€" ? "Commencer" : "Choisir"}
+      {/* ─── VILLES ─── */}
+      <section style={{ background: "var(--bois)", padding: "64px 32px" }}>
+        <div style={{ maxWidth: 600, margin: "0 auto" }}>
+          <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(24px,4vw,32px)", fontWeight: 700, color: "#fff", textAlign: "center", marginBottom: 8 }}>
+            Artisans disponibles en <span className="calli" style={{ color: "var(--argile)" }}>Rh&ocirc;ne-Alpes</span>
+          </h2>
+          <p style={{ textAlign: "center", fontSize: 15, color: "rgba(255,255,255,.5)", marginBottom: 36 }}>
+            S&eacute;lectionnez votre ville
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+            {VILLES.map((v) => (
+              <Link key={v.slug} href={`/${v.slug}`} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 12px", borderBottom: "1px solid rgba(255,255,255,.08)", color: "#fff", fontSize: 16, fontWeight: 500, transition: "all .2s" }}
+                onMouseEnter={(e) => { e.currentTarget.style.paddingLeft = "20px"; e.currentTarget.style.color = "var(--argile)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.paddingLeft = "12px"; e.currentTarget.style.color = "#fff"; }}
+              >
+                <span>{v.nom}</span>
+                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
               </Link>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-        <div className="pricing-note">
-          Pas de commission. Pas de co&ucirc;t par devis. Pas de frais cach&eacute;s. <strong style={{ color: "rgba(255,255,255,.4)" }}>Jamais.</strong>
+      </section>
+
+      {/* ─── BANDEAU ARTISAN ─── */}
+      <section style={{ background: "var(--sable-light)", padding: "48px 32px", textAlign: "center" }}>
+        <div style={{ maxWidth: 600, margin: "0 auto" }}>
+          <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "var(--bois)", marginBottom: 8 }}>
+            Vous &ecirc;tes <span className="calli">artisan</span> ?
+          </h2>
+          <p style={{ fontSize: 15, color: "var(--bois-mid)", marginBottom: 20 }}>
+            Rejoignez la 1&egrave;re plateforme de confiance en Rh&ocirc;ne-Alpes. Zéro commission.
+          </p>
+          <Link href="/artisan" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 32px", background: "var(--bois)", color: "#fff", borderRadius: 99, fontSize: 15, fontWeight: 600, transition: "all .2s" }}>
+            D&eacute;couvrir l&apos;offre artisan
+            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+          </Link>
         </div>
-      </div>
+      </section>
 
       <Footer />
 

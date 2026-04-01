@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Karla } from "next/font/google";
+import { Fraunces, Karla, Playfair_Display } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
 import "./globals.css";
 
@@ -13,6 +13,13 @@ const fraunces = Fraunces({
 const karla = Karla({
   variable: "--font-karla",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -50,7 +57,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className={`${fraunces.variable} ${karla.variable}`}>
+    <html lang="fr" className={`${fraunces.variable} ${karla.variable} ${playfair.variable}`}>
       <body className="min-h-screen flex flex-col bg-creme text-anthracite font-body antialiased">
         <AuthProvider>{children}</AuthProvider>
       </body>
