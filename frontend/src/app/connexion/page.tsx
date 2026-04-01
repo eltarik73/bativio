@@ -64,11 +64,11 @@ export default function ConnexionPage() {
   if (magicSent) {
     return (
       <><Navbar />
-      <main style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "85vh", padding: 16 }}>
-        <div style={{ background: "#fff", borderRadius: 16, border: "1.5px solid #EDEBE7", boxShadow: "0 4px 24px rgba(28,28,30,.04)", maxWidth: 440, width: "100%", padding: 40, textAlign: "center" }}>
+      <main style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "85vh", padding: 16, background: "var(--creme)" }}>
+        <div style={{ background: "var(--blanc)", borderRadius: 16, border: "1px solid var(--sable)", boxShadow: "0 4px 24px rgba(61,46,31,.04)", maxWidth: 440, width: "100%", padding: 40, textAlign: "center" }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>&#9993;</div>
-          <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 8 }}>Lien envoy&eacute; !</h1>
-          <p style={{ fontSize: 15, color: "#9B9590", lineHeight: 1.6 }}>
+          <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "var(--bois)", marginBottom: 8 }}>Lien envoy&eacute; !</h1>
+          <p style={{ fontSize: 15, color: "var(--pierre)", lineHeight: 1.6 }}>
             Si un compte existe avec cet email, un lien de connexion a &eacute;t&eacute; envoy&eacute;. V&eacute;rifiez votre bo&icirc;te mail.
           </p>
         </div>
@@ -78,12 +78,12 @@ export default function ConnexionPage() {
 
   return (
     <><Navbar />
-    <main style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "85vh", padding: 16 }}>
-      <div style={{ background: "#fff", borderRadius: 16, border: "1.5px solid #EDEBE7", boxShadow: "0 4px 24px rgba(28,28,30,.04)", maxWidth: 440, width: "100%", padding: 40 }}>
+    <main style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "85vh", padding: 16, background: "var(--creme)" }}>
+      <div style={{ background: "var(--blanc)", borderRadius: 16, border: "1px solid var(--sable)", boxShadow: "0 4px 24px rgba(61,46,31,.04)", maxWidth: 440, width: "100%", padding: 40 }}>
         <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "#C4531A", letterSpacing: -0.5 }}>Bativio</h1>
-          <p style={{ marginTop: 8, fontSize: 15, color: "#1C1C1E", fontWeight: 600 }}>Connectez-vous &agrave; votre espace professionnel</p>
-          <p style={{ marginTop: 4, fontSize: 14, color: "#9B9590" }}>G&eacute;rez vos demandes de devis, votre vitrine et vos clients</p>
+          <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "var(--terre)", letterSpacing: -0.5 }}>Bativio</h1>
+          <p style={{ marginTop: 8, fontSize: 15, color: "var(--bois)", fontWeight: 600 }}>Connectez-vous &agrave; votre espace professionnel</p>
+          <p style={{ marginTop: 4, fontSize: 14, color: "var(--pierre)" }}>G&eacute;rez vos demandes de devis, votre vitrine et vos clients</p>
         </div>
 
         <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 24 }}>

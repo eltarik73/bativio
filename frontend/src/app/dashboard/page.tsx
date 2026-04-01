@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 
-const S = { card: { background: "#fff", borderRadius: 16, border: "1.5px solid #EDEBE7", overflow: "hidden", boxShadow: "0 4px 24px rgba(28,28,30,.04)" } as React.CSSProperties };
+const S = { card: { background: "var(--blanc,#fff)", borderRadius: 16, border: "1px solid var(--sable,#E8D5C0)", overflow: "hidden", boxShadow: "0 4px 24px rgba(61,46,31,.04)" } as React.CSSProperties };
 
 const statsDef = [
   { label: "Vues ce mois", fallback: "0", icon: '<svg width="20" height="20" fill="none" stroke="#E0DDD8" stroke-width="1.5" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' },
@@ -103,8 +103,8 @@ export default function DashboardPage() {
 
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E" }}>{greeting}, {firstName} !</h1>
-        <p style={{ fontSize: 15, color: "#9B9590", marginTop: 2 }}>{displayName}</p>
+        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "var(--bois,#3D2E1F)" }}>{greeting}, {firstName} !</h1>
+        <p style={{ fontSize: 15, color: "var(--pierre,#9C958D)", marginTop: 2 }}>{displayName}</p>
         {dateStr && <p style={{ fontSize: 13, color: "#C5C0B9", marginTop: 4 }}>{dateStr}</p>}
       </div>
 
@@ -114,16 +114,16 @@ export default function DashboardPage() {
           <div style={{ position: "relative", width: 56, height: 56, flexShrink: 0 }}>
             <svg width="56" height="56" style={{ transform: "rotate(-90deg)" }}>
               <circle cx="28" cy="28" r="24" fill="none" stroke="#EDEBE7" strokeWidth="4" />
-              <circle cx="28" cy="28" r="24" fill="none" stroke="#C4531A" strokeWidth="4" strokeDasharray={`${completion * 1.508} 151`} strokeLinecap="round" />
+              <circle cx="28" cy="28" r="24" fill="none" stroke="var(--terre,#C4531A)" strokeWidth="4" strokeDasharray={`${completion * 1.508} 151`} strokeLinecap="round" />
             </svg>
-            <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, color: "#C4531A" }}>{completion}%</span>
+            <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, color: "var(--terre,#C4531A)" }}>{completion}%</span>
           </div>
           <div style={{ flex: 1 }}>
-            <p style={{ fontSize: 15, fontWeight: 700, color: "#1C1C1E" }}>{completionLabel}</p>
-            <p style={{ fontSize: 13, color: "#9B9590", marginTop: 2 }}>{completionHint}</p>
+            <p style={{ fontSize: 15, fontWeight: 700, color: "var(--bois,#3D2E1F)" }}>{completionLabel}</p>
+            <p style={{ fontSize: 13, color: "var(--pierre,#9C958D)", marginTop: 2 }}>{completionHint}</p>
           </div>
           {completion < 100 && (
-            <Link href="/dashboard/profil" style={{ height: 36, padding: "0 16px", borderRadius: 8, border: "1.5px solid #E0DDD8", display: "inline-flex", alignItems: "center", fontSize: 13, fontWeight: 600, color: "#C4531A", textDecoration: "none", transition: "all .15s" }}>Compl&eacute;ter</Link>
+            <Link href="/dashboard/profil" style={{ height: 36, padding: "0 16px", borderRadius: 8, border: "1.5px solid #E0DDD8", display: "inline-flex", alignItems: "center", fontSize: 13, fontWeight: 600, color: "var(--terre,#C4531A)", textDecoration: "none", transition: "all .15s" }}>Compl&eacute;ter</Link>
           )}
         </div>
         {/* Checklist */}
@@ -145,7 +145,7 @@ export default function DashboardPage() {
               <span style={{ fontFamily: "'Fraunces',serif", fontSize: 32, fontWeight: 800, color: s.color || "#1C1C1E", lineHeight: 1 }}>{stats ? [stats.vuesCeMois, stats.demandesCeMois, stats.rdvCeMois, stats.noteMoyenne > 0 ? stats.noteMoyenne.toFixed(1) : "-"][statsDef.indexOf(s)] : s.fallback}</span>
               <span dangerouslySetInnerHTML={{ __html: s.icon }} style={{ display: "flex" }} />
             </div>
-            <p style={{ fontSize: 13, color: "#9B9590", marginTop: 6 }}>{s.label}</p>
+            <p style={{ fontSize: 13, color: "var(--pierre,#9C958D)", marginTop: 6 }}>{s.label}</p>
           </div>
         ))}
       </div>
@@ -153,16 +153,16 @@ export default function DashboardPage() {
       {/* Dernieres demandes */}
       <div style={{ ...S.card, marginBottom: 24 }}>
         <div style={{ padding: "20px 28px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontFamily: "'Fraunces',serif", fontSize: 17, fontWeight: 700, color: "#1C1C1E" }}>Derni&egrave;res demandes</span>
-          <Link href="/dashboard/devis" style={{ fontSize: 13, color: "#C4531A", fontWeight: 500, textDecoration: "none" }}>Voir tout &rarr;</Link>
+          <span style={{ fontFamily: "'Fraunces',serif", fontSize: 17, fontWeight: 700, color: "var(--bois,#3D2E1F)" }}>Derni&egrave;res demandes</span>
+          <Link href="/dashboard/devis" style={{ fontSize: 13, color: "var(--terre,#C4531A)", fontWeight: 500, textDecoration: "none" }}>Voir tout &rarr;</Link>
         </div>
         {recentDevis.length > 0 ? (
           <div>
             {recentDevis.map((d) => (
               <Link key={d.id} href={`/dashboard/devis/${d.id}`} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 28px", borderTop: "1px solid #F7F5F2", textDecoration: "none", transition: "background .15s" }}>
                 <div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#1C1C1E" }}>{d.nomClient}</div>
-                  <div style={{ fontSize: 12, color: "#9B9590", marginTop: 2 }}>{d.descriptionBesoin.substring(0, 60)}{d.descriptionBesoin.length > 60 ? "..." : ""}</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "var(--bois,#3D2E1F)" }}>{d.nomClient}</div>
+                  <div style={{ fontSize: 12, color: "var(--pierre,#9C958D)", marginTop: 2 }}>{d.descriptionBesoin.substring(0, 60)}{d.descriptionBesoin.length > 60 ? "..." : ""}</div>
                 </div>
                 <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
                   {d.urgence === "urgent" && <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: "rgba(220,38,38,.1)", color: "#dc2626" }}>⚡</span>}
@@ -172,7 +172,7 @@ export default function DashboardPage() {
             ))}
           </div>
         ) : (
-          <div style={{ padding: "28px", textAlign: "center", color: "#9B9590", fontSize: 14 }}>
+          <div style={{ padding: "28px", textAlign: "center", color: "var(--pierre,#9C958D)", fontSize: 14 }}>
             Aucune demande pour le moment.
           </div>
         )}
@@ -187,8 +187,8 @@ export default function DashboardPage() {
           { label: "Voir ma page", href: vitrineHref, icon: '<svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' },
         ].map((a) => (
           <Link key={a.label} href={a.href} style={{ ...S.card, padding: 28, textAlign: "center", textDecoration: "none", transition: "all .2s", cursor: "pointer" }}>
-            <span dangerouslySetInnerHTML={{ __html: a.icon }} style={{ display: "flex", justifyContent: "center", color: "#9B9590" }} />
-            <p style={{ marginTop: 10, fontSize: 13, fontWeight: 600, color: "#1C1C1E" }}>{a.label}</p>
+            <span dangerouslySetInnerHTML={{ __html: a.icon }} style={{ display: "flex", justifyContent: "center", color: "var(--pierre,#9C958D)" }} />
+            <p style={{ marginTop: 10, fontSize: 13, fontWeight: 600, color: "var(--bois,#3D2E1F)" }}>{a.label}</p>
           </Link>
         ))}
       </div>
