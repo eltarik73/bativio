@@ -21,7 +21,7 @@ export default function Footer() {
           <div className="footer-col">
             <div className="footer-col-title">Pour les artisans</div>
             <Link href="/inscription">Cr&eacute;er ma page</Link>
-            <Link href="/#pricing">Tarifs</Link>
+            <Link href="/artisan">Tarifs</Link>
             <Link href="/facturation-electronique">Facturation</Link>
           </div>
           <div className="footer-col">

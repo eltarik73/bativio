@@ -27,9 +27,9 @@ export default function RejoindrePage() {
   return (
     <div style={{ background: "#fff" }}>
       {/* Nav light */}
-      <nav style={{ padding: "0 32px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid #EDEBE7" }}>
+      <nav style={{ padding: "0 32px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid var(--sable,#E8D5C0)" }}>
         <Link href="/" style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#C4531A", textDecoration: "none" }}>Bativio</Link>
-        <Link href="/connexion" style={{ fontSize: 14, color: "#6B6560", textDecoration: "none" }}>Se connecter</Link>
+        <Link href="/connexion" style={{ fontSize: 14, color: "var(--bois-mid,#5C4A3A)", textDecoration: "none" }}>Se connecter</Link>
       </nav>
 
       {/* Hero */}
@@ -51,7 +51,7 @@ export default function RejoindrePage() {
 
       {/* Pourquoi */}
       <section style={{ padding: "64px 32px", maxWidth: 1000, margin: "0 auto" }}>
-        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "#1C1C1E", textAlign: "center", marginBottom: 48 }}>Pourquoi Bativio ?</h2>
+        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "var(--bois,#3D2E1F)", textAlign: "center", marginBottom: 48 }}>Pourquoi Bativio ?</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24 }}>
           {[
             { icon: "&#127760;", title: "Votre vitrine pro en ligne", desc: "Page publique avec vos réalisations, avis clients, coordonnées. Visible sur Google." },
@@ -60,8 +60,8 @@ export default function RejoindrePage() {
           ].map((item) => (
             <div key={item.title} style={{ textAlign: "center", padding: 24 }}>
               <div style={{ fontSize: 40, marginBottom: 16 }} dangerouslySetInnerHTML={{ __html: item.icon }} />
-              <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 8 }}>{item.title}</h3>
-              <p style={{ fontSize: 14, color: "#6B6560", lineHeight: 1.6 }}>{item.desc}</p>
+              <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 8 }}>{item.title}</h3>
+              <p style={{ fontSize: 14, color: "var(--bois-mid,#5C4A3A)", lineHeight: 1.6 }}>{item.desc}</p>
             </div>
           ))}
         </div>
@@ -70,7 +70,7 @@ export default function RejoindrePage() {
       {/* Comment ca marche */}
       <section style={{ background: "#FAF8F5", padding: "64px 32px" }}>
         <div style={{ maxWidth: 900, margin: "0 auto" }}>
-          <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "#1C1C1E", textAlign: "center", marginBottom: 48 }}>Comment &ccedil;a marche</h2>
+          <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "var(--bois,#3D2E1F)", textAlign: "center", marginBottom: 48 }}>Comment &ccedil;a marche</h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
             {[
               { n: "1", label: "Entrez votre SIREN", desc: "On récupère vos infos automatiquement" },
@@ -80,8 +80,8 @@ export default function RejoindrePage() {
             ].map((s) => (
               <div key={s.n} style={{ textAlign: "center" }}>
                 <div style={{ width: 48, height: 48, borderRadius: "50%", background: "#fff", border: "2px solid #C4531A", display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "'Fraunces',serif", fontSize: 20, fontWeight: 700, color: "#C4531A", marginBottom: 14 }}>{s.n}</div>
-                <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1C1C1E", marginBottom: 4 }}>{s.label}</h3>
-                <p style={{ fontSize: 13, color: "#9B9590" }}>{s.desc}</p>
+                <h3 style={{ fontSize: 15, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 4 }}>{s.label}</h3>
+                <p style={{ fontSize: 13, color: "var(--pierre,#9C958D)" }}>{s.desc}</p>
               </div>
             ))}
           </div>
@@ -120,11 +120,11 @@ export default function RejoindrePage() {
 
       {/* FAQ */}
       <section style={{ padding: "64px 32px", maxWidth: 700, margin: "0 auto" }}>
-        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "#1C1C1E", textAlign: "center", marginBottom: 40 }}>Questions fr&eacute;quentes</h2>
+        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "var(--bois,#3D2E1F)", textAlign: "center", marginBottom: 40 }}>Questions fr&eacute;quentes</h2>
         {FAQ.map((f, i) => (
-          <div key={i} style={{ borderBottom: "1px solid #EDEBE7", padding: "20px 0" }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1C1C1E", marginBottom: 8 }}>{f.q}</h3>
-            <p style={{ fontSize: 15, color: "#6B6560", lineHeight: 1.6 }}>{f.a}</p>
+          <div key={i} style={{ borderBottom: "1px solid var(--sable,#E8D5C0)", padding: "20px 0" }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 8 }}>{f.q}</h3>
+            <p style={{ fontSize: 15, color: "var(--bois-mid,#5C4A3A)", lineHeight: 1.6 }}>{f.a}</p>
           </div>
         ))}
       </section>
@@ -141,7 +141,7 @@ export default function RejoindrePage() {
       </section>
 
       {/* Footer mini */}
-      <footer style={{ padding: "20px 32px", textAlign: "center", fontSize: 12, color: "#9B9590" }}>
+      <footer style={{ padding: "20px 32px", textAlign: "center", fontSize: 12, color: "var(--pierre,#9C958D)" }}>
         &copy; 2026 Bativio &middot; Z&eacute;ro commission.
       </footer>
     </div>

@@ -218,9 +218,9 @@ export default function InscriptionPage() {
       <main style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", padding: "40px 20px 60px" }}>
         {/* Hero header */}
         <div style={{ textAlign: "center", marginBottom: 32, maxWidth: 540 }}>
-          <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "#1C1C1E", letterSpacing: -0.5, marginBottom: 8 }}>Cr&eacute;ez votre page pro en 3 minutes</h1>
+          <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "var(--bois,#3D2E1F)", letterSpacing: -0.5, marginBottom: 8 }}>Cr&eacute;ez votre page pro en 3 minutes</h1>
           <p style={{ fontSize: 15, color: "#6B6560", lineHeight: 1.6, marginBottom: 12 }}>Rejoignez les artisans de Chamb&eacute;ry, Annecy, Grenoble, Lyon et Valence</p>
-          <p style={{ fontSize: 13, color: "#9B9590", fontWeight: 500 }}>Gratuit &middot; Sans engagement &middot; Sans carte bancaire</p>
+          <p style={{ fontSize: 13, color: "var(--pierre,#9C958D)", fontWeight: 500 }}>Gratuit &middot; Sans engagement &middot; Sans carte bancaire</p>
         </div>
 
         {/* Stepper */}
@@ -263,9 +263,9 @@ export default function InscriptionPage() {
                       <span style={{ fontWeight: 600, color: "#166534", fontSize: 14 }}>Entreprise trouv&eacute;e</span>
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                      <div><p style={{ fontSize: 11, color: "#9B9590", marginBottom: 2 }}>Raison sociale</p><p style={{ fontSize: 14, fontWeight: 600, color: "#1C1C1E" }}>{form.raisonSociale}</p></div>
-                      {form.ville && <div><p style={{ fontSize: 11, color: "#9B9590", marginBottom: 2 }}>Ville</p><p style={{ fontSize: 14, color: "#6B6560" }}>{form.ville}</p></div>}
-                      {form.codeNaf && <div><p style={{ fontSize: 11, color: "#9B9590", marginBottom: 2 }}>Code NAF</p><p style={{ fontSize: 14, color: "#6B6560" }}>{form.codeNaf}</p></div>}
+                      <div><p style={{ fontSize: 11, color: "var(--pierre,#9C958D)", marginBottom: 2 }}>Raison sociale</p><p style={{ fontSize: 14, fontWeight: 600, color: "var(--bois,#3D2E1F)" }}>{form.raisonSociale}</p></div>
+                      {form.ville && <div><p style={{ fontSize: 11, color: "var(--pierre,#9C958D)", marginBottom: 2 }}>Ville</p><p style={{ fontSize: 14, color: "#6B6560" }}>{form.ville}</p></div>}
+                      {form.codeNaf && <div><p style={{ fontSize: 11, color: "var(--pierre,#9C958D)", marginBottom: 2 }}>Code NAF</p><p style={{ fontSize: 14, color: "#6B6560" }}>{form.codeNaf}</p></div>}
                     </div>
                   </div>
                 )}
@@ -286,7 +286,7 @@ export default function InscriptionPage() {
                 <div className="field"><label className="bv-label">Nom d&apos;affichage *</label><input className="bv-input" value={form.nomAffichage} onChange={(e) => update("nomAffichage", e.target.value)} placeholder="Le nom visible par vos clients" /></div>
                 <div className="field"><label className="bv-label">Email professionnel *</label><input className="bv-input" type="email" value={form.email} onChange={(e) => update("email", e.target.value)} placeholder="contact@exemple.fr" /></div>
                 <div className="field"><label className="bv-label">T&eacute;l&eacute;phone *</label><input className="bv-input" type="tel" value={form.telephone} onChange={(e) => update("telephone", e.target.value)} placeholder="04 79 12 34 56" /></div>
-                <div className="field"><label className="bv-label">Mot de passe * <span style={{ fontWeight: 400, color: "#9B9590" }}>(8 caract&egrave;res min.)</span></label><input className="bv-input" type="password" value={form.password} onChange={(e) => update("password", e.target.value)} placeholder="Choisissez un mot de passe" /></div>
+                <div className="field"><label className="bv-label">Mot de passe * <span style={{ fontWeight: 400, color: "var(--pierre,#9C958D)" }}>(8 caract&egrave;res min.)</span></label><input className="bv-input" type="password" value={form.password} onChange={(e) => update("password", e.target.value)} placeholder="Choisissez un mot de passe" /></div>
                 {error && <p style={{ color: "#dc2626", fontSize: 14, marginTop: -8, marginBottom: 8 }}>{error}</p>}
                 <div className="btn-row">
                   <button className="bv-btn bv-btn-secondary bv-btn-half" onClick={() => go(0)}>{ARROW_L} Retour</button>
@@ -348,7 +348,7 @@ export default function InscriptionPage() {
                   onDrop={(e) => { e.preventDefault(); e.stopPropagation(); handleFiles(e.dataTransfer.files); }}
                 >
                   <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" multiple hidden onChange={(e) => handleFiles(e.target.files)} />
-                  <div style={{ width: 40, height: 40, margin: "0 auto 12px", background: "#fff", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #EDEBE7" }}>
+                  <div style={{ width: 40, height: 40, margin: "0 auto 12px", background: "#fff", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--sable,#E8D5C0)" }}>
                     <svg width="20" height="20" fill="none" stroke="#9B9590" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M12 16V4m0 0l-4 4m4-4l4 4M4 14v4a2 2 0 002 2h12a2 2 0 002-2v-4" /></svg>
                   </div>
                   <div style={{ fontSize: 14, color: "#6B6560" }}>Glissez vos photos ici ou <strong style={{ color: "#C4531A", cursor: "pointer" }}>parcourir</strong></div>
@@ -357,7 +357,7 @@ export default function InscriptionPage() {
                 {photos.length > 0 && (
                   <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
                     {photos.map((f, i) => (
-                      <div key={i} style={{ position: "relative", width: 80, height: 80, borderRadius: 10, overflow: "hidden", border: "1px solid #EDEBE7" }}>
+                      <div key={i} style={{ position: "relative", width: 80, height: 80, borderRadius: 10, overflow: "hidden", border: "1px solid var(--sable,#E8D5C0)" }}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={URL.createObjectURL(f)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                         <button type="button" onClick={() => setPhotos((p) => p.filter((_, j) => j !== i))} style={{ position: "absolute", top: 4, right: 4, background: "rgba(0,0,0,.6)", color: "#fff", border: "none", borderRadius: "50%", width: 22, height: 22, cursor: "pointer", fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center" }}>&times;</button>
