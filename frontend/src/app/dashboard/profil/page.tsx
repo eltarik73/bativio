@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const C: React.CSSProperties = { background: "#fff", borderRadius: 16, border: "1.5px solid #EDEBE7", padding: 28, marginBottom: 20, boxShadow: "0 4px 24px rgba(28,28,30,.04)" };
+const C: React.CSSProperties = { background: "#fff", borderRadius: 16, border: "1px solid var(--sable,#E8D5C0)", padding: 28, marginBottom: 20, boxShadow: "0 4px 24px rgba(28,28,30,.04)" };
 
 export default function ProfilPage() {
   const [form, setForm] = useState({
@@ -13,11 +13,11 @@ export default function ProfilPage() {
 
   return (
     <div style={{ maxWidth: 800, margin: "0 auto" }}>
-      <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 24 }}>Mon profil</h1>
+      <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 24 }}>Mon profil</h1>
 
       {/* Informations */}
       <div style={C}>
-        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 20 }}>Informations</h2>
+        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 20 }}>Informations</h2>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
           <div className="field"><label className="bv-label">Nom d&apos;affichage</label><input className="bv-input" value={form.nomAffichage} onChange={(e) => u("nomAffichage", e.target.value)} /></div>
           <div className="field"><label className="bv-label">T&eacute;l&eacute;phone</label><input className="bv-input" value={form.telephone} onChange={(e) => u("telephone", e.target.value)} /></div>
@@ -28,14 +28,14 @@ export default function ProfilPage() {
 
       {/* Description */}
       <div style={C}>
-        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 20 }}>Description</h2>
+        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 20 }}>Description</h2>
         <textarea className="bv-textarea" value={form.description} onChange={(e) => u("description", e.target.value)} maxLength={500} />
         <p style={{ textAlign: "right", fontSize: 12, color: "#C5C0B9", marginTop: 6 }}>{form.description.length} / 500</p>
       </div>
 
       {/* Badges */}
       <div style={C}>
-        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 16 }}>Badges et certifications</h2>
+        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 16 }}>Badges et certifications</h2>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
           {["RGE", "Qualibat", "Assurance décennale"].map((b) => (
             <span key={b} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 14px", borderRadius: 8, background: "rgba(196,83,26,.06)", color: "#C4531A", fontSize: 13, fontWeight: 500 }}>
@@ -49,10 +49,10 @@ export default function ProfilPage() {
 
       {/* Services */}
       <div style={C}>
-        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 16 }}>Services</h2>
+        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 16 }}>Services</h2>
         {["Dépannage plomberie", "Rénovation salle de bains", "Installation chauffage"].map((s) => (
           <div key={s} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: "1px solid #F7F5F2" }}>
-            <span style={{ fontSize: 14, fontWeight: 600, color: "#1C1C1E" }}>{s}</span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: "var(--bois,#3D2E1F)" }}>{s}</span>
             <button style={{ background: "none", border: "none", fontSize: 12, color: "#C4531A", cursor: "pointer", fontWeight: 500 }}>Supprimer</button>
           </div>
         ))}

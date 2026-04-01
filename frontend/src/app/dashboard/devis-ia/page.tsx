@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { DashboardFeatureGate } from "@/components/DashboardFeatureGate";
 
 const STATUT_BADGE: Record<string, { bg: string; color: string; label: string }> = {
-  BROUILLON: { bg: "rgba(155,149,144,.1)", color: "#6B6560", label: "Brouillon" },
+  BROUILLON: { bg: "rgba(155,149,144,.1)", color: "var(--bois-mid,#5C4A3A)", label: "Brouillon" },
   ENVOYE: { bg: "rgba(37,99,235,.1)", color: "#2563EB", label: "Envoy\u00e9" },
   VU: { bg: "rgba(147,51,234,.1)", color: "#9333EA", label: "Vu" },
   ACCEPTE: { bg: "rgba(22,163,74,.1)", color: "#16a34a", label: "Accept\u00e9" },
@@ -88,7 +88,7 @@ function DevisIAListContent() {
             fontFamily: "'Fraunces', serif",
             fontSize: 24,
             fontWeight: 700,
-            color: "#1C1C1E",
+            color: "var(--bois,#3D2E1F)",
           }}
         >
           Mes devis
@@ -119,7 +119,7 @@ function DevisIAListContent() {
           style={{
             textAlign: "center",
             padding: 40,
-            color: "#9B9590",
+            color: "var(--pierre,#9C958D)",
             fontSize: 14,
           }}
         >
@@ -139,7 +139,7 @@ function DevisIAListContent() {
                   style={{
                     background: "#fff",
                     borderRadius: 14,
-                    border: "1px solid #EDEBE7",
+                    border: "1px solid var(--sable,#E8D5C0)",
                     padding: "20px 24px",
                     transition: "all .2s",
                     cursor: "pointer",
@@ -158,7 +158,7 @@ function DevisIAListContent() {
                       style={{
                         fontSize: 12,
                         fontWeight: 600,
-                        color: "#9B9590",
+                        color: "var(--pierre,#9C958D)",
                         fontFamily: "monospace",
                       }}
                     >
@@ -190,7 +190,7 @@ function DevisIAListContent() {
                     style={{
                       fontSize: 16,
                       fontWeight: 700,
-                      color: "#1C1C1E",
+                      color: "var(--bois,#3D2E1F)",
                       marginBottom: 4,
                     }}
                   >
@@ -200,7 +200,7 @@ function DevisIAListContent() {
                     <p
                       style={{
                         fontSize: 14,
-                        color: "#6B6560",
+                        color: "var(--bois-mid,#5C4A3A)",
                         lineHeight: 1.5,
                         display: "-webkit-box",
                         WebkitLineClamp: 2,
@@ -223,7 +223,7 @@ function DevisIAListContent() {
                         fontFamily: "'Fraunces', serif",
                         fontSize: 18,
                         fontWeight: 700,
-                        color: "#1C1C1E",
+                        color: "var(--bois,#3D2E1F)",
                       }}
                     >
                       {formatEuros(d.totalTTC)}
@@ -259,7 +259,7 @@ function DevisIAListContent() {
             <path d="M14 2v6h6" />
             <path d="M9.5 15.5l1.5 1.5 3.5-3.5" strokeWidth="1.5" />
           </svg>
-          <p style={{ fontSize: 15, color: "#9B9590" }}>Aucun devis.</p>
+          <p style={{ fontSize: 15, color: "var(--pierre,#9C958D)" }}>Aucun devis.</p>
           <p
             style={{
               fontSize: 13,

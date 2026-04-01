@@ -100,8 +100,8 @@ export default function PhotosPage() {
   return (
     <div style={{ maxWidth: 800, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E" }}>Mes photos</h1>
-        <span style={{ fontSize: 13, color: "#9B9590" }}>{totalPhotos} / {planLabel} photos ({user?.plan || "Gratuit"})</span>
+        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "var(--bois,#3D2E1F)" }}>Mes photos</h1>
+        <span style={{ fontSize: 13, color: "var(--pierre,#9C958D)" }}>{totalPhotos} / {planLabel} photos ({user?.plan || "Gratuit"})</span>
       </div>
 
       {/* Tabs */}
@@ -120,7 +120,7 @@ export default function PhotosPage() {
       >
         <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" multiple hidden onChange={(e) => handleFiles(e.target.files)} />
         <svg width="48" height="48" fill="none" stroke="#C5C0B9" strokeWidth="1.5" viewBox="0 0 24 24" style={{ margin: "0 auto 16px" }}><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
-        <p style={{ fontSize: 15, fontWeight: 600, color: "#1C1C1E", marginBottom: 4 }}>Glissez vos photos ici</p>
+        <p style={{ fontSize: 15, fontWeight: 600, color: "var(--bois,#3D2E1F)", marginBottom: 4 }}>Glissez vos photos ici</p>
         <p style={{ fontSize: 13, color: "#C5C0B9", marginBottom: 12 }}>ou</p>
         <span style={{ display: "inline-flex", alignItems: "center", height: 40, padding: "0 20px", borderRadius: 8, border: "1.5px solid #E0DDD8", fontSize: 13, fontWeight: 600, color: "#C4531A" }}>Choisir des photos</span>
         <p style={{ fontSize: 12, color: "#C5C0B9", marginTop: 12 }}>JPG, PNG ou WebP &middot; max 10 Mo</p>
@@ -158,10 +158,10 @@ export default function PhotosPage() {
       {/* Server gallery */}
       {serverPhotos.length > 0 ? (
         <>
-          <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginTop: 32, marginBottom: 12 }}>Mes photos en ligne</h2>
+          <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginTop: 32, marginBottom: 12 }}>Mes photos en ligne</h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
             {serverPhotos.map((p) => (
-              <div key={p.id} style={{ position: "relative", aspectRatio: "1", borderRadius: 12, overflow: "hidden", border: "1px solid #EDEBE7" }}>
+              <div key={p.id} style={{ position: "relative", aspectRatio: "1", borderRadius: 12, overflow: "hidden", border: "1px solid var(--sable,#E8D5C0)" }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={p.url} alt={p.titre || ""} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 <button onClick={(e) => { e.stopPropagation(); removeServer(p.id); }} style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: "50%", background: "rgba(0,0,0,.5)", color: "#fff", border: "none", cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>&times;</button>
@@ -175,7 +175,7 @@ export default function PhotosPage() {
       ) : localPhotos.length === 0 ? (
         <div style={{ textAlign: "center", padding: "48px 20px" }}>
           <svg width="64" height="64" fill="none" stroke="#E0DDD8" strokeWidth="1" viewBox="0 0 24 24" style={{ margin: "0 auto 16px" }}><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
-          <p style={{ fontSize: 15, color: "#9B9590" }}>Vous n&apos;avez pas encore de photos</p>
+          <p style={{ fontSize: 15, color: "var(--pierre,#9C958D)" }}>Vous n&apos;avez pas encore de photos</p>
           <p style={{ fontSize: 13, color: "#C5C0B9", marginTop: 4 }}>Ajoutez des photos de vos r&eacute;alisations pour attirer plus de clients</p>
         </div>
       ) : null}

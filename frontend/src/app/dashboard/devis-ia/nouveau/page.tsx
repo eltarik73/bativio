@@ -259,7 +259,7 @@ export default function NouveauDevisIAPage() {
     border: "1.5px solid #E0DDD8",
     fontSize: 14,
     fontFamily: "'Karla', sans-serif",
-    color: "#1C1C1E",
+    color: "var(--bois,#3D2E1F)",
     outline: "none",
     background: "#fff",
     transition: "border-color .15s",
@@ -268,7 +268,7 @@ export default function NouveauDevisIAPage() {
   const labelStyle: React.CSSProperties = {
     fontSize: 13,
     fontWeight: 600,
-    color: "#1C1C1E",
+    color: "var(--bois,#3D2E1F)",
     marginBottom: 6,
     display: "block",
   };
@@ -282,7 +282,7 @@ export default function NouveauDevisIAPage() {
         href="/dashboard/devis-ia"
         style={{
           fontSize: 13,
-          color: "#9B9590",
+          color: "var(--pierre,#9C958D)",
           textDecoration: "none",
           display: "inline-flex",
           alignItems: "center",
@@ -308,7 +308,7 @@ export default function NouveauDevisIAPage() {
           fontFamily: "'Fraunces', serif",
           fontSize: 24,
           fontWeight: 700,
-          color: "#1C1C1E",
+          color: "var(--bois,#3D2E1F)",
           marginBottom: 24,
         }}
       >
@@ -320,7 +320,7 @@ export default function NouveauDevisIAPage() {
         <div
           style={{
             background: "#fff",
-            border: "1px solid #EDEBE7",
+            border: "1px solid var(--sable,#E8D5C0)",
             borderRadius: 14,
             padding: 28,
           }}
@@ -330,7 +330,7 @@ export default function NouveauDevisIAPage() {
               fontFamily: "'Fraunces', serif",
               fontSize: 18,
               fontWeight: 700,
-              color: "#1C1C1E",
+              color: "var(--bois,#3D2E1F)",
               marginBottom: 20,
             }}
           >
@@ -477,10 +477,10 @@ export default function NouveauDevisIAPage() {
                 ))}
               </div>
               {fournitureOption === "client_fournit" && (
-                <p style={{ fontSize: 12, color: "#9B9590", marginTop: 6 }}>Le devis sera en main d&apos;œuvre seule. Les prix indicatifs des matériaux seront affichés à titre informatif.</p>
+                <p style={{ fontSize: 12, color: "var(--pierre,#9C958D)", marginTop: 6 }}>Le devis sera en main d&apos;œuvre seule. Les prix indicatifs des matériaux seront affichés à titre informatif.</p>
               )}
               {fournitureOption === "a_definir" && (
-                <p style={{ fontSize: 12, color: "#9B9590", marginTop: 6 }}>L&apos;IA générera 2 options : fourni-posé et pose seule.</p>
+                <p style={{ fontSize: 12, color: "var(--pierre,#9C958D)", marginTop: 6 }}>L&apos;IA générera 2 options : fourni-posé et pose seule.</p>
               )}
             </div>
           )}
@@ -581,7 +581,7 @@ export default function NouveauDevisIAPage() {
           <div
             style={{
               background: "#fff",
-              border: "1px solid #EDEBE7",
+              border: "1px solid var(--sable,#E8D5C0)",
               borderRadius: 14,
               padding: "16px 24px",
               display: "flex",
@@ -591,17 +591,17 @@ export default function NouveauDevisIAPage() {
             }}
           >
             <span
-              style={{ fontSize: 14, fontWeight: 700, color: "#1C1C1E" }}
+              style={{ fontSize: 14, fontWeight: 700, color: "var(--bois,#3D2E1F)" }}
             >
               {clientNom}
             </span>
             {clientEmail && (
-              <span style={{ fontSize: 13, color: "#9B9590" }}>
+              <span style={{ fontSize: 13, color: "var(--pierre,#9C958D)" }}>
                 {clientEmail}
               </span>
             )}
             {clientTelephone && (
-              <span style={{ fontSize: 13, color: "#9B9590" }}>
+              <span style={{ fontSize: 13, color: "var(--pierre,#9C958D)" }}>
                 &middot; {clientTelephone}
               </span>
             )}
@@ -611,7 +611,7 @@ export default function NouveauDevisIAPage() {
           <div
             style={{
               background: "#fff",
-              border: "1px solid #EDEBE7",
+              border: "1px solid var(--sable,#E8D5C0)",
               borderRadius: 14,
               padding: 24,
               overflowX: "auto",
@@ -622,7 +622,7 @@ export default function NouveauDevisIAPage() {
                 fontFamily: "'Fraunces', serif",
                 fontSize: 18,
                 fontWeight: 700,
-                color: "#1C1C1E",
+                color: "var(--bois,#3D2E1F)",
                 marginBottom: 16,
               }}
             >
@@ -645,7 +645,7 @@ export default function NouveauDevisIAPage() {
                   <th
                     style={{
                       padding: "8px 6px",
-                      color: "#9B9590",
+                      color: "var(--pierre,#9C958D)",
                       fontWeight: 600,
                       fontSize: 11,
                       textTransform: "uppercase",
@@ -657,7 +657,7 @@ export default function NouveauDevisIAPage() {
                   <th
                     style={{
                       padding: "8px 6px",
-                      color: "#9B9590",
+                      color: "var(--pierre,#9C958D)",
                       fontWeight: 600,
                       fontSize: 11,
                       textTransform: "uppercase",
@@ -669,7 +669,7 @@ export default function NouveauDevisIAPage() {
                   <th
                     style={{
                       padding: "8px 6px",
-                      color: "#9B9590",
+                      color: "var(--pierre,#9C958D)",
                       fontWeight: 600,
                       fontSize: 11,
                       textTransform: "uppercase",
@@ -682,7 +682,7 @@ export default function NouveauDevisIAPage() {
                   <th
                     style={{
                       padding: "8px 6px",
-                      color: "#9B9590",
+                      color: "var(--pierre,#9C958D)",
                       fontWeight: 600,
                       fontSize: 11,
                       textTransform: "uppercase",
@@ -695,7 +695,7 @@ export default function NouveauDevisIAPage() {
                   <th
                     style={{
                       padding: "8px 6px",
-                      color: "#9B9590",
+                      color: "var(--pierre,#9C958D)",
                       fontWeight: 600,
                       fontSize: 11,
                       textTransform: "uppercase",
@@ -708,7 +708,7 @@ export default function NouveauDevisIAPage() {
                   <th
                     style={{
                       padding: "8px 6px",
-                      color: "#9B9590",
+                      color: "var(--pierre,#9C958D)",
                       fontWeight: 600,
                       fontSize: 11,
                       textTransform: "uppercase",
@@ -742,7 +742,7 @@ export default function NouveauDevisIAPage() {
                             ...inputStyle,
                             padding: "6px 8px",
                             fontSize: 13,
-                            border: "1px solid #EDEBE7",
+                            border: "1px solid var(--sable,#E8D5C0)",
                           }}
                         />
                       </td>
@@ -756,7 +756,7 @@ export default function NouveauDevisIAPage() {
                             ...inputStyle,
                             padding: "6px 8px",
                             fontSize: 13,
-                            border: "1px solid #EDEBE7",
+                            border: "1px solid var(--sable,#E8D5C0)",
                           }}
                         />
                       </td>
@@ -777,7 +777,7 @@ export default function NouveauDevisIAPage() {
                             ...inputStyle,
                             padding: "6px 8px",
                             fontSize: 13,
-                            border: "1px solid #EDEBE7",
+                            border: "1px solid var(--sable,#E8D5C0)",
                             textAlign: "right",
                           }}
                         />
@@ -792,7 +792,7 @@ export default function NouveauDevisIAPage() {
                             ...inputStyle,
                             padding: "6px 8px",
                             fontSize: 13,
-                            border: "1px solid #EDEBE7",
+                            border: "1px solid var(--sable,#E8D5C0)",
                           }}
                         />
                       </td>
@@ -813,7 +813,7 @@ export default function NouveauDevisIAPage() {
                             ...inputStyle,
                             padding: "6px 8px",
                             fontSize: 13,
-                            border: "1px solid #EDEBE7",
+                            border: "1px solid var(--sable,#E8D5C0)",
                             textAlign: "right",
                           }}
                         />
@@ -823,7 +823,7 @@ export default function NouveauDevisIAPage() {
                           padding: "6px 4px",
                           textAlign: "right",
                           fontWeight: 600,
-                          color: "#1C1C1E",
+                          color: "var(--bois,#3D2E1F)",
                           fontSize: 13,
                           whiteSpace: "nowrap",
                         }}
@@ -893,7 +893,7 @@ export default function NouveauDevisIAPage() {
           <div
             style={{
               background: "#fff",
-              border: "1px solid #EDEBE7",
+              border: "1px solid var(--sable,#E8D5C0)",
               borderRadius: 14,
               padding: 24,
             }}
@@ -912,7 +912,7 @@ export default function NouveauDevisIAPage() {
                   display: "flex",
                   justifyContent: "space-between",
                   fontSize: 14,
-                  color: "#6B6560",
+                  color: "var(--bois-mid,#5C4A3A)",
                 }}
               >
                 <span>Total HT</span>
@@ -924,7 +924,7 @@ export default function NouveauDevisIAPage() {
                   justifyContent: "space-between",
                   alignItems: "center",
                   fontSize: 14,
-                  color: "#6B6560",
+                  color: "var(--bois-mid,#5C4A3A)",
                 }}
               >
                 <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -942,7 +942,7 @@ export default function NouveauDevisIAPage() {
                       width: 56,
                       padding: "4px 6px",
                       borderRadius: 6,
-                      border: "1px solid #EDEBE7",
+                      border: "1px solid var(--sable,#E8D5C0)",
                       fontSize: 13,
                       textAlign: "right",
                       outline: "none",
@@ -960,7 +960,7 @@ export default function NouveauDevisIAPage() {
                   justifyContent: "space-between",
                   fontSize: 16,
                   fontWeight: 700,
-                  color: "#1C1C1E",
+                  color: "var(--bois,#3D2E1F)",
                   borderTop: "2px solid #EDEBE7",
                   paddingTop: 10,
                 }}
@@ -981,7 +981,7 @@ export default function NouveauDevisIAPage() {
           <div
             style={{
               background: "#fff",
-              border: "1px solid #EDEBE7",
+              border: "1px solid var(--sable,#E8D5C0)",
               borderRadius: 14,
               padding: 24,
               display: "flex",
@@ -1035,7 +1035,7 @@ export default function NouveauDevisIAPage() {
                 gap: 10,
                 cursor: "pointer",
                 fontSize: 14,
-                color: "#1C1C1E",
+                color: "var(--bois,#3D2E1F)",
               }}
             >
               <input
@@ -1088,7 +1088,7 @@ export default function NouveauDevisIAPage() {
                 fontWeight: 600,
                 fontFamily: "'Karla', sans-serif",
                 background: "#fff",
-                color: "#1C1C1E",
+                color: "var(--bois,#3D2E1F)",
                 border: "1.5px solid #E0DDD8",
                 cursor: saving ? "not-allowed" : "pointer",
                 opacity: saving ? 0.6 : 1,

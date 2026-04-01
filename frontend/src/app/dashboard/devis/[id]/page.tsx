@@ -117,10 +117,10 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
     } catch { /* empty */ }
   };
 
-  if (loading) return <div style={{ padding: 40, textAlign: "center", color: "#9B9590" }}>Chargement...</div>;
-  if (!devis) return <div style={{ padding: 40, textAlign: "center", color: "#9B9590" }}>Demande introuvable</div>;
+  if (loading) return <div style={{ padding: 40, textAlign: "center", color: "var(--pierre,#9C958D)" }}>Chargement...</div>;
+  if (!devis) return <div style={{ padding: 40, textAlign: "center", color: "var(--pierre,#9C958D)" }}>Demande introuvable</div>;
 
-  const C: React.CSSProperties = { background: "#fff", borderRadius: 14, border: "1px solid #EDEBE7", padding: "24px 28px" };
+  const C: React.CSSProperties = { background: "#fff", borderRadius: 14, border: "1px solid var(--sable,#E8D5C0)", padding: "24px 28px" };
 
   return (
     <div style={{ maxWidth: 900, margin: "0 auto" }}>
@@ -140,12 +140,12 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
               <span style={{ fontSize: 13, color: "#C5C0B9", marginLeft: "auto" }}>{formatDate(devis.createdAt)}</span>
             </div>
 
-            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 20, fontWeight: 700, color: "#1C1C1E", marginBottom: 20 }}>Demande de {devis.nomClient}</h2>
+            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 20, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 20 }}>Demande de {devis.nomClient}</h2>
 
             <div style={{ marginBottom: 20 }}>
-              <p style={{ fontSize: 12, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 }}>Description du besoin</p>
+              <p style={{ fontSize: 12, fontWeight: 600, color: "var(--pierre,#9C958D)", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 }}>Description du besoin</p>
               <div style={{ background: "#FAF8F5", borderRadius: 10, padding: 16 }}>
-                <p style={{ fontSize: 14, color: "#1C1C1E", lineHeight: 1.6 }}>{devis.descriptionBesoin}</p>
+                <p style={{ fontSize: 14, color: "var(--bois,#3D2E1F)", lineHeight: 1.6 }}>{devis.descriptionBesoin}</p>
               </div>
             </div>
           </div>
@@ -153,23 +153,23 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
           {/* Timeline */}
           {devis.replies.length > 0 && (
             <div style={{ ...C, marginTop: 16 }}>
-              <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1C1C1E", marginBottom: 16 }}>Historique</h3>
+              <h3 style={{ fontSize: 15, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 16 }}>Historique</h3>
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                 <div style={{ display: "flex", gap: 12 }}>
                   <span style={{ fontSize: 16, flexShrink: 0 }}>&#128233;</span>
                   <div>
-                    <p style={{ fontSize: 13, fontWeight: 600, color: "#1C1C1E" }}>Demande re&ccedil;ue</p>
-                    <p style={{ fontSize: 12, color: "#9B9590" }}>{formatDate(devis.createdAt)}</p>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: "var(--bois,#3D2E1F)" }}>Demande re&ccedil;ue</p>
+                    <p style={{ fontSize: 12, color: "var(--pierre,#9C958D)" }}>{formatDate(devis.createdAt)}</p>
                   </div>
                 </div>
                 {devis.replies.map((r) => (
                   <div key={r.id} style={{ display: "flex", gap: 12 }}>
                     <span style={{ fontSize: 16, flexShrink: 0 }}>{r.type === "QUOTE_UPLOAD" ? "\uD83D\uDCCE" : "\uD83D\uDCAC"}</span>
                     <div style={{ flex: 1 }}>
-                      <p style={{ fontSize: 13, fontWeight: 600, color: "#1C1C1E" }}>{r.type === "QUOTE_UPLOAD" ? "Devis envoyé" : "Réponse envoyée"}</p>
-                      <p style={{ fontSize: 12, color: "#9B9590", marginBottom: 6 }}>{formatDate(r.createdAt)}</p>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: "var(--bois,#3D2E1F)" }}>{r.type === "QUOTE_UPLOAD" ? "Devis envoyé" : "Réponse envoyée"}</p>
+                      <p style={{ fontSize: 12, color: "var(--pierre,#9C958D)", marginBottom: 6 }}>{formatDate(r.createdAt)}</p>
                       <div style={{ background: "#F7F5F2", borderRadius: 8, padding: 12 }}>
-                        <p style={{ fontSize: 13, color: "#6B6560", lineHeight: 1.5 }}>{r.message}</p>
+                        <p style={{ fontSize: 13, color: "var(--bois-mid,#5C4A3A)", lineHeight: 1.5 }}>{r.message}</p>
                         {r.attachmentUrl && (
                           <a href={r.attachmentUrl} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 8, fontSize: 13, color: "#C4531A", fontWeight: 600, textDecoration: "none" }}>
                             &#128206; {r.attachmentFilename || "Pièce jointe"}
@@ -199,16 +199,16 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
         {/* Right — Client + Actions */}
         <div>
           <div style={C}>
-            <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1C1C1E", marginBottom: 16 }}>Client</h3>
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 16 }}>Client</h3>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={{ fontSize: 15 }}>&#128100;</span>
-                <span style={{ fontSize: 14, fontWeight: 600, color: "#1C1C1E" }}>{devis.nomClient}</span>
+                <span style={{ fontSize: 14, fontWeight: 600, color: "var(--bois,#3D2E1F)" }}>{devis.nomClient}</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ fontSize: 15 }}>&#128222;</span>
-                  <span style={{ fontSize: 14, color: "#6B6560" }}>{devis.telephoneClient}</span>
+                  <span style={{ fontSize: 14, color: "var(--bois-mid,#5C4A3A)" }}>{devis.telephoneClient}</span>
                 </div>
                 <a href={`tel:${devis.telephoneClient.replace(/\s/g, "")}`} style={{ fontSize: 12, fontWeight: 600, color: "#C4531A", textDecoration: "none" }}>Appeler</a>
               </div>
@@ -216,7 +216,7 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ fontSize: 15 }}>&#128231;</span>
-                    <span style={{ fontSize: 14, color: "#6B6560" }}>{devis.emailClient}</span>
+                    <span style={{ fontSize: 14, color: "var(--bois-mid,#5C4A3A)" }}>{devis.emailClient}</span>
                   </div>
                   <a href={`mailto:${devis.emailClient}`} style={{ fontSize: 12, fontWeight: 600, color: "#C4531A", textDecoration: "none" }}>Email</a>
                 </div>
@@ -226,9 +226,9 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
 
           {/* Actions */}
           <div style={{ ...C, marginTop: 16 }}>
-            <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1C1C1E", marginBottom: 16 }}>Actions</h3>
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 16 }}>Actions</h3>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              <a href={`tel:${devis.telephoneClient.replace(/\s/g, "")}`} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, border: "1.5px solid #E0DDD8", fontSize: 14, fontWeight: 600, color: "#1C1C1E", textDecoration: "none" }}>
+              <a href={`tel:${devis.telephoneClient.replace(/\s/g, "")}`} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, border: "1.5px solid #E0DDD8", fontSize: 14, fontWeight: 600, color: "var(--bois,#3D2E1F)", textDecoration: "none" }}>
                 &#128222; Appeler le client
               </a>
               <button onClick={() => { setReplyOpen(!replyOpen); setPdfOpen(false); setSent(false); }} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, background: "#C4531A", color: "#fff", fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer" }}>
@@ -242,7 +242,7 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
                 <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: "rgba(232,168,76,.12)", color: "#E8A84C" }}>Bient&ocirc;t</span>
               </button>
               {devis.statut !== "ARCHIVE" && (
-                <button onClick={handleArchive} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, border: "1.5px solid #E0DDD8", fontSize: 14, fontWeight: 600, color: "#9B9590", background: "none", cursor: "pointer", marginTop: 8 }}>
+                <button onClick={handleArchive} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, border: "1.5px solid #E0DDD8", fontSize: 14, fontWeight: 600, color: "var(--pierre,#9C958D)", background: "none", cursor: "pointer", marginTop: 8 }}>
                   &#128230; Archiver cette demande
                 </button>
               )}
@@ -252,16 +252,16 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
           {/* Reply form */}
           {replyOpen && (
             <div style={{ ...C, marginTop: 16 }}>
-              <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1C1C1E", marginBottom: 12 }}>R&eacute;pondre &agrave; {devis.nomClient}</h3>
+              <h3 style={{ fontSize: 14, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 12 }}>R&eacute;pondre &agrave; {devis.nomClient}</h3>
               <textarea
                 value={replyMsg}
                 onChange={(e) => setReplyMsg(e.target.value)}
                 placeholder="Votre message..."
                 rows={6}
-                style={{ width: "100%", padding: 14, borderRadius: 10, border: "1.5px solid #E0DDD8", fontSize: 14, fontFamily: "'Karla',sans-serif", color: "#1C1C1E", resize: "vertical", outline: "none" }}
+                style={{ width: "100%", padding: 14, borderRadius: 10, border: "1.5px solid #E0DDD8", fontSize: 14, fontFamily: "'Karla',sans-serif", color: "var(--bois,#3D2E1F)", resize: "vertical", outline: "none" }}
               />
               <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
-                <button onClick={() => setReplyOpen(false)} style={{ flex: 1, height: 42, borderRadius: 8, border: "1.5px solid #E0DDD8", background: "none", fontSize: 14, fontWeight: 600, color: "#6B6560", cursor: "pointer" }}>Annuler</button>
+                <button onClick={() => setReplyOpen(false)} style={{ flex: 1, height: 42, borderRadius: 8, border: "1.5px solid #E0DDD8", background: "none", fontSize: 14, fontWeight: 600, color: "var(--bois-mid,#5C4A3A)", cursor: "pointer" }}>Annuler</button>
                 <button onClick={handleReply} disabled={sending || !replyMsg.trim()} style={{ flex: 1, height: 42, borderRadius: 8, background: "#C4531A", color: "#fff", border: "none", fontSize: 14, fontWeight: 600, cursor: sending ? "wait" : "pointer", opacity: sending || !replyMsg.trim() ? 0.5 : 1 }}>
                   {sending ? "Envoi..." : "Envoyer →"}
                 </button>
@@ -272,7 +272,7 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
           {/* PDF upload form */}
           {pdfOpen && (
             <div style={{ ...C, marginTop: 16 }}>
-              <h3 style={{ fontSize: 14, fontWeight: 700, color: "#1C1C1E", marginBottom: 12 }}>Envoyer un devis &agrave; {devis.nomClient}</h3>
+              <h3 style={{ fontSize: 14, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 12 }}>Envoyer un devis &agrave; {devis.nomClient}</h3>
               <div
                 onDragOver={(e) => { e.preventDefault(); e.currentTarget.style.borderColor = "#C4531A"; }}
                 onDragLeave={(e) => { e.currentTarget.style.borderColor = "#E0DDD8"; }}
@@ -283,12 +283,12 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
                 {pdfFile ? (
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
                     <span style={{ fontSize: 20 }}>&#128196;</span>
-                    <span style={{ fontSize: 14, fontWeight: 600, color: "#1C1C1E" }}>{pdfFile.name}</span>
-                    <span style={{ fontSize: 12, color: "#9B9590" }}>({(pdfFile.size / 1024).toFixed(0)} Ko)</span>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: "var(--bois,#3D2E1F)" }}>{pdfFile.name}</span>
+                    <span style={{ fontSize: 12, color: "var(--pierre,#9C958D)" }}>({(pdfFile.size / 1024).toFixed(0)} Ko)</span>
                   </div>
                 ) : (
                   <>
-                    <p style={{ fontSize: 14, color: "#6B6560", marginBottom: 4 }}>Glissez votre fichier PDF ici</p>
+                    <p style={{ fontSize: 14, color: "var(--bois-mid,#5C4A3A)", marginBottom: 4 }}>Glissez votre fichier PDF ici</p>
                     <p style={{ fontSize: 12, color: "#C5C0B9" }}>ou cliquez pour choisir &middot; Max 10 Mo</p>
                   </>
                 )}
@@ -299,10 +299,10 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
                 onChange={(e) => setPdfMsg(e.target.value)}
                 placeholder="Message accompagnant (facultatif)"
                 rows={3}
-                style={{ width: "100%", padding: 12, borderRadius: 8, border: "1.5px solid #E0DDD8", fontSize: 14, fontFamily: "'Karla',sans-serif", color: "#1C1C1E", resize: "vertical", outline: "none", marginBottom: 12 }}
+                style={{ width: "100%", padding: 12, borderRadius: 8, border: "1.5px solid #E0DDD8", fontSize: 14, fontFamily: "'Karla',sans-serif", color: "var(--bois,#3D2E1F)", resize: "vertical", outline: "none", marginBottom: 12 }}
               />
               <div style={{ display: "flex", gap: 10 }}>
-                <button onClick={() => { setPdfOpen(false); setPdfFile(null); }} style={{ flex: 1, height: 42, borderRadius: 8, border: "1.5px solid #E0DDD8", background: "none", fontSize: 14, fontWeight: 600, color: "#6B6560", cursor: "pointer" }}>Annuler</button>
+                <button onClick={() => { setPdfOpen(false); setPdfFile(null); }} style={{ flex: 1, height: 42, borderRadius: 8, border: "1.5px solid #E0DDD8", background: "none", fontSize: 14, fontWeight: 600, color: "var(--bois-mid,#5C4A3A)", cursor: "pointer" }}>Annuler</button>
                 <button onClick={handlePdfUpload} disabled={sending || !pdfFile} style={{ flex: 1, height: 42, borderRadius: 8, background: "#C4531A", color: "#fff", border: "none", fontSize: 14, fontWeight: 600, cursor: sending || !pdfFile ? "not-allowed" : "pointer", opacity: sending || !pdfFile ? 0.5 : 1 }}>
                   {sending ? "Envoi..." : "Envoyer le devis →"}
                 </button>
@@ -313,7 +313,7 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
           {sent && (
             <div style={{ marginTop: 12, padding: 14, background: "#F0FDF4", borderRadius: 10, border: "1px solid rgba(22,163,74,.15)", textAlign: "center" }}>
               <p style={{ fontSize: 14, fontWeight: 600, color: "#16a34a" }}>&#9989; R&eacute;ponse envoy&eacute;e !</p>
-              {devis.emailClient && <p style={{ fontSize: 12, color: "#6B6560", marginTop: 4 }}>Un email a &eacute;t&eacute; envoy&eacute; &agrave; {devis.emailClient}</p>}
+              {devis.emailClient && <p style={{ fontSize: 12, color: "var(--bois-mid,#5C4A3A)", marginTop: 4 }}>Un email a &eacute;t&eacute; envoy&eacute; &agrave; {devis.emailClient}</p>}
             </div>
           )}
         </div>

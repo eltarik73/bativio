@@ -87,7 +87,7 @@ export default function DisponibilitesPage() {
   };
 
   const inputStyle: React.CSSProperties = {
-    padding: "8px 10px", borderRadius: 8, border: "1.5px solid #EDEBE7",
+    padding: "8px 10px", borderRadius: 8, border: "1px solid var(--sable,#E8D5C0)",
     fontSize: 13, outline: "none", fontFamily: "'Karla',sans-serif",
     width: "100%", minWidth: 0, background: "#fff",
   };
@@ -112,23 +112,23 @@ export default function DisponibilitesPage() {
           <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
           Retour à l&apos;agenda
         </Link>
-        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 26, fontWeight: 700, color: "#1C1C1E", margin: 0 }}>
+        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 26, fontWeight: 700, color: "var(--bois,#3D2E1F)", margin: 0 }}>
           Mes disponibilités
         </h1>
-        <p style={{ fontSize: 14, color: "#9B9590", marginTop: 6 }}>
+        <p style={{ fontSize: 14, color: "var(--pierre,#9C958D)", marginTop: 6 }}>
           Définissez vos créneaux pour chaque jour de la semaine. Vos clients pourront réserver un RDV sur les créneaux disponibles.
         </p>
       </div>
 
       {loading ? (
-        <div style={{ textAlign: "center", padding: 60, color: "#9B9590", fontSize: 14 }}>
+        <div style={{ textAlign: "center", padding: 60, color: "var(--pierre,#9C958D)", fontSize: 14 }}>
           Chargement...
         </div>
       ) : (
         <>
           {/* Desktop table */}
           <div style={{
-            background: "#fff", borderRadius: 14, border: "1.5px solid #EDEBE7",
+            background: "#fff", borderRadius: 14, border: "1px solid var(--sable,#E8D5C0)",
             overflow: "hidden", boxShadow: "0 4px 24px rgba(28,28,30,.04)",
           }}>
             {/* Column headers (desktop) */}
@@ -137,8 +137,8 @@ export default function DisponibilitesPage() {
               style={{
                 gridTemplateColumns: "140px 60px 1fr 1fr 1fr 1fr 100px",
                 gap: 12, padding: "14px 20px",
-                background: "#F7F5F2", borderBottom: "1px solid #EDEBE7",
-                fontSize: 11, fontWeight: 700, color: "#9B9590",
+                background: "#F7F5F2", borderBottom: "1px solid var(--sable,#E8D5C0)",
+                fontSize: 11, fontWeight: 700, color: "var(--pierre,#9C958D)",
                 textTransform: "uppercase", letterSpacing: 0.5,
               }}
             >
@@ -166,7 +166,7 @@ export default function DisponibilitesPage() {
                 }}
               >
                 {/* Day label */}
-                <div style={{ fontWeight: 700, fontSize: 14, color: "#1C1C1E", marginBottom: 8 }} className="md:!mb-0">
+                <div style={{ fontWeight: 700, fontSize: 14, color: "var(--bois,#3D2E1F)", marginBottom: 8 }} className="md:!mb-0">
                   {slot.label}
                 </div>
 
@@ -191,7 +191,7 @@ export default function DisponibilitesPage() {
                 {/* Inputs — Mobile labels */}
                 <div className="max-md:grid max-md:grid-cols-2 max-md:gap-2" style={{ display: "contents" }}>
                   <div>
-                    <label className="md:hidden" style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#9B9590", marginBottom: 2 }}>Début</label>
+                    <label className="md:hidden" style={{ display: "block", fontSize: 11, fontWeight: 600, color: "var(--pierre,#9C958D)", marginBottom: 2 }}>Début</label>
                     <input
                       type="time"
                       value={slot.heureDebut}
@@ -201,7 +201,7 @@ export default function DisponibilitesPage() {
                     />
                   </div>
                   <div>
-                    <label className="md:hidden" style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#9B9590", marginBottom: 2 }}>Fin</label>
+                    <label className="md:hidden" style={{ display: "block", fontSize: 11, fontWeight: 600, color: "var(--pierre,#9C958D)", marginBottom: 2 }}>Fin</label>
                     <input
                       type="time"
                       value={slot.heureFin}
@@ -211,7 +211,7 @@ export default function DisponibilitesPage() {
                     />
                   </div>
                   <div>
-                    <label className="md:hidden" style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#9B9590", marginBottom: 2 }}>Pause début</label>
+                    <label className="md:hidden" style={{ display: "block", fontSize: 11, fontWeight: 600, color: "var(--pierre,#9C958D)", marginBottom: 2 }}>Pause début</label>
                     <input
                       type="time"
                       value={slot.pauseDebut}
@@ -222,7 +222,7 @@ export default function DisponibilitesPage() {
                     />
                   </div>
                   <div>
-                    <label className="md:hidden" style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#9B9590", marginBottom: 2 }}>Pause fin</label>
+                    <label className="md:hidden" style={{ display: "block", fontSize: 11, fontWeight: 600, color: "var(--pierre,#9C958D)", marginBottom: 2 }}>Pause fin</label>
                     <input
                       type="time"
                       value={slot.pauseFin}
@@ -233,7 +233,7 @@ export default function DisponibilitesPage() {
                     />
                   </div>
                   <div>
-                    <label className="md:hidden" style={{ display: "block", fontSize: 11, fontWeight: 600, color: "#9B9590", marginBottom: 2 }}>Durée slot</label>
+                    <label className="md:hidden" style={{ display: "block", fontSize: 11, fontWeight: 600, color: "var(--pierre,#9C958D)", marginBottom: 2 }}>Durée slot</label>
                     <select
                       value={slot.dureeSlot}
                       onChange={(e) => updateSlot(idx, { dureeSlot: Number(e.target.value) })}

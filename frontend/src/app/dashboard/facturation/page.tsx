@@ -83,7 +83,7 @@ export default function FacturationPage() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "60vh" }}>
         <div style={{ textAlign: "center" }}>
           <div style={{ width: 32, height: 32, border: "3px solid #E5E0DB", borderTopColor: "#C4531A", borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 16px" }} />
-          <p style={{ fontSize: 14, color: "#9B9590" }}>Chargement...</p>
+          <p style={{ fontSize: 14, color: "var(--pierre,#9C958D)" }}>Chargement...</p>
         </div>
       </div>
     );
@@ -119,16 +119,16 @@ export default function FacturationPage() {
             { icon: <svg width="24" height="24" fill="none" stroke="#2563EB" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>, title: "Automatique", desc: "Factures reçues et classées automatiquement", bg: "rgba(37,99,235,.08)" },
             { icon: <svg width="24" height="24" fill="none" stroke="#C4531A" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>, title: "Export", desc: "CSV/Excel pour votre comptable en 1 clic", bg: "rgba(196,83,26,.08)" },
           ].map((f) => (
-            <div key={f.title} style={{ background: "#fff", borderRadius: 14, border: "1px solid #EDEBE7", padding: "24px 18px", textAlign: "center", transition: "transform .2s, box-shadow .2s", cursor: "default" }} className="stat-card-hover">
+            <div key={f.title} style={{ background: "#fff", borderRadius: 14, border: "1px solid var(--sable,#E8D5C0)", padding: "24px 18px", textAlign: "center", transition: "transform .2s, box-shadow .2s", cursor: "default" }} className="stat-card-hover">
               <div style={{ width: 44, height: 44, borderRadius: 12, background: f.bg, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>{f.icon}</div>
-              <div style={{ fontFamily: "'Fraunces',serif", fontSize: 15, fontWeight: 700, color: "#1C1C1E", marginBottom: 4 }}>{f.title}</div>
-              <div style={{ fontSize: 12, color: "#9B9590", lineHeight: 1.4 }}>{f.desc}</div>
+              <div style={{ fontFamily: "'Fraunces',serif", fontSize: 15, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 4 }}>{f.title}</div>
+              <div style={{ fontSize: 12, color: "var(--pierre,#9C958D)", lineHeight: 1.4 }}>{f.desc}</div>
             </div>
           ))}
         </div>
 
         {/* Plans cards */}
-        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#1C1C1E", marginBottom: 16 }}>Choisissez votre niveau de protection</h2>
+        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 16 }}>Choisissez votre niveau de protection</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16, marginBottom: 32 }}>
           {[
             {
@@ -150,17 +150,17 @@ export default function FacturationPage() {
             <div key={p.name} style={{ background: "#fff", borderRadius: 16, padding: "28px 22px", border: p.pop ? "2px solid #C4531A" : "1px solid #EDEBE7", position: "relative", boxShadow: p.pop ? "0 4px 20px rgba(196,83,26,.12)" : "0 1px 3px rgba(0,0,0,.04)", display: "flex", flexDirection: "column" }}>
               {p.pop && <div style={{ position: "absolute", top: -11, left: "50%", transform: "translateX(-50%)", background: "#C4531A", color: "#fff", padding: "4px 14px", borderRadius: 20, fontSize: 11, fontWeight: 600 }}>Recommandé</div>}
               <div style={{ width: 48, height: 48, borderRadius: 12, background: p.bg, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>{p.icon}</div>
-              <div style={{ fontFamily: "'Fraunces',serif", fontSize: 20, fontWeight: 700, color: "#1C1C1E" }}>{p.name}</div>
+              <div style={{ fontFamily: "'Fraunces',serif", fontSize: 20, fontWeight: 700, color: "var(--bois,#3D2E1F)" }}>{p.name}</div>
               <div style={{ marginTop: 4 }}>
                 <span style={{ fontFamily: "'Fraunces',serif", fontSize: 32, fontWeight: 700, color: "#C4531A" }}>{p.price}€</span>
-                <span style={{ fontSize: 14, color: "#9B9590" }}>/mois</span>
+                <span style={{ fontSize: 14, color: "var(--pierre,#9C958D)" }}>/mois</span>
               </div>
-              <p style={{ fontSize: 13, color: "#9B9590", marginTop: 4, marginBottom: 16 }}>{p.desc}</p>
+              <p style={{ fontSize: 13, color: "var(--pierre,#9C958D)", marginTop: 4, marginBottom: 16 }}>{p.desc}</p>
               <div style={{ flex: 1 }}>
                 {p.features.map((f) => (
                   <div key={f} style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 0" }}>
                     <svg width="16" height="16" fill="none" stroke="#C4531A" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg>
-                    <span style={{ fontSize: 13, color: "#6B6560" }}>{f}</span>
+                    <span style={{ fontSize: 13, color: "var(--bois-mid,#5C4A3A)" }}>{f}</span>
                   </div>
                 ))}
               </div>
@@ -189,8 +189,8 @@ export default function FacturationPage() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh", padding: 32 }}>
         <div style={{ maxWidth: 520, textAlign: "center" }}>
           <div style={{ width: 64, height: 64, borderRadius: "50%", background: "rgba(196,83,26,.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px", fontSize: 32 }}>📄</div>
-          <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 26, fontWeight: 700, color: "#1C1C1E", marginBottom: 8 }}>Facturation électronique</h1>
-          <p style={{ fontSize: 15, color: "#6B6560", lineHeight: 1.6, marginBottom: 28 }}>
+          <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 26, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 8 }}>Facturation électronique</h1>
+          <p style={{ fontSize: 15, color: "var(--bois-mid,#5C4A3A)", lineHeight: 1.6, marginBottom: 28 }}>
             À partir de septembre 2026, toutes les entreprises doivent pouvoir recevoir des factures électroniques. Activez le module pour être conforme.
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14, marginBottom: 28, textAlign: "center" }}>
@@ -201,8 +201,8 @@ export default function FacturationPage() {
             ].map((f) => (
               <div key={f.title} style={{ background: "#fff", borderRadius: 12, border: "1px solid #E5E0DB", padding: 16 }}>
                 <div style={{ fontSize: 24, marginBottom: 8 }}>{f.icon}</div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: "#1C1C1E" }}>{f.title}</div>
-                <div style={{ fontSize: 12, color: "#9B9590", marginTop: 4 }}>{f.desc}</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "var(--bois,#3D2E1F)" }}>{f.title}</div>
+                <div style={{ fontSize: 12, color: "var(--pierre,#9C958D)", marginTop: 4 }}>{f.desc}</div>
               </div>
             ))}
           </div>
@@ -224,8 +224,8 @@ export default function FacturationPage() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "40vh", padding: 32 }}>
         <div style={{ textAlign: "center" }}>
           <p style={{ fontSize: 15, fontWeight: 600, color: "#dc2626" }}>Impossible de charger la facturation</p>
-          <p style={{ fontSize: 13, color: "#9B9590", marginTop: 8 }}>Réessayez dans quelques instants.</p>
-          <button onClick={() => window.location.reload()} style={{ marginTop: 16, padding: "10px 20px", background: "#F7F5F2", borderRadius: 8, border: "none", fontSize: 13, color: "#6B6560", cursor: "pointer" }}>Réessayer</button>
+          <p style={{ fontSize: 13, color: "var(--pierre,#9C958D)", marginTop: 8 }}>Réessayez dans quelques instants.</p>
+          <button onClick={() => window.location.reload()} style={{ marginTop: 16, padding: "10px 20px", background: "#F7F5F2", borderRadius: 8, border: "none", fontSize: 13, color: "var(--bois-mid,#5C4A3A)", cursor: "pointer" }}>Réessayer</button>
         </div>
       </div>
     );

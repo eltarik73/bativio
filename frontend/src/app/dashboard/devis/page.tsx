@@ -62,7 +62,7 @@ export default function DevisPage() {
   return (
     <div style={{ maxWidth: 800, margin: "0 auto" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E" }}>Demandes de devis</h1>
+        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "var(--bois,#3D2E1F)" }}>Demandes de devis</h1>
         {newCount > 0 && (
           <span style={{ background: "#dc2626", color: "#fff", fontSize: 12, fontWeight: 700, padding: "3px 10px", borderRadius: 10 }}>{newCount} nouvelle{newCount > 1 ? "s" : ""}</span>
         )}
@@ -84,7 +84,7 @@ export default function DevisPage() {
 
       {/* List */}
       {loading ? (
-        <div style={{ textAlign: "center", padding: 40, color: "#9B9590", fontSize: 14 }}>Chargement...</div>
+        <div style={{ textAlign: "center", padding: 40, color: "var(--pierre,#9C958D)", fontSize: 14 }}>Chargement...</div>
       ) : devis.length > 0 ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {devis.map((d) => {
@@ -103,11 +103,11 @@ export default function DevisPage() {
                     {d.urgence === "urgent" && <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: "rgba(220,38,38,.1)", color: "#dc2626", textTransform: "uppercase", letterSpacing: 0.5 }}>⚡ Urgent</span>}
                     <span style={{ fontSize: 12, color: "#C5C0B9", marginLeft: "auto" }}>{timeAgo(d.createdAt)}</span>
                   </div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: "#1C1C1E", marginBottom: 4 }}>{d.nomClient}</div>
-                  <p style={{ fontSize: 14, color: "#6B6560", lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{d.descriptionBesoin}</p>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 4 }}>{d.nomClient}</div>
+                  <p style={{ fontSize: 14, color: "var(--bois-mid,#5C4A3A)", lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{d.descriptionBesoin}</p>
                   <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 12 }}>
-                    <span style={{ fontSize: 13, color: "#9B9590" }}>{d.telephoneClient}</span>
-                    {d.emailClient && <span style={{ fontSize: 13, color: "#9B9590" }}>&middot; {d.emailClient}</span>}
+                    <span style={{ fontSize: 13, color: "var(--pierre,#9C958D)" }}>{d.telephoneClient}</span>
+                    {d.emailClient && <span style={{ fontSize: 13, color: "var(--pierre,#9C958D)" }}>&middot; {d.emailClient}</span>}
                     <span style={{ marginLeft: "auto", fontSize: 13, fontWeight: 600, color: "#C4531A" }}>Voir &rarr;</span>
                   </div>
                 </div>
@@ -118,7 +118,7 @@ export default function DevisPage() {
       ) : (
         <div style={{ textAlign: "center", padding: "56px 20px" }}>
           <svg width="56" height="56" fill="none" stroke="#E0DDD8" strokeWidth="1" viewBox="0 0 24 24" style={{ margin: "0 auto 16px" }}><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><path d="M14 2v6h6" /></svg>
-          <p style={{ fontSize: 15, color: "#9B9590" }}>Aucune demande de devis</p>
+          <p style={{ fontSize: 15, color: "var(--pierre,#9C958D)" }}>Aucune demande de devis</p>
           <p style={{ fontSize: 13, color: "#C5C0B9", marginTop: 4 }}>Les nouvelles demandes appara&icirc;tront ici.</p>
         </div>
       )}
@@ -126,9 +126,9 @@ export default function DevisPage() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div style={{ display: "flex", justifyContent: "center", gap: 12, marginTop: 24 }}>
-          <button onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={page === 0} style={{ fontSize: 14, color: "#9B9590", background: "none", border: "none", cursor: "pointer", opacity: page === 0 ? 0.3 : 1 }}>Pr&eacute;c&eacute;dent</button>
-          <span style={{ fontSize: 14, color: "#9B9590" }}>Page {page + 1} / {totalPages}</span>
-          <button onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1} style={{ fontSize: 14, color: "#9B9590", background: "none", border: "none", cursor: "pointer", opacity: page >= totalPages - 1 ? 0.3 : 1 }}>Suivant</button>
+          <button onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={page === 0} style={{ fontSize: 14, color: "var(--pierre,#9C958D)", background: "none", border: "none", cursor: "pointer", opacity: page === 0 ? 0.3 : 1 }}>Pr&eacute;c&eacute;dent</button>
+          <span style={{ fontSize: 14, color: "var(--pierre,#9C958D)" }}>Page {page + 1} / {totalPages}</span>
+          <button onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1} style={{ fontSize: 14, color: "var(--pierre,#9C958D)", background: "none", border: "none", cursor: "pointer", opacity: page >= totalPages - 1 ? 0.3 : 1 }}>Suivant</button>
         </div>
       )}
     </div>

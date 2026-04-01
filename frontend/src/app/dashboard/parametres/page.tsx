@@ -101,7 +101,7 @@ export default function ParametresPage() {
   };
 
   const CARD: React.CSSProperties = {
-    background: "#fff", borderRadius: 16, border: "1.5px solid #EDEBE7", padding: 28, marginBottom: 20,
+    background: "#fff", borderRadius: 16, border: "1px solid var(--sable,#E8D5C0)", padding: 28, marginBottom: 20,
   };
 
   const planLabel = plan === "BUSINESS" ? "Business" : plan === "PRO_PLUS" ? "Business" : plan === "PRO" ? "Pro" : plan === "STARTER" ? "Starter" : plan === "ESSENTIEL" ? "Starter" : "Gratuit";
@@ -118,14 +118,14 @@ export default function ParametresPage() {
 
   return (
     <div style={{ maxWidth: 700, padding: 32, margin: "0 auto" }}>
-      <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 26, fontWeight: 700, color: "#1C1C1E", marginBottom: 28 }}>Paramètres</h1>
+      <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 26, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 28 }}>Paramètres</h1>
 
       {/* Compte */}
       <div style={CARD}>
-        <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 20 }}>Compte</h2>
+        <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 18, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 20 }}>Compte</h2>
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "#9B9590", marginBottom: 6 }}>Email</div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: "#1C1C1E" }}>{email}</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: "var(--pierre,#9C958D)", marginBottom: 6 }}>Email</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "var(--bois,#3D2E1F)" }}>{email}</div>
         </div>
         {!pwOpen ? (
           <button onClick={() => setPwOpen(true)} style={{ border: "1.5px solid #C4531A", color: "#C4531A", background: "transparent", height: 40, borderRadius: 8, padding: "0 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
@@ -137,7 +137,7 @@ export default function ParametresPage() {
             <input type="password" placeholder="Nouveau mot de passe (min 8 car.)" value={newPw} onChange={(e) => setNewPw(e.target.value)} style={{ width: "100%", height: 40, padding: "0 12px", borderRadius: 8, border: "1.5px solid #E0DDD8", fontSize: 14, marginBottom: 12 }} />
             {pwMsg && <p style={{ fontSize: 13, color: pwMsg.includes("modifié") ? "#16a34a" : "#dc2626", marginBottom: 8 }}>{pwMsg}</p>}
             <div style={{ display: "flex", gap: 8 }}>
-              <button onClick={() => { setPwOpen(false); setPwMsg(""); }} style={{ flex: 1, height: 40, borderRadius: 8, border: "1.5px solid #E0DDD8", background: "none", fontSize: 13, fontWeight: 600, color: "#6B6560", cursor: "pointer" }}>Annuler</button>
+              <button onClick={() => { setPwOpen(false); setPwMsg(""); }} style={{ flex: 1, height: 40, borderRadius: 8, border: "1.5px solid #E0DDD8", background: "none", fontSize: 13, fontWeight: 600, color: "var(--bois-mid,#5C4A3A)", cursor: "pointer" }}>Annuler</button>
               <button onClick={handleChangePassword} disabled={pwLoading} style={{ flex: 1, height: 40, borderRadius: 8, background: "#C4531A", color: "#fff", border: "none", fontSize: 13, fontWeight: 600, cursor: "pointer", opacity: pwLoading ? 0.5 : 1 }}>{pwLoading ? "..." : "Confirmer"}</button>
             </div>
           </div>
@@ -146,21 +146,21 @@ export default function ParametresPage() {
 
       {/* Abonnement */}
       <div style={CARD}>
-        <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 20 }}>Abonnement</h2>
+        <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 18, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 20 }}>Abonnement</h2>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
           <span style={{ background: "rgba(196,83,26,.06)", color: "#C4531A", padding: "6px 14px", borderRadius: 8, fontSize: 13, fontWeight: 600 }}>Plan {planLabel}</span>
-          <span style={{ fontSize: 15, color: "#9B9590" }}>{planPrice} €/mois</span>
+          <span style={{ fontSize: 15, color: "var(--pierre,#9C958D)" }}>{planPrice} €/mois</span>
         </div>
         <div style={{ marginBottom: 20 }}>
           {(features[plan] || features.GRATUIT).map((f) => (
             <div key={f} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0" }}>
               <span style={{ color: "#16a34a", fontSize: 16 }}>&#10003;</span>
-              <span style={{ fontSize: 14, color: "#6B6560" }}>{f}</span>
+              <span style={{ fontSize: 14, color: "var(--bois-mid,#5C4A3A)" }}>{f}</span>
             </div>
           ))}
         </div>
         {plan !== "GRATUIT" && (
-          <button onClick={handleManageSubscription} style={{ border: "1.5px solid #E0DDD8", color: "#1C1C1E", background: "transparent", height: 40, borderRadius: 8, padding: "0 20px", fontSize: 13, fontWeight: 600, cursor: "pointer", marginBottom: 12 }}>
+          <button onClick={handleManageSubscription} style={{ border: "1.5px solid #E0DDD8", color: "var(--bois,#3D2E1F)", background: "transparent", height: 40, borderRadius: 8, padding: "0 20px", fontSize: 13, fontWeight: 600, cursor: "pointer", marginBottom: 12 }}>
             Gérer mon abonnement
           </button>
         )}
@@ -170,7 +170,7 @@ export default function ParametresPage() {
           </button>
         ) : (
           <div style={{ background: "#FAF8F5", borderRadius: 12, padding: 20, marginTop: 12 }}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1C1C1E", marginBottom: 16 }}>Choisir un plan</h3>
+            <h3 style={{ fontSize: 15, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 16 }}>Choisir un plan</h3>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {[
                 { id: "STARTER", name: "Starter", price: "19€/mois", desc: "Conformité PA + facturation" },
@@ -184,14 +184,14 @@ export default function ParametresPage() {
                   opacity: planLoading === p.id ? 0.5 : 1,
                 }}>
                   <div style={{ textAlign: "left" }}>
-                    <div style={{ fontSize: 15, fontWeight: 700, color: "#1C1C1E" }}>{p.name} <span style={{ fontWeight: 500, color: "#9B9590" }}>{p.price}</span></div>
-                    <div style={{ fontSize: 12, color: "#9B9590", marginTop: 2 }}>{p.desc}</div>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: "var(--bois,#3D2E1F)" }}>{p.name} <span style={{ fontWeight: 500, color: "var(--pierre,#9C958D)" }}>{p.price}</span></div>
+                    <div style={{ fontSize: 12, color: "var(--pierre,#9C958D)", marginTop: 2 }}>{p.desc}</div>
                   </div>
                   <span style={{ fontSize: 13, fontWeight: 600, color: "#C4531A" }}>{planLoading === p.id ? "..." : "Choisir →"}</span>
                 </button>
               ))}
             </div>
-            <button onClick={() => setShowPlans(false)} style={{ marginTop: 12, fontSize: 13, color: "#9B9590", background: "none", border: "none", cursor: "pointer" }}>Annuler</button>
+            <button onClick={() => setShowPlans(false)} style={{ marginTop: 12, fontSize: 13, color: "var(--pierre,#9C958D)", background: "none", border: "none", cursor: "pointer" }}>Annuler</button>
           </div>
         )}
       </div>
@@ -199,9 +199,9 @@ export default function ParametresPage() {
       {/* Ma page */}
       {url && (
         <div style={CARD}>
-          <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 20 }}>Ma page</h2>
+          <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 18, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 20 }}>Ma page</h2>
           <div style={{ background: "#F7F5F2", borderRadius: 10, padding: "14px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <span style={{ fontSize: 14, fontFamily: "monospace", color: "#1C1C1E" }}>{url}</span>
+            <span style={{ fontSize: 14, fontFamily: "monospace", color: "var(--bois,#3D2E1F)" }}>{url}</span>
             <button onClick={copyUrl} style={{ background: "#C4531A", color: "#fff", padding: "6px 14px", borderRadius: 6, fontSize: 12, fontWeight: 600, border: "none", cursor: "pointer" }}>{copied ? "Copié !" : "Copier"}</button>
           </div>
           {(plan === "PRO" || plan === "PRO_PLUS" || plan === "BUSINESS") && (
@@ -215,7 +215,7 @@ export default function ParametresPage() {
       {/* Zone de danger */}
       <div style={{ background: "rgba(220,38,38,.02)", borderRadius: 16, border: "1.5px solid rgba(220,38,38,.15)", padding: 28, marginBottom: 20 }}>
         <h2 style={{ fontSize: 16, fontWeight: 700, color: "#DC2626", marginBottom: 10 }}>Zone de danger</h2>
-        <p style={{ fontSize: 13, color: "#6B6560", lineHeight: 1.6, marginBottom: 16 }}>La désactivation masquera votre page de l&apos;annuaire. Vous pourrez la réactiver à tout moment.</p>
+        <p style={{ fontSize: 13, color: "var(--bois-mid,#5C4A3A)", lineHeight: 1.6, marginBottom: 16 }}>La désactivation masquera votre page de l&apos;annuaire. Vous pourrez la réactiver à tout moment.</p>
         <button onClick={handleDeactivate} style={{ border: "1.5px solid #DC2626", color: "#DC2626", background: "transparent", height: 40, borderRadius: 8, padding: "0 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Désactiver mon compte</button>
       </div>
 

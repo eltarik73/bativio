@@ -166,7 +166,7 @@ function AgendaPageContent() {
     <div>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: 28 }}>
-        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 26, fontWeight: 700, color: "#1C1C1E", margin: 0 }}>
+        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 26, fontWeight: 700, color: "var(--bois,#3D2E1F)", margin: 0 }}>
           Agenda
         </h1>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -175,7 +175,7 @@ function AgendaPageContent() {
             style={{
               display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 18px",
               borderRadius: 10, fontSize: 13, fontWeight: 600,
-              border: "1.5px solid #EDEBE7", background: "#fff", color: "#1C1C1E",
+              border: "1px solid var(--sable,#E8D5C0)", background: "#fff", color: "var(--bois,#3D2E1F)",
               textDecoration: "none", transition: "all .15s",
             }}
           >
@@ -200,69 +200,69 @@ function AgendaPageContent() {
       {/* Inline add form */}
       {showForm && (
         <div style={{
-          background: "#fff", borderRadius: 14, border: "1.5px solid #EDEBE7", padding: 24,
+          background: "#fff", borderRadius: 14, border: "1px solid var(--sable,#E8D5C0)", padding: 24,
           marginBottom: 20, boxShadow: "0 4px 24px rgba(28,28,30,.04)",
         }}>
-          <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 17, fontWeight: 700, color: "#1C1C1E", marginBottom: 16 }}>
+          <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 17, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 16 }}>
             Nouveau rendez-vous
           </h3>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: 12 }}>
             <div>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#6B6560", marginBottom: 4 }}>Nom du client *</label>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--bois-mid,#5C4A3A)", marginBottom: 4 }}>Nom du client *</label>
               <input
                 value={form.clientNom}
                 onChange={(e) => setForm((f) => ({ ...f, clientNom: e.target.value }))}
                 placeholder="Jean Dupont"
                 style={{
-                  width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #EDEBE7",
+                  width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid var(--sable,#E8D5C0)",
                   fontSize: 14, outline: "none", fontFamily: "'Karla',sans-serif",
                 }}
               />
             </div>
             <div>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#6B6560", marginBottom: 4 }}>Téléphone</label>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--bois-mid,#5C4A3A)", marginBottom: 4 }}>Téléphone</label>
               <input
                 value={form.clientTelephone}
                 onChange={(e) => setForm((f) => ({ ...f, clientTelephone: e.target.value }))}
                 placeholder="06 12 34 56 78"
                 style={{
-                  width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #EDEBE7",
+                  width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid var(--sable,#E8D5C0)",
                   fontSize: 14, outline: "none", fontFamily: "'Karla',sans-serif",
                 }}
               />
             </div>
             <div>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#6B6560", marginBottom: 4 }}>Date *</label>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--bois-mid,#5C4A3A)", marginBottom: 4 }}>Date *</label>
               <input
                 type="date"
                 value={form.date}
                 onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
                 style={{
-                  width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #EDEBE7",
+                  width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid var(--sable,#E8D5C0)",
                   fontSize: 14, outline: "none", fontFamily: "'Karla',sans-serif",
                 }}
               />
             </div>
             <div>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#6B6560", marginBottom: 4 }}>Heure *</label>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--bois-mid,#5C4A3A)", marginBottom: 4 }}>Heure *</label>
               <input
                 type="time"
                 value={form.heure}
                 onChange={(e) => setForm((f) => ({ ...f, heure: e.target.value }))}
                 style={{
-                  width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #EDEBE7",
+                  width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid var(--sable,#E8D5C0)",
                   fontSize: 14, outline: "none", fontFamily: "'Karla',sans-serif",
                 }}
               />
             </div>
             <div style={{ gridColumn: "1 / -1" }}>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#6B6560", marginBottom: 4 }}>Objet *</label>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--bois-mid,#5C4A3A)", marginBottom: 4 }}>Objet *</label>
               <input
                 value={form.objet}
                 onChange={(e) => setForm((f) => ({ ...f, objet: e.target.value }))}
                 placeholder="Installation chauffe-eau, dépannage..."
                 style={{
-                  width: "100%", padding: "10px 12px", borderRadius: 8, border: "1.5px solid #EDEBE7",
+                  width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid var(--sable,#E8D5C0)",
                   fontSize: 14, outline: "none", fontFamily: "'Karla',sans-serif",
                 }}
               />
@@ -287,7 +287,7 @@ function AgendaPageContent() {
               onClick={() => { setShowForm(false); setFormError(""); }}
               style={{
                 padding: "10px 22px", borderRadius: 10, fontSize: 13, fontWeight: 600,
-                background: "#F7F5F2", color: "#6B6560", border: "none", cursor: "pointer",
+                background: "#F7F5F2", color: "var(--bois-mid,#5C4A3A)", border: "none", cursor: "pointer",
                 transition: "all .15s",
               }}
             >
@@ -307,7 +307,7 @@ function AgendaPageContent() {
           style={{
             display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px",
             borderRadius: 8, fontSize: 13, fontWeight: 600, background: "#fff",
-            border: "1.5px solid #EDEBE7", color: "#6B6560", cursor: "pointer",
+            border: "1px solid var(--sable,#E8D5C0)", color: "var(--bois-mid,#5C4A3A)", cursor: "pointer",
           }}
         >
           <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
@@ -315,7 +315,7 @@ function AgendaPageContent() {
         </button>
 
         <div style={{ textAlign: "center" }}>
-          <span style={{ fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, color: "#1C1C1E" }}>
+          <span style={{ fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, color: "var(--bois,#3D2E1F)" }}>
             {weekLabel(monday)}
           </span>
           {fmtDate(monday) !== fmtDate(getMonday(new Date())) && (
@@ -337,7 +337,7 @@ function AgendaPageContent() {
           style={{
             display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px",
             borderRadius: 8, fontSize: 13, fontWeight: 600, background: "#fff",
-            border: "1.5px solid #EDEBE7", color: "#6B6560", cursor: "pointer",
+            border: "1px solid var(--sable,#E8D5C0)", color: "var(--bois-mid,#5C4A3A)", cursor: "pointer",
           }}
         >
           Semaine suivante
@@ -347,7 +347,7 @@ function AgendaPageContent() {
 
       {/* Week grid */}
       {loading ? (
-        <div style={{ textAlign: "center", padding: 60, color: "#9B9590", fontSize: 14 }}>
+        <div style={{ textAlign: "center", padding: 60, color: "var(--pierre,#9C958D)", fontSize: 14 }}>
           Chargement...
         </div>
       ) : (
@@ -372,7 +372,7 @@ function AgendaPageContent() {
                 <div style={{
                   padding: "10px 12px",
                   background: isToday ? "rgba(196,83,26,.08)" : "#F7F5F2",
-                  borderBottom: "1px solid #EDEBE7",
+                  borderBottom: "1px solid var(--sable,#E8D5C0)",
                   textAlign: "center",
                 }}>
                   <div style={{
@@ -387,7 +387,7 @@ function AgendaPageContent() {
                   }}>
                     {day.getDate()}
                   </div>
-                  <div style={{ fontSize: 11, color: "#9B9590" }}>
+                  <div style={{ fontSize: 11, color: "var(--pierre,#9C958D)" }}>
                     {MOIS[day.getMonth()]}
                   </div>
                 </div>
@@ -432,14 +432,14 @@ function AgendaPageContent() {
                             {rdv.heureDebut}{rdv.heureFin ? ` – ${rdv.heureFin}` : ""}
                           </div>
                           <div style={{
-                            fontSize: 12, fontWeight: 600, color: "#1C1C1E", marginTop: 2,
+                            fontSize: 12, fontWeight: 600, color: "var(--bois,#3D2E1F)", marginTop: 2,
                             textDecoration: st.strike ? "line-through" : "none",
                             whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
                           }}>
                             {rdv.clientNom}
                           </div>
                           <div style={{
-                            fontSize: 11, color: "#6B6560", marginTop: 1,
+                            fontSize: 11, color: "var(--bois-mid,#5C4A3A)", marginTop: 1,
                             whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
                             textDecoration: st.strike ? "line-through" : "none",
                           }}>
@@ -451,12 +451,12 @@ function AgendaPageContent() {
                         {isExpanded && (
                           <div style={{
                             padding: "10px 10px 8px", marginTop: 4,
-                            background: "#fff", borderRadius: 8, border: "1px solid #EDEBE7",
+                            background: "#fff", borderRadius: 8, border: "1px solid var(--sable,#E8D5C0)",
                             fontSize: 12,
                           }}>
                             {rdv.clientTelephone && (
                               <div style={{ marginBottom: 4 }}>
-                                <span style={{ color: "#9B9590" }}>Tél : </span>
+                                <span style={{ color: "var(--pierre,#9C958D)" }}>Tél : </span>
                                 <a href={`tel:${rdv.clientTelephone}`} style={{ color: "#C4531A", fontWeight: 600 }}>
                                   {rdv.clientTelephone}
                                 </a>
@@ -464,14 +464,14 @@ function AgendaPageContent() {
                             )}
                             {rdv.clientEmail && (
                               <div style={{ marginBottom: 4 }}>
-                                <span style={{ color: "#9B9590" }}>Email : </span>
-                                <span style={{ color: "#1C1C1E" }}>{rdv.clientEmail}</span>
+                                <span style={{ color: "var(--pierre,#9C958D)" }}>Email : </span>
+                                <span style={{ color: "var(--bois,#3D2E1F)" }}>{rdv.clientEmail}</span>
                               </div>
                             )}
                             {rdv.notes && (
                               <div style={{ marginBottom: 4 }}>
-                                <span style={{ color: "#9B9590" }}>Notes : </span>
-                                <span style={{ color: "#1C1C1E" }}>{rdv.notes}</span>
+                                <span style={{ color: "var(--pierre,#9C958D)" }}>Notes : </span>
+                                <span style={{ color: "var(--bois,#3D2E1F)" }}>{rdv.notes}</span>
                               </div>
                             )}
                             <div style={{
@@ -536,15 +536,15 @@ function AgendaPageContent() {
       {!loading && rdvs.length === 0 && (
         <div style={{
           textAlign: "center", padding: "48px 20px", marginTop: 20,
-          background: "#fff", borderRadius: 14, border: "1.5px solid #EDEBE7",
+          background: "#fff", borderRadius: 14, border: "1px solid var(--sable,#E8D5C0)",
         }}>
           <svg width="48" height="48" fill="none" stroke="#C5C0B9" strokeWidth="1.5" viewBox="0 0 24 24" style={{ margin: "0 auto 16px" }}>
             <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
           </svg>
-          <p style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#1C1C1E", marginBottom: 6 }}>
+          <p style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 6 }}>
             Aucun RDV cette semaine
           </p>
-          <p style={{ fontSize: 14, color: "#9B9590", maxWidth: 380, margin: "0 auto" }}>
+          <p style={{ fontSize: 14, color: "var(--pierre,#9C958D)", maxWidth: 380, margin: "0 auto" }}>
             Configurez vos disponibilités pour que vos clients puissent prendre rendez-vous directement en ligne.
           </p>
           <Link
