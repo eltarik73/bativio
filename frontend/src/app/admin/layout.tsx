@@ -85,7 +85,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </aside>
         <div style={{ flex: 1 }}>
           <header style={{ background: "#fff", borderBottom: "1.5px solid #EDEBE7", padding: "16px 32px" }}>
-            <p style={{ fontSize: 14, color: "#9B9590", fontWeight: 500 }}>Tableau de bord &middot; Vue d&apos;ensemble de votre plateforme</p>
+            <p style={{ fontSize: 14, color: "var(--pierre,#9C958D)", fontWeight: 500 }}>Tableau de bord &middot; Vue d&apos;ensemble de votre plateforme</p>
           </header>
           <main style={{ padding: "28px 32px", maxWidth: 1200, margin: "0 auto" }} className="max-md:p-4">{children}</main>
         </div>

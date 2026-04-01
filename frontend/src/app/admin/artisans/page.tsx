@@ -84,21 +84,21 @@ export default function AdminArtisansPage() {
   const tableCard: React.CSSProperties = {
     background: "#fff",
     borderRadius: 14,
-    border: "1px solid #EDEBE7",
+    border: "1px solid var(--sable,#E8D5C0)",
     overflow: "hidden",
   };
 
   return (
     <div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
-        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E" }}>Artisans</h1>
+        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "var(--bois,#3D2E1F)" }}>Artisans</h1>
         <form onSubmit={handleSearch}>
           <input
             type="text"
             placeholder="Rechercher..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            style={{ height: 42, padding: "0 16px", borderRadius: 10, border: "1.5px solid #E0DDD8", fontSize: 14, fontFamily: "'Karla',sans-serif", color: "#1C1C1E", outline: "none", transition: "border-color .2s", width: 220 }}
+            style={{ height: 42, padding: "0 16px", borderRadius: 10, border: "1.5px solid #E0DDD8", fontSize: 14, fontFamily: "'Karla',sans-serif", color: "var(--bois,#3D2E1F)", outline: "none", transition: "border-color .2s", width: 220 }}
             onFocus={(e) => { e.currentTarget.style.borderColor = "#C4531A"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(196,83,26,.08)"; }}
             onBlur={(e) => { e.currentTarget.style.borderColor = "#E0DDD8"; e.currentTarget.style.boxShadow = "none"; }}
           />
@@ -110,25 +110,25 @@ export default function AdminArtisansPage() {
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ background: "#F7F5F2", borderBottom: "1px solid #EDEBE7" }}>
-                <th style={{ textAlign: "left", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Nom</th>
-                <th style={{ textAlign: "left", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Email</th>
-                <th style={{ textAlign: "left", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Ville</th>
-                <th style={{ textAlign: "left", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Plan</th>
-                <th style={{ textAlign: "left", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Statut</th>
-                <th style={{ textAlign: "center", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Visible</th>
-                <th style={{ textAlign: "right", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5 }}>Actions</th>
+                <th style={{ textAlign: "left", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "var(--pierre,#9C958D)", textTransform: "uppercase", letterSpacing: 0.5 }}>Nom</th>
+                <th style={{ textAlign: "left", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "var(--pierre,#9C958D)", textTransform: "uppercase", letterSpacing: 0.5 }}>Email</th>
+                <th style={{ textAlign: "left", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "var(--pierre,#9C958D)", textTransform: "uppercase", letterSpacing: 0.5 }}>Ville</th>
+                <th style={{ textAlign: "left", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "var(--pierre,#9C958D)", textTransform: "uppercase", letterSpacing: 0.5 }}>Plan</th>
+                <th style={{ textAlign: "left", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "var(--pierre,#9C958D)", textTransform: "uppercase", letterSpacing: 0.5 }}>Statut</th>
+                <th style={{ textAlign: "center", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "var(--pierre,#9C958D)", textTransform: "uppercase", letterSpacing: 0.5 }}>Visible</th>
+                <th style={{ textAlign: "right", padding: "14px 16px", fontSize: 11, fontWeight: 600, color: "var(--pierre,#9C958D)", textTransform: "uppercase", letterSpacing: 0.5 }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={7} style={{ padding: "32px 24px", textAlign: "center", fontSize: 14, color: "#9B9590" }}>
+                  <td colSpan={7} style={{ padding: "32px 24px", textAlign: "center", fontSize: 14, color: "var(--pierre,#9C958D)" }}>
                     Chargement...
                   </td>
                 </tr>
               ) : artisans.length === 0 ? (
                 <tr>
-                  <td colSpan={7} style={{ padding: "32px 24px", textAlign: "center", fontSize: 14, color: "#9B9590" }}>
+                  <td colSpan={7} style={{ padding: "32px 24px", textAlign: "center", fontSize: 14, color: "var(--pierre,#9C958D)" }}>
                     Aucun artisan trouve
                   </td>
                 </tr>
@@ -138,9 +138,9 @@ export default function AdminArtisansPage() {
                     onMouseEnter={(e) => { e.currentTarget.style.background = "#FAF8F5"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
                   >
-                    <td style={{ padding: "14px 16px", fontSize: 14, fontWeight: 600, color: "#1C1C1E" }}>{a.nomAffichage}</td>
-                    <td style={{ padding: "14px 16px", fontSize: 14, color: "#6B6560" }}>{a.user?.email || a.email || "-"}</td>
-                    <td style={{ padding: "14px 16px", fontSize: 14, color: "#6B6560" }}>{a.ville || "-"}</td>
+                    <td style={{ padding: "14px 16px", fontSize: 14, fontWeight: 600, color: "var(--bois,#3D2E1F)" }}>{a.nomAffichage}</td>
+                    <td style={{ padding: "14px 16px", fontSize: 14, color: "var(--bois-mid,#5C4A3A)" }}>{a.user?.email || a.email || "-"}</td>
+                    <td style={{ padding: "14px 16px", fontSize: 14, color: "var(--bois-mid,#5C4A3A)" }}>{a.ville || "-"}</td>
                     <td style={{ padding: "14px 16px" }}>
                       <span style={{
                         padding: "4px 12px", borderRadius: 20, fontSize: 12, fontWeight: 600,
@@ -209,17 +209,17 @@ export default function AdminArtisansPage() {
             <button
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0}
-              style={{ fontSize: 14, color: "#9B9590", background: "none", border: "none", cursor: "pointer", opacity: page === 0 ? 0.3 : 1, fontFamily: "'Karla',sans-serif", fontWeight: 500 }}
+              style={{ fontSize: 14, color: "var(--pierre,#9C958D)", background: "none", border: "none", cursor: "pointer", opacity: page === 0 ? 0.3 : 1, fontFamily: "'Karla',sans-serif", fontWeight: 500 }}
             >
               Precedent
             </button>
-            <span style={{ fontSize: 14, color: "#9B9590" }}>
+            <span style={{ fontSize: 14, color: "var(--pierre,#9C958D)" }}>
               Page {page + 1} / {totalPages}
             </span>
             <button
               onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
               disabled={page >= totalPages - 1}
-              style={{ fontSize: 14, color: "#9B9590", background: "none", border: "none", cursor: "pointer", opacity: page >= totalPages - 1 ? 0.3 : 1, fontFamily: "'Karla',sans-serif", fontWeight: 500 }}
+              style={{ fontSize: 14, color: "var(--pierre,#9C958D)", background: "none", border: "none", cursor: "pointer", opacity: page >= totalPages - 1 ? 0.3 : 1, fontFamily: "'Karla',sans-serif", fontWeight: 500 }}
             >
               Suivant
             </button>

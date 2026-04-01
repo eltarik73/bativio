@@ -293,10 +293,10 @@ export default function AdminParametresPage() {
     <div style={{ maxWidth: 900 }}>
       {/* Header */}
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", margin: 0 }}>
+        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "var(--bois,#3D2E1F)", margin: 0 }}>
           Parametres
         </h1>
-        <p style={{ fontSize: 14, color: "#9B9590", marginTop: 4 }}>
+        <p style={{ fontSize: 14, color: "var(--pierre,#9C958D)", marginTop: 4 }}>
           Configuration globale de la plateforme
         </p>
       </div>
@@ -378,11 +378,11 @@ export default function AdminParametresPage() {
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div style={{
-      background: "#fff", borderRadius: 12, border: "1.5px solid #EDEBE7",
+      background: "#fff", borderRadius: 12, border: "1px solid var(--sable,#E8D5C0)",
       padding: "20px 24px",
     }}>
       <h3 style={{
-        fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, color: "#1C1C1E",
+        fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, color: "var(--bois,#3D2E1F)",
         margin: "0 0 16px 0", paddingBottom: 12, borderBottom: "1px solid #EDEBE7",
       }}>
         {title}
@@ -396,7 +396,7 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
 
 function EmptyMessage() {
   return (
-    <p style={{ fontSize: 13, color: "#9B9590", fontStyle: "italic", margin: 0 }}>
+    <p style={{ fontSize: 13, color: "var(--pierre,#9C958D)", fontStyle: "italic", margin: 0 }}>
       Aucune configuration dans cette categorie.
     </p>
   );
@@ -409,9 +409,9 @@ function ConfigRow({ item, onUpdate }: { item: ConfigItem; onUpdate: (cle: strin
     return (
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", minHeight: 36 }}>
         <div>
-          <span style={{ fontSize: 14, fontWeight: 500, color: "#1C1C1E" }}>{item.label}</span>
+          <span style={{ fontSize: 14, fontWeight: 500, color: "var(--bois,#3D2E1F)" }}>{item.label}</span>
           {item.description && (
-            <p style={{ fontSize: 12, color: "#9B9590", margin: "2px 0 0 0" }}>{item.description}</p>
+            <p style={{ fontSize: 12, color: "var(--pierre,#9C958D)", margin: "2px 0 0 0" }}>{item.description}</p>
           )}
         </div>
         <Toggle checked={val} onChange={(v) => onUpdate(item.cle, String(v))} />
@@ -423,9 +423,9 @@ function ConfigRow({ item, onUpdate }: { item: ConfigItem; onUpdate: (cle: strin
     return (
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", minHeight: 36, gap: 16 }}>
         <div style={{ flex: 1 }}>
-          <span style={{ fontSize: 14, fontWeight: 500, color: "#1C1C1E" }}>{item.label}</span>
+          <span style={{ fontSize: 14, fontWeight: 500, color: "var(--bois,#3D2E1F)" }}>{item.label}</span>
           {item.description && (
-            <p style={{ fontSize: 12, color: "#9B9590", margin: "2px 0 0 0" }}>{item.description}</p>
+            <p style={{ fontSize: 12, color: "var(--pierre,#9C958D)", margin: "2px 0 0 0" }}>{item.description}</p>
           )}
         </div>
         <input
@@ -433,8 +433,8 @@ function ConfigRow({ item, onUpdate }: { item: ConfigItem; onUpdate: (cle: strin
           value={item.valeur}
           onChange={(e) => onUpdate(item.cle, e.target.value)}
           style={{
-            width: 100, padding: "6px 10px", borderRadius: 8, border: "1.5px solid #EDEBE7",
-            fontSize: 14, color: "#1C1C1E", outline: "none", textAlign: "right",
+            width: 100, padding: "6px 10px", borderRadius: 8, border: "1px solid var(--sable,#E8D5C0)",
+            fontSize: 14, color: "var(--bois,#3D2E1F)", outline: "none", textAlign: "right",
           }}
           onFocus={(e) => { e.currentTarget.style.borderColor = "#C4531A"; }}
           onBlur={(e) => { e.currentTarget.style.borderColor = "#EDEBE7"; }}
@@ -446,17 +446,17 @@ function ConfigRow({ item, onUpdate }: { item: ConfigItem; onUpdate: (cle: strin
   // Default: string / text input
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 4, minHeight: 36 }}>
-      <span style={{ fontSize: 14, fontWeight: 500, color: "#1C1C1E" }}>{item.label}</span>
+      <span style={{ fontSize: 14, fontWeight: 500, color: "var(--bois,#3D2E1F)" }}>{item.label}</span>
       {item.description && (
-        <p style={{ fontSize: 12, color: "#9B9590", margin: 0 }}>{item.description}</p>
+        <p style={{ fontSize: 12, color: "var(--pierre,#9C958D)", margin: 0 }}>{item.description}</p>
       )}
       <input
         type="text"
         value={item.valeur}
         onChange={(e) => onUpdate(item.cle, e.target.value)}
         style={{
-          padding: "8px 12px", borderRadius: 8, border: "1.5px solid #EDEBE7",
-          fontSize: 14, color: "#1C1C1E", outline: "none", width: "100%",
+          padding: "8px 12px", borderRadius: 8, border: "1px solid var(--sable,#E8D5C0)",
+          fontSize: 14, color: "var(--bois,#3D2E1F)", outline: "none", width: "100%",
         }}
         onFocus={(e) => { e.currentTarget.style.borderColor = "#C4531A"; }}
         onBlur={(e) => { e.currentTarget.style.borderColor = "#EDEBE7"; }}
@@ -482,9 +482,9 @@ function FeaturePlansRow({ item, onUpdate }: { item: ConfigItem; onUpdate: (cle:
 
   return (
     <div style={{ minHeight: 36 }}>
-      <span style={{ fontSize: 14, fontWeight: 500, color: "#1C1C1E" }}>{item.label}</span>
+      <span style={{ fontSize: 14, fontWeight: 500, color: "var(--bois,#3D2E1F)" }}>{item.label}</span>
       {item.description && (
-        <p style={{ fontSize: 12, color: "#9B9590", margin: "2px 0 0 0" }}>{item.description}</p>
+        <p style={{ fontSize: 12, color: "var(--pierre,#9C958D)", margin: "2px 0 0 0" }}>{item.description}</p>
       )}
       <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
         {plans.map((plan) => (
@@ -495,7 +495,7 @@ function FeaturePlansRow({ item, onUpdate }: { item: ConfigItem; onUpdate: (cle:
               onChange={() => toggle(plan)}
               style={{ accentColor: "#C4531A", width: 16, height: 16 }}
             />
-            <span style={{ fontSize: 13, fontWeight: 500, color: "#1C1C1E" }}>{plan.replace("_", " ")}</span>
+            <span style={{ fontSize: 13, fontWeight: 500, color: "var(--bois,#3D2E1F)" }}>{plan.replace("_", " ")}</span>
           </label>
         ))}
       </div>
