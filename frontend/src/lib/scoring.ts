@@ -1,97 +1,32 @@
 // Scoring / Admission system for Bativio artisans
-// Each criterion has a weight and possible answers with points
+// Criteria match the frontend form (/onboarding/validation)
+// Score calculated server-side only — never expose weights/threshold to client
 
-export interface ScoringCriterion {
+export const AUTO_ACCEPT_THRESHOLD = 55; // percent
+
+// Criteria IDs must match the frontend form keys exactly
+interface CriterionDef {
   id: string;
-  question: string;
-  type: "single" | "multiple" | "boolean";
-  options: { value: string; label: string; points: number }[];
   weight: number;
+  maxValue: number;
+  validValues: number[];
 }
 
-export const CRITERIA: ScoringCriterion[] = [
-  {
-    id: "experience",
-    question: "Depuis combien de temps exercez-vous ?",
-    type: "single",
-    options: [
-      { value: "moins_1", label: "Moins d'1 an", points: 1 },
-      { value: "1_3", label: "1 à 3 ans", points: 3 },
-      { value: "3_5", label: "3 à 5 ans", points: 5 },
-      { value: "5_10", label: "5 à 10 ans", points: 8 },
-      { value: "plus_10", label: "Plus de 10 ans", points: 10 },
-    ],
-    weight: 2,
-  },
-  {
-    id: "assurance",
-    question: "Avez-vous une assurance décennale en cours de validité ?",
-    type: "boolean",
-    options: [
-      { value: "oui", label: "Oui", points: 10 },
-      { value: "non", label: "Non", points: 0 },
-    ],
-    weight: 3,
-  },
-  {
-    id: "qualifications",
-    question: "Avez-vous des qualifications professionnelles ?",
-    type: "multiple",
-    options: [
-      { value: "rge", label: "RGE", points: 5 },
-      { value: "qualibat", label: "Qualibat", points: 5 },
-      { value: "qualifelec", label: "Qualifelec", points: 5 },
-      { value: "qualibois", label: "Qualibois", points: 3 },
-      { value: "qualipac", label: "Qualipac", points: 3 },
-      { value: "capeb", label: "CAPEB", points: 2 },
-      { value: "autre", label: "Autre certification", points: 2 },
-      { value: "aucune", label: "Aucune", points: 0 },
-    ],
-    weight: 2,
-  },
-  {
-    id: "chiffre_affaires",
-    question: "Quel est votre chiffre d'affaires annuel ?",
-    type: "single",
-    options: [
-      { value: "moins_30k", label: "Moins de 30 000 EUR", points: 2 },
-      { value: "30_70k", label: "30 000 - 70 000 EUR", points: 5 },
-      { value: "70_150k", label: "70 000 - 150 000 EUR", points: 8 },
-      { value: "plus_150k", label: "Plus de 150 000 EUR", points: 10 },
-    ],
-    weight: 1,
-  },
-  {
-    id: "equipe",
-    question: "Combien de personnes dans votre entreprise ?",
-    type: "single",
-    options: [
-      { value: "solo", label: "Seul(e)", points: 3 },
-      { value: "2_5", label: "2 à 5 personnes", points: 6 },
-      { value: "5_10", label: "5 à 10 personnes", points: 8 },
-      { value: "plus_10", label: "Plus de 10 personnes", points: 10 },
-    ],
-    weight: 1,
-  },
-  {
-    id: "motivation",
-    question: "Pourquoi souhaitez-vous rejoindre Bativio ?",
-    type: "multiple",
-    options: [
-      { value: "visibilite", label: "Gagner en visibilite", points: 3 },
-      { value: "clients", label: "Trouver de nouveaux clients", points: 3 },
-      { value: "facturation", label: "Gerer ma facturation", points: 2 },
-      { value: "organisation", label: "Mieux m'organiser", points: 2 },
-      { value: "curiosite", label: "Par curiosite", points: 1 },
-    ],
-    weight: 1,
-  },
+const CRITERIA: CriterionDef[] = [
+  { id: "anciennete",        weight: 3,   maxValue: 10, validValues: [1, 4, 7, 10] },
+  { id: "statut_juridique",  weight: 1.5, maxValue: 4,  validValues: [1, 2, 4] },
+  { id: "assurance",         weight: 3.5, maxValue: 10, validValues: [0, 3, 10] },
+  { id: "effectif",          weight: 2,   maxValue: 7,  validValues: [1, 3, 5, 7] },
+  { id: "labels",            weight: 1.5, maxValue: 5,  validValues: [0, 3, 5] },
+  { id: "photos",            weight: 1.5, maxValue: 5,  validValues: [0, 2, 3, 5] },
+  { id: "avis",              weight: 1.5, maxValue: 5,  validValues: [0, 2, 3, 5] },
+  { id: "presence_en_ligne", weight: 1,   maxValue: 5,  validValues: [0, 2, 3, 5] },
+  { id: "zone",              weight: 2.5, maxValue: 9,  validValues: [0, 3, 6, 9] },
+  { id: "plan",              weight: 1.5, maxValue: 8,  validValues: [1, 4, 6, 8] },
 ];
 
-export const AUTO_ACCEPT_THRESHOLD = 55;
-
 export interface ScoringAnswers {
-  [criterionId: string]: string | string[];
+  [key: string]: number | string | string[];
 }
 
 export interface ScoringResult {
@@ -103,75 +38,46 @@ export interface ScoringResult {
 }
 
 export function validateAnswers(answers: ScoringAnswers): string | null {
-  for (const criterion of CRITERIA) {
-    const answer = answers[criterion.id];
-    if (answer === undefined || answer === null) {
-      return `Reponse manquante pour : ${criterion.question}`;
-    }
+  if (!answers || typeof answers !== "object") return "Réponses manquantes";
 
-    if (criterion.type === "multiple") {
-      if (!Array.isArray(answer) || answer.length === 0) {
-        return `Selectionnez au moins une option pour : ${criterion.question}`;
-      }
-      const validValues = criterion.options.map((o) => o.value);
-      for (const v of answer) {
-        if (!validValues.includes(v)) {
-          return `Option invalide "${v}" pour : ${criterion.question}`;
-        }
-      }
-    } else {
-      if (typeof answer !== "string") {
-        return `Reponse invalide pour : ${criterion.question}`;
-      }
-      const validValues = criterion.options.map((o) => o.value);
-      if (!validValues.includes(answer)) {
-        return `Option invalide "${answer}" pour : ${criterion.question}`;
-      }
+  for (const criterion of CRITERIA) {
+    const raw = answers[criterion.id];
+    if (raw === undefined || raw === null) {
+      return `Réponse manquante pour le critère "${criterion.id}"`;
+    }
+    const value = typeof raw === "string" ? Number(raw) : raw;
+    if (typeof value !== "number" || isNaN(value)) {
+      return `Valeur invalide pour "${criterion.id}"`;
+    }
+    if (!criterion.validValues.includes(value)) {
+      return `Option invalide (${value}) pour "${criterion.id}"`;
     }
   }
+
   return null;
 }
 
 export function calculateScore(answers: ScoringAnswers): ScoringResult {
-  let totalScore = 0;
-  let totalMaxScore = 0;
   const details: ScoringResult["details"] = [];
+  let totalScore = 0;
+  let totalMax = 0;
 
   for (const criterion of CRITERIA) {
-    const answer = answers[criterion.id];
-    let points = 0;
+    const raw = answers[criterion.id];
+    const value = typeof raw === "string" ? Number(raw) : (raw as number) || 0;
+    const weighted = value * criterion.weight;
+    const maxWeighted = criterion.maxValue * criterion.weight;
 
-    if (criterion.type === "multiple" && Array.isArray(answer)) {
-      // For multiple, sum points of selected options (capped at max single option * weight)
-      for (const v of answer) {
-        const option = criterion.options.find((o) => o.value === v);
-        if (option) points += option.points;
-      }
-    } else if (typeof answer === "string") {
-      const option = criterion.options.find((o) => o.value === answer);
-      if (option) points = option.points;
-    }
-
-    const weightedPoints = points * criterion.weight;
-    const maxPoints =
-      Math.max(...criterion.options.map((o) => o.points)) * criterion.weight;
-
-    totalScore += weightedPoints;
-    totalMaxScore += maxPoints;
-
-    details.push({
-      criterionId: criterion.id,
-      points: weightedPoints,
-      maxPoints,
-    });
+    totalScore += weighted;
+    totalMax += maxWeighted;
+    details.push({ criterionId: criterion.id, points: weighted, maxPoints: maxWeighted });
   }
 
-  const percent =
-    totalMaxScore > 0 ? Math.round((totalScore / totalMaxScore) * 100) : 0;
+  const percent = totalMax > 0 ? Math.round((totalScore / totalMax) * 100) : 0;
 
   return {
     score: totalScore,
-    maxScore: totalMaxScore,
+    maxScore: totalMax,
     percent,
     details,
     autoAccepted: percent >= AUTO_ACCEPT_THRESHOLD,

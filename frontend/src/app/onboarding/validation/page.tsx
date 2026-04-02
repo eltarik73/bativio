@@ -267,7 +267,7 @@ export default function ValidationPage() {
         body: JSON.stringify(answers),
       }) as Record<string, unknown>;
 
-      const status = (result.status as string) || (result.decision as string) || "";
+      const status = (result.result as string) || (result.status as string) || (result.decision as string) || "";
       if (status === "auto_accepted" || status === "ACTIVE") {
         setStep("auto_accepted");
       } else {

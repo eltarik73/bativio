@@ -177,7 +177,7 @@ export default function AdminArtisansPage() {
                         <span style={{ display: "block", width: 16, height: 16, borderRadius: 8, background: "#fff", transition: "transform .2s", transform: a.visible !== false ? "translateX(16px)" : "translateX(0)" }} />
                       </button>
                     </td>
-                    <td style={{ padding: "14px 16px", textAlign: "right" }}>
+                    <td style={{ padding: "14px 16px", textAlign: "right", display: "flex", gap: 6, justifyContent: "flex-end" }}>
                       <button
                         onClick={() => handleToggleActif(a.id, a.actif)}
                         disabled={actionLoading === a.id}
@@ -194,6 +194,26 @@ export default function AdminArtisansPage() {
                           : a.actif
                           ? "Desactiver"
                           : "Valider"}
+                      </button>
+                      <button
+                        onClick={async () => {
+                          if (!confirm(`Supprimer définitivement ${a.nomAffichage} ? Cette action est irréversible.`)) return;
+                          setActionLoading(a.id);
+                          try {
+                            await fetchWithAuth(`/admin/artisans/${a.id}/delete`, { method: "POST" });
+                            await fetchArtisans();
+                          } catch { /* empty */ }
+                          finally { setActionLoading(null); }
+                        }}
+                        disabled={actionLoading === a.id}
+                        style={{
+                          padding: "6px 10px", height: 32, borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: "pointer",
+                          border: "1px solid rgba(239,68,68,.15)", background: "transparent", color: "#dc2626",
+                          opacity: actionLoading === a.id ? 0.5 : 1,
+                        }}
+                        title="Supprimer définitivement"
+                      >
+                        &#128465;
                       </button>
                     </td>
                   </tr>

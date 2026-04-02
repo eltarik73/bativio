@@ -33,9 +33,10 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const answers: ScoringAnswers = body.answers;
+    // Accept both { answers: {...} } and direct {...} format
+    const answers: ScoringAnswers = body.answers || body;
 
-    if (!answers || typeof answers !== "object") {
+    if (!answers || typeof answers !== "object" || Object.keys(answers).length === 0) {
       return apiError("Les reponses sont requises", 400);
     }
 
