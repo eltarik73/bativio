@@ -4,14 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import s from "./PricingGrid.module.css";
 
-/* ── SVGs exact from pricing-bativio-v8.html ── */
 const Chk = () => <svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 const Arrow = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>;
 
-const FlagFR = () => <svg width="22" height="16" viewBox="0 0 22 16" fill="none"><rect x="0.5" y="0.5" width="21" height="15" rx="2" fill="#fff" stroke="#E5E7EB" strokeWidth="0.5" /><rect x="1" y="1" width="6.67" height="14" fill="#002395" /><rect x="7.67" y="1" width="6.67" height="14" fill="#fff" /><rect x="14.33" y="1" width="6.67" height="14" fill="#ED2939" /></svg>;
-const FlagEU = () => <svg width="22" height="16" viewBox="0 0 22 16" fill="none"><rect x="0.5" y="0.5" width="21" height="15" rx="2" fill="#003399" stroke="#E5E7EB" strokeWidth="0.5" /><circle cx="11" cy="3.2" r="0.7" fill="#FFCC00" /><circle cx="13.5" cy="3.9" r="0.7" fill="#FFCC00" /><circle cx="15.1" cy="5.5" r="0.7" fill="#FFCC00" /><circle cx="15.8" cy="8" r="0.7" fill="#FFCC00" /><circle cx="15.1" cy="10.5" r="0.7" fill="#FFCC00" /><circle cx="13.5" cy="12.1" r="0.7" fill="#FFCC00" /><circle cx="11" cy="12.8" r="0.7" fill="#FFCC00" /><circle cx="8.5" cy="12.1" r="0.7" fill="#FFCC00" /><circle cx="6.9" cy="10.5" r="0.7" fill="#FFCC00" /><circle cx="6.2" cy="8" r="0.7" fill="#FFCC00" /><circle cx="6.9" cy="5.5" r="0.7" fill="#FFCC00" /><circle cx="8.5" cy="3.9" r="0.7" fill="#FFCC00" /></svg>;
+const FlagFR = () => <svg width="22" height="16" viewBox="0 0 22 16" fill="none"><rect x="0.5" y="0.5" width="21" height="15" rx="2" fill="#fff" stroke="#E8D5C0" strokeWidth="0.5" /><rect x="1" y="1" width="6.67" height="14" fill="#002395" /><rect x="7.67" y="1" width="6.67" height="14" fill="#fff" /><rect x="14.33" y="1" width="6.67" height="14" fill="#ED2939" /></svg>;
+const FlagEU = () => <svg width="22" height="16" viewBox="0 0 22 16" fill="none"><rect x="0.5" y="0.5" width="21" height="15" rx="2" fill="#003399" stroke="#E8D5C0" strokeWidth="0.5" /><circle cx="11" cy="3.2" r="0.7" fill="#FFCC00" /><circle cx="13.5" cy="3.9" r="0.7" fill="#FFCC00" /><circle cx="15.1" cy="5.5" r="0.7" fill="#FFCC00" /><circle cx="15.8" cy="8" r="0.7" fill="#FFCC00" /><circle cx="15.1" cy="10.5" r="0.7" fill="#FFCC00" /><circle cx="13.5" cy="12.1" r="0.7" fill="#FFCC00" /><circle cx="11" cy="12.8" r="0.7" fill="#FFCC00" /><circle cx="8.5" cy="12.1" r="0.7" fill="#FFCC00" /><circle cx="6.9" cy="10.5" r="0.7" fill="#FFCC00" /><circle cx="6.2" cy="8" r="0.7" fill="#FFCC00" /><circle cx="6.9" cy="5.5" r="0.7" fill="#FFCC00" /><circle cx="8.5" cy="3.9" r="0.7" fill="#FFCC00" /></svg>;
 
-/* ── Badge icons from v8 ── */
 const IFile = () => <svg viewBox="0 0 12 12" fill="none"><path d="M2 2h8v8H2z" stroke="currentColor" strokeWidth="1" /><path d="M4 5h4M4 7h3" stroke="currentColor" strokeWidth="0.8" /></svg>;
 const IPlus = () => <svg viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>;
 const IStar = () => <svg viewBox="0 0 12 12" fill="none"><path d="M6 1l1.5 3.1 3.4.5-2.5 2.4.6 3.4L6 8.8 3 10.4l.6-3.4L1.1 4.6l3.4-.5z" fill="#fff" /></svg>;
@@ -26,6 +24,16 @@ const PT_CLS: Record<string, string> = { free: s.ptFree, green: s.ptGreen, blue:
 const CK_CLS: Record<string, string> = { g: s.ckG, t: s.ckT, b: s.ckB, p: s.ckP };
 const SL_CLS: Record<string, string> = { default: "", ft: s.slFt, biz: s.slBiz, ia: s.slIa };
 const CTA_CLS: Record<string, string> = { outline: s.ctaO, green: s.ctaG, blue: s.ctaB, purple: s.ctaP };
+
+// Plan hierarchy for gating
+const PLAN_LEVEL: Record<string, number> = { gratuit: 0, starter: 1, pro: 2, business: 3 };
+
+function normalizePlanId(plan: string): string {
+  const p = plan.toLowerCase();
+  if (p === "essentiel") return "starter";
+  if (p === "pro_plus" || p === "proplus") return "business";
+  return p;
+}
 
 interface Feature { label: string; check: string; detail?: string; soon?: boolean }
 interface Section { label: string; variant: string; features: Feature[] }
@@ -138,20 +146,40 @@ const PLANS: Plan[] = [
   },
 ];
 
-export default function PricingGrid() {
-  const [annual, setAnnual] = useState(false);
+interface PricingGridProps {
+  currentPlan?: string; // "GRATUIT", "STARTER", "PRO", "BUSINESS", etc.
+  ctaHref?: string;     // override link destination (e.g. "/dashboard/parametres")
+}
 
+export default function PricingGrid({ currentPlan, ctaHref }: PricingGridProps) {
+  const [annual, setAnnual] = useState(false);
   const getPrice = (m: number) => annual ? Math.round(m * 0.83) : m;
+
+  const normalizedCurrent = currentPlan ? normalizePlanId(currentPlan) : null;
+  const currentLevel = normalizedCurrent ? (PLAN_LEVEL[normalizedCurrent] ?? -1) : -1;
+  const isConnected = currentLevel >= 0;
+
+  // If connected and has Business → show best plan message
+  if (isConnected && currentLevel >= 3) {
+    return (
+      <section className={s.pg}>
+        <div className={s.bestPlan}>
+          &#10024; Vous avez le meilleur plan — <strong>Business</strong>. Toutes les fonctionnalités sont débloquées.
+        </div>
+        <p className={s.pf}>Sans engagement &middot; Sans commission &middot; Z&eacute;ro frais cach&eacute;s &middot; Annulable &agrave; tout moment</p>
+      </section>
+    );
+  }
 
   return (
     <section className={s.pg}>
       {/* Conformity bar */}
       <div className={s.cb}>
-        <div className={s.ci}><FlagFR /> Conforme réforme 2026</div>
-        <div className={s.ci}><FlagEU /> Norme européenne e-invoicing</div>
+        <div className={s.ci}><FlagFR /> Conforme r&eacute;forme 2026</div>
+        <div className={s.ci}><FlagEU /> Norme europ&eacute;enne e-invoicing</div>
         <div className={s.ci}>
           <span className={s.cick}><Chk /></span>
-          Connecté PA certifiée par l&apos;État
+          Connect&eacute; PA certifi&eacute;e par l&apos;&Eacute;tat
         </div>
       </div>
 
@@ -169,11 +197,23 @@ export default function PricingGrid() {
       <div className={s.plans}>
         {PLANS.map((plan) => {
           const price = getPrice(plan.price);
-          return (
-            <div key={plan.id} className={`${s.plan} ${plan.featured ? s.planFeat : ""}`}>
-              {plan.featured && <div className={s.ptop}>Recommandé</div>}
+          const planLevel = PLAN_LEVEL[plan.id] ?? 0;
+          const isCurrent = isConnected && plan.id === normalizedCurrent;
+          const isLower = isConnected && planLevel < currentLevel;
+          const isUpgrade = isConnected && planLevel > currentLevel;
 
-              <div className={`${s.pt} ${PT_CLS[plan.promiseTag.variant] || ""}`} style={plan.featured ? { marginTop: 6 } : undefined}>
+          // Hide plans below current
+          if (isLower) return null;
+
+          const linkHref = ctaHref || (plan.id === "gratuit" ? "/inscription" : "/inscription");
+
+          return (
+            <div key={plan.id} className={`${s.plan} ${plan.featured && !isCurrent ? s.planFeat : ""} ${isCurrent ? s.planCurrent : ""}`}>
+              {/* Top badge */}
+              {isCurrent && <div className={`${s.ptop} ${s.ptopCurrent}`}>Votre plan</div>}
+              {plan.featured && !isCurrent && <div className={s.ptop}>Recommand&eacute;</div>}
+
+              <div className={`${s.pt} ${PT_CLS[plan.promiseTag.variant] || ""}`} style={plan.featured || isCurrent ? { marginTop: 6 } : undefined}>
                 {plan.promiseTag.label}
               </div>
               <div className={s.pn}>{plan.name}</div>
@@ -205,7 +245,7 @@ export default function PricingGrid() {
                       <li key={f.label} className={s.fi}>
                         <span className={`${s.ck} ${CK_CLS[f.check] || ""}`}><Chk /></span>
                         {f.label}
-                        {f.soon && <span className={s.soon}>bientôt</span>}
+                        {f.soon && <span className={s.soon}>bient&ocirc;t</span>}
                         {f.detail && !f.soon && <span className={s.fd}>{f.detail}</span>}
                       </li>
                     ))}
@@ -215,16 +255,20 @@ export default function PricingGrid() {
 
               {/* CTA */}
               <div className={s.pcta}>
-                <Link href={plan.id === "gratuit" ? "/inscription" : "/inscription"} className={`${s.ctaBtn} ${CTA_CLS[plan.cta.variant] || ""}`}>
-                  {plan.cta.label} <Arrow />
-                </Link>
+                {isCurrent ? (
+                  <span className={`${s.ctaBtn} ${s.ctaDisabled}`}>Plan actuel</span>
+                ) : (
+                  <Link href={linkHref} className={`${s.ctaBtn} ${CTA_CLS[plan.cta.variant] || ""}`}>
+                    {isUpgrade ? `Passer à ${plan.name}` : plan.cta.label} <Arrow />
+                  </Link>
+                )}
               </div>
             </div>
           );
         })}
       </div>
 
-      <p className={s.pf}>Sans engagement · Sans commission · Zéro frais cachés · Annulable à tout moment</p>
+      <p className={s.pf}>Sans engagement &middot; Sans commission &middot; Z&eacute;ro frais cach&eacute;s &middot; Annulable &agrave; tout moment</p>
     </section>
   );
 }

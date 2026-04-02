@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { hasFeature } from "@/lib/plans";
 import type { PlanType } from "@/lib/plans";
+import PricingGrid from "@/components/pricing/PricingGrid";
 
 export default function FacturationPage() {
   const { user, fetchWithAuth } = useAuth();
@@ -128,75 +129,7 @@ export default function FacturationPage() {
         </div>
 
         {/* Plans Bativio */}
-        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 16 }}>Choisissez votre plan Bativio</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 14, marginBottom: 32 }}>
-          {[
-            {
-              name: "Gratuit", price: "0", tag: "Je découvre", desc: "Testez Bativio gratuitement",
-              color: "#78716C", ctaBg: "transparent", ctaColor: "#1C1C1E", ctaBorder: "1px solid #D1D5DB",
-              sections: [
-                { label: "Visibilité", features: ["Fiche annuaire", "Réception demandes de devis", "3 photos chantiers"] },
-                { label: "Facturation", features: ["5 factures / mois"] },
-              ],
-            },
-            {
-              name: "Starter", price: "19", tag: "J'existe en ligne", desc: "Présence en ligne + facturation illimitée",
-              color: "#0F6E56", ctaBg: "#0F6E56", ctaColor: "#fff", ctaBorder: "none",
-              sections: [
-                { label: "Visibilité", features: ["Fiche annuaire optimisée", "10 photos chantiers", "Badges qualifications illimités", "Support email"] },
-                { label: "Facturation électronique", features: ["Factures + devis illimités", "Réception PA", "Émission PA", "E-reporting automatique"] },
-              ],
-            },
-            {
-              name: "Pro", price: "39", tag: "Je trouve des clients", desc: "Site internet pro + CRM", pop: true,
-              color: "#185FA5", ctaBg: "#185FA5", ctaColor: "#fff", ctaBorder: "none",
-              sections: [
-                { label: "Acquisition clients", features: ["Site internet Bativio personnalisé", "Avis clients vérifiés", "Relances devis automatiques", "Agenda & RDV en ligne", "CRM clients", "Photos illimitées", "Support prioritaire"] },
-                { label: "Facturation", features: ["Tout Starter inclus", "Export comptable (FEC)", "Création factures in-app"] },
-              ],
-            },
-            {
-              name: "Business", price: "59", tag: "Je scale mon activité", desc: "IA et SEO travaillent pour vous",
-              color: "#534AB7", ctaBg: "#534AB7", ctaColor: "#fff", ctaBorder: "none",
-              sections: [
-                { label: "Croissance", features: ["Tout Pro inclus", "SEO local optimisé", "Mise en avant annuaire", "Stats CA + conversion", "SMS notifications (50/mois)", "Support prioritaire"] },
-                { label: "Intelligence artificielle", features: ["Devis IA automatisé", "Agent IA répondeur", "Reporting intelligent"] },
-                { label: "Facturation", features: ["Tout Pro inclus"] },
-              ],
-            },
-          ].map((p) => (
-            <div key={p.name} style={{ background: "#fff", borderRadius: 14, padding: "20px 16px", border: p.pop ? "2px solid #185FA5" : "0.5px solid #E5E7EB", position: "relative", display: "flex", flexDirection: "column" }}>
-              {p.pop && <div style={{ position: "absolute", top: -11, left: "50%", transform: "translateX(-50%)", background: "#185FA5", color: "#fff", padding: "4px 14px", borderRadius: 99, fontSize: 11, fontWeight: 600, whiteSpace: "nowrap" }}>Recommandé</div>}
-              <div style={{ fontSize: 11, fontWeight: 500, padding: "3px 10px", borderRadius: 99, display: "inline-block", marginBottom: 8, width: "fit-content", background: `${p.color}15`, color: p.color }}>{p.tag}</div>
-              <div style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 500, color: "#1C1C1E", marginBottom: 4 }}>{p.name}</div>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 2, marginBottom: 4 }}>
-                <span style={{ fontFamily: "'Fraunces',serif", fontSize: 32, fontWeight: 600, color: "#1C1C1E" }}>{p.price}€</span>
-                {parseInt(p.price) > 0 && <span style={{ fontSize: 14, color: "#A8A29E" }}>/mois</span>}
-              </div>
-              <div style={{ fontSize: 13, color: "#78716C", lineHeight: 1.5, marginBottom: 12, minHeight: 40 }}>{p.desc}</div>
-              {p.sections.map((sec, si) => (
-                <div key={si}>
-                  <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "#A8A29E", margin: "12px 0 8px", paddingTop: 10, borderTop: "0.5px solid #E5E7EB" }}>{sec.label}</div>
-                  <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 5, padding: 0, margin: 0 }}>
-                    {sec.features.map((f) => (
-                      <li key={f} style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 13, lineHeight: 1.4, color: "#1C1C1E" }}>
-                        <span style={{ width: 16, minWidth: 16, height: 16, borderRadius: "50%", background: p.color, display: "flex", alignItems: "center", justifyContent: "center", marginTop: 1 }}>
-                          <svg viewBox="0 0 12 12" fill="none" width="12" height="12"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                        </span>
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-              <div style={{ marginTop: "auto", paddingTop: 16 }}>
-                <Link href="/dashboard/parametres" style={{ width: "100%", padding: 10, borderRadius: 8, fontSize: 14, fontWeight: 500, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, textDecoration: "none", background: p.ctaBg, color: p.ctaColor, border: p.ctaBorder }}>
-                  {p.price === "0" ? "Plan actuel" : `Passer à ${p.name}`}
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
+        <PricingGrid currentPlan={plan} ctaHref="/dashboard/parametres" />
 
         {/* Bottom urgence */}
         <div style={{ background: "#1C1C1E", borderRadius: 16, padding: "28px 32px", textAlign: "center" }}>
