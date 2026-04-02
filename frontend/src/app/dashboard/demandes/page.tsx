@@ -4,10 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
-// ---------------------------------------------------------------------------
-// Constants
-// ---------------------------------------------------------------------------
-
 const DOT: Record<string, string> = {
   NOUVEAU: "#dc2626",
   VU: "#E8A84C",
@@ -20,10 +16,10 @@ const DOT: Record<string, string> = {
 const LABEL: Record<string, string> = {
   NOUVEAU: "Nouveau",
   VU: "En cours",
-  REPONDU: "Devis envoy\u00e9",
-  ACCEPTE: "Accept\u00e9e",
-  REFUSE: "Refus\u00e9e",
-  ARCHIVE: "Archiv\u00e9e",
+  REPONDU: "Devis envoyé",
+  ACCEPTE: "Acceptée",
+  REFUSE: "Refusée",
+  ARCHIVE: "Archivée",
 };
 
 const BG: Record<string, string> = {
@@ -35,17 +31,8 @@ const BG: Record<string, string> = {
   ARCHIVE: "rgba(197,192,185,.08)",
 };
 
-const TABS = [
-  { key: "TOUS", label: "Toutes" },
-  { key: "NOUVEAU", label: "Nouvelles" },
-  { key: "VU", label: "En cours" },
-  { key: "REPONDU", label: "Devis envoy\u00e9" },
-  { key: "ACCEPTE", label: "Accept\u00e9es" },
-];
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
+const ACTIVE_STATUSES = ["NOUVEAU", "VU", "REPONDU"];
+const ARCHIVED_STATUSES = ["ACCEPTE", "REFUSE", "ARCHIVE"];
 
 interface Demande {
   id: string;
@@ -63,16 +50,11 @@ interface Demande {
   masque?: boolean;
 }
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
 function timeAgo(iso: string): string {
   const d = new Date(iso);
-  const now = Date.now();
-  const diff = now - d.getTime();
+  const diff = Date.now() - d.getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "\u00C0 l\u2019instant";
+  if (mins < 1) return "À l'instant";
   if (mins < 60) return `il y a ${mins} min`;
   const hours = Math.floor(mins / 60);
   if (hours < 24) return `il y a ${hours}h`;
@@ -83,382 +65,221 @@ function timeAgo(iso: string): string {
 }
 
 function initials(name: string): string {
-  return name
-    .split(" ")
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
+  return name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 }
 
-function excerpt(text: string, max: number = 60): string {
+function excerpt(text: string, max = 60): string {
   if (!text) return "";
-  if (text.length <= max) return text;
-  return text.slice(0, max).trimEnd() + "\u2026";
+  return text.length <= max ? text : text.slice(0, max).trimEnd() + "…";
 }
-
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
 
 export default function DemandesPage() {
   const { fetchWithAuth } = useAuth();
   const router = useRouter();
   const [demandes, setDemandes] = useState<Demande[]>([]);
-  const [filter, setFilter] = useState("TOUS");
+  const [tab, setTab] = useState<"active" | "archived">("active");
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [total, setTotal] = useState(0);
   const [masqueCount, setMasqueCount] = useState(0);
+  const [toast, setToast] = useState<{ message: string; undoId?: string } | null>(null);
 
   const fetchDemandes = useCallback(async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({ page: String(page), size: "20" });
-      if (filter !== "TOUS") params.set("status", filter);
-      const data = (await fetchWithAuth(`/artisan/demandes?${params}`)) as {
+      const data = (await fetchWithAuth("/artisan/demandes?size=100")) as {
         demandes?: Demande[];
         masqueCount?: number;
-        pagination?: { total: number; totalPages: number };
       };
       setDemandes(data.demandes || []);
-      setTotalPages(data.pagination?.totalPages || 0);
-      setTotal(data.pagination?.total || 0);
       setMasqueCount(data.masqueCount || 0);
-    } catch {
-      /* empty */
-    } finally {
+    } catch { /* empty */ } finally {
       setLoading(false);
     }
-  }, [page, filter, fetchWithAuth]);
+  }, [fetchWithAuth]);
 
-  useEffect(() => {
-    fetchDemandes();
-  }, [fetchDemandes]);
+  useEffect(() => { fetchDemandes(); }, [fetchDemandes]);
 
+  const handleArchive = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await fetchWithAuth(`/artisan/demandes/${id}/status`, {
+        method: "PUT",
+        body: JSON.stringify({ status: "ARCHIVE" }),
+      });
+      setDemandes((prev) => prev.map((d) => d.id === id ? { ...d, statut: "ARCHIVE" } : d));
+      setToast({ message: "Demande archivée", undoId: id });
+      setTimeout(() => setToast(null), 5000);
+    } catch { /* empty */ }
+  };
+
+  const handleUnarchive = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await fetchWithAuth(`/artisan/demandes/${id}/status`, {
+        method: "PUT",
+        body: JSON.stringify({ status: "VU" }),
+      });
+      setDemandes((prev) => prev.map((d) => d.id === id ? { ...d, statut: "VU" } : d));
+      setToast({ message: "Demande remise en cours" });
+      setTimeout(() => setToast(null), 3000);
+    } catch { /* empty */ }
+  };
+
+  const handleUndoArchive = async (id: string) => {
+    try {
+      await fetchWithAuth(`/artisan/demandes/${id}/status`, {
+        method: "PUT",
+        body: JSON.stringify({ status: "VU" }),
+      });
+      setDemandes((prev) => prev.map((d) => d.id === id ? { ...d, statut: "VU" } : d));
+      setToast(null);
+    } catch { /* empty */ }
+  };
+
+  const activeDemandes = demandes.filter((d) => ACTIVE_STATUSES.includes(d.statut));
+  const archivedDemandes = demandes.filter((d) => ARCHIVED_STATUSES.includes(d.statut));
+  const displayed = tab === "active" ? activeDemandes : archivedDemandes;
   const newCount = demandes.filter((d) => d.statut === "NOUVEAU").length;
 
   return (
     <div style={{ maxWidth: 800, margin: "0 auto" }}>
       {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-          marginBottom: 20,
-        }}
-      >
-        <h1
-          style={{
-            fontFamily: "'Fraunces',serif",
-            fontSize: 24,
-            fontWeight: 700,
-            color: "var(--bois,#3D2E1F)",
-          }}
-        >
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "var(--bois,#3D2E1F)" }}>
           Demandes de devis
         </h1>
-        {total > 0 && (
-          <span
-            style={{
-              background: "var(--sable,#E8D5C0)",
-              color: "var(--bois,#3D2E1F)",
-              fontSize: 12,
-              fontWeight: 700,
-              padding: "4px 12px",
-              borderRadius: 10,
-            }}
-          >
-            {total}
-          </span>
-        )}
         {newCount > 0 && (
-          <span
-            style={{
-              background: "#dc2626",
-              color: "#fff",
-              fontSize: 12,
-              fontWeight: 700,
-              padding: "3px 10px",
-              borderRadius: 10,
-            }}
-          >
+          <span style={{ background: "#dc2626", color: "#fff", fontSize: 12, fontWeight: 700, padding: "3px 10px", borderRadius: 10 }}>
             {newCount} nouvelle{newCount > 1 ? "s" : ""}
           </span>
         )}
       </div>
 
-      {/* Filter tabs */}
-      <div
-        style={{
-          display: "flex",
-          gap: 8,
-          marginBottom: 24,
-          overflowX: "auto",
-        }}
-        className="hide-scroll"
-      >
-        {TABS.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => {
-              setFilter(tab.key);
-              setPage(0);
-            }}
-            style={{
-              padding: "8px 18px",
-              borderRadius: 20,
-              fontSize: 13,
-              fontWeight: 600,
-              cursor: "pointer",
-              whiteSpace: "nowrap",
-              transition: "all .15s",
-              background: filter === tab.key ? "#1C1C1E" : "#fff",
-              color: filter === tab.key ? "#fff" : "var(--pierre,#9C958D)",
-              border:
-                filter !== tab.key
-                  ? "1.5px solid var(--sable,#E8D5C0)"
-                  : "none",
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
+      {/* Tabs: En cours / Archivées */}
+      <div style={{ display: "flex", gap: 0, marginBottom: 24, borderBottom: "1px solid var(--sable,#E8D5C0)" }}>
+        <button
+          onClick={() => setTab("active")}
+          style={{
+            padding: "10px 20px", fontSize: 14, fontWeight: 600, cursor: "pointer",
+            background: "none", border: "none", borderBottom: tab === "active" ? "2px solid var(--terre,#C4531A)" : "2px solid transparent",
+            color: tab === "active" ? "var(--terre,#C4531A)" : "var(--pierre,#9C958D)",
+            fontFamily: "'Karla',sans-serif", transition: "all .15s",
+          }}
+        >
+          En cours ({activeDemandes.length})
+        </button>
+        <button
+          onClick={() => setTab("archived")}
+          style={{
+            padding: "10px 20px", fontSize: 14, fontWeight: 600, cursor: "pointer",
+            background: "none", border: "none", borderBottom: tab === "archived" ? "2px solid var(--terre,#C4531A)" : "2px solid transparent",
+            color: tab === "archived" ? "var(--terre,#C4531A)" : "var(--pierre,#9C958D)",
+            fontFamily: "'Karla',sans-serif", transition: "all .15s",
+          }}
+        >
+          Archivées ({archivedDemandes.length})
+        </button>
       </div>
 
       {/* Masked leads banner */}
-      {masqueCount > 0 && (
-        <div
-          style={{
-            background: "rgba(196,83,26,.06)",
-            border: "1px solid rgba(196,83,26,.15)",
-            borderRadius: 12,
-            padding: 16,
-            marginBottom: 20,
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            flexWrap: "wrap",
-          }}
-        >
-          <span style={{ fontSize: 20 }} aria-hidden="true">
-            {"\uD83D\uDD12"}
+      {masqueCount > 0 && tab === "active" && (
+        <div style={{ background: "rgba(196,83,26,.06)", border: "1px solid rgba(196,83,26,.15)", borderRadius: 12, padding: 16, marginBottom: 20, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 20 }}>🔒</span>
+          <span style={{ flex: 1, minWidth: 200, fontSize: 14, color: "var(--bois,#3D2E1F)", lineHeight: 1.5 }}>
+            <strong>{masqueCount} client{masqueCount > 1 ? "s" : ""}</strong> vous {masqueCount > 1 ? "ont" : "a"} contacté mais {masqueCount > 1 ? "leurs" : "ses"} coordonnées sont masquées.
           </span>
-          <span
-            style={{
-              flex: 1,
-              minWidth: 200,
-              fontSize: 14,
-              color: "var(--bois,#3D2E1F)",
-              lineHeight: 1.5,
-            }}
-          >
-            <strong>{masqueCount} client{masqueCount > 1 ? "s" : ""}</strong>{" "}
-            vous {masqueCount > 1 ? "ont" : "a"} contact&eacute; mais{" "}
-            {masqueCount > 1 ? "leurs" : "ses"} coordonn&eacute;es sont
-            masqu&eacute;es. Passez &agrave; Starter (19&euro;/mois) pour{" "}
-            {masqueCount > 1 ? "les" : "le"} contacter.
-          </span>
-          <a
-            href="/dashboard/abonnement"
-            style={{
-              display: "inline-block",
-              padding: "10px 22px",
-              background: "var(--terre,#C4531A)",
-              color: "#fff",
-              borderRadius: 8,
-              fontSize: 14,
-              fontWeight: 700,
-              textDecoration: "none",
-              whiteSpace: "nowrap",
-            }}
-          >
-            D&eacute;bloquer &rarr;
+          <a href="/dashboard/abonnement" style={{ display: "inline-block", padding: "10px 22px", background: "var(--terre,#C4531A)", color: "#fff", borderRadius: 8, fontSize: 14, fontWeight: 700, textDecoration: "none", whiteSpace: "nowrap" }}>
+            Débloquer →
           </a>
         </div>
       )}
 
       {/* List */}
       {loading ? (
-        <div
-          style={{
-            textAlign: "center",
-            padding: 40,
-            color: "var(--pierre,#9C958D)",
-            fontSize: 14,
-          }}
-        >
-          Chargement...
-        </div>
-      ) : demandes.length > 0 ? (
+        <div style={{ textAlign: "center", padding: 40, color: "var(--pierre,#9C958D)", fontSize: 14 }}>Chargement...</div>
+      ) : displayed.length > 0 ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {demandes.map((d) => {
+          {displayed.map((d) => {
             const isNew = d.statut === "NOUVEAU";
             const isMasked = d.masque === true;
+            const isArchived = ARCHIVED_STATUSES.includes(d.statut);
             return (
               <div
                 key={d.id}
                 onClick={() => router.push(`/dashboard/demandes/${d.id}`)}
-                className="stat-card-hover"
                 style={{
-                  background: "#fff",
-                  borderRadius: 14,
-                  border: isMasked
-                    ? "1px solid rgba(196,83,26,.15)"
-                    : isNew
-                      ? "1.5px solid var(--terre,#C4531A)"
-                      : "1px solid var(--sable,#E8D5C0)",
-                  padding: "18px 20px",
-                  cursor: "pointer",
-                  transition: "all .2s",
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: 14,
-                  position: "relative",
+                  background: "#fff", borderRadius: 14,
+                  border: isMasked ? "1px solid rgba(196,83,26,.15)" : isNew ? "1.5px solid var(--terre,#C4531A)" : "1px solid var(--sable,#E8D5C0)",
+                  padding: "18px 20px", cursor: "pointer", transition: "all .2s",
+                  display: "flex", alignItems: "flex-start", gap: 14, position: "relative",
+                  opacity: isArchived ? 0.7 : 1,
                 }}
               >
-                {/* Indicator: lock for masked, red dot for new */}
+                {/* Indicator */}
                 {isMasked ? (
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: 10,
-                      right: 10,
-                      fontSize: 14,
-                    }}
-                    aria-hidden="true"
-                  >
-                    {"\uD83D\uDD12"}
-                  </span>
-                ) : (
-                  isNew && (
-                    <span
-                      style={{
-                        position: "absolute",
-                        top: 10,
-                        right: 10,
-                        width: 10,
-                        height: 10,
-                        borderRadius: "50%",
-                        background: "#dc2626",
-                        animation: "pulse 1.5s infinite",
-                      }}
-                    />
-                  )
+                  <span style={{ position: "absolute", top: 10, right: 10, fontSize: 14 }}>🔒</span>
+                ) : isNew && (
+                  <span style={{ position: "absolute", top: 10, right: 10, width: 10, height: 10, borderRadius: "50%", background: "#dc2626", animation: "pulse 1.5s infinite" }} />
                 )}
 
                 {/* Avatar */}
-                <div
-                  style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: "50%",
-                    background: isMasked
-                      ? "var(--sable,#E8D5C0)"
-                      : "linear-gradient(135deg, var(--terre,#C4531A), var(--argile,#D4733A))",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: isMasked ? "var(--pierre,#9C958D)" : "#fff",
-                    fontSize: 14,
-                    fontWeight: 700,
-                    fontFamily: "'Karla',sans-serif",
-                    flexShrink: 0,
-                  }}
-                >
-                  {isMasked ? "\uD83D\uDD12" : initials(d.nomClient || "?")}
+                <div style={{
+                  width: 44, height: 44, borderRadius: "50%",
+                  background: isMasked ? "var(--sable,#E8D5C0)" : "linear-gradient(135deg, var(--terre,#C4531A), var(--argile,#D4733A))",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  color: isMasked ? "var(--pierre,#9C958D)" : "#fff", fontSize: 14, fontWeight: 700, flexShrink: 0,
+                }}>
+                  {isMasked ? "🔒" : initials(d.nomClient || "?")}
                 </div>
 
                 {/* Content */}
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      marginBottom: 4,
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontSize: 15,
-                        fontWeight: 700,
-                        color: isMasked
-                          ? "var(--pierre,#9C958D)"
-                          : "var(--bois,#3D2E1F)",
-                      }}
-                    >
-                      {isMasked ? "\u25CF\u25CF\u25CF\u25CF\u25CF\u25CF\u25CF\u25CF" : d.nomClient}
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 15, fontWeight: 700, color: isMasked ? "var(--pierre,#9C958D)" : "var(--bois,#3D2E1F)" }}>
+                      {isMasked ? "●●●●●●●●" : d.nomClient}
                     </span>
                     {isMasked ? (
-                      <span
-                        style={{
-                          fontSize: 11,
-                          fontWeight: 600,
-                          padding: "2px 8px",
-                          borderRadius: 4,
-                          background: "rgba(196,83,26,.06)",
-                          color: "var(--terre,#C4531A)",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        Coordonn&eacute;es masqu&eacute;es
+                      <span style={{ fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 4, background: "rgba(196,83,26,.06)", color: "var(--terre,#C4531A)", whiteSpace: "nowrap" }}>
+                        Coordonnées masquées
                       </span>
                     ) : (
-                      <span
-                        style={{
-                          fontSize: 11,
-                          fontWeight: 600,
-                          padding: "2px 8px",
-                          borderRadius: 4,
-                          background: BG[d.statut] || BG.ARCHIVE,
-                          color: DOT[d.statut] || "#9B9590",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
+                      <span style={{ fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 4, background: BG[d.statut] || BG.ARCHIVE, color: DOT[d.statut] || "#9B9590", whiteSpace: "nowrap" }}>
                         {LABEL[d.statut] || d.statut}
                       </span>
                     )}
                     {d.urgence === "urgent" && (
-                      <span
-                        style={{
-                          fontSize: 10,
-                          fontWeight: 700,
-                          padding: "2px 8px",
-                          borderRadius: 4,
-                          background: "rgba(220,38,38,.1)",
-                          color: "#dc2626",
-                          textTransform: "uppercase",
-                          letterSpacing: 0.5,
-                        }}
-                      >
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: "rgba(220,38,38,.1)", color: "#dc2626", textTransform: "uppercase", letterSpacing: 0.5 }}>
                         Urgent
                       </span>
                     )}
-                    <span
-                      style={{
-                        fontSize: 12,
-                        color: "var(--pierre,#9C958D)",
-                        marginLeft: "auto",
-                        whiteSpace: "nowrap",
-                        flexShrink: 0,
-                      }}
-                    >
+                    <span style={{ fontSize: 12, color: "var(--pierre,#9C958D)", marginLeft: "auto", whiteSpace: "nowrap", flexShrink: 0 }}>
                       {timeAgo(d.createdAt)}
                     </span>
                   </div>
-                  <p
-                    style={{
-                      fontSize: 14,
-                      color: "var(--pierre,#9C958D)",
-                      lineHeight: 1.4,
-                      margin: 0,
-                    }}
-                  >
+                  <p style={{ fontSize: 14, color: "var(--pierre,#9C958D)", lineHeight: 1.4, margin: 0 }}>
                     {excerpt(d.descriptionBesoin, 60)}
                   </p>
+
+                  {/* Action buttons */}
+                  <div style={{ marginTop: 8, display: "flex", gap: 8 }}>
+                    {!isArchived && !isMasked && (
+                      <button
+                        onClick={(e) => handleArchive(d.id, e)}
+                        style={{ fontSize: 12, color: "var(--pierre,#9C958D)", background: "none", border: "none", cursor: "pointer", fontFamily: "'Karla',sans-serif", padding: "2px 0" }}
+                        onMouseEnter={(e) => { e.currentTarget.style.color = "var(--terre,#C4531A)"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.color = "var(--pierre,#9C958D)"; }}
+                      >
+                        Archiver
+                      </button>
+                    )}
+                    {isArchived && (
+                      <button
+                        onClick={(e) => handleUnarchive(d.id, e)}
+                        style={{ fontSize: 12, color: "var(--terre,#C4531A)", background: "none", border: "none", cursor: "pointer", fontFamily: "'Karla',sans-serif", fontWeight: 500, padding: "2px 0" }}
+                      >
+                        Remettre en cours
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             );
@@ -466,76 +287,37 @@ export default function DemandesPage() {
         </div>
       ) : (
         <div style={{ textAlign: "center", padding: "56px 20px" }}>
-          <svg
-            width="56"
-            height="56"
-            fill="none"
-            stroke="var(--sable,#E8D5C0)"
-            strokeWidth="1"
-            viewBox="0 0 24 24"
-            style={{ margin: "0 auto 16px" }}
-          >
+          <svg width="56" height="56" fill="none" stroke="var(--sable,#E8D5C0)" strokeWidth="1" viewBox="0 0 24 24" style={{ margin: "0 auto 16px" }}>
             <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
           </svg>
           <p style={{ fontSize: 15, color: "var(--pierre,#9C958D)" }}>
-            Aucune demande de devis
-          </p>
-          <p
-            style={{
-              fontSize: 13,
-              color: "var(--pierre,#9C958D)",
-              opacity: 0.6,
-              marginTop: 4,
-            }}
-          >
-            Les nouvelles demandes appara&icirc;tront ici.
+            {tab === "active" ? "Aucune demande en cours" : "Aucune demande archivée"}
           </p>
         </div>
       )}
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            gap: 12,
-            marginTop: 24,
-          }}
-        >
-          <button
-            onClick={() => setPage((p) => Math.max(0, p - 1))}
-            disabled={page === 0}
-            style={{
-              fontSize: 14,
-              color: "var(--pierre,#9C958D)",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              opacity: page === 0 ? 0.3 : 1,
-            }}
-          >
-            Pr&eacute;c&eacute;dent
-          </button>
-          <span style={{ fontSize: 14, color: "var(--pierre,#9C958D)" }}>
-            Page {page + 1} / {totalPages}
-          </span>
-          <button
-            onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-            disabled={page >= totalPages - 1}
-            style={{
-              fontSize: 14,
-              color: "var(--pierre,#9C958D)",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              opacity: page >= totalPages - 1 ? 0.3 : 1,
-            }}
-          >
-            Suivant
-          </button>
+      {/* Toast */}
+      {toast && (
+        <div style={{
+          position: "fixed", bottom: 80, left: "50%", transform: "translateX(-50%)",
+          background: "var(--bois,#3D2E1F)", color: "#fff", padding: "12px 20px", borderRadius: 10,
+          fontSize: 14, fontWeight: 500, boxShadow: "0 4px 20px rgba(0,0,0,.15)", zIndex: 999,
+          display: "flex", alignItems: "center", gap: 12, animation: "slideUp .3s ease",
+        }}>
+          {toast.message}
+          {toast.undoId && (
+            <button
+              onClick={() => handleUndoArchive(toast.undoId!)}
+              style={{ color: "var(--argile,#D4956B)", background: "none", border: "none", cursor: "pointer", fontWeight: 600, fontSize: 13, fontFamily: "'Karla',sans-serif" }}
+            >
+              Annuler
+            </button>
+          )}
+          <style>{`@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}`}</style>
         </div>
       )}
+
+      <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}`}</style>
     </div>
   );
 }
