@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { z } from "zod";
+import { sendClientReplyToArtisan } from "@/lib/devis-emails";
 
 const messageSchema = z.object({
   contenu: z.string().min(1, "Le message ne peut pas être vide").max(2000, "Le message ne peut pas dépasser 2000 caractères"),
@@ -56,6 +57,21 @@ export async function POST(
         contenu,
       },
     });
+
+    // Notify artisan by email
+    const artisan = await prisma.artisan.findUnique({
+      where: { id: demande.artisanId },
+      include: { user: { select: { email: true } } },
+    });
+    if (artisan?.user?.email) {
+      sendClientReplyToArtisan({
+        artisanEmail: artisan.user.email,
+        artisanNom: artisan.nomAffichage,
+        clientNom: demande.nomClient,
+        messageExtrait: contenu.substring(0, 100),
+        demandeId: demande.id,
+      }).catch((e) => console.error("Email artisan reply error:", e));
+    }
 
     return apiSuccess(message, 201);
   } catch (error) {

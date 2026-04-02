@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { z } from "zod";
 import crypto from "crypto";
+import { sendNewDemandeToArtisan, sendDemandeConfirmationToClient } from "@/lib/devis-emails";
 
 const demandeSchema = z.object({
   artisanId: z.string().min(1, "L'identifiant artisan est requis"),
@@ -81,6 +82,27 @@ export async function POST(request: NextRequest) {
         responseToken,
       },
     });
+
+    // Send emails (fire-and-forget, don't block response)
+    const artisanUser = await prisma.user.findUnique({ where: { id: artisan.userId }, select: { email: true } });
+    if (artisanUser?.email) {
+      sendNewDemandeToArtisan({
+        artisanEmail: artisanUser.email,
+        artisanNom: artisan.nomAffichage,
+        clientNom,
+        descriptionBesoin,
+        urgence,
+        demandeId: demande.id,
+      }).catch((e) => console.error("Email artisan error:", e));
+    }
+    if (clientEmail) {
+      sendDemandeConfirmationToClient({
+        clientEmail,
+        clientNom,
+        artisanNom: artisan.nomAffichage,
+        responseToken,
+      }).catch((e) => console.error("Email client error:", e));
+    }
 
     return apiSuccess({ id: demande.id, responseToken }, 201);
   } catch (error) {

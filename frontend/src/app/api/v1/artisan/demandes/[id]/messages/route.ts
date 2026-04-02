@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { requireAuth } from "@/lib/auth-server";
 import { z } from "zod";
+import { sendArtisanReplyToClient } from "@/lib/devis-emails";
 
 const messageSchema = z.object({
   contenu: z.string().min(1, "Le message ne peut pas être vide").max(2000, "Le message ne peut pas dépasser 2000 caractères"),
@@ -60,6 +61,17 @@ export async function POST(
         },
       }),
     ]);
+
+    // Notify client by email
+    if (demande.emailClient && demande.responseToken) {
+      sendArtisanReplyToClient({
+        clientEmail: demande.emailClient,
+        clientNom: demande.nomClient,
+        artisanNom: artisan.nomAffichage,
+        messageExtrait: contenu.substring(0, 100),
+        responseToken: demande.responseToken,
+      }).catch((e) => console.error("Email client reply error:", e));
+    }
 
     return apiSuccess(message, 201);
   } catch (error: unknown) {
