@@ -101,6 +101,20 @@ export default function ConnexionPage() {
             </div>
           </div>
 
+          <div style={{ textAlign: "right", marginTop: -16, marginBottom: 8 }}>
+            <Link
+              href="/mot-de-passe-oublie"
+              style={{
+                fontSize: 13,
+                color: "#C4531A",
+                textDecoration: "none",
+                fontWeight: 500,
+              }}
+            >
+              Mot de passe oubli&eacute; ?
+            </Link>
+          </div>
+
           {error && <p style={{ color: "#dc2626", fontSize: 14 }}>{error}</p>}
 
           <button type="submit" disabled={loading} style={{ width: "100%", height: 48, background: "#C4531A", color: "#fff", border: "none", borderRadius: 10, fontFamily: "'Karla',sans-serif", fontSize: 16, fontWeight: 600, cursor: "pointer", transition: "background .2s" }}

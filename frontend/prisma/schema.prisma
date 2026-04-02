@@ -66,6 +66,10 @@ model User {
   magicLinkToken   String?  @map("magic_link_token")
   magicLinkExpiresAt DateTime? @map("magic_link_expires_at")
   refreshTokenHash String?  @map("refresh_token_hash")
+  resetTokenHash     String?   @unique @map("reset_token_hash")
+  resetTokenExpires  DateTime? @map("reset_token_expires")
+  resetRequestedAt   DateTime? @map("reset_requested_at")
+  resetAttempts      Int       @default(0) @map("reset_attempts")
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
 

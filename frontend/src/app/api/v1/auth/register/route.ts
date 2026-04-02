@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, setAuthCookie } from "@/lib/auth-server";
@@ -44,17 +44,52 @@ export async function POST(request: NextRequest) {
     const siret = data.siret && data.siret.length >= 9 ? data.siret : `TEMP${Date.now()}${Math.random().toString(36).slice(2, 6)}`;
     const { metierId, ville, zoneRayonKm } = data;
 
-    // Check email uniqueness
+    // Check for duplicates: email, siret, telephone
     const existingEmail = await prisma.user.findUnique({ where: { email } });
     if (existingEmail) {
-      return apiError("Un compte existe déjà avec cet email", 409);
+      return NextResponse.json(
+        {
+          success: false,
+          error: "doublon",
+          message: "Une entreprise avec cet email est déjà inscrite.",
+          champDoublon: "email",
+          timestamp: new Date().toISOString(),
+        },
+        { status: 409 }
+      );
     }
 
-    // Check SIRET uniqueness (skip for temp SIRETs)
     if (!siret.startsWith("TEMP")) {
       const existingSiret = await prisma.artisan.findUnique({ where: { siret } });
       if (existingSiret) {
-        return apiError("Un compte existe déjà avec ce SIRET", 409);
+        return NextResponse.json(
+          {
+            success: false,
+            error: "doublon",
+            message: "Une entreprise avec ce SIRET est déjà inscrite.",
+            champDoublon: "siret",
+            timestamp: new Date().toISOString(),
+          },
+          { status: 409 }
+        );
+      }
+    }
+
+    if (telephone) {
+      const existingTelephone = await prisma.artisan.findFirst({
+        where: { telephone },
+      });
+      if (existingTelephone) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "doublon",
+            message: "Une entreprise avec ce numéro de téléphone est déjà inscrite.",
+            champDoublon: "telephone",
+            timestamp: new Date().toISOString(),
+          },
+          { status: 409 }
+        );
       }
     }
 
