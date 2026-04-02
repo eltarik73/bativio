@@ -4,6 +4,7 @@ import { apiSuccess, apiError } from "@/lib/api-response";
 import { requireAuth } from "@/lib/auth-server";
 import { z } from "zod";
 import { sendArtisanReplyToClient } from "@/lib/devis-emails";
+import { getLeadLimit } from "@/lib/lead-limits";
 
 const messageSchema = z.object({
   contenu: z.string().min(1, "Le message ne peut pas être vide").max(2000, "Le message ne peut pas dépasser 2000 caractères"),
@@ -31,6 +32,23 @@ export async function POST(
 
     if (!demande || demande.artisanId !== artisan.id) {
       return apiError("Demande de devis introuvable", 404);
+    }
+
+    // Check if this demande is masked (lead limit exceeded)
+    const rankBefore = await prisma.demandeDevis.count({
+      where: {
+        artisanId: artisan.id,
+        createdAt: { lt: demande.createdAt },
+      },
+    });
+    const rank = rankBefore + 1;
+    const leadLimit = getLeadLimit(artisan.plan);
+    if (leadLimit !== null && rank > leadLimit) {
+      return apiError(
+        "Passez à un plan payant pour répondre à cette demande.",
+        403,
+        "lead_masque"
+      );
     }
 
     const body = await request.json();

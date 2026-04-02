@@ -239,7 +239,51 @@ export async function sendRelanceArtisan(params: {
 }
 
 // ---------------------------------------------------------------------------
-// 6. Relance client (48h sans reponse au devis)
+// 6. Demande masquee -> artisan (frustration / upsell)
+// ---------------------------------------------------------------------------
+
+export async function sendDemandeMasqueeToArtisan(params: {
+  artisanEmail: string;
+  artisanNom: string;
+  clientVille: string;
+  typeTravauxResume: string;
+  demandeId: string;
+}): Promise<void> {
+  const { artisanEmail, artisanNom, clientVille, typeTravauxResume, demandeId } = params;
+
+  void demandeId; // kept for future use (deep-link)
+
+  const upgradeUrl = `${SITE_URL}/dashboard/abonnement`;
+
+  const html = emailWrapper(`
+    <p style="margin:0 0 8px 0;">Bonjour <strong>${escapeHtml(artisanNom)}</strong>,</p>
+    <p style="margin:0 0 20px 0;">Un client &agrave; <strong>${escapeHtml(clientVille || "votre secteur")}</strong> recherche un artisan pour&nbsp;:</p>
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#FAF8F5;border-radius:8px;padding:20px;margin-bottom:4px;">
+      <tr><td>
+        <p style="margin:0 0 6px 0;font-size:13px;color:#888;">Type de travaux</p>
+        <p style="margin:0;font-weight:700;">${escapeHtml(truncate(typeTravauxResume))}</p>
+      </td></tr>
+    </table>
+
+    <p style="margin:20px 0;padding:16px;background:rgba(196,83,26,.06);border:1px solid rgba(196,83,26,.15);border-radius:8px;font-size:14px;color:#1C1C1E;">
+      Vous avez utilis&eacute; vos <strong>5 demandes gratuites</strong>. Les coordonn&eacute;es de ce client sont masqu&eacute;es.
+    </p>
+
+    ${ctaButton("D\u00e9bloquer mes demandes \u2014 19\u20ac/mois", upgradeUrl)}
+
+    <p style="margin:0;font-size:13px;color:#888;">Passez &agrave; Starter pour acc&eacute;der &agrave; toutes vos demandes, sans limite.</p>
+  `);
+
+  await sendEmail(
+    artisanEmail,
+    `Un client à ${clientVille || "votre secteur"} cherche un artisan — débloquez ses coordonnées`,
+    html
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 7. Relance client (48h sans reponse au devis)
 // ---------------------------------------------------------------------------
 
 export async function sendRelanceClient(params: {

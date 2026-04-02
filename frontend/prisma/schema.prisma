@@ -108,6 +108,7 @@ model Artisan {
   stripePriceId        String?  @map("stripe_price_id")
   subscriptionStatus   String?  @map("subscription_status")
   invoiceCount         Int      @default(0) @map("invoice_count")
+  leadsCompletsUtilises Int     @default(0) @map("leads_complets_utilises")
   invoiceCountResetAt  DateTime? @map("invoice_count_reset_at")
   profilCompletion Int     @default(0) @map("profil_completion")
   templateId      String   @default("classique") @map("template_id")

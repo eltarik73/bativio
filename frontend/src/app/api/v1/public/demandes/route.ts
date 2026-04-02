@@ -3,7 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { z } from "zod";
 import crypto from "crypto";
-import { sendNewDemandeToArtisan, sendDemandeConfirmationToClient } from "@/lib/devis-emails";
+import { sendNewDemandeToArtisan, sendDemandeConfirmationToClient, sendDemandeMasqueeToArtisan } from "@/lib/devis-emails";
+import { getLeadLimit } from "@/lib/lead-limits";
 
 const demandeSchema = z.object({
   artisanId: z.string().min(1, "L'identifiant artisan est requis"),
@@ -83,17 +84,40 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Determine if this lead is within the free-plan limit
+    const leadLimit = getLeadLimit(artisan.plan);
+    const withinLimit =
+      leadLimit === null || artisan.leadsCompletsUtilises < leadLimit;
+
+    // If within limit, increment the counter
+    if (withinLimit && leadLimit !== null) {
+      await prisma.artisan.update({
+        where: { id: artisan.id },
+        data: { leadsCompletsUtilises: { increment: 1 } },
+      });
+    }
+
     // Send emails (fire-and-forget, don't block response)
     const artisanUser = await prisma.user.findUnique({ where: { id: artisan.userId }, select: { email: true } });
     if (artisanUser?.email) {
-      sendNewDemandeToArtisan({
-        artisanEmail: artisanUser.email,
-        artisanNom: artisan.nomAffichage,
-        clientNom,
-        descriptionBesoin,
-        urgence,
-        demandeId: demande.id,
-      }).catch((e) => console.error("Email artisan error:", e));
+      if (withinLimit) {
+        sendNewDemandeToArtisan({
+          artisanEmail: artisanUser.email,
+          artisanNom: artisan.nomAffichage,
+          clientNom,
+          descriptionBesoin,
+          urgence,
+          demandeId: demande.id,
+        }).catch((e) => console.error("Email artisan error:", e));
+      } else {
+        sendDemandeMasqueeToArtisan({
+          artisanEmail: artisanUser.email,
+          artisanNom: artisan.nomAffichage,
+          clientVille: clientVille || "",
+          typeTravauxResume: descriptionBesoin,
+          demandeId: demande.id,
+        }).catch((e) => console.error("Email artisan masked error:", e));
+      }
     }
     if (clientEmail) {
       sendDemandeConfirmationToClient({

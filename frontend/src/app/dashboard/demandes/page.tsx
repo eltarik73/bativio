@@ -49,9 +49,9 @@ const TABS = [
 
 interface Demande {
   id: string;
-  nomClient: string;
-  telephoneClient: string;
-  emailClient: string;
+  nomClient: string | null;
+  telephoneClient: string | null;
+  emailClient: string | null;
   clientVille?: string;
   descriptionBesoin: string;
   urgence?: string;
@@ -60,6 +60,7 @@ interface Demande {
   createdAt: string;
   messageCount: number;
   lastMessageAt: string | null;
+  masque?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -109,6 +110,7 @@ export default function DemandesPage() {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [total, setTotal] = useState(0);
+  const [masqueCount, setMasqueCount] = useState(0);
 
   const fetchDemandes = useCallback(async () => {
     setLoading(true);
@@ -117,11 +119,13 @@ export default function DemandesPage() {
       if (filter !== "TOUS") params.set("status", filter);
       const data = (await fetchWithAuth(`/artisan/demandes?${params}`)) as {
         demandes?: Demande[];
+        masqueCount?: number;
         pagination?: { total: number; totalPages: number };
       };
       setDemandes(data.demandes || []);
       setTotalPages(data.pagination?.totalPages || 0);
       setTotal(data.pagination?.total || 0);
+      setMasqueCount(data.masqueCount || 0);
     } catch {
       /* empty */
     } finally {
@@ -224,6 +228,58 @@ export default function DemandesPage() {
         ))}
       </div>
 
+      {/* Masked leads banner */}
+      {masqueCount > 0 && (
+        <div
+          style={{
+            background: "rgba(196,83,26,.06)",
+            border: "1px solid rgba(196,83,26,.15)",
+            borderRadius: 12,
+            padding: 16,
+            marginBottom: 20,
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            flexWrap: "wrap",
+          }}
+        >
+          <span style={{ fontSize: 20 }} aria-hidden="true">
+            {"\uD83D\uDD12"}
+          </span>
+          <span
+            style={{
+              flex: 1,
+              minWidth: 200,
+              fontSize: 14,
+              color: "var(--bois,#3D2E1F)",
+              lineHeight: 1.5,
+            }}
+          >
+            <strong>{masqueCount} client{masqueCount > 1 ? "s" : ""}</strong>{" "}
+            vous {masqueCount > 1 ? "ont" : "a"} contact&eacute; mais{" "}
+            {masqueCount > 1 ? "leurs" : "ses"} coordonn&eacute;es sont
+            masqu&eacute;es. Passez &agrave; Starter (19&euro;/mois) pour{" "}
+            {masqueCount > 1 ? "les" : "le"} contacter.
+          </span>
+          <a
+            href="/dashboard/abonnement"
+            style={{
+              display: "inline-block",
+              padding: "10px 22px",
+              background: "var(--terre,#C4531A)",
+              color: "#fff",
+              borderRadius: 8,
+              fontSize: 14,
+              fontWeight: 700,
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            D&eacute;bloquer &rarr;
+          </a>
+        </div>
+      )}
+
       {/* List */}
       {loading ? (
         <div
@@ -240,6 +296,7 @@ export default function DemandesPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {demandes.map((d) => {
             const isNew = d.statut === "NOUVEAU";
+            const isMasked = d.masque === true;
             return (
               <div
                 key={d.id}
@@ -248,9 +305,11 @@ export default function DemandesPage() {
                 style={{
                   background: "#fff",
                   borderRadius: 14,
-                  border: isNew
-                    ? "1.5px solid var(--terre,#C4531A)"
-                    : "1px solid var(--sable,#E8D5C0)",
+                  border: isMasked
+                    ? "1px solid rgba(196,83,26,.15)"
+                    : isNew
+                      ? "1.5px solid var(--terre,#C4531A)"
+                      : "1px solid var(--sable,#E8D5C0)",
                   padding: "18px 20px",
                   cursor: "pointer",
                   transition: "all .2s",
@@ -260,20 +319,34 @@ export default function DemandesPage() {
                   position: "relative",
                 }}
               >
-                {/* Red dot for new */}
-                {isNew && (
+                {/* Indicator: lock for masked, red dot for new */}
+                {isMasked ? (
                   <span
                     style={{
                       position: "absolute",
                       top: 10,
                       right: 10,
-                      width: 10,
-                      height: 10,
-                      borderRadius: "50%",
-                      background: "#dc2626",
-                      animation: "pulse 1.5s infinite",
+                      fontSize: 14,
                     }}
-                  />
+                    aria-hidden="true"
+                  >
+                    {"\uD83D\uDD12"}
+                  </span>
+                ) : (
+                  isNew && (
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: 10,
+                        right: 10,
+                        width: 10,
+                        height: 10,
+                        borderRadius: "50%",
+                        background: "#dc2626",
+                        animation: "pulse 1.5s infinite",
+                      }}
+                    />
+                  )
                 )}
 
                 {/* Avatar */}
@@ -282,19 +355,20 @@ export default function DemandesPage() {
                     width: 44,
                     height: 44,
                     borderRadius: "50%",
-                    background:
-                      "linear-gradient(135deg, var(--terre,#C4531A), var(--argile,#D4733A))",
+                    background: isMasked
+                      ? "var(--sable,#E8D5C0)"
+                      : "linear-gradient(135deg, var(--terre,#C4531A), var(--argile,#D4733A))",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    color: "#fff",
+                    color: isMasked ? "var(--pierre,#9C958D)" : "#fff",
                     fontSize: 14,
                     fontWeight: 700,
                     fontFamily: "'Karla',sans-serif",
                     flexShrink: 0,
                   }}
                 >
-                  {initials(d.nomClient)}
+                  {isMasked ? "\uD83D\uDD12" : initials(d.nomClient || "?")}
                 </div>
 
                 {/* Content */}
@@ -311,24 +385,42 @@ export default function DemandesPage() {
                       style={{
                         fontSize: 15,
                         fontWeight: 700,
-                        color: "var(--bois,#3D2E1F)",
+                        color: isMasked
+                          ? "var(--pierre,#9C958D)"
+                          : "var(--bois,#3D2E1F)",
                       }}
                     >
-                      {d.nomClient}
+                      {isMasked ? "\u25CF\u25CF\u25CF\u25CF\u25CF\u25CF\u25CF\u25CF" : d.nomClient}
                     </span>
-                    <span
-                      style={{
-                        fontSize: 11,
-                        fontWeight: 600,
-                        padding: "2px 8px",
-                        borderRadius: 4,
-                        background: BG[d.statut] || BG.ARCHIVE,
-                        color: DOT[d.statut] || "#9B9590",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {LABEL[d.statut] || d.statut}
-                    </span>
+                    {isMasked ? (
+                      <span
+                        style={{
+                          fontSize: 11,
+                          fontWeight: 600,
+                          padding: "2px 8px",
+                          borderRadius: 4,
+                          background: "rgba(196,83,26,.06)",
+                          color: "var(--terre,#C4531A)",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        Coordonn&eacute;es masqu&eacute;es
+                      </span>
+                    ) : (
+                      <span
+                        style={{
+                          fontSize: 11,
+                          fontWeight: 600,
+                          padding: "2px 8px",
+                          borderRadius: 4,
+                          background: BG[d.statut] || BG.ARCHIVE,
+                          color: DOT[d.statut] || "#9B9590",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {LABEL[d.statut] || d.statut}
+                      </span>
+                    )}
                     {d.urgence === "urgent" && (
                       <span
                         style={{
