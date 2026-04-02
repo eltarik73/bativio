@@ -34,8 +34,8 @@ const CRITERIA: Criterion[] = [
   {
     key: "anciennete",
     category: "CONFIANCE",
-    label: "Ancienneté de l\u2019entreprise",
-    description: "Depuis combien de temps votre entreprise est-elle en activit\u00e9\u00a0?",
+    label: "Ancienneté de l'entreprise",
+    description: "Depuis combien de temps votre entreprise est-elle en activité ?",
     options: [
       { label: "Moins de 2 ans", value: 1 },
       { label: "2-4 ans", value: 4 },
@@ -47,7 +47,7 @@ const CRITERIA: Criterion[] = [
     key: "statut_juridique",
     category: "CONFIANCE",
     label: "Statut juridique",
-    description: "Quel est le statut juridique de votre structure\u00a0?",
+    description: "Quel est le statut juridique de votre structure ?",
     options: [
       { label: "Auto-entrepreneur", value: 1 },
       { label: "EIRL / EI", value: 2 },
@@ -58,18 +58,18 @@ const CRITERIA: Criterion[] = [
     key: "assurance",
     category: "CONFIANCE",
     label: "Assurance professionnelle",
-    description: "Quelles assurances poss\u00e9dez-vous\u00a0?",
+    description: "Quelles assurances possédez-vous ?",
     options: [
       { label: "Aucune", value: 0 },
       { label: "RC Pro", value: 3 },
-      { label: "D\u00e9cennale + RC Pro", value: 10 },
+      { label: "Décennale + RC Pro", value: 10 },
     ],
   },
   {
     key: "effectif",
     category: "CONFIANCE",
     label: "Effectif",
-    description: "Combien de personnes travaillent dans votre entreprise\u00a0?",
+    description: "Combien de personnes travaillent dans votre entreprise ?",
     options: [
       { label: "Seul", value: 1 },
       { label: "2-3", value: 3 },
@@ -81,7 +81,7 @@ const CRITERIA: Criterion[] = [
     key: "labels",
     category: "CONFIANCE",
     label: "Labels et certifications",
-    description: "Poss\u00e9dez-vous des labels reconnus (RGE, Qualibat, etc.)\u00a0?",
+    description: "Possédez-vous des labels reconnus (RGE, Qualibat, etc.) ?",
     options: [
       { label: "Aucun", value: 0 },
       { label: "1 label", value: 3 },
@@ -92,8 +92,8 @@ const CRITERIA: Criterion[] = [
   {
     key: "photos",
     category: "QUALITE",
-    label: "Photos de r\u00e9alisations",
-    description: "Combien de photos de chantiers pouvez-vous pr\u00e9senter\u00a0?",
+    label: "Photos de réalisations",
+    description: "Combien de photos de chantiers pouvez-vous présenter ?",
     options: [
       { label: "Aucune", value: 0 },
       { label: "1-3", value: 2 },
@@ -105,7 +105,7 @@ const CRITERIA: Criterion[] = [
     key: "avis",
     category: "QUALITE",
     label: "Avis clients",
-    description: "Combien d\u2019avis clients avez-vous en ligne\u00a0?",
+    description: "Combien d'avis clients avez-vous en ligne ?",
     options: [
       { label: "Aucun", value: 0 },
       { label: "1-5", value: 2 },
@@ -116,38 +116,38 @@ const CRITERIA: Criterion[] = [
   {
     key: "presence_en_ligne",
     category: "QUALITE",
-    label: "Pr\u00e9sence en ligne",
-    description: "O\u00f9 \u00eates-vous visible sur internet\u00a0?",
+    label: "Présence en ligne",
+    description: "Où êtes-vous visible sur internet ?",
     options: [
       { label: "Aucune", value: 0 },
       { label: "Google", value: 2 },
-      { label: "Google + r\u00e9seaux", value: 3 },
-      { label: "Site + Google + r\u00e9seaux", value: 5 },
+      { label: "Google + réseaux", value: 3 },
+      { label: "Site + Google + réseaux", value: 5 },
     ],
   },
   // ── ENGAGEMENT ──
   {
     key: "zone",
     category: "ENGAGEMENT",
-    label: "Zone g\u00e9ographique",
-    description: "O\u00f9 intervenez-vous principalement\u00a0?",
+    label: "Zone géographique",
+    description: "Où intervenez-vous principalement ?",
     options: [
-      { label: "Hors Rh\u00f4ne-Alpes", value: 0 },
-      { label: "Rh\u00f4ne-Alpes", value: 3 },
+      { label: "Hors Rhône-Alpes", value: 0 },
+      { label: "Rhône-Alpes", value: 3 },
       { label: "Ville cible", value: 6 },
-      { label: "Chamb\u00e9ry", value: 9 },
+      { label: "Chambéry", value: 9 },
     ],
   },
   {
     key: "plan",
     category: "ENGAGEMENT",
-    label: "Plan souhait\u00e9",
-    description: "Quel abonnement vous int\u00e9resse\u00a0?",
+    label: "Plan souhaité",
+    description: "Quel abonnement vous intéresse ?",
     options: [
       { label: "Gratuit", value: 1 },
-      { label: "Starter 19\u20ac", value: 4 },
-      { label: "Pro 39\u20ac", value: 6 },
-      { label: "Business 59\u20ac", value: 8 },
+      { label: "Starter 19€", value: 4 },
+      { label: "Pro 39€", value: 6 },
+      { label: "Business 59€", value: 8 },
     ],
   },
 ];
@@ -317,7 +317,7 @@ export default function ValidationPage() {
             onMouseEnter={(e) => { e.currentTarget.style.background = "var(--terre-h, #D4733A)"; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = "var(--terre, #C4531A)"; }}
           >
-            Acc\u00e9der \u00e0 mon espace &rarr;
+            Accéder à mon espace &rarr;
           </button>
         </div>
       </div>
@@ -331,7 +331,7 @@ export default function ValidationPage() {
         <div style={{ textAlign: "center", maxWidth: 420, padding: 32 }}>
           <div style={{ marginBottom: 24 }}><ClockCircle /></div>
           <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 28, fontWeight: 700, color: "var(--anthracite, #1C1C1E)", marginBottom: 12 }}>
-            Demande envoy\u00e9e !
+            Demande envoyée !
           </h1>
           <p style={{ fontSize: 16, color: "var(--or, #C9943A)", fontWeight: 600, marginBottom: 8 }}>
             Retour sous 48h maximum
@@ -367,7 +367,7 @@ export default function ValidationPage() {
 
   const categoryLabels: Record<CategoryKey, string> = {
     CONFIANCE: "Confiance",
-    QUALITE: "Qualit\u00e9",
+    QUALITE: "Qualité",
     ENGAGEMENT: "Engagement",
   };
 
@@ -388,7 +388,7 @@ export default function ValidationPage() {
           />
         </div>
         <div style={{ padding: "10px 24px", fontSize: 13, fontWeight: 500, color: "var(--pierre, #9C958D)" }}>
-          {answeredCount}/{totalCriteria} crit\u00e8res compl\u00e9t\u00e9s
+          {answeredCount}/{totalCriteria} critères complétés
         </div>
       </div>
 
@@ -398,7 +398,7 @@ export default function ValidationPage() {
           Finalisez votre inscription
         </h1>
         <p style={{ fontSize: 15, color: "var(--pierre, #9C958D)", marginBottom: 36, lineHeight: 1.5 }}>
-          R\u00e9pondez \u00e0 ces quelques questions pour valider votre profil artisan.
+          Répondez à ces quelques questions pour valider votre profil artisan.
         </p>
 
         {error && (

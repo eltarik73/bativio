@@ -195,7 +195,7 @@ export default function InscriptionPage() {
           setPhotoToast("Photos enregistrées ultérieurement");
         }
       }
-      router.push("/dashboard");
+      router.push("/onboarding/validation");
     } catch (err) {
       // Bug 7 fix: meilleur parsing erreur
       if (err instanceof Error) {
@@ -213,7 +213,7 @@ export default function InscriptionPage() {
     setLoading(true); setError("");
     try {
       await doRegister();
-      router.push("/dashboard");
+      router.push("/onboarding/validation");
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message || "Erreur lors de l'inscription");

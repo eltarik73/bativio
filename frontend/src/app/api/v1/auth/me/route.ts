@@ -50,6 +50,7 @@ export async function GET() {
       siret: artisan.siret,
       raisonSociale: artisan.raisonSociale,
       invoquoEnabled: artisan.invoquoEnabled,
+      artisanStatus: artisan.artisanStatus,
       adresse: artisan.adresse,
       codePostal: artisan.codePostal,
       zoneRayonKm: artisan.zoneRayonKm,

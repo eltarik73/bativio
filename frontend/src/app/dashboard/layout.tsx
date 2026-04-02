@@ -64,6 +64,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [newDemandesCount, setNewDemandesCount] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Redirect to scoring if artisan is still in ONBOARDING
+  useEffect(() => {
+    const status = (user as Record<string, unknown> | null)?.artisanStatus as string | undefined;
+    if (status === "ONBOARDING") {
+      router.replace("/onboarding/validation");
+    } else if (status === "PENDING_REVIEW") {
+      router.replace("/onboarding/validation");
+    }
+  }, [user, router]);
+
   useEffect(() => {
     fetchWithAuth("/artisan/demandes?status=NOUVEAU&size=0")
       .then((data) => {
