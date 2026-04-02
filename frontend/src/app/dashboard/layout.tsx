@@ -92,7 +92,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <ProtectedRoute>
       <div style={{ display: "flex", minHeight: "100vh", background: "#FAF8F5" }}>
         {/* Sidebar desktop */}
-        <aside style={{ width: 252, flexShrink: 0, background: "var(--blanc,#fff)", borderRight: "1px solid var(--sable,#E8D5C0)", display: "flex", flexDirection: "column", height: "100vh", position: "sticky", top: 0, overflow: "hidden" }} className="hidden md:flex">
+        <aside style={{ width: 252, flexShrink: 0, background: "var(--blanc,#fff)", borderRight: "1px solid var(--sable,#E8D5C0)", flexDirection: "column", height: "100vh", position: "sticky", top: 0, overflow: "hidden" }} className="hidden md:!flex">
           <Link href="/" style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#C4531A", textDecoration: "none", padding: "20px 16px 0 24px", marginBottom: 20, display: "block", letterSpacing: -0.5, flexShrink: 0 }}>Bativio</Link>
           <nav style={{ flex: 1, minHeight: 0, overflowY: "auto", display: "flex", flexDirection: "column", gap: 2, padding: "0 12px" }}>
             {NAV.map((item) => {
@@ -154,7 +154,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
 
         {/* Mobile nav */}
-        <nav style={{ position: "fixed", bottom: 0, left: 0, right: 0, height: 60, background: "rgba(255,255,255,.96)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderTop: "1.5px solid #EDEBE7", display: "flex", zIndex: 50 }} className="md:hidden">
+        <nav style={{ position: "fixed", bottom: 0, left: 0, right: 0, height: 60, background: "rgba(255,255,255,.96)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderTop: "1.5px solid #EDEBE7", zIndex: 50 }} className="flex md:!hidden">
           {MOB.map((item) => (
             <Link key={item.href} href={item.href} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, fontSize: 10, fontWeight: p === item.href ? 600 : 500, color: p === item.href ? "#C4531A" : "#9B9590", textDecoration: "none", transition: "color .15s" }}>
               <span dangerouslySetInnerHTML={{ __html: item.icon }} style={{ display: "flex" }} />
@@ -170,7 +170,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Mobile menu drawer */}
         {mobileMenuOpen && (
-          <div style={{ position: "fixed", inset: 0, zIndex: 100, display: "flex", flexDirection: "column", justifyContent: "flex-end" }} className="md:hidden" onClick={(e) => { if (e.target === e.currentTarget) setMobileMenuOpen(false); }}>
+          <div style={{ position: "fixed", inset: 0, zIndex: 100, flexDirection: "column", justifyContent: "flex-end" }} className="flex md:!hidden" onClick={(e) => { if (e.target === e.currentTarget) setMobileMenuOpen(false); }}>
             <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.3)" }} />
             <div style={{ position: "relative", background: "#fff", borderRadius: "16px 16px 0 0", padding: "20px 20px 100px", maxHeight: "70vh", overflowY: "auto" }}>
               {/* User info */}
