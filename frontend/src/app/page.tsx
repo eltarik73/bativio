@@ -9,6 +9,8 @@ import { MOCK_ARTISANS, MOCK_METIERS } from "@/lib/mock-data";
 import { getArtisans, getMetiers } from "@/lib/api";
 import type { ArtisanPublic, MetierData } from "@/lib/api";
 import { VILLES } from "@/lib/constants";
+import VilleAutocomplete from "@/components/VilleAutocomplete/VilleAutocomplete";
+import type { CommuneResult } from "@/components/VilleAutocomplete/VilleAutocomplete";
 
 const TESTIMONIALS = [
   { text: "J'ai trouvé un électricien de confiance en 5 minutes. Travaux impeccables.", name: "Sophie L.", role: "Particulier, Annecy", initials: "SL" },
@@ -31,10 +33,42 @@ const STEPS = [
 
 export default function Home() {
   const [villeFilter, setVilleFilter] = useState("");
+  const [villeLabel, setVilleLabel] = useState("");
+  const [locating, setLocating] = useState(false);
   const [metierFilter, setMetierFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [allArtisans, setAllArtisans] = useState<ArtisanPublic[]>(MOCK_ARTISANS);
   const [allMetiers, setAllMetiers] = useState<MetierData[]>(MOCK_METIERS);
+
+  const handleVilleSelect = (commune: CommuneResult) => {
+    const slug = commune.slug || commune.nom.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
+    setVilleFilter(slug);
+    setVilleLabel(commune.nom);
+  };
+
+  const handleLocate = () => {
+    if (!navigator.geolocation) return;
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const res = await fetch(`/api/v1/public/geo/communes?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&limit=1`);
+          const json = await res.json();
+          if (json.success && json.data?.length > 0) {
+            handleVilleSelect(json.data[0]);
+          }
+        } catch {
+          // silently fail
+        } finally {
+          setLocating(false);
+        }
+      },
+      () => {
+        setLocating(false);
+      },
+      { timeout: 10000 }
+    );
+  };
 
   useEffect(() => {
     getArtisans({ size: 100 })
@@ -74,13 +108,17 @@ export default function Home() {
             Des artisans de confiance, v&eacute;rifi&eacute;s et not&eacute;s par leurs clients. Devis gratuit en 24h.
           </p>
           <div className="search-bar" style={{ background: "var(--g50)", border: "1px solid var(--sable)", maxWidth: 640 }}>
-            <select value={villeFilter} onChange={(e) => setVilleFilter(e.target.value)}>
-              <option value="">Toutes les villes</option>
-              {VILLES.map((v) => <option key={v.slug} value={v.slug}>{v.nom}</option>)}
-            </select>
+            <div style={{ flex: 1, maxWidth: 200, minWidth: 0 }}>
+              <VilleAutocomplete
+                onSelect={handleVilleSelect}
+                placeholder="Ville ou code postal"
+                defaultValue={villeLabel}
+                className="search-bar-ville"
+              />
+            </div>
             <input
               type="text"
-              placeholder="Plombier, électricien, rénovation..."
+              placeholder="Plombier, &eacute;lectricien, r&eacute;novation..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -89,7 +127,19 @@ export default function Home() {
               Rechercher
             </button>
           </div>
-          <p style={{ fontSize: 13, color: "var(--pierre)", marginTop: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginTop: 14, flexWrap: "wrap" }}>
+            <button onClick={handleLocate} disabled={locating} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, color: "var(--terre)", background: "none", border: "none", cursor: "pointer", fontWeight: 500, fontFamily: "'Karla',sans-serif" }}>
+              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" /><circle cx="12" cy="9" r="2.5" /></svg>
+              {locating ? "Localisation..." : "Me localiser"}
+            </button>
+            {villeFilter && (
+              <button onClick={() => { setVilleFilter(""); setVilleLabel(""); }} style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 13, color: "var(--pierre)", background: "none", border: "none", cursor: "pointer", fontFamily: "'Karla',sans-serif" }}>
+                <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" /></svg>
+                Toutes les villes
+              </button>
+            )}
+          </div>
+          <p style={{ fontSize: 13, color: "var(--pierre)", marginTop: 10 }}>
             Recherches populaires : <Link href="/chambery" style={{ color: "var(--argile)", fontWeight: 500 }}>r&eacute;novation salle de bain</Link>, <Link href="/chambery" style={{ color: "var(--argile)", fontWeight: 500 }}>plombier urgent</Link>, <Link href="/chambery" style={{ color: "var(--argile)", fontWeight: 500 }}>peinture int&eacute;rieure</Link>
           </p>
         </div>

@@ -68,6 +68,8 @@ a{text-decoration:none;color:inherit;transition:color .15s}button{font-family:'K
 .search-bar{display:flex;gap:8px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:6px;max-width:620px;margin:0 auto}
 .search-bar select,.search-bar input{flex:1;padding:13px 16px;border:none;border-radius:10px;font-family:'Karla',sans-serif;font-size:14px;background:var(--blanc);color:var(--anthracite);outline:none;min-width:0}
 .search-bar select{max-width:180px;cursor:pointer;color:var(--g500)}
+.search-bar-ville input{padding:13px 16px;border:none!important;border-radius:10px;font-family:'Karla',sans-serif;font-size:14px;background:var(--blanc)!important;color:var(--anthracite);outline:none;box-shadow:none!important;min-width:0}
+.search-bar-ville input:focus{border:none!important;box-shadow:none!important}
 .search-btn{background:var(--terre);color:var(--blanc);padding:13px 26px;border-radius:10px;font-size:14px;font-weight:600;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:8px}
 .search-btn:hover{background:var(--terre-h)}
 .search-btn svg{width:16px;height:16px}

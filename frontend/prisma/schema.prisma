@@ -98,6 +98,7 @@ model Artisan {
   ville           String?
   latitude        Float?
   longitude       Float?
+  codeInsee       String?  @map("code_insee")
   zoneRayonKm     Int      @default(15) @map("zone_rayon_km")
   experienceAnnees Int?    @map("experience_annees")
   noteMoyenne     Float    @default(0) @map("note_moyenne")

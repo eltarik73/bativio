@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { METIERS, VILLES } from "@/lib/constants";
+import VilleAutocomplete from "@/components/VilleAutocomplete/VilleAutocomplete";
 
 const API_URL = "/api/v1";
 
@@ -371,10 +372,15 @@ export default function InscriptionPage() {
                 <div className="card-subtitle">O&ugrave; intervenez-vous ?</div>
                 <div className="field">
                   <label className="bv-label">Ville principale *</label>
-                  <select className="bv-select" value={form.ville} onChange={(e) => { update("ville", e.target.value); setError(""); }}>
-                    <option value="">S&eacute;lectionnez votre ville</option>
-                    {VILLES.map((v) => <option key={v.slug} value={v.nom}>{v.nom}</option>)}
-                  </select>
+                  <VilleAutocomplete
+                    onSelect={(commune) => {
+                      update("ville", commune.nom);
+                      update("codePostal", commune.codesPostaux[0] || "");
+                      setError("");
+                    }}
+                    defaultValue={form.ville}
+                    placeholder="Tapez votre ville ou code postal..."
+                  />
                 </div>
                 {error && <p style={{ color: "#dc2626", fontSize: 14, marginTop: 8 }}>{error}</p>}
                 <div className="btn-row">
