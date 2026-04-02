@@ -21,12 +21,13 @@ export default function InscriptionPage() {
   const [error, setError] = useState("");
   const [photoToast, setPhotoToast] = useState("");
 
-  // Redirect to dashboard if already authenticated
+  const [justRegistered, setJustRegistered] = useState(false);
+  // Redirect if already authenticated (but not if just registered — we want to go to scoring)
   useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      router.replace("/dashboard");
+    if (!authLoading && isAuthenticated && !justRegistered) {
+      router.replace("/onboarding/validation");
     }
-  }, [authLoading, isAuthenticated, router]);
+  }, [authLoading, isAuthenticated, justRegistered, router]);
   const [siretLoading, setSiretLoading] = useState(false);
   const [siretFound, setSiretFound] = useState(false);
   const [photos, setPhotos] = useState<File[]>([]);
@@ -148,6 +149,8 @@ export default function InscriptionPage() {
     });
     const json = await res.json();
     if (!json.success) throw new Error(json.error || "Erreur lors de l'inscription");
+    // Mark as just registered BEFORE updating auth state
+    setJustRegistered(true);
     // Cookie is set server-side — update local state
     if (json.data) {
       updateUser(json.data);
