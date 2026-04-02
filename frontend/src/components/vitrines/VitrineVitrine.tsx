@@ -8,6 +8,7 @@ import ContactCard from "@/components/ContactCard";
 import PhotoGallery from "@/components/vitrines/PhotoGallery";
 import type { PhotoLayoutType } from "@/lib/vitrine-config";
 import { METIER_PHOTOS } from "@/lib/metier-config";
+import ChatDevis from "@/components/ChatDevis/ChatDevis";
 
 const JOURS = ["", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 const PLACEHOLDERS = Object.values(METIER_PHOTOS).slice(0, 4);
@@ -15,7 +16,11 @@ const PLACEHOLDERS = Object.values(METIER_PHOTOS).slice(0, 4);
 export default function VitrineVitrine({ a, photo, primary, accent, villeSlug }: { a: ArtisanPublic; photo: string; primary: string; accent: string; villeSlug: string }) {
   const sliderPhotos = (a.photos && a.photos.length > 0) ? a.photos.map((p) => p.url) : [photo, ...PLACEHOLDERS.slice(0, 2)];
   const [slideIdx, setSlideIdx] = useState(0);
+  const [devisOpen, setDevisOpen] = useState(false);
+  const [toast, setToast] = useState(false);
   const services = a.services ?? [];
+
+  const metierSlug = (a.metierNom || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-");
 
   return (
     <>
@@ -57,6 +62,9 @@ export default function VitrineVitrine({ a, photo, primary, accent, villeSlug }:
           <svg width="18" height="18" fill={accent} viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
           <span style={{ fontFamily: "'Fraunces',serif", fontSize: 20, fontWeight: 700, color: "#1C1C1E" }}>{a.noteMoyenne?.toFixed(1)}</span>
           <span style={{ fontSize: 14, color: "#9B9590" }}>({a.nombreAvis} avis)</span>
+        </div>
+        <div style={{ marginTop: 20 }}>
+          <button onClick={() => setDevisOpen(true)} style={{ padding: "14px 28px", background: primary, color: "#fff", borderRadius: 10, fontSize: 15, fontWeight: 600, border: "none", cursor: "pointer" }}>Devis gratuit</button>
         </div>
       </section>
 
@@ -149,6 +157,31 @@ export default function VitrineVitrine({ a, photo, primary, accent, villeSlug }:
           <ContactCard a={a} />
         </div>
       </section>
+
+      {/* ChatDevis modal */}
+      {devisOpen && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,.5)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }} onClick={() => setDevisOpen(false)}>
+          <div style={{ position: "relative", width: "100%", maxWidth: 520, maxHeight: "90vh", overflow: "auto", borderRadius: 16, boxShadow: "0 24px 48px rgba(0,0,0,.25)" }} onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => setDevisOpen(false)} aria-label="Fermer" style={{ position: "absolute", top: 12, right: 12, zIndex: 10, width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(0,0,0,.08)", fontSize: 20, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#1C1C1E" }}>&times;</button>
+            <ChatDevis
+              artisanId={a.id}
+              artisanNom={a.nomAffichage}
+              artisanMetierSlug={metierSlug}
+              artisanMetierNom={a.metierNom}
+              onClose={() => setDevisOpen(false)}
+              onSuccess={() => { setDevisOpen(false); setToast(true); setTimeout(() => setToast(false), 3000); }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Toast */}
+      {toast && (
+        <div style={{ position: "fixed", bottom: 32, left: "50%", transform: "translateX(-50%)", zIndex: 1100, background: "#16a34a", color: "#fff", padding: "14px 28px", borderRadius: 12, fontSize: 15, fontWeight: 600, boxShadow: "0 8px 24px rgba(0,0,0,.2)", display: "flex", alignItems: "center", gap: 8 }}>
+          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          Demande envoy&eacute;e !
+        </div>
+      )}
     </>
   );
 }

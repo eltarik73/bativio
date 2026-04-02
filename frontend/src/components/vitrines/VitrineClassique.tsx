@@ -1,13 +1,22 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import type { ArtisanPublic } from "@/lib/api";
 import DevisForm3Steps from "@/components/DevisForm3Steps";
 import ContactCard from "@/components/ContactCard";
 import PhotoGallery from "@/components/vitrines/PhotoGallery";
 import type { PhotoLayoutType } from "@/lib/vitrine-config";
+import ChatDevis from "@/components/ChatDevis/ChatDevis";
 
 const JOURS = ["", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 
 export default function VitrineClassique({ a, photo, primary, accent, villeSlug }: { a: ArtisanPublic; photo: string; primary: string; accent: string; villeSlug: string }) {
+  const [devisOpen, setDevisOpen] = useState(false);
+  const [toast, setToast] = useState(false);
+
+  const metierSlug = (a.metierNom || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-");
+
   return (
     <>
       {/* Breadcrumb */}
@@ -55,7 +64,7 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
             </div>
           )}
           <div style={{ display: "flex", gap: 12, marginTop: 32 }}>
-            <a href="#devis" style={{ padding: "14px 32px", background: primary, color: "#fff", borderRadius: 12, fontSize: 15, fontWeight: 600, textDecoration: "none" }}>Devis gratuit</a>
+            <button onClick={() => setDevisOpen(true)} style={{ padding: "14px 32px", background: primary, color: "#fff", borderRadius: 12, fontSize: 15, fontWeight: 600, border: "none", cursor: "pointer" }}>Devis gratuit</button>
             {a.telephone && (
               <a href={`tel:${a.telephone.replace(/\s/g, "")}`} style={{ padding: "14px 32px", border: "1px solid rgba(255,255,255,.2)", color: "#fff", borderRadius: 12, fontSize: 15, fontWeight: 600, textDecoration: "none" }}>{a.telephone}</a>
             )}
@@ -193,6 +202,31 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
             </div>
           </div>
         </section>
+      )}
+
+      {/* ChatDevis modal */}
+      {devisOpen && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,.5)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }} onClick={() => setDevisOpen(false)}>
+          <div style={{ position: "relative", width: "100%", maxWidth: 520, maxHeight: "90vh", overflow: "auto", borderRadius: 16, boxShadow: "0 24px 48px rgba(0,0,0,.25)" }} onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => setDevisOpen(false)} aria-label="Fermer" style={{ position: "absolute", top: 12, right: 12, zIndex: 10, width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(0,0,0,.08)", fontSize: 20, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#1C1C1E" }}>&times;</button>
+            <ChatDevis
+              artisanId={a.id}
+              artisanNom={a.nomAffichage}
+              artisanMetierSlug={metierSlug}
+              artisanMetierNom={a.metierNom}
+              onClose={() => setDevisOpen(false)}
+              onSuccess={() => { setDevisOpen(false); setToast(true); setTimeout(() => setToast(false), 3000); }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Toast */}
+      {toast && (
+        <div style={{ position: "fixed", bottom: 32, left: "50%", transform: "translateX(-50%)", zIndex: 1100, background: "#16a34a", color: "#fff", padding: "14px 28px", borderRadius: 12, fontSize: 15, fontWeight: 600, boxShadow: "0 8px 24px rgba(0,0,0,.2)", display: "flex", alignItems: "center", gap: 8 }}>
+          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          Demande envoy&eacute;e !
+        </div>
       )}
     </>
   );
