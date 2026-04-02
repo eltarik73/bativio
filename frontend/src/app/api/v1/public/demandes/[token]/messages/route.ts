@@ -24,6 +24,10 @@ export async function POST(
       return apiError("Demande de devis introuvable", 404);
     }
 
+    if (demande.expiresAt && demande.expiresAt < new Date()) {
+      return apiError("Cette demande a expiré", 410);
+    }
+
     // Rate limit: max 20 messages per token per hour
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
     const recentMessages = await prisma.messageDevis.count({
@@ -50,11 +54,14 @@ export async function POST(
 
     const { contenu } = parsed.data;
 
+    // Sanitize HTML to prevent XSS
+    const sanitizedContenu = contenu.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
     const message = await prisma.messageDevis.create({
       data: {
         demandeId: demande.id,
         auteur: "client",
-        contenu,
+        contenu: sanitizedContenu,
       },
     });
 
@@ -68,7 +75,7 @@ export async function POST(
         artisanEmail: artisan.user.email,
         artisanNom: artisan.nomAffichage,
         clientNom: demande.nomClient,
-        messageExtrait: contenu.substring(0, 100),
+        messageExtrait: sanitizedContenu.substring(0, 100),
         demandeId: demande.id,
       }).catch((e) => console.error("Email artisan reply error:", e));
     }

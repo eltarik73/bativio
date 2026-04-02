@@ -36,6 +36,10 @@ export async function POST(
       return apiError("Demande de devis introuvable", 404);
     }
 
+    if (demande.expiresAt && demande.expiresAt < new Date()) {
+      return apiError("Cette demande a expiré", 410);
+    }
+
     // Check photo limit
     const existingCount = await prisma.devisPhoto.count({
       where: { demandeId: demande.id },

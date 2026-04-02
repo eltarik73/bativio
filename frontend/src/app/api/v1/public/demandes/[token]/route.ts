@@ -37,6 +37,10 @@ export async function GET(
       return apiError("Demande de devis introuvable", 404);
     }
 
+    if (demande.expiresAt && demande.expiresAt < new Date()) {
+      return apiError("Cette demande a expiré", 410);
+    }
+
     return apiSuccess({
       id: demande.id,
       nomClient: demande.nomClient,

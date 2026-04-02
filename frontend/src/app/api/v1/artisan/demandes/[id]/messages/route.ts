@@ -42,6 +42,9 @@ export async function POST(
 
     const { contenu } = parsed.data;
 
+    // Sanitize HTML to prevent XSS
+    const sanitizedContenu = contenu.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
     const isFirstReply = demande.statut !== "REPONDU" && !demande.reponduAt;
 
     // Create message and update demande status in a transaction
@@ -50,7 +53,7 @@ export async function POST(
         data: {
           demandeId: demande.id,
           auteur: "artisan",
-          contenu,
+          contenu: sanitizedContenu,
         },
       }),
       prisma.demandeDevis.update({
@@ -68,7 +71,7 @@ export async function POST(
         clientEmail: demande.emailClient,
         clientNom: demande.nomClient,
         artisanNom: artisan.nomAffichage,
-        messageExtrait: contenu.substring(0, 100),
+        messageExtrait: sanitizedContenu.substring(0, 100),
         responseToken: demande.responseToken,
       }).catch((e) => console.error("Email client reply error:", e));
     }
