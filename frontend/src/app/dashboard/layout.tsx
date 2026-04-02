@@ -6,6 +6,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
+const ICON_STAR = '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6z"/></svg>';
+
 const NAV: { href: string; label: string; icon: string; badge?: string; sep?: boolean }[] = [
   { href: "/dashboard", label: "Tableau de bord", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>' },
   { href: "/dashboard/agenda", label: "Agenda", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>' },
@@ -17,8 +19,33 @@ const NAV: { href: string; label: string; icon: string; badge?: string; sep?: bo
   { href: "/dashboard/devis-ia", label: "Devis IA", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 008.5 14.063l-6.135-1.582a.5.5 0 010-.962L8.5 9.937A2 2 0 009.937 8.5l1.582-6.135a.5.5 0 01.962 0L14.063 8.5A2 2 0 0015.5 9.937l6.135 1.582a.5.5 0 010 .962L15.5 14.063a2 2 0 00-1.437 1.437l-1.582 6.135a.5.5 0 01-.962 0L9.937 15.5z"/><path d="M3.5 2v3M2 3.5h3M5 18v2.5M3.75 19.25h2.5"/></svg>', badge: "Business" },
   { href: "/dashboard/facturation", label: "Facturation", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14h.01M13 14h2M9 18h.01M13 18h2"/></svg>', badge: "Bientôt" },
   { href: "/dashboard/rdv", label: "Mes RDV", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>' },
-  { href: "/dashboard/parametres", label: "Paramètres", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>', sep: true },
+  // Séparateur avant paramètres et abonnement
+  { href: "/tarifs", label: "Mon abonnement", icon: ICON_STAR, sep: true },
+  { href: "/dashboard/parametres", label: "Paramètres", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>' },
 ];
+
+function getInitials(name: string): string {
+  if (!name) return "?";
+  const words = name.trim().split(/\s+/);
+  if (words.length === 1) return words[0].charAt(0).toUpperCase();
+  return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
+}
+
+function getPlanLabel(plan: string): string {
+  const p = (plan || "GRATUIT").toUpperCase();
+  if (p === "BUSINESS" || p === "PRO_PLUS") return "Business";
+  if (p === "PRO") return "Pro";
+  if (p === "STARTER" || p === "ESSENTIEL") return "Starter";
+  return "Gratuit";
+}
+
+function getPlanBadgeStyle(plan: string): React.CSSProperties {
+  const p = (plan || "GRATUIT").toUpperCase();
+  if (p === "BUSINESS" || p === "PRO_PLUS") return { background: "var(--bois,#3D2E1F)", color: "var(--sable-light,#F2EAE0)" };
+  if (p === "PRO") return { background: "var(--terre,#C4531A)", color: "#fff" };
+  if (p === "STARTER" || p === "ESSENTIEL") return { background: "rgba(196,83,26,.08)", color: "var(--terre,#C4531A)" };
+  return { background: "var(--sable-light,#F2EAE0)", color: "var(--pierre,#9C958D)" };
+}
 
 const MOB = [
   { href: "/dashboard", label: "Accueil", icon: '<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>' },
@@ -84,15 +111,41 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               );
             })}
           </nav>
-          <div style={{ flexShrink: 0, borderTop: "1.5px solid #F7F5F2", padding: "16px 16px 20px 30px", display: "flex", flexDirection: "column", gap: 10 }}>
+          {/* User block */}
+          <div style={{ flexShrink: 0, borderTop: "1px solid var(--sable,#E8D5C0)", padding: "12px 16px 16px" }}>
+            {/* Avatar + name + plan */}
+            <div style={{ background: "var(--sable-light,#F2EAE0)", borderRadius: 10, padding: "12px 14px", marginBottom: 10 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 8, background: "linear-gradient(135deg, var(--terre,#C4531A), var(--argile,#D4956B))", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <span style={{ fontFamily: "'Fraunces',serif", fontSize: 13, fontWeight: 700, color: "#fff", lineHeight: 1 }}>{getInitials(user?.nomAffichage || "")}</span>
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "var(--bois,#3D2E1F)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user?.nomAffichage || "Artisan"}</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
+                    <span style={{ fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 6, ...getPlanBadgeStyle(user?.plan || "GRATUIT") }}>{getPlanLabel(user?.plan || "GRATUIT")}</span>
+                  </div>
+                </div>
+              </div>
+              <Link href="/dashboard/parametres" style={{ display: "block", fontSize: 12, color: "var(--terre,#C4531A)", fontWeight: 500, textDecoration: "none", marginTop: 8, transition: "color .15s" }}>Changer de plan &rarr;</Link>
+            </div>
+
+            {/* Voir ma page */}
             {vitrineHref !== "#" && user?.actif && (
-              <Link href={vitrineHref} target="_blank" style={{ fontSize: 13, color: "#C4531A", fontWeight: 600, textDecoration: "none", transition: "color .15s" }}>Voir ma page &rarr;</Link>
+              <Link href={vitrineHref} target="_blank" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--terre,#C4531A)", fontWeight: 600, textDecoration: "none", padding: "6px 0", transition: "color .15s" }}>
+                <span dangerouslySetInnerHTML={{ __html: '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' }} style={{ display: "flex", flexShrink: 0, width: 16, height: 16 }} />
+                Voir ma page
+              </Link>
             )}
             {vitrineHref !== "#" && !user?.actif && (
-              <span style={{ fontSize: 12, color: "#9B9590", fontStyle: "italic" }}>Page visible apr&egrave;s validation</span>
+              <span style={{ fontSize: 12, color: "var(--pierre,#9C958D)", fontStyle: "italic", display: "block", padding: "6px 0" }}>Page visible apr&egrave;s validation</span>
             )}
-            <button onClick={handleLogout} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "#DC2626", fontWeight: 600, background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: 0, transition: "color .15s" }}>
-              <span dangerouslySetInnerHTML={{ __html: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>' }} style={{ display: "flex", flexShrink: 0, width: 20, height: 20 }} />
+
+            {/* Déconnexion */}
+            <button onClick={handleLogout} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--pierre,#9C958D)", fontWeight: 500, background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: "6px 0", transition: "color .15s", fontFamily: "'Karla',sans-serif" }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = "var(--terre,#C4531A)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = "var(--pierre,#9C958D)"; }}
+            >
+              <span dangerouslySetInnerHTML={{ __html: '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>' }} style={{ display: "flex", flexShrink: 0, width: 16, height: 16 }} />
               Se d&eacute;connecter
             </button>
           </div>
