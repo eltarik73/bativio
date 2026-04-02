@@ -50,10 +50,27 @@ export default function InscriptionPage() {
     return match ? match.nom : "";
   };
 
+  const [doublonInfo, setDoublonInfo] = useState<{ message: string; champDoublon: string } | null>(null);
+
   const handleSiretLookup = async () => {
     if (!siretValid) return;
-    setSiretLoading(true); setError(""); setSiretFound(false);
+    setSiretLoading(true); setError(""); setSiretFound(false); setDoublonInfo(null);
     try {
+      // 1. Check doublon SIRET IMMÉDIATEMENT
+      const siretToCheck = rawSiret.length === 9 ? rawSiret + "00000" : rawSiret;
+      const checkRes = await fetch(`${API_URL}/auth/check-doublon`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ siret: siretToCheck }),
+      });
+      if (checkRes.status === 409) {
+        const checkData = await checkRes.json();
+        setDoublonInfo({ message: checkData.message || "Cette entreprise est déjà inscrite sur Bativio.", champDoublon: checkData.champDoublon || "siret" });
+        setSiretLoading(false);
+        return;
+      }
+
+      // 2. Lookup API gouv
       const res = await fetch(`https://recherche-entreprises.api.gouv.fr/search?q=${rawSiret}`);
       const json = await res.json();
       if (json.results?.length > 0) {
@@ -79,12 +96,25 @@ export default function InscriptionPage() {
     }
   };
 
-  // Bug 3 fix: validation par etape
-  const validateStep1 = () => {
+  // Validation par etape avec check doublon email/tel
+  const validateStep1 = async (): Promise<boolean> => {
     if (!form.nomAffichage.trim()) { setError("Le nom d'affichage est requis"); return false; }
     if (!form.email.trim()) { setError("L'email est requis"); return false; }
     if (!form.telephone.trim()) { setError("Le téléphone est requis"); return false; }
     if (!form.password || form.password.length < 8) { setError("Le mot de passe doit contenir au moins 8 caractères"); return false; }
+    // Check doublon email + telephone
+    try {
+      const res = await fetch(`${API_URL}/auth/check-doublon`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email, telephone: form.telephone }),
+      });
+      if (res.status === 409) {
+        const data = await res.json();
+        setError(data.message || "Un compte avec ces informations existe déjà.");
+        return false;
+      }
+    } catch { /* continue si erreur réseau */ }
     return true;
   };
   const validateStep2 = () => {
@@ -252,7 +282,7 @@ export default function InscriptionPage() {
                   <input
                     type="text" className="bv-input siret-input" maxLength={19}
                     value={fmtSiret(form.siret)}
-                    onChange={(e) => { update("siret", e.target.value.replace(/\D/g, "").slice(0, 14)); setSiretFound(false); setError(""); }}
+                    onChange={(e) => { update("siret", e.target.value.replace(/\D/g, "").slice(0, 14)); setSiretFound(false); setError(""); setDoublonInfo(null); }}
                     placeholder="123 456 789"
                   />
                 </div>
@@ -269,11 +299,26 @@ export default function InscriptionPage() {
                     </div>
                   </div>
                 )}
+                {/* Doublon détecté */}
+                {doublonInfo && (
+                  <div style={{ padding: 20, background: "rgba(196,83,26,.06)", border: "1px solid rgba(196,83,26,.2)", borderRadius: 14, marginBottom: 16 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                      <span style={{ fontSize: 18 }}>&#9888;</span>
+                      <span style={{ fontWeight: 700, color: "var(--bois,#3D2E1F)", fontSize: 15 }}>Cette entreprise est d&eacute;j&agrave; inscrite</span>
+                    </div>
+                    <p style={{ fontSize: 14, color: "var(--bois-mid,#5C4A3A)", lineHeight: 1.5, marginBottom: 14 }}>{doublonInfo.message}</p>
+                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                      <a href="/connexion" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 22px", background: "var(--terre,#C4531A)", color: "#fff", borderRadius: 99, fontSize: 14, fontWeight: 600, textDecoration: "none" }}>Se connecter &agrave; mon espace</a>
+                      <a href="/mot-de-passe-oublie" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 22px", border: "1px solid var(--sable,#E8D5C0)", color: "var(--terre,#C4531A)", borderRadius: 99, fontSize: 13, fontWeight: 500, textDecoration: "none" }}>Mot de passe oubli&eacute; ?</a>
+                    </div>
+                    <p style={{ fontSize: 12, color: "var(--pierre,#9C958D)", marginTop: 10 }}>Ce n&apos;est pas vous ? Contactez-nous : contact@bativio.fr</p>
+                  </div>
+                )}
                 {error && <p style={{ color: "#dc2626", fontSize: 14, marginBottom: 16 }}>{error}</p>}
-                <button className="bv-btn bv-btn-primary" disabled={!siretValid || siretLoading} onClick={() => { if (!siretFound) handleSiretLookup(); else go(1); }}>
+                <button className="bv-btn bv-btn-primary" disabled={!siretValid || siretLoading || !!doublonInfo} onClick={() => { if (!siretFound) handleSiretLookup(); else go(1); }}>
                   {siretLoading ? "Vérification..." : siretFound ? <>Continuer {ARROW_R}</> : <>V&eacute;rifier et continuer {ARROW_R}</>}
                 </button>
-                <div className="bv-help">Vous n&apos;avez pas de SIREN/SIRET ? <a href="#" className="bv-link">Contactez-nous</a></div>
+                <div className="bv-help">Vous n&apos;avez pas de SIREN/SIRET ? <a href="mailto:contact@bativio.fr" className="bv-link">Contactez-nous</a></div>
               </div>
             )}
 
@@ -290,7 +335,7 @@ export default function InscriptionPage() {
                 {error && <p style={{ color: "#dc2626", fontSize: 14, marginTop: -8, marginBottom: 8 }}>{error}</p>}
                 <div className="btn-row">
                   <button className="bv-btn bv-btn-secondary bv-btn-half" onClick={() => go(0)}>{ARROW_L} Retour</button>
-                  <button className="bv-btn bv-btn-primary bv-btn-half" onClick={() => { if (validateStep1()) go(2); }}>Continuer {ARROW_R}</button>
+                  <button className="bv-btn bv-btn-primary bv-btn-half" onClick={async () => { if (await validateStep1()) go(2); }}>Continuer {ARROW_R}</button>
                 </div>
               </div>
             )}
