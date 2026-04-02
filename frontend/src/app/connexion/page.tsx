@@ -15,6 +15,7 @@ export default function ConnexionPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [magicSent, setMagicSent] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -42,7 +43,7 @@ export default function ConnexionPage() {
   };
 
   const handleMagicLink = async () => {
-    if (!email) { setError("Entrez votre email"); return; }
+    if (!email) { setError("Entrez votre email"); const el = document.getElementById("email"); el?.focus(); return; }
     setLoading(true);
     setError("");
     try {
@@ -52,8 +53,12 @@ export default function ConnexionPage() {
         body: JSON.stringify({ email }),
       });
       const json = await res.json();
-      if (!json.success) throw new Error(json.error || "Erreur");
+      if (!res.ok && json.error) throw new Error(json.error);
       setMagicSent(true);
+      setResendTimer(60);
+      const interval = setInterval(() => {
+        setResendTimer((t) => { if (t <= 1) { clearInterval(interval); return 0; } return t - 1; });
+      }, 1000);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur");
     } finally {
@@ -67,10 +72,25 @@ export default function ConnexionPage() {
       <main style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "85vh", padding: 16, background: "var(--creme)" }}>
         <div style={{ background: "var(--blanc)", borderRadius: 16, border: "1px solid var(--sable)", boxShadow: "0 4px 24px rgba(61,46,31,.04)", maxWidth: 440, width: "100%", padding: 40, textAlign: "center" }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>&#9993;</div>
-          <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "var(--bois)", marginBottom: 8 }}>Lien envoy&eacute; !</h1>
-          <p style={{ fontSize: 15, color: "var(--pierre)", lineHeight: 1.6 }}>
-            Si un compte existe avec cet email, un lien de connexion a &eacute;t&eacute; envoy&eacute;. V&eacute;rifiez votre bo&icirc;te mail.
+          <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "var(--bois)", marginBottom: 8 }}>V&eacute;rifiez votre bo&icirc;te mail</h1>
+          <p style={{ fontSize: 14, color: "var(--bois-mid,#5C4A3A)", lineHeight: 1.6, marginBottom: 4 }}>
+            Un lien de connexion a &eacute;t&eacute; envoy&eacute; &agrave;
           </p>
+          <p style={{ fontSize: 15, fontWeight: 700, color: "var(--bois)", marginBottom: 16 }}>{email}</p>
+          <p style={{ fontSize: 13, color: "var(--pierre)", lineHeight: 1.5, marginBottom: 20 }}>
+            Cliquez sur le lien dans l&apos;email pour vous connecter. Pensez &agrave; v&eacute;rifier vos spams.
+          </p>
+          <button
+            onClick={handleMagicLink}
+            disabled={resendTimer > 0 || loading}
+            style={{ fontSize: 13, color: resendTimer > 0 ? "var(--pierre)" : "var(--terre,#C4531A)", background: "none", border: "none", cursor: resendTimer > 0 ? "default" : "pointer", fontFamily: "'Karla',sans-serif", fontWeight: 500, marginBottom: 16 }}
+          >
+            {resendTimer > 0 ? `Renvoyer (${resendTimer}s)` : "Renvoyer le lien"}
+          </button>
+          <br />
+          <button onClick={() => setMagicSent(false)} style={{ fontSize: 13, color: "var(--pierre)", background: "none", border: "none", cursor: "pointer", fontFamily: "'Karla',sans-serif" }}>
+            &larr; Se connecter avec un mot de passe
+          </button>
         </div>
       </main></>
     );
@@ -133,6 +153,7 @@ export default function ConnexionPage() {
         >
           Recevoir un magic link
         </button>
+        <p style={{ textAlign: "center", fontSize: 12, color: "var(--pierre,#9C958D)", marginTop: 6 }}>Connexion sans mot de passe par email</p>
 
         <p style={{ marginTop: 24, textAlign: "center", fontSize: 14, color: "#9B9590" }}>
           Pas encore inscrit ?{" "}
