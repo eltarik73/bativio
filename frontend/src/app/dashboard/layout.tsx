@@ -91,7 +91,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <ProtectedRoute>
       <div style={{ display: "flex", minHeight: "100vh", background: "#FAF8F5" }}>
         {/* Sidebar desktop */}
-        <aside style={{ width: 252, flexShrink: 0, background: "var(--blanc,#fff)", borderRight: "1px solid var(--sable,#E8D5C0)", display: "flex", flexDirection: "column", height: "100vh", position: "sticky", top: 0, overflow: "hidden" }} className="hidden md:flex">
+        <aside style={{ width: 252, flexShrink: 0, background: "var(--blanc,#fff)", borderRight: "1px solid var(--sable,#E8D5C0)", display: "flex", flexDirection: "column", height: "100vh", position: "sticky", top: 0 }} className="hidden md:flex">
           <Link href="/" style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#C4531A", textDecoration: "none", padding: "24px 16px 0 30px", marginBottom: 36, display: "block", letterSpacing: -0.5, flexShrink: 0 }}>Bativio</Link>
           <nav style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 2, padding: "0 16px" }}>
             {NAV.map((item) => {
@@ -112,40 +112,36 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             })}
           </nav>
           {/* User block */}
-          <div style={{ flexShrink: 0, borderTop: "1px solid var(--sable,#E8D5C0)", padding: "12px 16px 16px" }}>
-            {/* Avatar + name + plan */}
-            <div style={{ background: "var(--sable-light,#F2EAE0)", borderRadius: 10, padding: "12px 14px", marginBottom: 10 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 36, height: 36, borderRadius: 8, background: "linear-gradient(135deg, var(--terre,#C4531A), var(--argile,#D4956B))", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <span style={{ fontFamily: "'Fraunces',serif", fontSize: 13, fontWeight: 700, color: "#fff", lineHeight: 1 }}>{getInitials(user?.nomAffichage || "")}</span>
-                </div>
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "var(--bois,#3D2E1F)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user?.nomAffichage || "Artisan"}</div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}>
-                    <span style={{ fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 6, ...getPlanBadgeStyle(user?.plan || "GRATUIT") }}>{getPlanLabel(user?.plan || "GRATUIT")}</span>
-                  </div>
-                </div>
+          <div style={{ flexShrink: 0, borderTop: "1px solid var(--sable,#E8D5C0)", padding: "10px 16px 14px" }}>
+            {/* Avatar + name + plan — compact */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0" }}>
+              <div style={{ width: 32, height: 32, borderRadius: 8, background: "linear-gradient(135deg, var(--terre,#C4531A), var(--argile,#D4956B))", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <span style={{ fontFamily: "'Fraunces',serif", fontSize: 12, fontWeight: 700, color: "#fff", lineHeight: 1 }}>{getInitials(user?.nomAffichage || "")}</span>
               </div>
-              <Link href="/dashboard/parametres" style={{ display: "block", fontSize: 12, color: "var(--terre,#C4531A)", fontWeight: 500, textDecoration: "none", marginTop: 8, transition: "color .15s" }}>Changer de plan &rarr;</Link>
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "var(--bois,#3D2E1F)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user?.nomAffichage || "Artisan"}</div>
+                <span style={{ fontSize: 10, fontWeight: 600, padding: "1px 6px", borderRadius: 4, ...getPlanBadgeStyle(user?.plan || "GRATUIT") }}>{getPlanLabel(user?.plan || "GRATUIT")}</span>
+              </div>
+              <Link href="/dashboard/parametres" style={{ fontSize: 11, color: "var(--terre,#C4531A)", fontWeight: 500, textDecoration: "none", flexShrink: 0 }}>&uarr;</Link>
             </div>
 
             {/* Voir ma page */}
             {vitrineHref !== "#" && user?.actif && (
-              <Link href={vitrineHref} target="_blank" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--terre,#C4531A)", fontWeight: 600, textDecoration: "none", padding: "6px 0", transition: "color .15s" }}>
-                <span dangerouslySetInnerHTML={{ __html: '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' }} style={{ display: "flex", flexShrink: 0, width: 16, height: 16 }} />
+              <Link href={vitrineHref} target="_blank" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--terre,#C4531A)", fontWeight: 600, textDecoration: "none", padding: "5px 0", transition: "color .15s" }}>
+                <span dangerouslySetInnerHTML={{ __html: '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' }} style={{ display: "flex", flexShrink: 0 }} />
                 Voir ma page
               </Link>
             )}
             {vitrineHref !== "#" && !user?.actif && (
-              <span style={{ fontSize: 12, color: "var(--pierre,#9C958D)", fontStyle: "italic", display: "block", padding: "6px 0" }}>Page visible apr&egrave;s validation</span>
+              <span style={{ fontSize: 12, color: "var(--pierre,#9C958D)", fontStyle: "italic", display: "block", padding: "5px 0" }}>Page visible apr&egrave;s validation</span>
             )}
 
             {/* Déconnexion */}
-            <button onClick={handleLogout} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--pierre,#9C958D)", fontWeight: 500, background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: "6px 0", transition: "color .15s", fontFamily: "'Karla',sans-serif" }}
+            <button onClick={handleLogout} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "var(--pierre,#9C958D)", fontWeight: 500, background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: "5px 0", transition: "color .15s", fontFamily: "'Karla',sans-serif" }}
               onMouseEnter={(e) => { e.currentTarget.style.color = "var(--terre,#C4531A)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.color = "var(--pierre,#9C958D)"; }}
             >
-              <span dangerouslySetInnerHTML={{ __html: '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>' }} style={{ display: "flex", flexShrink: 0, width: 16, height: 16 }} />
+              <span dangerouslySetInnerHTML={{ __html: '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>' }} style={{ display: "flex", flexShrink: 0 }} />
               Se d&eacute;connecter
             </button>
           </div>
