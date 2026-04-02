@@ -150,6 +150,15 @@ model Artisan {
   tarifsHoraire   Float?              @map("tarifs_horaire")
   tarifsMarges    Json?               @map("tarifs_marges")
 
+  scoringData     Json?          @map("scoring_data")
+  scoringScore    Float?         @map("scoring_score")
+  scoringPercent  Int?           @map("scoring_percent")
+  motifRefus      String?        @map("motif_refus") @db.Text
+  scoringDate     DateTime?      @map("scoring_date")
+  validationDate  DateTime?      @map("validation_date")
+  validatedBy     String?        @map("validated_by")
+  artisanStatus   String         @default("ONBOARDING") @map("artisan_status")
+
   @@index([ville, metierId])
   @@index([slug])
   @@index([plan])
@@ -591,4 +600,11 @@ model RendezVousBativio {
   @@index([artisanId, dateDebut])
   @@index([artisanId, statut])
   @@map("rendez_vous_bativio")
+}
+
+model Settings {
+  id         String   @id @default("singleton")
+  adminEmail String   @default("contact@bativio.com") @map("admin_email")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  @@map("settings")
 }
