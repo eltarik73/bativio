@@ -53,7 +53,7 @@ export function generateStaticParams() {
     ).forEach((a) => p.push({ ville: v.slug, slug: a.slug }));
   }
 
-  // Metier pages: 5 villes x 8 metiers = 40 pages
+  // Metier pages: 5 villes x 28 metiers = 140 pages
   const villeSlugs = ["chambery", "annecy", "grenoble", "lyon", "valence"];
   for (const ville of villeSlugs) {
     for (const metier of METIER_SLUGS) {

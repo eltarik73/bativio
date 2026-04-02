@@ -173,6 +173,330 @@ export const METIER_SEO_CONTENT: Record<
       },
     ],
   },
+  serrurier: {
+    intro:
+      "Un probleme de serrure peut survenir a tout moment : porte claquee, cle cassee dans la serrure, tentative d'effraction ou simplement besoin de renforcer la securite de votre logement. Les serruriers de {ville} inscrits sur Bativio interviennent rapidement pour tous vos besoins en serrurerie et metallerie. Que ce soit pour un depannage en urgence, le remplacement d'une serrure, l'installation d'une porte blindee ou la reparation d'un volet roulant, nos artisans sont qualifies et verifies. Sur Bativio, chaque serrurier affiche ses specialites, ses tarifs indicatifs et les avis de ses clients precedents. La transparence tarifaire est essentielle dans ce metier : un bon serrurier fournit toujours un devis avant d'intervenir, meme en urgence. Demandez un devis gratuit sur Bativio et recevez une reponse rapide — les serruriers de {ville} sont notifies instantanement de votre demande.",
+    faq: [
+      {
+        q: "Combien coute un depannage serrurier a {ville} ?",
+        a: "A {ville}, un depannage serrurerie (ouverture de porte simple) coute entre 80 et 200 euros en heures ouvrees, et entre 150 et 350 euros la nuit ou le week-end. Le remplacement d'une serrure coute entre 100 et 400 euros selon le modele. Demandez un devis gratuit sur Bativio pour eviter les mauvaises surprises.",
+      },
+      {
+        q: "Comment eviter les serruriers malhonnetes a {ville} ?",
+        a: "Sur Bativio, tous les serruriers sont verifies par leur numero SIRET. Consultez les avis clients, verifiez les badges de certification et exigez toujours un devis ecrit avant intervention. Un serrurier serieux ne facture jamais sans devis prealable.",
+      },
+      {
+        q: "Un serrurier peut-il installer une porte blindee ?",
+        a: "Oui, la plupart des serruriers sur Bativio proposent la fourniture et la pose de portes blindees certifiees A2P. Comptez entre 1 500 et 4 000 euros selon le niveau de certification (BP1, BP2, BP3). Demandez un devis pour obtenir un chiffrage precis adapte a votre logement.",
+      },
+    ],
+  },
+  cuisiniste: {
+    intro:
+      "Amenager ou renover une cuisine est un projet qui transforme votre quotidien. Les cuisinistes de {ville} inscrits sur Bativio vous accompagnent de la conception a la pose de votre cuisine sur mesure. Qu'il s'agisse d'une cuisine equipee standard, d'un agencement haut de gamme ou d'une simple renovation de facades, nos artisans cuisinistes sont a votre ecoute pour creer l'espace qui vous ressemble. Un bon cuisiniste gere l'ensemble du projet : prise de mesures, conception 3D, choix des materiaux, coordination des corps de metier (plomberie, electricite), fabrication et pose. Sur Bativio, consultez les realisations de chaque cuisiniste, comparez les styles et demandez un devis gratuit sans engagement.",
+    faq: [
+      {
+        q: "Combien coute une cuisine sur mesure a {ville} ?",
+        a: "A {ville}, une cuisine equipee complete coute entre 5 000 et 15 000 euros pour une gamme standard, et entre 15 000 et 40 000 euros pour du haut de gamme. Ce prix inclut generalement les meubles, le plan de travail, l'electromenager et la pose. Demandez un devis gratuit sur Bativio.",
+      },
+      {
+        q: "Combien de temps pour installer une cuisine ?",
+        a: "La pose d'une cuisine complete prend en moyenne 3 a 5 jours. Ajoutez 2 a 4 semaines de delai de fabrication pour du sur-mesure. Les travaux annexes (plomberie, electricite, carrelage) peuvent allonger le chantier d'une semaine supplementaire.",
+      },
+      {
+        q: "Un cuisiniste gere-t-il aussi la plomberie et l'electricite ?",
+        a: "Oui, la plupart des cuisinistes sur Bativio coordonnent l'ensemble des corps de metier necessaires. Certains disposent de leurs propres equipes plomberie/electricite, d'autres travaillent avec des partenaires de confiance. Verifiez les prestations incluses dans le devis.",
+      },
+    ],
+  },
+  charpentier: {
+    intro:
+      "La charpente est l'ossature de votre toiture et la garantie de la solidite de votre habitation. Que vous construisiez une maison neuve, envisagiez une surelevation ou ayez besoin de reparer une charpente endommagee, les charpentiers de {ville} inscrits sur Bativio maitrisent toutes les techniques : charpente traditionnelle en bois massif, charpente industrielle en fermettes, lamelle-colle. Le metier de charpentier exige une expertise pointue : calcul des charges, choix des essences de bois, traitement contre les insectes xylophages et les champignons. Sur Bativio, chaque charpentier affiche ses qualifications (Qualibat charpente bois, assurance decennale) et ses realisations photographiees. Le traitement preventif ou curatif de la charpente est essentiel en region Rhone-Alpes, ou l'humidite peut favoriser les degradations. Demandez un devis gratuit pour votre projet de charpente — l'artisan peut generalement effectuer un diagnostic sur place dans la semaine.",
+    faq: [
+      {
+        q: "Combien coute une charpente neuve a {ville} ?",
+        a: "A {ville}, une charpente traditionnelle coute entre 60 et 120 euros du m2, tandis qu'une charpente industrielle (fermettes) revient entre 40 et 80 euros du m2. Pour une maison de 100m2 au sol, le budget charpente se situe entre 5 000 et 15 000 euros selon la complexite et les materiaux choisis.",
+      },
+      {
+        q: "Comment savoir si ma charpente a besoin d'un traitement ?",
+        a: "Les signes d'alerte sont : sciure au sol sous la charpente, petits trous dans le bois, poutres qui sonnent creux, traces de moisissures. Un diagnostic professionnel est recommande tous les 5 ans. Sur Bativio, demandez un devis gratuit pour un diagnostic charpente a {ville}.",
+      },
+      {
+        q: "Peut-on surelevation une maison a {ville} ?",
+        a: "Oui, la surelevation est une solution pour gagner de la surface habitable sans emprise au sol supplementaire. Un permis de construire est necessaire. Le cout varie entre 1 500 et 2 500 euros du m2. Un charpentier qualifie sur Bativio peut evaluer la faisabilite et vous accompagner dans les demarches.",
+      },
+    ],
+  },
+  terrassier: {
+    intro:
+      "Le terrassement est la premiere etape de tout projet de construction. Les terrassiers de {ville} inscrits sur Bativio realisent les travaux de preparation de terrain indispensables avant la construction : decaissement, nivellement, creusement de fondations, creation de voies d'acces, pose de reseaux (VRD : Voirie et Reseaux Divers). Un terrassier qualifie intervient egalement pour l'assainissement, le drainage, la viabilisation de terrain et l'amenagement de plateformes. Sur Bativio, chaque terrassier affiche son parc de machines (mini-pelle, tractopelle, camion-benne), ses specialites et ses realisations. Le terrassement est un metier technique qui necessite une connaissance approfondie des sols et des reglementations locales. Demandez un devis gratuit pour votre projet de terrassement a {ville}.",
+    faq: [
+      {
+        q: "Combien coute un terrassement a {ville} ?",
+        a: "A {ville}, le terrassement coute en moyenne entre 25 et 55 euros du m3 selon la nature du sol et l'accessibilite du terrain. Pour un terrain de 200m2, comptez entre 2 000 et 8 000 euros. L'evacuation des terres represente un cout supplementaire de 15 a 30 euros du m3.",
+      },
+      {
+        q: "Faut-il un permis pour des travaux de terrassement ?",
+        a: "Les travaux de terrassement simples (nivellement, decaissement) ne necessitent generalement pas de permis. En revanche, si le terrassement s'inscrit dans un projet de construction, le permis de construire couvre ces travaux. Pour les VRD, des autorisations specifiques peuvent etre requises.",
+      },
+      {
+        q: "Quand faire realiser un terrassement ?",
+        a: "La periode ideale est le printemps ou le debut d'ete, quand le sol est sec mais pas trop dur. Evitez les periodes de gel ou de fortes pluies. Un terrassier sur Bativio peut vous conseiller sur le meilleur moment selon votre projet.",
+      },
+    ],
+  },
+  demolition: {
+    intro:
+      "La demolition et le curage sont des etapes prealables indispensables a de nombreux projets de renovation ou de reconstruction. Les entreprises de demolition de {ville} inscrites sur Bativio realisent tous types de travaux : demolition partielle ou totale de batiments, curage d'interieur avant renovation, desamiantage, deconstruction selective pour recyclage des materiaux. La demolition est un metier qui exige rigueur et respect des normes de securite : diagnostic amiante prealable obligatoire, gestion des dechets selon la reglementation, protection des structures mitoyennes. Sur Bativio, chaque entreprise de demolition affiche ses certifications, son materiel et ses references. Demandez un devis gratuit pour votre projet de demolition ou de curage a {ville}.",
+    faq: [
+      {
+        q: "Combien coute une demolition a {ville} ?",
+        a: "A {ville}, le curage d'un appartement coute entre 30 et 60 euros du m2. La demolition complete d'une maison revient entre 80 et 150 euros du m2 selon la complexite (amiante, accessibilite, tri des dechets). Demandez un devis gratuit sur Bativio pour un chiffrage precis.",
+      },
+      {
+        q: "Un diagnostic amiante est-il obligatoire avant demolition ?",
+        a: "Oui, un diagnostic amiante est obligatoire avant tous travaux de demolition sur les batiments construits avant juillet 1997. Ce diagnostic doit etre realise par un diagnostiqueur certifie. En cas de presence d'amiante, une entreprise specialisee devra intervenir.",
+      },
+      {
+        q: "Que deviennent les dechets de demolition ?",
+        a: "Les dechets de demolition doivent etre tries et achemines vers des centres de traitement agrees. Un bon professionnel pratique la deconstruction selective pour maximiser le recyclage (beton, metaux, bois). Les entreprises sur Bativio assurent la gestion complete des dechets conformement a la reglementation.",
+      },
+    ],
+  },
+  platrier: {
+    intro:
+      "Le platrier-plaquiste est l'artisan des finitions interieures. Les platriers de {ville} inscrits sur Bativio realisent la pose de plaques de platre (BA13), la creation de cloisons, les faux plafonds, le doublage des murs et les enduits de finition. Que vous souhaitiez redistribuer les pieces de votre appartement, creer un faux plafond avec spots integres, isoler vos murs par l'interieur ou simplement reprendre des enduits fissures, un platrier qualifie intervient avec precision et rapidite. Sur Bativio, chaque platrier affiche ses specialites : cloisons seches, plafonds suspendus, isolation, enduits traditionnels a la chaux. Les photos de realisations vous permettent de juger de la qualite des finitions. Demandez un devis gratuit — les platriers de {ville} vous repondent rapidement avec une proposition detaillee.",
+    faq: [
+      {
+        q: "Combien coute la pose de placoplatre a {ville} ?",
+        a: "A {ville}, la pose de cloisons en placoplatre coute entre 25 et 50 euros du m2 (fourniture et pose). Un faux plafond revient entre 30 et 60 euros du m2. Le doublage isolant (placo + isolant) coute entre 35 et 70 euros du m2. Demandez un devis gratuit sur Bativio.",
+      },
+      {
+        q: "Combien de temps pour creer une cloison ?",
+        a: "Un platrier professionnel peut monter une cloison standard (3m x 2,50m) en une journee, finitions comprises. Pour un projet complet de redistribution de pieces (3-4 cloisons), comptez 3 a 5 jours de travaux. Les finitions (bandes, enduit, poncage) representent environ la moitie du temps.",
+      },
+      {
+        q: "Quelle difference entre cloison seche et cloison maconnee ?",
+        a: "La cloison seche (placo) est plus rapide a poser, plus legere et offre de bonnes performances acoustiques. La cloison maconnee (briques, carreaux de platre) est plus solide et offre une meilleure isolation phonique. Un platrier sur Bativio vous conseillera la meilleure solution selon votre projet.",
+      },
+    ],
+  },
+  solier: {
+    intro:
+      "Le solier est le specialiste des revetements de sol souples et semi-rigides. Les soliers de {ville} inscrits sur Bativio posent tous types de revetements : parquet flottant, parquet massif, sols vinyles (PVC), lino, moquette, sol stratifie, resine de sol, beton cire. Choisir le bon revetement de sol est essentiel pour le confort, l'esthetique et la durabilite de vos pieces. Un solier professionnel prepare le support (ragréage, mise a niveau), pose le revetement selon les regles de l'art et assure des finitions impeccables (plinthes, seuils, joints). Sur Bativio, consultez les realisations de chaque solier, comparez les specialites et demandez un devis gratuit en precisant la surface et le type de revetement souhaite.",
+    faq: [
+      {
+        q: "Combien coute la pose de parquet a {ville} ?",
+        a: "A {ville}, la pose de parquet flottant coute entre 15 et 35 euros du m2 (pose seule). Le parquet massif pose colle revient entre 30 et 60 euros du m2. Ajoutez le cout du parquet lui-meme (15 a 100 euros du m2 selon l'essence et la qualite). Demandez un devis gratuit sur Bativio.",
+      },
+      {
+        q: "Quel revetement de sol choisir pour une piece humide ?",
+        a: "Pour une salle de bain ou une cuisine, privilegiez un sol vinyle (PVC), un sol en resine ou un parquet massif traite pour pieces humides. Le parquet flottant standard et la moquette sont deconseilles. Un solier sur Bativio peut vous conseiller le meilleur choix selon votre usage et votre budget.",
+      },
+      {
+        q: "Faut-il un ragréage avant la pose d'un revetement de sol ?",
+        a: "Un ragréage est necessaire si le support presente des irregularites de plus de 2mm par metre. Cette etape est cruciale pour garantir une pose durable et un rendu esthetique parfait. Votre solier sur Bativio evaluera l'etat du support lors d'une visite technique.",
+      },
+    ],
+  },
+  vitrier: {
+    intro:
+      "Le vitrier-miroitier est le specialiste du verre dans l'habitat. Les vitriers de {ville} inscrits sur Bativio interviennent pour le remplacement de vitres cassees, la pose de double vitrage, l'installation de miroirs sur mesure, la creation de parois de douche en verre et la pose de credences en verre. Une vitre cassee represente un risque de securite et une deperdition de chaleur immediate : les vitriers de Bativio peuvent intervenir rapidement pour un depannage. Pour les projets de renovation energetique, le remplacement de simples vitrages par du double ou triple vitrage ameliore significativement l'isolation thermique et acoustique de votre logement. Demandez un devis gratuit sur Bativio pour tous vos travaux de vitrerie a {ville}.",
+    faq: [
+      {
+        q: "Combien coute un remplacement de vitre a {ville} ?",
+        a: "A {ville}, le remplacement d'une vitre simple coute entre 80 et 200 euros. Pour un double vitrage, comptez entre 150 et 400 euros par fenetre selon les dimensions. La pose d'une paroi de douche en verre revient entre 500 et 1 500 euros. Demandez un devis gratuit sur Bativio.",
+      },
+      {
+        q: "Faut-il remplacer le simple vitrage par du double vitrage ?",
+        a: "Oui, le remplacement du simple vitrage par du double vitrage reduit les deperditions de chaleur de 40% et ameliore fortement le confort acoustique. Les aides MaPrimeRenov peuvent couvrir une partie du cout si vous passez par un artisan certifie RGE.",
+      },
+      {
+        q: "Un vitrier intervient-il en urgence ?",
+        a: "Oui, la plupart des vitriers sur Bativio proposent des interventions d'urgence pour les vitres cassees (securite, intemperies). Envoyez votre demande via le formulaire de devis en precisant l'urgence : l'artisan est notifie immediatement et peut generalement intervenir dans la journee.",
+      },
+    ],
+  },
+  isolation: {
+    intro:
+      "L'isolation est le premier levier pour reduire vos factures d'energie et ameliorer le confort de votre logement. Les specialistes de l'isolation a {ville} inscrits sur Bativio realisent tous types d'isolation : combles perdus ou amenages, murs par l'interieur (ITI) ou par l'exterieur (ITE), planchers bas, toitures-terrasses. En region Rhone-Alpes, ou les hivers sont rigoureux et les etes de plus en plus chauds, une bonne isolation est doublement avantageuse. Les artisans certifies RGE sur Bativio vous permettent de beneficier des aides financieres (MaPrimeRenov, CEE, eco-pret a taux zero). Sur Bativio, chaque specialiste affiche ses certifications, les materiaux utilises (laine de verre, laine de roche, ouate de cellulose, polystyrene, fibre de bois) et ses realisations. Demandez un devis gratuit pour votre projet d'isolation a {ville}.",
+    faq: [
+      {
+        q: "Combien coute l'isolation des combles a {ville} ?",
+        a: "A {ville}, l'isolation des combles perdus par soufflage coute entre 20 et 35 euros du m2. L'isolation des combles amenages (sous rampants) revient entre 40 et 80 euros du m2. L'ITE (isolation par l'exterieur) coute entre 100 et 200 euros du m2. Les aides peuvent couvrir jusqu'a 75% du cout pour les foyers modestes.",
+      },
+      {
+        q: "Quelles aides pour l'isolation en 2026 ?",
+        a: "MaPrimeRenov, les CEE (Certificats d'Economies d'Energie), l'eco-pret a taux zero et les aides locales sont disponibles pour les travaux d'isolation. Pour en beneficier, les travaux doivent etre realises par un artisan certifie RGE. Les specialistes isolation sur Bativio sont souvent certifies RGE.",
+      },
+      {
+        q: "Quelle est la meilleure isolation pour une maison ?",
+        a: "Le choix depend de la zone a isoler et de votre budget. Pour les combles : ouate de cellulose ou laine de roche soufflee. Pour les murs par l'interieur : laine de verre ou fibre de bois. Pour l'ITE : polystyrene expanse ou fibre de bois. Un professionnel sur Bativio peut realiser un audit energetique pour vous conseiller.",
+      },
+    ],
+  },
+  paysagiste: {
+    intro:
+      "Le paysagiste est l'artisan qui transforme vos espaces exterieurs en veritables lieux de vie. Les paysagistes de {ville} inscrits sur Bativio concoivent et realisent l'amenagement de vos jardins, terrasses et espaces verts. Creation de jardins, entretien regulier, elagage d'arbres, plantation de haies, installation d'arrosage automatique, engazonnement : nos paysagistes interviennent sur tous types de projets. Un paysagiste qualifie prend en compte l'exposition, le type de sol, le climat local et vos envies pour creer un espace harmonieux et facile a entretenir. Sur Bativio, consultez les realisations avant/apres de chaque paysagiste et demandez un devis gratuit. Les paysagistes de {ville} vous proposent des amenagements adaptes au climat de la region Rhone-Alpes.",
+    faq: [
+      {
+        q: "Combien coute un amenagement de jardin a {ville} ?",
+        a: "A {ville}, un amenagement de jardin complet (conception, plantation, engazonnement) coute entre 30 et 80 euros du m2 selon la complexite. Un entretien regulier revient entre 25 et 45 euros de l'heure. L'elagage d'un arbre coute entre 200 et 800 euros selon la taille et l'accessibilite.",
+      },
+      {
+        q: "A quelle periode planter un jardin en Rhone-Alpes ?",
+        a: "En region Rhone-Alpes, la meilleure periode de plantation est l'automne (octobre-novembre) ou le printemps (mars-avril). Evitez les periodes de gel et de secheresse. Un paysagiste sur Bativio peut vous etablir un plan de plantation adapte au climat local.",
+      },
+      {
+        q: "Un paysagiste peut-il aussi amenager une terrasse ?",
+        a: "De nombreux paysagistes sur Bativio realisent egalement les amenagements de terrasses (bois, pierre, composite), les murets, les escaliers exterieurs et les eclairages de jardin. Verifiez les specialites indiquees sur la fiche de chaque artisan.",
+      },
+    ],
+  },
+  pisciniste: {
+    intro:
+      "Faire construire ou renover une piscine est un projet qui valorise votre propriete et ameliore votre qualite de vie. Les piscinistes de {ville} inscrits sur Bativio sont des specialistes de la construction, la renovation et l'entretien de piscines. Piscine coque, piscine beton, piscine naturelle, spa : nos artisans maitrisent toutes les techniques. Un pisciniste qualifie gere l'ensemble du projet : etude de faisabilite, terrassement, construction, installation des equipements (filtration, chauffage, traitement), mise en eau et mise en service. Sur Bativio, chaque pisciniste affiche ses realisations et ses specialites. Demandez un devis gratuit pour votre projet de piscine a {ville}.",
+    faq: [
+      {
+        q: "Combien coute une piscine a {ville} ?",
+        a: "A {ville}, une piscine coque coute entre 15 000 et 30 000 euros pose comprise. Une piscine en beton sur mesure revient entre 25 000 et 60 000 euros. Ajoutez environ 5 000 euros pour les equipements (filtration, chauffage). Demandez un devis gratuit sur Bativio pour un chiffrage precis.",
+      },
+      {
+        q: "Faut-il un permis de construire pour une piscine ?",
+        a: "Une declaration prealable suffit pour les piscines de 10 a 100m2. Au-dela de 100m2 ou avec un abri de plus de 1,80m de hauteur, un permis de construire est necessaire. Les piscines de moins de 10m2 non couvertes ne necessitent aucune formalite.",
+      },
+      {
+        q: "Quel entretien pour une piscine ?",
+        a: "L'entretien regulier comprend le controle du pH, le nettoyage du filtre, l'aspiration du fond et le traitement de l'eau. Un contrat d'entretien annuel coute entre 1 000 et 2 000 euros. Les piscinistes sur Bativio proposent des formules d'entretien adaptees a vos besoins.",
+      },
+    ],
+  },
+  domoticien: {
+    intro:
+      "La domotique transforme votre maison en un espace intelligent, confortable et econome en energie. Les domoticiens de {ville} inscrits sur Bativio concoivent et installent des systemes de maison connectee : eclairage automatise, volets roulants connectes, thermostat intelligent, systeme audio multiroom, controle a distance via smartphone. Un domoticien qualifie integre harmonieusement les differents equipements pour creer une experience fluide et intuitive. Sur Bativio, chaque domoticien affiche ses certifications, les marques qu'il maitrise (Somfy, KNX, Legrand, Hager) et ses realisations. Demandez un devis gratuit pour votre projet de maison connectee a {ville}.",
+    faq: [
+      {
+        q: "Combien coute une installation domotique a {ville} ?",
+        a: "A {ville}, une installation domotique de base (eclairage + volets + thermostat connectes) coute entre 2 000 et 5 000 euros. Un systeme complet (securite, audio, video, automatismes) peut atteindre 10 000 a 30 000 euros selon la surface et la complexite. Demandez un devis gratuit sur Bativio.",
+      },
+      {
+        q: "Peut-on installer de la domotique dans une maison ancienne ?",
+        a: "Oui, les solutions domotiques sans fil (Z-Wave, Zigbee, Wi-Fi) permettent d'equiper une maison ancienne sans travaux lourds. Un domoticien sur Bativio peut evaluer votre installation existante et proposer les solutions les plus adaptees a votre configuration.",
+      },
+      {
+        q: "La domotique permet-elle de faire des economies d'energie ?",
+        a: "Oui, un systeme domotique bien configure peut reduire votre consommation energetique de 15 a 30%. La programmation du chauffage, la gestion automatique de l'eclairage et le pilotage des volets selon l'ensoleillement sont les principaux leviers d'economie.",
+      },
+    ],
+  },
+  alarme: {
+    intro:
+      "La securite de votre domicile ou de vos locaux professionnels est une priorite. Les specialistes en alarme et videosurveillance de {ville} inscrits sur Bativio installent des systemes de protection adaptes a vos besoins : alarme anti-intrusion, videosurveillance, controle d'acces, telesurveillance. Un installateur qualifie realise une etude de securite de vos locaux, propose un systeme sur mesure et assure l'installation, la mise en service et la maintenance. Sur Bativio, chaque specialiste affiche ses certifications (APSAD, NF Service), les marques qu'il installe et ses references. Demandez un devis gratuit pour securiser votre habitation ou votre local professionnel a {ville}.",
+    faq: [
+      {
+        q: "Combien coute une alarme maison a {ville} ?",
+        a: "A {ville}, une alarme anti-intrusion (centrale + detecteurs + sirene) coute entre 500 et 2 000 euros pose comprise. Un systeme de videosurveillance (4 cameras + enregistreur) revient entre 1 000 et 3 000 euros. La telesurveillance coute entre 20 et 50 euros par mois en supplement.",
+      },
+      {
+        q: "A-t-on le droit d'installer des cameras chez soi ?",
+        a: "Oui, vous pouvez installer des cameras a l'interieur de votre domicile et filmant votre propriete privee sans autorisation. En revanche, les cameras ne doivent pas filmer la voie publique ni la propriete de vos voisins. Pour des locaux professionnels, des obligations supplementaires s'appliquent (CNIL, information des salaries).",
+      },
+      {
+        q: "Quelle alarme choisir : filaire ou sans fil ?",
+        a: "L'alarme sans fil est plus simple a installer, ideale en renovation. L'alarme filaire est plus fiable (pas de risque de brouillage, pas de piles a changer) et recommandee en construction neuve. Un specialiste sur Bativio vous conseillera la meilleure solution selon votre configuration.",
+      },
+    ],
+  },
+  ramoneur: {
+    intro:
+      "Le ramonage est une obligation legale pour tous les foyers equipes d'un appareil de chauffage a combustion (cheminee, poele, chaudiere). Les ramoneurs de {ville} inscrits sur Bativio realisent le ramonage mecanique des conduits de fumee, l'entretien des poeles a bois et a granules, le diagnostic des conduits et les travaux de fumisterie. Un ramonage regulier previent les risques d'incendie et d'intoxication au monoxyde de carbone, et ameliore le rendement de votre appareil de chauffage. En region Rhone-Alpes, le ramonage est obligatoire au moins une fois par an (deux fois pour le bois). Sur Bativio, chaque ramoneur affiche ses certifications et ses tarifs. Demandez un devis gratuit pour votre ramonage a {ville}.",
+    faq: [
+      {
+        q: "Combien coute un ramonage a {ville} ?",
+        a: "A {ville}, un ramonage de cheminee ou poele coute entre 50 et 90 euros. Le ramonage d'un conduit de chaudiere gaz ou fioul revient entre 60 et 120 euros. Un certificat de ramonage est delivre apres l'intervention, document exige par votre assurance en cas de sinistre.",
+      },
+      {
+        q: "Le ramonage est-il obligatoire ?",
+        a: "Oui, le ramonage est obligatoire au moins une fois par an pour tous les conduits de fumee en activite. Pour les appareils a bois (cheminee, poele), deux ramonages par an sont exiges dont un pendant la periode de chauffe. Le defaut de ramonage peut entrainer une amende et la non-prise en charge par l'assurance en cas d'incendie.",
+      },
+      {
+        q: "Quand faire ramoner sa cheminee ?",
+        a: "Le meilleur moment est en fin d'ete ou debut d'automne, avant la reprise de la saison de chauffe. Le second ramonage annuel (pour le bois) se fait en cours d'hiver. Reservez votre ramoneur a {ville} a l'avance sur Bativio car les creneaux se remplissent vite en automne.",
+      },
+    ],
+  },
+  cloturiste: {
+    intro:
+      "La cloture delimitie votre propriete, assure votre intimite et securise votre terrain. Les cloturistes de {ville} inscrits sur Bativio installent tous types de clotures et portails : cloture en grillage, panneaux rigides, palissade bois, cloture aluminium, portail battant ou coulissant, motorisation de portail. Un cloturiste professionnel prend en compte la reglementation locale (PLU, hauteur maximale, distance avec le voisinage), realise le bornage si necessaire et assure une pose durable. Sur Bativio, consultez les realisations de chaque cloturiste et demandez un devis gratuit pour votre projet de cloture ou de portail a {ville}.",
+    faq: [
+      {
+        q: "Combien coute une cloture a {ville} ?",
+        a: "A {ville}, une cloture en grillage rigide coute entre 30 et 60 euros du metre lineaire pose. Une cloture en aluminium revient entre 100 et 250 euros du metre lineaire. Un portail battant standard coute entre 800 et 3 000 euros pose comprise. La motorisation ajoute 500 a 1 500 euros.",
+      },
+      {
+        q: "Faut-il une autorisation pour poser une cloture ?",
+        a: "Dans la plupart des communes, une declaration prealable de travaux est necessaire pour installer une cloture. Verifiez le PLU de votre commune pour les contraintes de hauteur, de materiaux et de couleur. Votre cloturiste sur Bativio peut vous accompagner dans ces demarches.",
+      },
+      {
+        q: "Quelle cloture choisir pour un jardin ?",
+        a: "Le choix depend de vos priorites : grillage rigide pour un bon rapport qualite-prix, aluminium pour le design et la durabilite, bois pour le charme naturel. Un cloturiste sur Bativio vous conseillera la meilleure solution selon votre terrain, votre budget et le style de votre maison.",
+      },
+    ],
+  },
+  "paysagiste-ext": {
+    intro:
+      "L'amenagement exterieur transforme vos espaces de vie en prolongement naturel de votre maison. Les specialistes de l'amenagement exterieur a {ville} inscrits sur Bativio concoivent et realisent terrasses (bois, pierre, composite, beton), allees de jardin, cours en gravier ou pave, murets decoratifs, escaliers exterieurs et eclairages d'ambiance. Un amenagement exterieur bien pense valorise votre propriete et cree des espaces conviviaux pour profiter des beaux jours. Sur Bativio, chaque artisan affiche ses realisations avant/apres et ses specialites. Demandez un devis gratuit pour votre projet d'amenagement exterieur a {ville}.",
+    faq: [
+      {
+        q: "Combien coute une terrasse a {ville} ?",
+        a: "A {ville}, une terrasse en bois coute entre 80 et 150 euros du m2 pose comprise. Une terrasse en composite revient entre 100 et 200 euros du m2. Une terrasse en pierre naturelle ou en pave coute entre 60 et 120 euros du m2. Demandez un devis gratuit sur Bativio pour un chiffrage precis.",
+      },
+      {
+        q: "Quel materiau choisir pour une terrasse ?",
+        a: "Le bois (pin traite, exotique) offre chaleur et esthetique mais demande un entretien annuel. Le composite est sans entretien mais plus couteux. La pierre naturelle est durable et noble. Le gres cerame sur plots est tendance et facile a poser. Un specialiste sur Bativio vous conseillera selon votre usage et votre budget.",
+      },
+      {
+        q: "Faut-il un permis pour amenager une terrasse ?",
+        a: "Une terrasse de plain-pied (moins de 60cm de hauteur) ne necessite generalement aucune formalite. Une terrasse surelevee de plus de 60cm ou couverte necessite une declaration prealable ou un permis de construire selon la surface. Verifiez le PLU de votre commune.",
+      },
+    ],
+  },
+  assainissement: {
+    intro:
+      "L'assainissement est un enjeu de sante publique et de protection de l'environnement. Les specialistes de l'assainissement a {ville} inscrits sur Bativio realisent l'installation, l'entretien et la mise aux normes des systemes d'assainissement : raccordement au tout-a-l'egout, installation de fosses septiques et micro-stations d'epuration, vidange, curage de canalisations, diagnostic assainissement. En zone non raccordee au reseau collectif, l'assainissement non collectif (ANC) est obligatoire. Un diagnostic assainissement est requis lors de la vente d'un bien immobilier. Sur Bativio, chaque specialiste affiche ses certifications et ses references. Demandez un devis gratuit pour vos travaux d'assainissement a {ville}.",
+    faq: [
+      {
+        q: "Combien coute l'installation d'une fosse septique a {ville} ?",
+        a: "A {ville}, l'installation d'une fosse toutes eaux coute entre 3 000 et 8 000 euros. Une micro-station d'epuration revient entre 6 000 et 15 000 euros. La vidange d'une fosse septique coute entre 150 et 400 euros. Demandez un devis gratuit sur Bativio pour un chiffrage precis.",
+      },
+      {
+        q: "A quelle frequence vidanger une fosse septique ?",
+        a: "La vidange d'une fosse toutes eaux doit etre effectuee tous les 3 a 4 ans en moyenne, ou quand le niveau de boues atteint 50% du volume. Une micro-station necessite un entretien plus frequent (1 a 2 fois par an). Un specialiste sur Bativio peut etablir un contrat d'entretien adapte.",
+      },
+      {
+        q: "Le diagnostic assainissement est-il obligatoire ?",
+        a: "Oui, un diagnostic assainissement est obligatoire lors de la vente d'un bien immobilier en assainissement non collectif. Ce diagnostic est valable 3 ans et doit etre realise par le SPANC (Service Public d'Assainissement Non Collectif) de votre commune.",
+      },
+    ],
+  },
+  etancheite: {
+    intro:
+      "L'etancheite est essentielle pour proteger votre batiment contre les infiltrations d'eau et les degats qui en decoulent. Les specialistes en etancheite a {ville} inscrits sur Bativio traitent tous les problemes d'impermeabilisation : toitures-terrasses, balcons, fondations, sous-sols, salles de bain, facades. Une etancheite defaillante entraine des infiltrations, des moisissures et des degradations structurelles couteuses a reparer. Les etancheurs qualifies utilisent differentes techniques selon le support : membrane bitumineuse, resine polyurethane, etancheite liquide, cuvelage. Sur Bativio, chaque specialiste affiche ses certifications (Qualibat etancheite), ses references et ses realisations. Demandez un devis gratuit pour vos travaux d'etancheite a {ville}.",
+    faq: [
+      {
+        q: "Combien coute l'etancheite d'une toiture-terrasse a {ville} ?",
+        a: "A {ville}, l'etancheite d'une toiture-terrasse coute entre 40 et 100 euros du m2 selon la technique utilisee (membrane bitumineuse, resine, PVC). Pour un balcon, comptez entre 50 et 120 euros du m2. Le cuvelage d'un sous-sol revient entre 150 et 300 euros du m2.",
+      },
+      {
+        q: "Comment detecter un probleme d'etancheite ?",
+        a: "Les signes d'alerte sont : taches d'humidite persistantes, moisissures, salpetre sur les murs, odeur de moisi, peinture qui cloque. Une detection precoce evite des reparations couteuses. Un specialiste en etancheite sur Bativio peut realiser un diagnostic complet de votre batiment.",
+      },
+      {
+        q: "Quelle garantie pour des travaux d'etancheite ?",
+        a: "Les travaux d'etancheite sont couverts par la garantie decennale (10 ans). C'est une obligation legale pour l'artisan. Verifiez que votre etancheur sur Bativio affiche le badge assurance decennale. Les membranes d'etancheite elles-memes ont une duree de vie de 15 a 30 ans selon le materiau.",
+      },
+    ],
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -180,14 +504,38 @@ export const METIER_SEO_CONTENT: Record<
 // ---------------------------------------------------------------------------
 
 export const METIER_SLUGS = new Set([
+  // GROS OEUVRE
+  "macon",
+  "couvreur",
+  "charpentier",
+  "terrassier",
+  "demolition",
+  // SECOND OEUVRE
   "plombier",
   "electricien",
   "peintre",
-  "macon",
   "carreleur",
   "menuisier",
-  "couvreur",
   "chauffagiste",
+  "platrier",
+  "solier",
+  "vitrier",
+  "isolation",
+  // SPECIALITES
+  "serrurier",
+  "cuisiniste",
+  "paysagiste",
+  "pisciniste",
+  "domoticien",
+  "alarme",
+  "ramoneur",
+  // EXTERIEUR
+  "cloturiste",
+  "paysagiste-ext",
+  "assainissement",
+  "etancheite",
+  // AUTRE
+  "autre",
 ]);
 
 // ---------------------------------------------------------------------------

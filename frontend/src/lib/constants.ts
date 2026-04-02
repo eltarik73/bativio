@@ -18,16 +18,38 @@ export const VILLES = [
 ] as const;
 
 export const METIERS = [
+  // GROS OEUVRE
+  { nom: "Maçon", slug: "macon", icone: "\u{1F9F1}" },
+  { nom: "Couvreur", slug: "couvreur", icone: "\u{1F3E0}" },
+  { nom: "Charpentier", slug: "charpentier", icone: "\u{1FAB5}" },
+  { nom: "Terrassier", slug: "terrassier", icone: "\u{1F69C}" },
+  { nom: "Démolition", slug: "demolition", icone: "\u{1F528}" },
+  // SECOND OEUVRE
   { nom: "Plombier", slug: "plombier", icone: "\u{1F527}" },
   { nom: "Électricien", slug: "electricien", icone: "⚡" },
   { nom: "Peintre", slug: "peintre", icone: "\u{1F3A8}" },
-  { nom: "Maçon", slug: "macon", icone: "\u{1F9F1}" },
   { nom: "Carreleur", slug: "carreleur", icone: "\u{1F532}" },
   { nom: "Menuisier", slug: "menuisier", icone: "\u{1FA9A}" },
-  { nom: "Couvreur", slug: "couvreur", icone: "\u{1F3E0}" },
   { nom: "Chauffagiste", slug: "chauffagiste", icone: "\u{1F525}" },
+  { nom: "Plâtrier", slug: "platrier", icone: "\u{1F3D7}\uFE0F" },
+  { nom: "Solier", slug: "solier", icone: "\u{1F7EB}" },
+  { nom: "Vitrier", slug: "vitrier", icone: "\u{1FA9F}" },
+  { nom: "Isolation", slug: "isolation", icone: "\u{1F9E4}" },
+  // SPECIALITES
   { nom: "Serrurier", slug: "serrurier", icone: "\u{1F511}" },
   { nom: "Cuisiniste", slug: "cuisiniste", icone: "\u{1F373}" },
+  { nom: "Paysagiste", slug: "paysagiste", icone: "\u{1F33F}" },
+  { nom: "Pisciniste", slug: "pisciniste", icone: "\u{1F3CA}" },
+  { nom: "Domoticien", slug: "domoticien", icone: "\u{1F4F1}" },
+  { nom: "Alarme", slug: "alarme", icone: "\u{1F514}" },
+  { nom: "Ramoneur", slug: "ramoneur", icone: "\u{1FA88}" },
+  // EXTERIEUR
+  { nom: "Clôturiste", slug: "cloturiste", icone: "\u{1F6A7}" },
+  { nom: "Aménagement extérieur", slug: "paysagiste-ext", icone: "\u{1F3E1}" },
+  { nom: "Assainissement", slug: "assainissement", icone: "\u{1F6B0}" },
+  { nom: "Étanchéité", slug: "etancheite", icone: "\u{1F4A7}" },
+  // AUTRE
+  { nom: "Autre", slug: "autre", icone: "\u{1F6E0}\uFE0F" },
 ] as const;
 
 export type PlanId = "GRATUIT" | "STARTER" | "PRO" | "BUSINESS";

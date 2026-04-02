@@ -1,15 +1,36 @@
 {
   "metiers": [
-    { "slug": "plombier", "nom": "Plombier", "label": "Plombier / Chauffagiste", "categorie": "second_oeuvre", "icone": "🔧", "ordre": 1 },
-    { "slug": "electricien", "nom": "Électricien", "label": "Électricien", "categorie": "second_oeuvre", "icone": "⚡", "ordre": 2 },
-    { "slug": "peintre", "nom": "Peintre", "label": "Peintre / Décorateur", "categorie": "second_oeuvre", "icone": "🎨", "ordre": 3 },
-    { "slug": "macon", "nom": "Maçon", "label": "Maçon / Gros œuvre", "categorie": "gros_oeuvre", "icone": "🧱", "ordre": 4 },
-    { "slug": "carreleur", "nom": "Carreleur", "label": "Carreleur / Faïencier", "categorie": "second_oeuvre", "icone": "🔲", "ordre": 5 },
-    { "slug": "menuisier", "nom": "Menuisier", "label": "Menuisier / Ébéniste", "categorie": "second_oeuvre", "icone": "🪚", "ordre": 6 },
-    { "slug": "couvreur", "nom": "Couvreur", "label": "Couvreur / Zingueur", "categorie": "gros_oeuvre", "icone": "🏠", "ordre": 7 },
-    { "slug": "chauffagiste", "nom": "Chauffagiste", "label": "Chauffagiste / Climaticien", "categorie": "second_oeuvre", "icone": "🔥", "ordre": 8 },
-    { "slug": "serrurier", "nom": "Serrurier", "label": "Serrurier / Métallier", "categorie": "specialites", "icone": "🔑", "ordre": 9 },
-    { "slug": "cuisiniste", "nom": "Cuisiniste", "label": "Cuisiniste", "categorie": "specialites", "icone": "🍳", "ordre": 10 }
+    { "slug": "macon", "nom": "Maçon", "label": "Maçon / Gros œuvre", "categorie": "gros_oeuvre", "icone": "🧱", "ordre": 1 },
+    { "slug": "couvreur", "nom": "Couvreur", "label": "Couvreur / Zingueur", "categorie": "gros_oeuvre", "icone": "🏠", "ordre": 2 },
+    { "slug": "charpentier", "nom": "Charpentier", "label": "Charpentier", "categorie": "gros_oeuvre", "icone": "🪵", "ordre": 3 },
+    { "slug": "terrassier", "nom": "Terrassier", "label": "Terrassier / VRD", "categorie": "gros_oeuvre", "icone": "🚜", "ordre": 4 },
+    { "slug": "demolition", "nom": "Démolition", "label": "Démolition / Curage", "categorie": "gros_oeuvre", "icone": "🔨", "ordre": 5 },
+
+    { "slug": "plombier", "nom": "Plombier", "label": "Plombier / Chauffagiste", "categorie": "second_oeuvre", "icone": "🔧", "ordre": 10 },
+    { "slug": "electricien", "nom": "Électricien", "label": "Électricien", "categorie": "second_oeuvre", "icone": "⚡", "ordre": 11 },
+    { "slug": "peintre", "nom": "Peintre", "label": "Peintre / Décorateur", "categorie": "second_oeuvre", "icone": "🎨", "ordre": 12 },
+    { "slug": "carreleur", "nom": "Carreleur", "label": "Carreleur / Faïencier", "categorie": "second_oeuvre", "icone": "🔲", "ordre": 13 },
+    { "slug": "menuisier", "nom": "Menuisier", "label": "Menuisier / Ébéniste", "categorie": "second_oeuvre", "icone": "🪚", "ordre": 14 },
+    { "slug": "chauffagiste", "nom": "Chauffagiste", "label": "Chauffagiste / Climaticien", "categorie": "second_oeuvre", "icone": "🔥", "ordre": 15 },
+    { "slug": "platrier", "nom": "Plâtrier", "label": "Plâtrier / Plaquiste", "categorie": "second_oeuvre", "icone": "🏗️", "ordre": 16 },
+    { "slug": "solier", "nom": "Solier", "label": "Solier / Poseur de revêtements", "categorie": "second_oeuvre", "icone": "🟫", "ordre": 17 },
+    { "slug": "vitrier", "nom": "Vitrier", "label": "Vitrier / Miroitier", "categorie": "second_oeuvre", "icone": "🪟", "ordre": 18 },
+    { "slug": "isolation", "nom": "Isolation", "label": "Isolation thermique / Acoustique", "categorie": "second_oeuvre", "icone": "🧤", "ordre": 19 },
+
+    { "slug": "serrurier", "nom": "Serrurier", "label": "Serrurier / Métallier", "categorie": "specialites", "icone": "🔑", "ordre": 20 },
+    { "slug": "cuisiniste", "nom": "Cuisiniste", "label": "Cuisiniste", "categorie": "specialites", "icone": "🍳", "ordre": 21 },
+    { "slug": "paysagiste", "nom": "Paysagiste", "label": "Paysagiste / Jardinier", "categorie": "specialites", "icone": "🌿", "ordre": 22 },
+    { "slug": "pisciniste", "nom": "Pisciniste", "label": "Pisciniste", "categorie": "specialites", "icone": "🏊", "ordre": 23 },
+    { "slug": "domoticien", "nom": "Domoticien", "label": "Domotique / Maison connectée", "categorie": "specialites", "icone": "📱", "ordre": 24 },
+    { "slug": "alarme", "nom": "Alarme", "label": "Alarme / Vidéosurveillance", "categorie": "specialites", "icone": "🔔", "ordre": 25 },
+    { "slug": "ramoneur", "nom": "Ramoneur", "label": "Ramoneur / Fumisterie", "categorie": "specialites", "icone": "🪈", "ordre": 26 },
+
+    { "slug": "cloturiste", "nom": "Clôturiste", "label": "Clôtures / Portails", "categorie": "exterieur", "icone": "🚧", "ordre": 30 },
+    { "slug": "paysagiste-ext", "nom": "Aménagement extérieur", "label": "Terrasses / Allées", "categorie": "exterieur", "icone": "🏡", "ordre": 31 },
+    { "slug": "assainissement", "nom": "Assainissement", "label": "Assainissement / Fosse septique", "categorie": "exterieur", "icone": "🚰", "ordre": 32 },
+    { "slug": "etancheite", "nom": "Étanchéité", "label": "Étanchéité / Imperméabilisation", "categorie": "exterieur", "icone": "💧", "ordre": 33 },
+
+    { "slug": "autre", "nom": "Autre", "label": "Autre métier", "categorie": "autre", "icone": "🛠️", "ordre": 99 }
   ],
   "arbres": {
     "plombier": {
@@ -105,6 +126,66 @@
         { "label": "Cuisine / Placards", "value": "cuisine", "next": "description" },
         { "label": "Escalier", "value": "escalier", "next": "description" },
         { "label": "Terrasse bois", "value": "terrasse", "next": "menuiserie_surface" },
+        { "label": "Autre", "value": "autre", "next": "description" }
+      ]
+    },
+    "charpentier": {
+      "id": "root",
+      "question": "Type de travaux de charpente ?",
+      "type": "single_choice",
+      "options": [
+        { "label": "Charpente neuve", "value": "neuve", "next": "charpente_surface" },
+        { "label": "Réparation", "value": "reparation", "next": "description" },
+        { "label": "Surélévation", "value": "surelevation", "next": "charpente_surface" },
+        { "label": "Traitement bois", "value": "traitement", "next": "charpente_surface" },
+        { "label": "Autre", "value": "autre", "next": "description" }
+      ]
+    },
+    "platrier": {
+      "id": "root",
+      "question": "Type de travaux de plâtrerie ?",
+      "type": "single_choice",
+      "options": [
+        { "label": "Cloisons", "value": "cloisons", "next": "platrier_surface" },
+        { "label": "Faux plafond", "value": "faux_plafond", "next": "platrier_surface" },
+        { "label": "Doublage", "value": "doublage", "next": "platrier_surface" },
+        { "label": "Enduit", "value": "enduit", "next": "platrier_surface" },
+        { "label": "Autre", "value": "autre", "next": "description" }
+      ]
+    },
+    "isolation": {
+      "id": "root",
+      "question": "Type d'isolation ?",
+      "type": "single_choice",
+      "options": [
+        { "label": "Combles", "value": "combles", "next": "isolation_surface" },
+        { "label": "Murs intérieurs", "value": "murs_int", "next": "isolation_surface" },
+        { "label": "Murs extérieurs (ITE)", "value": "ite", "next": "isolation_surface" },
+        { "label": "Plancher", "value": "plancher", "next": "isolation_surface" },
+        { "label": "Autre", "value": "autre", "next": "description" }
+      ]
+    },
+    "paysagiste": {
+      "id": "root",
+      "question": "Type d'aménagement ?",
+      "type": "single_choice",
+      "options": [
+        { "label": "Création jardin", "value": "creation", "next": "paysagiste_surface" },
+        { "label": "Entretien", "value": "entretien", "next": "paysagiste_surface" },
+        { "label": "Élagage", "value": "elagage", "next": "description" },
+        { "label": "Clôture végétale", "value": "cloture_vegetale", "next": "description" },
+        { "label": "Autre", "value": "autre", "next": "description" }
+      ]
+    },
+    "serrurier": {
+      "id": "root",
+      "question": "Quel type d'intervention ?",
+      "type": "single_choice",
+      "options": [
+        { "label": "Dépannage urgent", "value": "depannage", "next": "description" },
+        { "label": "Remplacement serrure", "value": "serrure", "next": "description" },
+        { "label": "Porte blindée", "value": "blindee", "next": "description" },
+        { "label": "Volet roulant", "value": "volet", "next": "description" },
         { "label": "Autre", "value": "autre", "next": "description" }
       ]
     },
@@ -318,6 +399,46 @@
       "max": 300,
       "unit": "m²",
       "default": 40,
+      "next": "description"
+    },
+    "charpente_surface": {
+      "id": "charpente_surface",
+      "question": "Surface de toiture / charpente ?",
+      "type": "slider",
+      "min": 20,
+      "max": 300,
+      "unit": "m²",
+      "default": 80,
+      "next": "description"
+    },
+    "platrier_surface": {
+      "id": "platrier_surface",
+      "question": "Surface concernée ?",
+      "type": "slider",
+      "min": 5,
+      "max": 200,
+      "unit": "m²",
+      "default": 30,
+      "next": "description"
+    },
+    "isolation_surface": {
+      "id": "isolation_surface",
+      "question": "Surface à isoler ?",
+      "type": "slider",
+      "min": 10,
+      "max": 300,
+      "unit": "m²",
+      "default": 60,
+      "next": "description"
+    },
+    "paysagiste_surface": {
+      "id": "paysagiste_surface",
+      "question": "Surface du terrain ?",
+      "type": "slider",
+      "min": 20,
+      "max": 2000,
+      "unit": "m²",
+      "default": 200,
       "next": "description"
     }
   }
