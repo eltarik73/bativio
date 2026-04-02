@@ -140,7 +140,7 @@ export default function PhotosPage() {
             {localPhotos.map((p, i) => (
               <div key={i} style={{ position: "relative", aspectRatio: "1", borderRadius: 12, overflow: "hidden", border: "2px dashed #E8A84C" }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={p.preview} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <img src={p.preview} alt="Photo en attente d'envoi" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 <button onClick={(e) => { e.stopPropagation(); removeLocal(i); }} style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: "50%", background: "rgba(0,0,0,.5)", color: "#fff", border: "none", cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>&times;</button>
               </div>
             ))}

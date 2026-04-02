@@ -359,7 +359,7 @@ export default function InscriptionPage() {
                     {photos.map((f, i) => (
                       <div key={i} style={{ position: "relative", width: 80, height: 80, borderRadius: 10, overflow: "hidden", border: "1px solid var(--sable,#E8D5C0)" }}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={URL.createObjectURL(f)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        <img src={URL.createObjectURL(f)} alt="Photo de realisation" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                         <button type="button" onClick={() => setPhotos((p) => p.filter((_, j) => j !== i))} style={{ position: "absolute", top: 4, right: 4, background: "rgba(0,0,0,.6)", color: "#fff", border: "none", borderRadius: "50%", width: 22, height: 22, cursor: "pointer", fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center" }}>&times;</button>
                       </div>
                     ))}

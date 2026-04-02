@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { TRAVAUX } from "@/lib/travaux-data";
 import { MOCK_ARTISANS } from "@/lib/mock-data";
 import ArtisanCard from "@/components/ArtisanCard";
@@ -44,8 +45,7 @@ export default async function TravauxPage({ params }: { params: Promise<{ slug: 
         {/* Hero */}
         <section style={{ position: "relative", overflow: "hidden", background: "#1C1C1E", padding: "48px 32px 56px" }}>
           <div style={{ position: "absolute", inset: 0, opacity: 0.15 }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={t.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            <Image src={t.photo} alt={t.nom} fill style={{ objectFit: "cover" }} unoptimized />
           </div>
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(28,28,30,.6), rgba(28,28,30,.9))" }} />
           <div style={{ position: "relative", zIndex: 1, maxWidth: 800, margin: "0 auto" }}>

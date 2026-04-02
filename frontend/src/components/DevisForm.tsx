@@ -140,7 +140,7 @@ export default function DevisForm({ slug, artisanName }: { slug: string; artisan
               {photos.map((p, i) => (
                 <div key={i} style={{ position: "relative", width: 64, height: 64, borderRadius: 10, overflow: "hidden", border: "1px solid #EDEBE7" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={p.preview} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <img src={p.preview} alt="Photo jointe au devis" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   <button type="button" onClick={(e) => { e.stopPropagation(); removePhoto(i); }} style={{ position: "absolute", top: 2, right: 2, width: 20, height: 20, borderRadius: "50%", background: "rgba(0,0,0,.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center" }}>&times;</button>
                 </div>
               ))}

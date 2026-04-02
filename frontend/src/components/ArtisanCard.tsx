@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import type { ArtisanPublic } from "@/lib/api";
 import { METIER_COLORS, METIER_ICONS } from "@/lib/metier-config";
 import { getArtisanPhoto, FALLBACK_PHOTO } from "@/lib/artisan-photos";
@@ -38,11 +39,13 @@ export default function ArtisanCard({ artisan, villeSlug }: { artisan: ArtisanPu
     <Link href={`/${vs}/${artisan.slug}`}>
       <article className="card">
         <div className="card-photo">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={imgSrc}
-            alt={artisan.metierNom}
+            alt={artisan.metierNom || "Photo artisan"}
+            fill
+            style={{ objectFit: "cover" }}
             onError={() => setImgSrc(FALLBACK_PHOTO)}
+            unoptimized
           />
           <div className="card-badge" style={{ background: color }}>
             <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" dangerouslySetInnerHTML={{ __html: icon }} />

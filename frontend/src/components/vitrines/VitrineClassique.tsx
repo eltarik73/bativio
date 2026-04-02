@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import type { ArtisanPublic } from "@/lib/api";
 import DevisForm3Steps from "@/components/DevisForm3Steps";
 import ContactCard from "@/components/ContactCard";
@@ -33,8 +34,7 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
       {/* Hero */}
       <section style={{ background: "#1C1C1E", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, opacity: 0.18 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          <Image src={photo} alt={`${a.nomAffichage} - ${a.metierNom || "Artisan"}`} fill style={{ objectFit: "cover" }} unoptimized />
         </div>
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(28,28,30,.5), rgba(28,28,30,.8), #1C1C1E)" }} />
         <div style={{ position: "relative", zIndex: 1, maxWidth: 880, margin: "0 auto", padding: "56px 32px 64px" }}>

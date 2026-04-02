@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import type { ArtisanPublic } from "@/lib/api";
 import DevisForm3Steps from "@/components/DevisForm3Steps";
 import ContactCard from "@/components/ContactCard";
@@ -31,8 +32,7 @@ export default function VitrinePortfolio({ a, photo, primary, accent, villeSlug 
       {/* Hero split */}
       <section style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: 420 }} className="max-md:grid-cols-1">
         <div style={{ position: "relative", overflow: "hidden" }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={photo} alt={`${a.nomAffichage} - ${a.metierNom || "Artisan"}`} style={{ width: "100%", height: "100%", objectFit: "cover", minHeight: 320 }} />
+          <Image src={photo} alt={`${a.nomAffichage} - ${a.metierNom || "Artisan"}`} fill style={{ objectFit: "cover", minHeight: 320 }} unoptimized />
         </div>
         <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", padding: "48px 40px", background: "#FAF8F5" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>

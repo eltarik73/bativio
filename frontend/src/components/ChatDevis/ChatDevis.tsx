@@ -625,7 +625,7 @@ export default function ChatDevis({
                 {photos.map((p, i) => (
                   <div key={i} className={s.photoThumb}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={p.url} alt="" />
+                    <img src={p.url} alt="Photo jointe" />
                     <button
                       type="button"
                       className={s.photoRemove}

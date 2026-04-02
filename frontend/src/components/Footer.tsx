@@ -14,9 +14,11 @@ export default function Footer() {
           </div>
           <div className="footer-col">
             <div className="footer-col-title">Pour les particuliers</div>
-            <Link href="/">Trouver un artisan</Link>
-            <Link href="/">Demander un devis</Link>
-            <Link href="/">Nos villes</Link>
+            <Link href="/chambery">Artisans Chambéry</Link>
+            <Link href="/annecy">Artisans Annecy</Link>
+            <Link href="/grenoble">Artisans Grenoble</Link>
+            <Link href="/lyon">Artisans Lyon</Link>
+            <Link href="/valence">Artisans Valence</Link>
           </div>
           <div className="footer-col">
             <div className="footer-col-title">Pour les artisans</div>

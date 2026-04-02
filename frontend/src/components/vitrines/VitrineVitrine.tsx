@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import type { ArtisanPublic } from "@/lib/api";
 import DevisForm3Steps from "@/components/DevisForm3Steps";
 import ContactCard from "@/components/ContactCard";
@@ -37,8 +38,7 @@ export default function VitrineVitrine({ a, photo, primary, accent, villeSlug }:
 
       {/* Slider hero */}
       <section style={{ position: "relative", height: 420, overflow: "hidden" }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={sliderPhotos[slideIdx]} alt={`${a.nomAffichage} - réalisation ${slideIdx + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "opacity .3s" }} />
+        <Image src={sliderPhotos[slideIdx]} alt={`${a.nomAffichage} - réalisation ${slideIdx + 1}`} fill style={{ objectFit: "cover", transition: "opacity .3s" }} unoptimized />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(transparent 40%, rgba(0,0,0,.4))" }} />
         {slideIdx > 0 && <button onClick={() => setSlideIdx(slideIdx - 1)} style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", width: 44, height: 44, borderRadius: "50%", background: "rgba(255,255,255,.9)", border: "none", fontSize: 18, cursor: "pointer", color: "#1C1C1E" }}>&larr;</button>}
         {slideIdx < sliderPhotos.length - 1 && <button onClick={() => setSlideIdx(slideIdx + 1)} style={{ position: "absolute", right: 16, top: "50%", transform: "translateY(-50%)", width: 44, height: 44, borderRadius: "50%", background: "rgba(255,255,255,.9)", border: "none", fontSize: 18, cursor: "pointer", color: "#1C1C1E" }}>&rarr;</button>}
@@ -80,8 +80,7 @@ export default function VitrineVitrine({ a, photo, primary, accent, villeSlug }:
             </div>
           </div>
           <div style={{ position: "relative", minHeight: 280 }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={sliderPhotos[1] || photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            <Image src={sliderPhotos[1] || photo} alt={`${a.nomAffichage} - realisation`} fill style={{ objectFit: "cover" }} unoptimized />
           </div>
         </div>
       </section>
@@ -91,8 +90,7 @@ export default function VitrineVitrine({ a, photo, primary, accent, villeSlug }:
         <section style={{ background: "#fff" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }} className="max-md:grid-cols-1">
             <div style={{ position: "relative", minHeight: 280 }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={sliderPhotos[2] || photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <Image src={sliderPhotos[2] || photo} alt={`${a.nomAffichage} - prestations`} fill style={{ objectFit: "cover" }} unoptimized />
             </div>
             <div style={{ padding: "40px 32px" }}>
               <div style={{ maxWidth: 400, margin: "0 auto" }}>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import type { ArtisanPublic } from "@/lib/api";
 import DevisForm3Steps from "@/components/DevisForm3Steps";
 import ContactCard from "@/components/ContactCard";
@@ -53,8 +54,7 @@ export default function VitrineModerne({ a, photo, primary, accent, villeSlug }:
         <div style={{ maxWidth: 960, margin: "0 auto", display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gridTemplateRows: "auto auto", gap: 14 }} className="max-md:grid-cols-1">
           {/* Big photo */}
           <div style={{ borderRadius: 16, overflow: "hidden", gridRow: "1/3", position: "relative", minHeight: 300 }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={photo} alt={`${a.nomAffichage} - ${a.metierNom || "Artisan"}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            <Image src={photo} alt={`${a.nomAffichage} - ${a.metierNom || "Artisan"}`} fill style={{ objectFit: "cover" }} unoptimized />
           </div>
 
           {/* Stat cards */}

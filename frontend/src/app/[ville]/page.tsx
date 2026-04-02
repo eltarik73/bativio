@@ -9,6 +9,8 @@ import type { ArtisanPublic, MetierData } from "@/lib/api";
 import { VILLES } from "@/lib/constants";
 import VilleClient from "./VilleClient";
 
+export const revalidate = 3600;
+
 export function generateStaticParams() {
   return VILLES.map((v) => ({ ville: v.slug }));
 }
@@ -105,7 +107,7 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
       </main>
       <Footer />
 
-      {/* JSON-LD */}
+      {/* JSON-LD ItemList */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -122,6 +124,20 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
                 url: `https://bativio.fr/${villeSlug}/${a.slug}`,
               },
             })),
+          }),
+        }}
+      />
+      {/* JSON-LD BreadcrumbList */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Accueil", item: "https://bativio.fr" },
+              { "@type": "ListItem", position: 2, name: ville?.nom || villeSlug },
+            ],
           }),
         }}
       />

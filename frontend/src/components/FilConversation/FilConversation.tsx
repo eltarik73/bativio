@@ -370,7 +370,7 @@ export default function FilConversation({
           {msg.photoUrl && (
             <img
               src={msg.photoUrl}
-              alt=""
+              alt="Photo jointe au message"
               className={s.messagePhoto}
               loading="lazy"
             />

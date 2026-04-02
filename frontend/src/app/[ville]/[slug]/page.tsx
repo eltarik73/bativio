@@ -17,6 +17,8 @@ import MetierVillePageComponent, {
 } from "@/components/MetierVillePage";
 import { notFound } from "next/navigation";
 
+export const revalidate = 3600;
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -132,9 +134,10 @@ export async function generateMetadata({
   const ogImage =
     a.photos && a.photos.length > 0 ? a.photos[0].url : metierImg;
   const seoDesc = a.seoDescription;
+  const expPart = a.experienceAnnees ? ` ${a.experienceAnnees} ans d'expérience.` : "";
   const metaDesc =
     seoDesc ||
-    `${a.nomAffichage}, ${(a.metierNom || "artisan").toLowerCase()} \u00e0 ${a.ville || villeParam}. ${a.description || ""} Devis gratuit.`;
+    `${a.nomAffichage}, ${(a.metierNom || "artisan").toLowerCase()} à ${a.ville || villeParam}.${expPart} ${a.description || ""} Devis gratuit.`;
   return {
     title: `${a.nomAffichage} — ${a.metierNom || "Artisan"} à ${a.ville || villeParam}`,
     description:
