@@ -88,7 +88,7 @@ a{text-decoration:none;color:inherit;transition:color .15s}button{font-family:'K
 .card{display:flex;border-radius:16px;overflow:hidden;background:var(--blanc);border:1px solid var(--g100);cursor:pointer;transition:all .35s cubic-bezier(.22,1,.36,1);min-height:190px;position:relative;z-index:0}
 .card:hover{transform:translateY(-5px);box-shadow:0 20px 60px rgba(28,28,30,.15);border-color:transparent;border-left:3px solid var(--terre)}
 .card-photo{width:160px;min-width:160px;flex-shrink:0;position:relative;overflow:hidden}
-.card-photo img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.card-photo img,.card-photo>span{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;pointer-events:none}
 .card:hover .card-photo img{transform:scale(1.06)}
 .card-photo::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 20%,rgba(255,255,255,.35) 100%)}
 .card-badge{position:absolute;top:12px;left:12px;z-index:1;display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;color:#fff}
