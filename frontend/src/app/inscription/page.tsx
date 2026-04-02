@@ -257,7 +257,7 @@ export default function InscriptionPage() {
         <div className="reg-stepper">
           {STEP_LABELS.map((label, i) => (
             <div key={label} style={{ display: "contents" }}>
-              <div className="step">
+              <div className="step" onClick={() => { if (i < step) go(i); }} style={{ cursor: i < step ? "pointer" : "default" }}>
                 <div className={`step-dot ${i < step ? "done" : i === step ? "active" : "future"}`}>
                   {i < step ? <svg fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg> : i + 1}
                 </div>
@@ -413,14 +413,17 @@ export default function InscriptionPage() {
                 {error && <p style={{ color: "#dc2626", fontSize: 14, marginTop: 16 }}>{error}</p>}
                 {photoToast && <p style={{ color: "#C4531A", fontSize: 14, marginTop: 12, background: "#FEF3EC", padding: "10px 14px", borderRadius: 8, border: "1px solid #F5D0B9" }}>{photoToast}</p>}
                 <div style={{ marginTop: 28, display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
-                  <button
-                    className="bv-btn bv-btn-primary"
-                    style={{ width: "100%", height: 48 }}
-                    disabled={loading}
-                    onClick={handleFinish}
-                  >
-                    {loading ? "Création en cours..." : <>Terminer mon inscription {CHECK_I}</>}
-                  </button>
+                  <div style={{ display: "flex", gap: 10, width: "100%" }}>
+                    <button className="bv-btn bv-btn-secondary bv-btn-half" onClick={() => go(3)}>{ARROW_L} Retour</button>
+                    <button
+                      className="bv-btn bv-btn-primary bv-btn-half"
+                      style={{ height: 48 }}
+                      disabled={loading}
+                      onClick={handleFinish}
+                    >
+                      {loading ? "Création..." : <>Terminer {CHECK_I}</>}
+                    </button>
+                  </div>
                   <button
                     type="button"
                     disabled={loading}
