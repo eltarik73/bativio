@@ -1,0 +1,324 @@
+{
+  "metiers": [
+    { "slug": "plombier", "nom": "Plombier", "label": "Plombier / Chauffagiste", "categorie": "second_oeuvre", "icone": "🔧", "ordre": 1 },
+    { "slug": "electricien", "nom": "Électricien", "label": "Électricien", "categorie": "second_oeuvre", "icone": "⚡", "ordre": 2 },
+    { "slug": "peintre", "nom": "Peintre", "label": "Peintre / Décorateur", "categorie": "second_oeuvre", "icone": "🎨", "ordre": 3 },
+    { "slug": "macon", "nom": "Maçon", "label": "Maçon / Gros œuvre", "categorie": "gros_oeuvre", "icone": "🧱", "ordre": 4 },
+    { "slug": "carreleur", "nom": "Carreleur", "label": "Carreleur / Faïencier", "categorie": "second_oeuvre", "icone": "🔲", "ordre": 5 },
+    { "slug": "menuisier", "nom": "Menuisier", "label": "Menuisier / Ébéniste", "categorie": "second_oeuvre", "icone": "🪚", "ordre": 6 },
+    { "slug": "couvreur", "nom": "Couvreur", "label": "Couvreur / Zingueur", "categorie": "gros_oeuvre", "icone": "🏠", "ordre": 7 },
+    { "slug": "chauffagiste", "nom": "Chauffagiste", "label": "Chauffagiste / Climaticien", "categorie": "second_oeuvre", "icone": "🔥", "ordre": 8 },
+    { "slug": "serrurier", "nom": "Serrurier", "label": "Serrurier / Métallier", "categorie": "specialites", "icone": "🔑", "ordre": 9 },
+    { "slug": "cuisiniste", "nom": "Cuisiniste", "label": "Cuisiniste", "categorie": "specialites", "icone": "🍳", "ordre": 10 }
+  ],
+  "arbres": {
+    "plombier": {
+      "id": "root",
+      "question": "Quel type de travaux de plomberie ?",
+      "type": "single_choice",
+      "options": [
+        { "label": "Fuite / Dépannage urgent", "value": "fuite_depannage", "next": "fuite_type" },
+        { "label": "Rénovation salle de bain", "value": "reno_sdb", "next": "sdb_surface" },
+        { "label": "Installation chauffage", "value": "chauffage", "next": "chauffage_type" },
+        { "label": "Chauffe-eau / Ballon", "value": "chauffe_eau", "next": "ce_type" },
+        { "label": "Autre plomberie", "value": "autre", "next": "description" }
+      ]
+    },
+    "electricien": {
+      "id": "root",
+      "question": "Quel type de travaux d'électricité ?",
+      "type": "single_choice",
+      "options": [
+        { "label": "Mise aux normes / Tableau", "value": "normes", "next": "elec_surface" },
+        { "label": "Installation prises/éclairage", "value": "installation", "next": "elec_pieces" },
+        { "label": "Dépannage / Panne", "value": "depannage", "next": "description" },
+        { "label": "Domotique / Connecté", "value": "domotique", "next": "description" },
+        { "label": "Autre électricité", "value": "autre", "next": "description" }
+      ]
+    },
+    "peintre": {
+      "id": "root",
+      "question": "Quel type de travaux de peinture ?",
+      "type": "single_choice",
+      "options": [
+        { "label": "Peinture intérieure", "value": "interieure", "next": "peinture_pieces" },
+        { "label": "Peinture extérieure / Ravalement", "value": "exterieure", "next": "peinture_surface" },
+        { "label": "Papier peint / Enduit décoratif", "value": "deco", "next": "peinture_pieces" },
+        { "label": "Autre", "value": "autre", "next": "description" }
+      ]
+    },
+    "carreleur": {
+      "id": "root",
+      "question": "Quel type de carrelage ?",
+      "type": "single_choice",
+      "options": [
+        { "label": "Carrelage sol", "value": "sol", "next": "carrelage_surface" },
+        { "label": "Faïence salle de bain", "value": "faience", "next": "carrelage_surface" },
+        { "label": "Carrelage extérieur / Terrasse", "value": "exterieur", "next": "carrelage_surface" },
+        { "label": "Mosaïque", "value": "mosaique", "next": "carrelage_surface" },
+        { "label": "Autre", "value": "autre", "next": "description" }
+      ]
+    },
+    "macon": {
+      "id": "root",
+      "question": "Quel type de travaux de maçonnerie ?",
+      "type": "single_choice",
+      "options": [
+        { "label": "Construction mur / Cloison", "value": "mur", "next": "macon_surface" },
+        { "label": "Dalle / Chape", "value": "dalle", "next": "macon_surface" },
+        { "label": "Extension / Surélévation", "value": "extension", "next": "macon_surface" },
+        { "label": "Rénovation pierre", "value": "pierre", "next": "description" },
+        { "label": "Autre", "value": "autre", "next": "description" }
+      ]
+    },
+    "couvreur": {
+      "id": "root",
+      "question": "Quel type de travaux de couverture ?",
+      "type": "single_choice",
+      "options": [
+        { "label": "Réparation / Fuite toiture", "value": "reparation", "next": "couv_surface" },
+        { "label": "Réfection complète", "value": "refection", "next": "couv_surface" },
+        { "label": "Zinguerie / Gouttières", "value": "zinguerie", "next": "description" },
+        { "label": "Isolation toiture", "value": "isolation", "next": "couv_surface" },
+        { "label": "Autre", "value": "autre", "next": "description" }
+      ]
+    },
+    "chauffagiste": {
+      "id": "root",
+      "question": "Quel type de travaux de chauffage ?",
+      "type": "single_choice",
+      "options": [
+        { "label": "Installation pompe à chaleur", "value": "pac", "next": "chauff_surface" },
+        { "label": "Remplacement chaudière", "value": "chaudiere", "next": "chauff_type" },
+        { "label": "Climatisation", "value": "clim", "next": "chauff_surface" },
+        { "label": "Plancher chauffant", "value": "plancher", "next": "chauff_surface" },
+        { "label": "Entretien / Dépannage", "value": "entretien", "next": "description" },
+        { "label": "Autre", "value": "autre", "next": "description" }
+      ]
+    },
+    "menuisier": {
+      "id": "root",
+      "question": "Quel type de menuiserie ?",
+      "type": "single_choice",
+      "options": [
+        { "label": "Fenêtres / Portes", "value": "fenetres", "next": "menuiserie_nb" },
+        { "label": "Cuisine / Placards", "value": "cuisine", "next": "description" },
+        { "label": "Escalier", "value": "escalier", "next": "description" },
+        { "label": "Terrasse bois", "value": "terrasse", "next": "menuiserie_surface" },
+        { "label": "Autre", "value": "autre", "next": "description" }
+      ]
+    },
+    "_generique": {
+      "id": "root",
+      "question": "Décrivez votre besoin",
+      "type": "single_choice",
+      "options": [
+        { "label": "Rénovation", "value": "renovation", "next": "gen_surface" },
+        { "label": "Dépannage / Urgence", "value": "depannage", "next": "description" },
+        { "label": "Installation neuve", "value": "installation", "next": "gen_surface" },
+        { "label": "Entretien", "value": "entretien", "next": "description" },
+        { "label": "Autre", "value": "autre", "next": "description" }
+      ]
+    }
+  },
+  "questions_communes": {
+    "description": {
+      "id": "description",
+      "question": "Décrivez votre besoin en quelques mots",
+      "type": "free_text",
+      "placeholder": "Ex: Ma chaudière ne démarre plus depuis ce matin...",
+      "next": "delai"
+    },
+    "delai": {
+      "id": "delai",
+      "question": "Quel est votre délai ?",
+      "type": "single_choice",
+      "options": [
+        { "label": "Urgent (< 48h)", "value": "urgent" },
+        { "label": "Sous 2 semaines", "value": "2_semaines" },
+        { "label": "Sous 1 mois", "value": "1_mois" },
+        { "label": "Pas pressé", "value": "pas_presse" }
+      ],
+      "next": "photos"
+    },
+    "photos": {
+      "id": "photos",
+      "question": "Avez-vous des photos à partager ?",
+      "type": "photo_upload",
+      "required": false,
+      "max": 5,
+      "next": "summary"
+    },
+    "summary": {
+      "id": "summary",
+      "type": "summary"
+    },
+    "sdb_surface": {
+      "id": "sdb_surface",
+      "question": "Quelle est la surface de la salle de bain ?",
+      "type": "slider",
+      "min": 2,
+      "max": 30,
+      "unit": "m²",
+      "default": 6,
+      "next": "description"
+    },
+    "fuite_type": {
+      "id": "fuite_type",
+      "question": "Quel type de fuite ?",
+      "type": "single_choice",
+      "options": [
+        { "label": "Fuite visible (robinet, tuyau)", "value": "visible" },
+        { "label": "Fuite cachée (mur, sol)", "value": "cachee" },
+        { "label": "WC / Chasse d'eau", "value": "wc" },
+        { "label": "Cumulus / Chauffe-eau", "value": "cumulus" }
+      ],
+      "next": "description"
+    },
+    "chauffage_type": {
+      "id": "chauffage_type",
+      "question": "Quel type de chauffage ?",
+      "type": "single_choice",
+      "options": [
+        { "label": "Chaudière gaz", "value": "gaz" },
+        { "label": "Pompe à chaleur", "value": "pac" },
+        { "label": "Radiateurs", "value": "radiateurs" },
+        { "label": "Plancher chauffant", "value": "plancher" }
+      ],
+      "next": "description"
+    },
+    "ce_type": {
+      "id": "ce_type",
+      "question": "Quel type d'intervention ?",
+      "type": "single_choice",
+      "options": [
+        { "label": "Remplacement complet", "value": "remplacement" },
+        { "label": "Réparation / Détartrage", "value": "reparation" },
+        { "label": "Installation neuve", "value": "installation" }
+      ],
+      "next": "description"
+    },
+    "elec_surface": {
+      "id": "elec_surface",
+      "question": "Surface du logement ?",
+      "type": "slider",
+      "min": 20,
+      "max": 300,
+      "unit": "m²",
+      "default": 80,
+      "next": "description"
+    },
+    "elec_pieces": {
+      "id": "elec_pieces",
+      "question": "Combien de pièces concernées ?",
+      "type": "slider",
+      "min": 1,
+      "max": 10,
+      "unit": "pièces",
+      "default": 3,
+      "next": "description"
+    },
+    "peinture_pieces": {
+      "id": "peinture_pieces",
+      "question": "Combien de pièces à peindre ?",
+      "type": "slider",
+      "min": 1,
+      "max": 10,
+      "unit": "pièces",
+      "default": 2,
+      "next": "description"
+    },
+    "peinture_surface": {
+      "id": "peinture_surface",
+      "question": "Surface à peindre ?",
+      "type": "slider",
+      "min": 10,
+      "max": 500,
+      "unit": "m²",
+      "default": 50,
+      "next": "description"
+    },
+    "carrelage_surface": {
+      "id": "carrelage_surface",
+      "question": "Surface à carreler ?",
+      "type": "slider",
+      "min": 2,
+      "max": 100,
+      "unit": "m²",
+      "default": 15,
+      "next": "description"
+    },
+    "macon_surface": {
+      "id": "macon_surface",
+      "question": "Surface concernée ?",
+      "type": "slider",
+      "min": 5,
+      "max": 200,
+      "unit": "m²",
+      "default": 30,
+      "next": "description"
+    },
+    "couv_surface": {
+      "id": "couv_surface",
+      "question": "Surface de toiture ?",
+      "type": "slider",
+      "min": 20,
+      "max": 300,
+      "unit": "m²",
+      "default": 80,
+      "next": "description"
+    },
+    "chauff_surface": {
+      "id": "chauff_surface",
+      "question": "Surface du logement ?",
+      "type": "slider",
+      "min": 30,
+      "max": 300,
+      "unit": "m²",
+      "default": 90,
+      "next": "description"
+    },
+    "chauff_type": {
+      "id": "chauff_type",
+      "question": "Type de chaudière actuelle ?",
+      "type": "single_choice",
+      "options": [
+        { "label": "Gaz", "value": "gaz" },
+        { "label": "Fioul", "value": "fioul" },
+        { "label": "Électrique", "value": "electrique" },
+        { "label": "Je ne sais pas", "value": "inconnu" }
+      ],
+      "next": "description"
+    },
+    "menuiserie_nb": {
+      "id": "menuiserie_nb",
+      "question": "Combien de fenêtres / portes ?",
+      "type": "slider",
+      "min": 1,
+      "max": 20,
+      "unit": "unités",
+      "default": 3,
+      "next": "description"
+    },
+    "menuiserie_surface": {
+      "id": "menuiserie_surface",
+      "question": "Surface de terrasse ?",
+      "type": "slider",
+      "min": 5,
+      "max": 80,
+      "unit": "m²",
+      "default": 20,
+      "next": "description"
+    },
+    "gen_surface": {
+      "id": "gen_surface",
+      "question": "Surface concernée ?",
+      "type": "slider",
+      "min": 5,
+      "max": 300,
+      "unit": "m²",
+      "default": 40,
+      "next": "description"
+    }
+  }
+}

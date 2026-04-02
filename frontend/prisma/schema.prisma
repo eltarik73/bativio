@@ -137,6 +137,9 @@ model Artisan {
   disponibilites  DisponibiliteHebdo[]
   joursFeries     JourFerie[]
   rdvList         RendezVousBativio[]
+  artisanMetiers  ArtisanMetier[]
+  tarifsHoraire   Float?              @map("tarifs_horaire")
+  tarifsMarges    Json?               @map("tarifs_marges")
 
   @@index([ville, metierId])
   @@index([slug])
@@ -146,15 +149,71 @@ model Artisan {
 }
 
 model Metier {
-  id        String   @id @default(cuid())
-  nom       String   @unique
-  slug      String   @unique
-  icone     String?
-  createdAt DateTime @default(now()) @map("created_at")
+  id          String   @id @default(cuid())
+  nom         String   @unique
+  slug        String   @unique
+  icone       String?
+  label       String?  // "Plombier / Chauffagiste"
+  categorie   String?  // "gros_oeuvre", "second_oeuvre", etc.
+  arbreActif  Boolean  @default(false) @map("arbre_actif")
+  ordre       Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
 
-  artisans  Artisan[]
+  artisans       Artisan[]
+  artisanMetiers ArtisanMetier[]
 
   @@map("metiers")
+}
+
+model ArtisanMetier {
+  id        String  @id @default(cuid())
+  artisanId String  @map("artisan_id")
+  metierId  String  @map("metier_id")
+  principal Boolean @default(false)
+
+  artisan   Artisan @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  metier    Metier  @relation(fields: [metierId], references: [id], onDelete: Cascade)
+
+  @@unique([artisanId, metierId])
+  @@index([metierId])
+  @@map("artisan_metiers")
+}
+
+model ArbreQuestions {
+  id         String   @id @default(cuid())
+  metierSlug String   @unique @map("metier_slug")
+  questions  Json
+  version    Int      @default(1)
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("arbres_questions")
+}
+
+model MessageDevis {
+  id        String   @id @default(cuid())
+  demandeId String   @map("demande_id")
+  auteur    String   // "client" ou "artisan"
+  contenu   String   @db.Text
+  lu        Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  demande   DemandeDevis @relation(fields: [demandeId], references: [id], onDelete: Cascade)
+
+  @@index([demandeId, createdAt])
+  @@map("messages_devis")
+}
+
+model DevisPhoto {
+  id        String   @id @default(cuid())
+  demandeId String   @map("demande_id")
+  url       String
+  auteur    String   // "client" ou "artisan"
+  createdAt DateTime @default(now()) @map("created_at")
+
+  demande   DemandeDevis @relation(fields: [demandeId], references: [id], onDelete: Cascade)
+
+  @@index([demandeId])
+  @@map("devis_photos")
 }
 
 model Ville {
@@ -243,16 +302,31 @@ model DemandeDevis {
   statut           StatutDevis @default(NOUVEAU)
   reponduAt        DateTime?   @map("repondu_at")
   relanceEnvoyee   Boolean     @default(false) @map("relance_envoyee")
+  relanceCount     Int         @default(0) @map("relance_count")
   urgence          String      @default("normal") // "normal" | "urgent"
   responseToken    String?     @map("response_token")
+  // Chat devis — champs étendus
+  clientVille      String?     @map("client_ville")
+  metierId         String?     @map("metier_devis_id")
+  reponses         Json?       // réponses structurées du chat devis
+  resumeTexte      String?     @map("resume_texte") @db.Text
+  devisIA          Json?       @map("devis_ia")
+  devisIAGenere    Boolean     @default(false) @map("devis_ia_genere")
+  devisFinalUrl    String?     @map("devis_final_url")
+  devisMontantHT   Float?      @map("devis_montant_ht")
+  expiresAt        DateTime?   @map("expires_at")
   createdAt        DateTime    @default(now()) @map("created_at")
   updatedAt        DateTime    @updatedAt @map("updated_at")
 
   artisan          Artisan     @relation(fields: [artisanId], references: [id], onDelete: Cascade)
   replies          DevisReply[]
+  messages         MessageDevis[]
+  photosDevis      DevisPhoto[]
 
   @@index([artisanId, statut])
   @@index([artisanId, createdAt])
+  @@index([responseToken])
+  @@index([emailClient])
   @@map("demandes_devis")
 }
 
