@@ -91,9 +91,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <ProtectedRoute>
       <div style={{ display: "flex", minHeight: "100vh", background: "#FAF8F5" }}>
         {/* Sidebar desktop */}
-        <aside style={{ width: 252, flexShrink: 0, background: "var(--blanc,#fff)", borderRight: "1px solid var(--sable,#E8D5C0)", display: "flex", flexDirection: "column", height: "100vh", position: "sticky", top: 0 }} className="hidden md:flex">
-          <Link href="/" style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#C4531A", textDecoration: "none", padding: "24px 16px 0 30px", marginBottom: 36, display: "block", letterSpacing: -0.5, flexShrink: 0 }}>Bativio</Link>
-          <nav style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 2, padding: "0 16px" }}>
+        <aside style={{ width: 252, flexShrink: 0, background: "var(--blanc,#fff)", borderRight: "1px solid var(--sable,#E8D5C0)", display: "flex", flexDirection: "column", height: "100vh", position: "sticky", top: 0, overflow: "hidden" }} className="hidden md:flex">
+          <Link href="/" style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#C4531A", textDecoration: "none", padding: "20px 16px 0 24px", marginBottom: 20, display: "block", letterSpacing: -0.5, flexShrink: 0 }}>Bativio</Link>
+          <nav style={{ flex: 1, minHeight: 0, overflowY: "auto", display: "flex", flexDirection: "column", gap: 2, padding: "0 12px" }}>
             {NAV.map((item) => {
               const active = p === item.href;
               return (
@@ -111,8 +111,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               );
             })}
           </nav>
-          {/* User block */}
-          <div style={{ flexShrink: 0, borderTop: "1px solid var(--sable,#E8D5C0)", padding: "10px 16px 14px" }}>
+          {/* User block — always visible at bottom */}
+          <div style={{ flexShrink: 0, borderTop: "1px solid var(--sable,#E8D5C0)", padding: "10px 14px 12px", background: "var(--creme,#FAF8F5)" }}>
             {/* Avatar + name + plan — compact */}
             <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0" }}>
               <div style={{ width: 32, height: 32, borderRadius: 8, background: "linear-gradient(135deg, var(--terre,#C4531A), var(--argile,#D4956B))", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
