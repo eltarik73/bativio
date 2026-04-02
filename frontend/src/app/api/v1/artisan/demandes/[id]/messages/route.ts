@@ -6,6 +6,34 @@ import { z } from "zod";
 import { sendArtisanReplyToClient } from "@/lib/devis-emails";
 import { getLeadLimit } from "@/lib/lead-limits";
 
+// GET — poll for new messages (artisan side)
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await requireAuth();
+    const { id } = await params;
+    const artisan = await prisma.artisan.findUnique({ where: { userId: session.userId } });
+    if (!artisan) return apiError("Artisan introuvable", 404);
+
+    const demande = await prisma.demandeDevis.findUnique({ where: { id } });
+    if (!demande || demande.artisanId !== artisan.id) return apiError("Demande introuvable", 404);
+
+    const after = request.nextUrl.searchParams.get("after");
+    const where: Record<string, unknown> = { demandeId: id };
+    if (after) where.createdAt = { gt: new Date(after) };
+
+    const messages = await prisma.messageDevis.findMany({ where, orderBy: { createdAt: "asc" } });
+    return apiSuccess(messages);
+  } catch (error: unknown) {
+    const err = error as Error;
+    if (err.message === "UNAUTHORIZED") return apiError("Non autorisé", 401);
+    console.error("GET artisan messages error:", err);
+    return apiError("Erreur interne", 500);
+  }
+}
+
 const messageSchema = z.object({
   contenu: z.string().min(1, "Le message ne peut pas être vide").max(2000, "Le message ne peut pas dépasser 2000 caractères"),
 });
@@ -61,7 +89,7 @@ export async function POST(
     const { contenu } = parsed.data;
 
     // Sanitize HTML to prevent XSS
-    const sanitizedContenu = contenu.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const sanitizedContenu = contenu.replace(/<[^>]*>/g, "");
 
     const isFirstReply = demande.statut !== "REPONDU" && !demande.reponduAt;
 

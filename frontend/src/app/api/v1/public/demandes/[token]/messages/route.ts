@@ -8,6 +8,33 @@ const messageSchema = z.object({
   contenu: z.string().min(1, "Le message ne peut pas être vide").max(2000, "Le message ne peut pas dépasser 2000 caractères"),
 });
 
+// GET — poll for new messages (used by FilConversation component)
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ token: string }> }
+) {
+  try {
+    const { token } = await params;
+    const demande = await prisma.demandeDevis.findFirst({ where: { responseToken: token } });
+    if (!demande) return apiError("Demande introuvable", 404);
+    if (demande.expiresAt && demande.expiresAt < new Date()) return apiError("Cette demande a expiré", 410);
+
+    const after = request.nextUrl.searchParams.get("after");
+    const where: Record<string, unknown> = { demandeId: demande.id };
+    if (after) where.createdAt = { gt: new Date(after) };
+
+    const messages = await prisma.messageDevis.findMany({
+      where,
+      orderBy: { createdAt: "asc" },
+    });
+
+    return apiSuccess(messages);
+  } catch (error) {
+    console.error("GET messages error:", error);
+    return apiError("Erreur interne", 500);
+  }
+}
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ token: string }> }
@@ -55,7 +82,7 @@ export async function POST(
     const { contenu } = parsed.data;
 
     // Sanitize HTML to prevent XSS
-    const sanitizedContenu = contenu.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const sanitizedContenu = contenu.replace(/<[^>]*>/g, "");
 
     const message = await prisma.messageDevis.create({
       data: {

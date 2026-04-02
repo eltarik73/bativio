@@ -18,7 +18,8 @@ interface FilConversationProps {
 interface Message {
   id: string;
   contenu: string;
-  expediteur: "ARTISAN" | "CLIENT";
+  auteur: string; // "client" or "artisan" from API
+  expediteur?: string; // legacy compat
   photoUrl?: string | null;
   createdAt: string;
 }
@@ -162,7 +163,7 @@ export default function FilConversation({
         data = json.data;
       } else if (demandeId && isArtisan) {
         data = (await fetchWithAuth(
-          `/artisans/me/demandes/${demandeId}`
+          `/artisan/demandes/${demandeId}`
         )) as DemandeData;
       } else {
         setError("Parametres manquants.");
@@ -264,7 +265,7 @@ export default function FilConversation({
     const optimisticMsg: Message = {
       id: `temp-${Date.now()}`,
       contenu: text,
-      expediteur: isArtisan ? "ARTISAN" : "CLIENT",
+      auteur: isArtisan ? "artisan" : "client",
       createdAt: new Date().toISOString(),
     };
     setMessages((prev) => [...prev, optimisticMsg]);
@@ -292,7 +293,7 @@ export default function FilConversation({
         }
       } else if (demandeId && isArtisan) {
         const data = (await fetchWithAuth(
-          `/artisans/me/demandes/${demandeId}/messages`,
+          `/artisan/demandes/${demandeId}/messages`,
           {
             method: "POST",
             body: JSON.stringify({ contenu: text }),
@@ -356,9 +357,10 @@ export default function FilConversation({
         );
       }
 
+      const sender = (msg.auteur || msg.expediteur || "").toLowerCase();
       const isSelf = isArtisan
-        ? msg.expediteur === "ARTISAN"
-        : msg.expediteur === "CLIENT";
+        ? sender === "artisan"
+        : sender === "client";
 
       elements.push(
         <div
