@@ -65,6 +65,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { user, logout, fetchWithAuth } = useAuth();
   const [newDevisCount, setNewDevisCount] = useState(0);
   const [newDemandesCount, setNewDemandesCount] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     fetchWithAuth("/artisans/me/devis/count-new")
@@ -160,7 +161,60 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {item.label}
             </Link>
           ))}
+          {/* Plus / Menu button */}
+          <button onClick={() => setMobileMenuOpen(true)} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, fontSize: 10, fontWeight: 500, color: mobileMenuOpen ? "#C4531A" : "#9B9590", background: "none", border: "none", cursor: "pointer", fontFamily: "'Karla',sans-serif" }}>
+            <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+            Plus
+          </button>
         </nav>
+
+        {/* Mobile menu drawer */}
+        {mobileMenuOpen && (
+          <div style={{ position: "fixed", inset: 0, zIndex: 100, display: "flex", flexDirection: "column", justifyContent: "flex-end" }} className="md:hidden" onClick={(e) => { if (e.target === e.currentTarget) setMobileMenuOpen(false); }}>
+            <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.3)" }} />
+            <div style={{ position: "relative", background: "#fff", borderRadius: "16px 16px 0 0", padding: "20px 20px 100px", maxHeight: "70vh", overflowY: "auto" }}>
+              {/* User info */}
+              <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "8px 0 16px", borderBottom: "1px solid var(--sable,#E8D5C0)" }}>
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: "linear-gradient(135deg, var(--terre,#C4531A), var(--argile,#D4956B))", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <span style={{ fontFamily: "'Fraunces',serif", fontSize: 14, fontWeight: 700, color: "#fff" }}>{getInitials(user?.nomAffichage || "")}</span>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: "var(--bois,#3D2E1F)" }}>{user?.nomAffichage || "Artisan"}</div>
+                  <span style={{ fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 4, ...getPlanBadgeStyle(user?.plan || "GRATUIT") }}>{getPlanLabel(user?.plan || "GRATUIT")}</span>
+                </div>
+                <button onClick={() => setMobileMenuOpen(false)} style={{ width: 32, height: 32, borderRadius: 8, background: "var(--sable-light,#F2EAE0)", border: "none", cursor: "pointer", fontSize: 18, color: "var(--pierre,#9C958D)", display: "flex", alignItems: "center", justifyContent: "center" }}>&times;</button>
+              </div>
+
+              {/* Quick links */}
+              <div style={{ padding: "12px 0", display: "flex", flexDirection: "column", gap: 4 }}>
+                {[
+                  { href: "/dashboard/demandes", label: "Demandes" },
+                  { href: "/dashboard/vitrine", label: "Ma vitrine" },
+                  { href: "/dashboard/facturation", label: "Facturation" },
+                  { href: "/dashboard/rdv", label: "Mes RDV" },
+                  { href: "/dashboard/parametres", label: "Param\u00e8tres" },
+                ].map((l) => (
+                  <Link key={l.href} href={l.href} onClick={() => setMobileMenuOpen(false)} style={{ display: "block", padding: "12px 4px", fontSize: 15, fontWeight: 500, color: "var(--bois,#3D2E1F)", textDecoration: "none", borderBottom: "1px solid var(--sable-light,#F2EAE0)" }}>
+                    {l.label}
+                  </Link>
+                ))}
+              </div>
+
+              {/* Voir ma page */}
+              {vitrineHref !== "#" && user?.actif && (
+                <Link href={vitrineHref} target="_blank" onClick={() => setMobileMenuOpen(false)} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, color: "var(--terre,#C4531A)", fontWeight: 600, textDecoration: "none", padding: "12px 4px" }}>
+                  Voir ma page &rarr;
+                </Link>
+              )}
+
+              {/* Se déconnecter */}
+              <button onClick={() => { setMobileMenuOpen(false); handleLogout(); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", fontSize: 14, color: "var(--pierre,#9C958D)", fontWeight: 500, background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: "12px 4px", fontFamily: "'Karla',sans-serif" }}>
+                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Se d&eacute;connecter
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </ProtectedRoute>
   );
