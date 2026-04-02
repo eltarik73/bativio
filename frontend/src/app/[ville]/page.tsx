@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import ArtisanCard from "@/components/ArtisanCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -28,7 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
     const mock = MOCK_VILLES.find((v) => v.slug === villeSlug);
     nom = mock?.nom || villeSlug;
   }
-  const title = seoTitle || `Artisans du bâtiment à ${nom} | Bativio`;
+  const title = seoTitle || `Artisans du bâtiment à ${nom}`;
   const description = seoDesc || `Trouvez les meilleurs artisans du bâtiment à ${nom}. Plombier, électricien, peintre, maçon. Devis gratuit, zéro commission.`;
   return {
     title,
@@ -62,6 +63,12 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
     }
     if (metiersData && metiersData.length > 0) metiers = metiersData;
   } catch { /* fallback mock */ }
+
+  // If this slug is not a known city and no artisans found, return 404
+  const knownVille = VILLES.find((v) => v.slug === villeSlug);
+  if (!knownVille && artisans.length === 0) {
+    notFound();
+  }
 
   return (
     <>

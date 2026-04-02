@@ -5,9 +5,11 @@ import { verifyPassword, setAuthCookie } from "@/lib/auth-server";
 import { apiSuccess, apiError } from "@/lib/api-response";
 
 const loginSchema = z.object({
-  email: z.string().email("Email invalide"),
+  email: z.string().min(1, "L'email est requis").email("Email invalide"),
   password: z.string().min(1, "Le mot de passe est requis"),
 });
+
+const loginAttempts = new Map<string, { count: number; resetAt: number }>();
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,6 +22,14 @@ export async function POST(request: NextRequest) {
     }
 
     const { email, password } = parsed.data;
+
+    // Rate limiting per email
+    const key = email.toLowerCase();
+    const now = Date.now();
+    const entry = loginAttempts.get(key);
+    if (entry && now < entry.resetAt && entry.count >= 10) {
+      return apiError("Trop de tentatives. Réessayez dans 15 minutes.", 429);
+    }
 
     // Find user by email with artisan relation (exclude soft-deleted)
     const user = await prisma.user.findUnique({
@@ -34,6 +44,13 @@ export async function POST(request: NextRequest) {
     });
 
     if (!user) {
+      // Track failed attempt
+      const current = loginAttempts.get(key);
+      if (!current || now >= current.resetAt) {
+        loginAttempts.set(key, { count: 1, resetAt: now + 15 * 60 * 1000 });
+      } else {
+        current.count++;
+      }
       return apiError("Identifiants incorrects", 401);
     }
 
@@ -45,8 +62,18 @@ export async function POST(request: NextRequest) {
     // Verify password
     const valid = await verifyPassword(password, user.passwordHash);
     if (!valid) {
+      // Track failed attempt
+      const current = loginAttempts.get(key);
+      if (!current || now >= current.resetAt) {
+        loginAttempts.set(key, { count: 1, resetAt: now + 15 * 60 * 1000 });
+      } else {
+        current.count++;
+      }
       return apiError("Identifiants incorrects", 401);
     }
+
+    // Successful login — clear rate limit
+    loginAttempts.delete(key);
 
     // Set auth cookie
     await setAuthCookie(user.id, user.role);

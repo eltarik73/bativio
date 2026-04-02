@@ -31,14 +31,20 @@ export async function POST(request: NextRequest) {
     const {
       artisanId,
       metierId,
-      clientNom,
+      clientNom: rawClientNom,
       clientEmail,
       clientTel,
-      clientVille,
-      descriptionBesoin,
+      clientVille: rawClientVille,
+      descriptionBesoin: rawDescriptionBesoin,
       reponses,
       urgence,
     } = parsed.data;
+
+    // Sanitize text fields to prevent XSS
+    function stripHtml(s: string): string { return s.replace(/<[^>]*>/g, "").trim(); }
+    const clientNom = stripHtml(rawClientNom);
+    const clientVille = rawClientVille ? stripHtml(rawClientVille) : null;
+    const descriptionBesoin = stripHtml(rawDescriptionBesoin);
 
     // Verify artisan exists
     const artisan = await prisma.artisan.findUnique({

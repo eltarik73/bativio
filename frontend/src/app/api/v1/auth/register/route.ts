@@ -9,12 +9,18 @@ const registerSchema = z.object({
   password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères"),
   nom: z.string().optional(),
   nomAffichage: z.string().optional(),
-  siret: z.string().optional(),
+  siret: z.string().min(9, "SIRET/SIREN requis").regex(/^\d{9,14}$/, "SIRET invalide"),
   telephone: z.string().optional(),
   metierId: z.string().optional(),
   ville: z.string().optional(),
   zoneRayonKm: z.number().int().min(5).max(80).optional(),
 });
+
+function stripHtml(str: string): string {
+  return str.replace(/<[^>]*>/g, "").trim();
+}
+
+const registerAttempts = new Map<string, { count: number; resetAt: number }>();
 
 function generateSlug(nom: string): string {
   return nom
@@ -28,6 +34,14 @@ function generateSlug(nom: string): string {
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting per IP
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    const now = Date.now();
+    const ipEntry = registerAttempts.get(ip);
+    if (ipEntry && now < ipEntry.resetAt && ipEntry.count >= 3) {
+      return apiError("Trop de tentatives d'inscription. Réessayez plus tard.", 429);
+    }
+
     const body = await request.json();
 
     const parsed = registerSchema.safeParse(body);
@@ -39,10 +53,11 @@ export async function POST(request: NextRequest) {
     const data = parsed.data;
     const email = data.email;
     const password = data.password;
-    const nom = data.nomAffichage || data.nom || email.split("@")[0];
+    const nom = stripHtml(data.nomAffichage || data.nom || email.split("@")[0]);
     const telephone = data.telephone || "";
-    const siret = data.siret && data.siret.length >= 9 ? data.siret : `TEMP${Date.now()}${Math.random().toString(36).slice(2, 6)}`;
-    const { metierId, ville, zoneRayonKm } = data;
+    const siret = data.siret;
+    const { metierId, zoneRayonKm } = data;
+    const ville = data.ville ? stripHtml(data.ville) : undefined;
 
     // Check for duplicates: email, siret, telephone
     const existingEmail = await prisma.user.findUnique({ where: { email } });
@@ -59,20 +74,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!siret.startsWith("TEMP")) {
-      const existingSiret = await prisma.artisan.findUnique({ where: { siret } });
-      if (existingSiret) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: "doublon",
-            message: "Une entreprise avec ce SIRET est déjà inscrite.",
-            champDoublon: "siret",
-            timestamp: new Date().toISOString(),
-          },
-          { status: 409 }
-        );
-      }
+    const existingSiret = await prisma.artisan.findUnique({ where: { siret } });
+    if (existingSiret) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "doublon",
+          message: "Une entreprise avec ce SIRET est déjà inscrite.",
+          champDoublon: "siret",
+          timestamp: new Date().toISOString(),
+        },
+        { status: 409 }
+      );
     }
 
     if (telephone) {
@@ -156,6 +169,14 @@ export async function POST(request: NextRequest) {
 
       return { user, artisan };
     });
+
+    // Track registration attempt for rate limiting
+    const currentIpEntry = registerAttempts.get(ip);
+    if (!currentIpEntry || now >= currentIpEntry.resetAt) {
+      registerAttempts.set(ip, { count: 1, resetAt: now + 60 * 60 * 1000 });
+    } else {
+      currentIpEntry.count++;
+    }
 
     // Set auth cookie
     await setAuthCookie(result.user.id, result.user.role);

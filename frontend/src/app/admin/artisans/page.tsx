@@ -129,7 +129,7 @@ export default function AdminArtisansPage() {
               ) : artisans.length === 0 ? (
                 <tr>
                   <td colSpan={7} style={{ padding: "32px 24px", textAlign: "center", fontSize: 14, color: "var(--pierre,#9C958D)" }}>
-                    Aucun artisan trouve
+                    Aucun artisan trouvé
                   </td>
                 </tr>
               ) : (

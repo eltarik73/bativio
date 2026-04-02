@@ -1,8 +1,8 @@
 import type { ArtisanPublic, VilleData, MetierData } from "./api";
 
 export const MOCK_VILLES: VilleData[] = [
-  { id: "1", nom: "Chambéry", slug: "chambery", codePostal: "73000", departement: "Savoie", contenuSeo: "Chambéry, capitale historique de la Savoie, abrite un patrimoine architectural riche entre Vieux-Chambéry et quartiers modernes comme Bissy ou Cognin. Les artisans du bâtiment y sont particulièrement sollicités pour la rénovation d'immeubles anciens et les projets de construction neuve.", nombreArtisans: 5 },
-  { id: "2", nom: "Annecy", slug: "annecy", codePostal: "74000", departement: "Haute-Savoie", contenuSeo: "Annecy, la Venise des Alpes, séduit par son lac et sa vieille ville pittoresque. Les artisans accompagnent la rénovation du centre historique et les constructions dans les quartiers résidentiels.", nombreArtisans: 0 },
+  { id: "1", nom: "Chambéry", slug: "chambery", codePostal: "73000", departement: "Savoie", contenuSeo: "Chambéry, capitale historique de la Savoie, abrite un patrimoine architectural riche entre Vieux-Chambéry et quartiers modernes comme Bissy ou Cognin. Les artisans du bâtiment y sont particulièrement sollicités pour la rénovation d'immeubles anciens et les projets de construction neuve.", nombreArtisans: 4 },
+  { id: "2", nom: "Annecy", slug: "annecy", codePostal: "74000", departement: "Haute-Savoie", contenuSeo: "Annecy, la Venise des Alpes, séduit par son lac et sa vieille ville pittoresque. Les artisans accompagnent la rénovation du centre historique et les constructions dans les quartiers résidentiels.", nombreArtisans: 1 },
   { id: "3", nom: "Grenoble", slug: "grenoble", codePostal: "38000", departement: "Isère", contenuSeo: "Grenoble, capitale des Alpes, est un pôle universitaire et technologique majeur. La rénovation énergétique constitue un marché important pour les artisans.", nombreArtisans: 0 },
   { id: "4", nom: "Lyon", slug: "lyon", codePostal: "69000", departement: "Rhône", contenuSeo: "Lyon, deuxième métropole de France, offre un marché du bâtiment dynamique et diversifié.", nombreArtisans: 0 },
   { id: "5", nom: "Valence", slug: "valence", codePostal: "26000", departement: "Drôme", contenuSeo: "Valence, porte du Midi, bénéficie d'un cadre de vie attractif entre Rhône et Vercors.", nombreArtisans: 0 },
@@ -24,7 +24,7 @@ export const MOCK_METIERS: MetierData[] = [
 export const MOCK_ARTISANS: ArtisanPublic[] = [
   {
     id: "1", nomAffichage: "Martin Plomberie", slug: "martin-plomberie", metierNom: "Plombier", metierIcone: "\u{1F527}",
-    ville: "Chambéry", noteMoyenne: 4.8, nombreAvis: 47,
+    ville: "Chambéry", noteMoyenne: 0, nombreAvis: 0,
     description: "Plombier-chauffagiste depuis 15 ans. Dépannage urgent, rénovation salle de bain, installation chauffage.",
     telephone: "04 79 12 34 56", adresse: "Chambéry", codePostal: "73000", zoneRayonKm: 25, experienceAnnees: 15, plan: "PRO",
     templateId: "classique", colorPrimary: "#C4531A", colorAccent: "#E8A84C", photoLayout: "grid",
@@ -47,7 +47,7 @@ export const MOCK_ARTISANS: ArtisanPublic[] = [
   },
   {
     id: "2", nomAffichage: "Élec Savoie", slug: "elec-savoie", metierNom: "Électricien", metierIcone: "⚡",
-    ville: "Chambéry", noteMoyenne: 4.9, nombreAvis: 32,
+    ville: "Chambéry", noteMoyenne: 0, nombreAvis: 0,
     description: "Électricien qualifié à Chambéry. Tous travaux électriques dans le respect des normes NF C 15-100.",
     telephone: "04 79 23 45 67", adresse: "Chambéry", codePostal: "73000", zoneRayonKm: 25, experienceAnnees: 8, plan: "ESSENTIEL",
     badgesNoms: ["Qualifelec"],
@@ -60,20 +60,20 @@ export const MOCK_ARTISANS: ArtisanPublic[] = [
   },
   {
     id: "3", nomAffichage: "Dupont Peinture", slug: "dupont-peinture", metierNom: "Peintre", metierIcone: "\u{1F3A8}",
-    ville: "Chambéry", noteMoyenne: 4.7, nombreAvis: 28,
+    ville: "Annecy", noteMoyenne: 0, nombreAvis: 0,
     description: "Peinture décorative, ravalement de façades, pose de revêtements muraux. Devis gratuit.",
-    telephone: "04 79 34 56 78", adresse: "Chambéry", codePostal: "73000", zoneRayonKm: 25, experienceAnnees: 12, plan: "GRATUIT",
+    telephone: "04 50 34 56 78", adresse: "Annecy", codePostal: "74000", zoneRayonKm: 25, experienceAnnees: 12, plan: "GRATUIT",
     badgesNoms: ["Qualibat"],
     services: [
       { id: "s7", titre: "Décoration", description: "Peinture intérieure, finitions soignées.", prixIndicatif: "À partir de 25€/m²", ordre: 0 },
       { id: "s8", titre: "Façade", description: "Ravalement, nettoyage et protection.", prixIndicatif: "Sur devis", ordre: 1 },
       { id: "s9", titre: "Revêtements", description: "Papier peint, enduit décoratif.", prixIndicatif: "Sur devis", ordre: 2 },
     ],
-    photos: [], horaires: [], zones: ["Chambéry", "Cognin"],
+    photos: [], horaires: [], zones: ["Annecy", "Seynod"],
   },
   {
     id: "4", nomAffichage: "Alpes Maçonnerie", slug: "alpes-maconnerie", metierNom: "Maçon", metierIcone: "\u{1F9F1}",
-    ville: "Chambéry", noteMoyenne: 4.6, nombreAvis: 53,
+    ville: "Chambéry", noteMoyenne: 0, nombreAvis: 0,
     description: "Construction traditionnelle savoyarde et rénovation du bâti ancien depuis 20 ans.",
     telephone: "04 79 45 67 89", adresse: "Chambéry", codePostal: "73000", zoneRayonKm: 25, experienceAnnees: 20, plan: "BUSINESS",
     badgesNoms: ["Qualibat", "CAPEB"],
@@ -86,7 +86,7 @@ export const MOCK_ARTISANS: ArtisanPublic[] = [
   },
   {
     id: "5", nomAffichage: "Savoie Carrelage", slug: "savoie-carrelage", metierNom: "Carreleur", metierIcone: "\u{1F532}",
-    ville: "Chambéry", noteMoyenne: 4.5, nombreAvis: 19,
+    ville: "Chambéry", noteMoyenne: 0, nombreAvis: 0,
     description: "Carreleur professionnel à Chambéry, pose tous types de carrelages et faïences.",
     telephone: "04 79 56 78 90", adresse: "Chambéry", codePostal: "73000", zoneRayonKm: 25, experienceAnnees: 6, plan: "ESSENTIEL",
     badgesNoms: ["Assurance décennale"],

@@ -96,7 +96,7 @@ export async function generateMetadata({
   if (isMetierSlug(slug)) {
     const vNom = villeNom(villeParam);
     const mNom = metierNom(slug);
-    const title = `${mNom} \u00e0 ${vNom} \u2014 Artisans v\u00e9rifi\u00e9s | Bativio`;
+    const title = `${mNom} \u00e0 ${vNom} \u2014 Artisans v\u00e9rifi\u00e9s`;
     const description = `Trouvez un ${mNom.toLowerCase()} qualifi\u00e9 \u00e0 ${vNom}. Artisans v\u00e9rifi\u00e9s, devis gratuit en 2 minutes. Z\u00e9ro commission.`;
 
     return {

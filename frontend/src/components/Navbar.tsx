@@ -28,7 +28,7 @@ const ARTISAN_MENU = [
   { href: "/dashboard", label: "Tableau de bord" },
   { href: "/dashboard/profil", label: "Mon profil" },
   { href: "/dashboard/vitrine", label: "Ma vitrine" },
-  { href: "/dashboard/devis", label: "Demandes de devis" },
+  { href: "/dashboard/demandes", label: "Demandes" },
   { href: "/dashboard/photos", label: "Mes photos" },
   { href: "/dashboard/parametres", label: "Paramètres" },
 ];
@@ -87,7 +87,7 @@ export default function Navbar() {
             <Link href="/" className="nav-link">Annuaire</Link>
             <Link href="/artisan" className="nav-link">Je suis artisan</Link>
             <Link href="/connexion" className="nav-link">Connexion</Link>
-            <Link href="/inscription" className="nav-cta">Espace artisan</Link>
+            <Link href="/connexion" className="nav-cta">Espace artisan</Link>
           </>
         )}
 

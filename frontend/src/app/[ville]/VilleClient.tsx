@@ -67,7 +67,7 @@ export default function VilleClient({
           </div>
         ) : (
           <div className="text-center py-14">
-            <h3 className="font-display text-lg mb-[6px]">Aucun artisan trouve</h3>
+            <h3 className="font-display text-lg mb-[6px]">Aucun artisan trouvé</h3>
             <p className="text-[13px] text-g400">De nouveaux artisans s&apos;inscrivent chaque semaine.</p>
           </div>
         )}
