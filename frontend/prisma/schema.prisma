@@ -160,6 +160,11 @@ model Artisan {
   validatedBy     String?        @map("validated_by")
   artisanStatus   String         @default("ONBOARDING") @map("artisan_status")
 
+  // Plan override (admin)
+  planOverride         String?   @map("plan_override")
+  planOverrideRaison   String?   @map("plan_override_raison")
+  planOverrideExpireAt DateTime? @map("plan_override_expire_at")
+
   @@index([ville, metierId])
   @@index([slug])
   @@index([plan])

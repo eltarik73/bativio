@@ -49,3 +49,26 @@ export const PLAN_PRICES: Record<PlanId, number> = {
 export function getPlanLimits(plan: string) {
   return PLAN_LIMITS[normalizePlan(plan)];
 }
+
+// Effective plan = max(planStripe, planOverride)
+export function getEffectivePlan(artisan: {
+  plan: string;
+  planOverride?: string | null;
+  planOverrideExpireAt?: Date | string | null;
+}): PlanId {
+  const stripePlan = normalizePlan(artisan.plan || "GRATUIT");
+
+  if (!artisan.planOverride) return stripePlan;
+
+  // Check expiration
+  if (artisan.planOverrideExpireAt) {
+    const expiry = new Date(artisan.planOverrideExpireAt);
+    if (new Date() > expiry) return stripePlan;
+  }
+
+  const overridePlan = normalizePlan(artisan.planOverride);
+  const stripeLevel = PLAN_HIERARCHY.indexOf(stripePlan);
+  const overrideLevel = PLAN_HIERARCHY.indexOf(overridePlan);
+
+  return PLAN_HIERARCHY[Math.max(stripeLevel, overrideLevel)];
+}

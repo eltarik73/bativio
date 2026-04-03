@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth-server";
 import { apiSuccess, apiError } from "@/lib/api-response";
+import { getEffectivePlan } from "@/lib/plan-gates";
 
 export async function GET() {
   try {
@@ -36,7 +37,9 @@ export async function GET() {
       slug: artisan.slug,
       metierNom: artisan.metier?.nom ?? null,
       ville: artisan.ville,
-      plan: artisan.plan,
+      plan: getEffectivePlan(artisan).toUpperCase(),
+      planStripe: artisan.plan,
+      planOverride: artisan.planOverride,
       profilCompletion: artisan.profilCompletion,
       actif: artisan.actif,
       telephone: artisan.telephone,
