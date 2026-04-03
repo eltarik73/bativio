@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/context/AuthContext";
+import VilleAutocomplete from "@/components/VilleAutocomplete/VilleAutocomplete";
 
 interface BadgeData {
   id: string;
@@ -23,7 +24,7 @@ export default function ProfilPage() {
 
   const [form, setForm] = useState({
     nomAffichage: "", description: "",
-    telephone: "", adresse: "", codePostal: "", experienceAnnees: "",
+    telephone: "", adresse: "", ville: "", codePostal: "", experienceAnnees: "",
   });
   const [badges, setBadges] = useState<BadgeData[]>([]);
   const [services, setServices] = useState<ServiceData[]>([]);
@@ -42,6 +43,7 @@ export default function ProfilPage() {
           description: (data.description as string) || "",
           telephone: (data.telephone as string) || "",
           adresse: (data.adresse as string) || "",
+          ville: (data.ville as string) || "",
           codePostal: (data.codePostal as string) || "",
           experienceAnnees: data.experienceAnnees != null ? String(data.experienceAnnees) : "",
         });
@@ -60,6 +62,7 @@ export default function ProfilPage() {
           description: (user.description as string) || "",
           telephone: (user.telephone as string) || "",
           adresse: (user.ville as string) || "",
+          ville: (user.ville as string) || "",
           codePostal: "",
           experienceAnnees: "",
         });
@@ -80,6 +83,7 @@ export default function ProfilPage() {
         description: form.description,
         telephone: form.telephone,
         adresse: form.adresse,
+        ville: form.ville,
         codePostal: form.codePostal,
       };
       if (form.experienceAnnees !== "") {
@@ -123,7 +127,7 @@ export default function ProfilPage() {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
           <div className="field"><label className="bv-label">Nom d&apos;affichage</label><input className="bv-input" value={form.nomAffichage} onChange={(e) => u("nomAffichage", e.target.value)} /></div>
           <div className="field"><label className="bv-label">T&eacute;l&eacute;phone</label><input className="bv-input" value={form.telephone} onChange={(e) => u("telephone", e.target.value)} /></div>
-          <div className="field"><label className="bv-label">Adresse</label><input className="bv-input" value={form.adresse} onChange={(e) => u("adresse", e.target.value)} /></div>
+          <div className="field"><label className="bv-label">Ville</label><VilleAutocomplete onSelect={(commune) => { setForm(prev => ({ ...prev, ville: commune.nom, codePostal: commune.codesPostaux[0] || prev.codePostal })); }} defaultValue={form.ville} placeholder="Ville ou code postal..." /></div>
           <div className="field"><label className="bv-label">Exp&eacute;rience (ann&eacute;es)</label><input className="bv-input" type="number" value={form.experienceAnnees} onChange={(e) => u("experienceAnnees", e.target.value)} /></div>
         </div>
       </div>

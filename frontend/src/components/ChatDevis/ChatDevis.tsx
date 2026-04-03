@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import s from "./ChatDevis.module.css";
+import VilleAutocomplete from "@/components/VilleAutocomplete/VilleAutocomplete";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -734,12 +735,10 @@ export default function ChatDevis({
                 </div>
                 <div>
                   <label className={s.contactLabel}>Ville</label>
-                  <input
-                    type="text"
-                    className={s.contactInput}
-                    placeholder="Votre ville"
-                    value={contact.ville}
-                    onChange={(e) => setContact((c) => ({ ...c, ville: e.target.value }))}
+                  <VilleAutocomplete
+                    onSelect={(commune) => setContact(prev => ({ ...prev, ville: commune.nom }))}
+                    defaultValue={contact.ville}
+                    placeholder="Votre ville..."
                   />
                 </div>
 

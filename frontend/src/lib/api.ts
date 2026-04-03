@@ -56,6 +56,7 @@ export interface ArtisanPublic {
   photoLayout?: string;
   seoDescription?: string;
   seoKeywords?: string;
+  distance?: number;
 }
 
 export interface ServiceData {

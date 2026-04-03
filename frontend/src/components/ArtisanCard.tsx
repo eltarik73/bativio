@@ -73,6 +73,11 @@ export default function ArtisanCard({ artisan, villeSlug }: { artisan: ArtisanPu
           </div>
           <div className="card-meta">
             {artisan.ville}
+            {artisan.distance != null && artisan.distance < 100 && (
+              <span style={{ fontSize: 11, color: "var(--pierre,#9C958D)", marginLeft: 4 }}>
+                {"\u00B7"} {"\u00E0"} {artisan.distance < 1 ? `${Math.round(artisan.distance * 1000)}m` : `${artisan.distance.toFixed(1)} km`}
+              </span>
+            )}
             {online && (
               <>
                 <span className="card-mdot" />

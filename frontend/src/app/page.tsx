@@ -56,6 +56,8 @@ export default function Home() {
           const json = await res.json();
           if (json.success && json.data?.length > 0) {
             handleVilleSelect(json.data[0]);
+            sessionStorage.setItem('bativio_commune', JSON.stringify(json.data[0]));
+            sessionStorage.setItem('bativio_coords', JSON.stringify({ lat: pos.coords.latitude, lon: pos.coords.longitude }));
           }
         } catch {
           // silently fail
@@ -71,12 +73,21 @@ export default function Home() {
   };
 
   useEffect(() => {
+    const cached = sessionStorage.getItem('bativio_commune');
+    if (cached) {
+      try {
+        const commune = JSON.parse(cached);
+        handleVilleSelect(commune);
+      } catch {}
+    }
+
     getArtisans({ size: 100 })
       .then((page) => { if (page.content && page.content.length > 0) setAllArtisans(page.content); })
       .catch(() => {});
     getMetiers()
       .then((m) => { if (m && m.length > 0) setAllMetiers(m); })
       .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filtered = allArtisans.filter((a) => {
