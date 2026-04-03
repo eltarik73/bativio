@@ -237,8 +237,8 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
               <button onClick={() => { setPdfOpen(!pdfOpen); setReplyOpen(false); setSent(false); }} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, border: "1.5px solid #C4531A", fontSize: 14, fontWeight: 600, color: "#C4531A", background: "none", cursor: "pointer" }}>
                 &#128206; Envoyer un devis PDF
               </button>
-              <button disabled style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, border: "1.5px solid #E0DDD8", fontSize: 14, fontWeight: 600, color: "#C5C0B9", background: "none", cursor: "not-allowed", opacity: 0.6 }} title="Invoquo sera disponible prochainement">
-                &#129534; Cr&eacute;er un devis Invoquo
+              <button disabled style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, border: "1.5px solid #E0DDD8", fontSize: 14, fontWeight: 600, color: "#C5C0B9", background: "none", cursor: "not-allowed", opacity: 0.6 }} title="Facturation électronique bientôt disponible">
+                &#129534; Cr&eacute;er une facture
                 <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: "rgba(232,168,76,.12)", color: "#E8A84C" }}>Bient&ocirc;t</span>
               </button>
               {devis.statut !== "ARCHIVE" && (

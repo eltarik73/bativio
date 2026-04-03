@@ -18,7 +18,7 @@ const FAQ = [
   { q: "Combien de temps pour créer ma page ?", a: "3 minutes. Entrez votre SIREN, on récupère vos infos automatiquement." },
   { q: "Y a-t-il des commissions ?", a: "Non, jamais. Abonnement fixe, zéro commission sur les devis ou les chantiers." },
   { q: "Mes clients peuvent me trouver comment ?", a: "Via l’annuaire Bativio, votre URL personnalisée, et Google grâce au SEO intégré." },
-  { q: "C’est quoi Invoquo ?", a: "Notre module de facturation électronique, bientôt disponible pour vous mettre en conformité avec la réforme 2026." },
+  { q: "Comment fonctionne la facturation électronique ?", a: "Bativio intègre un module de facturation électronique conforme à la réforme 2026. Réception et émission PA incluses dès le plan Starter." },
 ];
 
 const CK = <svg width="15" height="15" fill="none" stroke="#E8A84C" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg>;

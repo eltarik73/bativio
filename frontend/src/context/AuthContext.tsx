@@ -138,8 +138,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     if (res.status === 401) {
+      // Try to refresh session by re-calling /auth/me
+      try {
+        const meRes = await fetch("/api/v1/auth/me", { credentials: "include" });
+        if (meRes.ok) {
+          const meData = await meRes.json();
+          if (meData.success && meData.data) {
+            setUser(meData.data);
+            // Retry the original request
+            const retryRes = await fetch(`/api/v1${path}`, { ...options, headers, credentials: "include" });
+            if (retryRes.ok) {
+              const retryJson = await retryRes.json();
+              if (retryJson.success) return retryJson.data;
+            }
+          }
+        }
+      } catch { /* ignore */ }
+      // Session truly expired
       setUser(null);
-      throw new Error("Session expiree");
+      if (typeof window !== "undefined" && !path.includes("/auth/")) {
+        window.location.href = "/connexion?expired=true";
+      }
+      throw new Error("Session expirée");
     }
 
     let json;

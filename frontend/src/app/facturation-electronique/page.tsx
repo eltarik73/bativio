@@ -98,7 +98,7 @@ const FEATURES = [
   },
   {
     title: "Connecté PA",
-    desc: "Bativio transmet vos factures via Invoquo, opérateur de dématérialisation connecté au portail public.",
+    desc: "Bativio transmet vos factures via un opérateur de dématérialisation agréé, connecté au portail public.",
     icon: (
       <svg width="24" height="24" fill="none" stroke="#C4531A" strokeWidth="2" viewBox="0 0 24 24">
         <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
@@ -127,7 +127,7 @@ const FAQ = [
   },
   {
     q: "Bativio est-il conforme ?",
-    a: "Bativio est connecté à Invoquo, un opérateur de dématérialisation qui assure la transmission de vos factures via les API du portail public de facturation. Vos factures sont conformes aux formats réglementaires exigés.",
+    a: "Bativio est connecté à un opérateur de dématérialisation agréé qui assure la transmission de vos factures via les API du portail public de facturation. Vos factures sont conformes aux formats réglementaires exigés.",
   },
 ];
 
