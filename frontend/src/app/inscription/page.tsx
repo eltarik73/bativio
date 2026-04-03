@@ -21,6 +21,7 @@ export default function InscriptionPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [photoToast, setPhotoToast] = useState("");
+  const [metierSearch, setMetierSearch] = useState("");
 
   const [justRegistered, setJustRegistered] = useState(false);
   // Redirect if already authenticated (but not if just registered — we want to go to scoring)
@@ -347,16 +348,79 @@ export default function InscriptionPage() {
             {/* Step 2: Metier */}
             {step === 2 && (
               <div className="step-animate">
-                <div className="card-title">Votre m&eacute;tier</div>
-                <div className="card-subtitle">S&eacute;lectionnez votre activit&eacute; principale.</div>
-                <div className="mg">
-                  {METIERS.map((m) => (
-                    <div key={m.slug} className={`mc ${form.metierNom === m.nom ? "sel" : ""}`} onClick={() => { update("metierId", m.slug); update("metierNom", m.nom); setError(""); }}>
-                      <div className="ico">{m.icone}</div>
-                      <div className="nm">{m.nom}</div>
-                    </div>
-                  ))}
-                </div>
+                <div className="card-title">Votre activit&eacute; principale</div>
+                <div className="card-subtitle">Quel est votre m&eacute;tier principal ? Vous pourrez ajouter d&apos;autres sp&eacute;cialit&eacute;s une fois inscrit.</div>
+
+                {/* Search filter */}
+                <input
+                  type="text"
+                  placeholder="Rechercher un m&eacute;tier..."
+                  value={metierSearch}
+                  onChange={(e) => setMetierSearch(e.target.value)}
+                  className="bv-input"
+                  style={{ marginBottom: 16 }}
+                />
+
+                {/* Métiers par catégorie */}
+                {(() => {
+                  const cats = [
+                    { key: "gros_oeuvre", label: "Gros \u0153uvre", color: "var(--bois,#3D2E1F)" },
+                    { key: "second_oeuvre", label: "Second \u0153uvre", color: "var(--terre,#C4531A)" },
+                    { key: "specialites", label: "Sp\u00e9cialit\u00e9s", color: "var(--or,#C9943A)" },
+                    { key: "exterieur", label: "Ext\u00e9rieur", color: "var(--mousse,#4A6741)" },
+                    { key: "autre", label: "Autre", color: "var(--pierre,#9C958D)" },
+                  ];
+                  const metiersByCat: Record<string, typeof METIERS[number][]> = {};
+                  const q = metierSearch.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                  METIERS.forEach((m) => {
+                    const mNorm = m.nom.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                    if (q && !mNorm.includes(q)) return;
+                    const catKey = m.categorie || "autre";
+                    if (!metiersByCat[catKey]) metiersByCat[catKey] = [];
+                    metiersByCat[catKey].push(m);
+                  });
+                  return cats.map((cat) => {
+                    const items = metiersByCat[cat.key];
+                    if (!items || items.length === 0) return null;
+                    return (
+                      <div key={cat.key} style={{ marginBottom: 16 }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: cat.color, marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
+                          <span style={{ width: 8, height: 8, borderRadius: "50%", background: cat.color, display: "inline-block" }} />
+                          {cat.label}
+                        </div>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+                          {items.map((m) => (
+                            <div
+                              key={m.slug}
+                              onClick={() => { update("metierId", m.slug); update("metierNom", m.nom); setError(""); }}
+                              style={{
+                                padding: "10px 8px", borderRadius: 10, textAlign: "center", cursor: "pointer",
+                                border: form.metierNom === m.nom ? `2px solid ${cat.color}` : "1px solid var(--sable,#E8D5C0)",
+                                background: form.metierNom === m.nom ? `${cat.color}10` : "var(--blanc,#fff)",
+                                transition: "all .15s",
+                              }}
+                            >
+                              <div style={{ fontSize: 22, marginBottom: 4 }}>{m.icone}</div>
+                              <div style={{ fontSize: 12, fontWeight: form.metierNom === m.nom ? 700 : 500, color: form.metierNom === m.nom ? cat.color : "var(--bois,#3D2E1F)" }}>{m.nom}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
+
+                {form.metierNom && (
+                  <div style={{ marginTop: 12, padding: "10px 14px", background: "var(--mousse-light,#E8F0E6)", borderRadius: 8, fontSize: 13, color: "var(--mousse,#4A6741)", display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 16 }}>&#10003;</span>
+                    Activit&eacute; principale : <strong>{form.metierNom}</strong>
+                  </div>
+                )}
+
+                <p style={{ fontSize: 12, color: "var(--pierre,#9C958D)", marginTop: 10, lineHeight: 1.5 }}>
+                  Vous pourrez ajouter d&apos;autres sp&eacute;cialit&eacute;s depuis votre espace une fois inscrit.
+                </p>
+
                 {error && <p style={{ color: "#dc2626", fontSize: 14, marginTop: 8 }}>{error}</p>}
                 <div className="btn-row">
                   <button className="bv-btn bv-btn-secondary bv-btn-half" onClick={() => go(1)}>{ARROW_L} Retour</button>
