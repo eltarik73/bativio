@@ -57,7 +57,7 @@ export async function POST(request: Request) {
           price_data: {
             currency: "eur" as const,
             product_data: { name: `Bativio ${config.name}`, description: `Abonnement ${annual ? "annuel" : "mensuel"} Bativio ${config.name}` },
-            unit_amount: annual ? Math.round(config.price * 0.83) : config.price,
+            unit_amount: annual ? Math.round(config.monthlyPrice * 100 * 0.83) : config.monthlyPrice * 100,
             recurring: { interval: (annual ? "year" : "month") as "year" | "month" },
           },
           quantity: 1,
@@ -67,8 +67,9 @@ export async function POST(request: Request) {
       customer: customerId,
       mode: "subscription",
       line_items: lineItems,
-      success_url: `${appUrl}/dashboard/parametres?success=true&plan=${plan}`,
-      cancel_url: `${appUrl}/tarifs?canceled=true`,
+      allow_promotion_codes: true,
+      success_url: `${appUrl}/dashboard/abonnement?success=true&plan=${plan}`,
+      cancel_url: `${appUrl}/artisan#pricing`,
       metadata: { artisanId: artisan.id, plan },
     });
 

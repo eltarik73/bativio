@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { getStripe } from "@/lib/stripe";
+import { getStripe, getPlanFromPriceId } from "@/lib/stripe";
 import { NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -29,18 +29,28 @@ export async function POST(request: NextRequest) {
       case "checkout.session.completed": {
         const session = event.data.object;
         const artisanId = session.metadata?.artisanId;
-        const plan = session.metadata?.plan;
+        let plan = session.metadata?.plan;
         const subscriptionId = session.subscription as string;
+
+        // Normalize plan name
+        if (plan) {
+          const p = plan.toUpperCase();
+          if (p === "ESSENTIEL") plan = "STARTER";
+          else if (p === "PRO_PLUS" || p === "PROPLUS") plan = "BUSINESS";
+          else plan = p;
+        }
 
         if (artisanId && plan) {
           await prisma.artisan.update({
             where: { id: artisanId },
             data: {
-              plan: plan as "STARTER" | "PRO" | "BUSINESS" | "ESSENTIEL" | "PRO_PLUS",
+              plan: plan as "STARTER" | "PRO" | "BUSINESS",
               stripeSubscriptionId: subscriptionId,
+              artisanStatus: "ACTIVE",
+              actif: true,
             },
           });
-          console.log(`Plan updated: artisan ${artisanId} -> ${plan}`);
+          console.log(`[STRIPE] Plan updated: artisan ${artisanId} → ${plan}`);
         }
         break;
       }
@@ -60,7 +70,20 @@ export async function POST(request: NextRequest) {
               where: { id: artisan.id },
               data: { plan: "GRATUIT", stripeSubscriptionId: null },
             });
-            console.log(`Subscription canceled: artisan ${artisan.id} -> GRATUIT`);
+            console.log(`[STRIPE] Subscription canceled: artisan ${artisan.id} → GRATUIT`);
+          } else if (status === "active") {
+            // Plan might have changed (upgrade/downgrade)
+            const priceId = subscription.items?.data?.[0]?.price?.id;
+            if (priceId) {
+              const newPlan = getPlanFromPriceId(priceId);
+              if (newPlan && newPlan !== artisan.plan) {
+                await prisma.artisan.update({
+                  where: { id: artisan.id },
+                  data: { plan: newPlan as "STARTER" | "PRO" | "BUSINESS" },
+                });
+                console.log(`[STRIPE] Plan changed: artisan ${artisan.id} → ${newPlan}`);
+              }
+            }
           }
         }
         break;
@@ -74,19 +97,19 @@ export async function POST(request: NextRequest) {
           where: { stripeCustomerId: customerId },
           data: { plan: "GRATUIT", stripeSubscriptionId: null },
         });
-        console.log(`Subscription deleted for customer ${customerId}`);
+        console.log(`[STRIPE] Subscription deleted for customer ${customerId}`);
         break;
       }
 
       case "invoice.payment_failed": {
         const invoice = event.data.object;
         const customerId = invoice.customer as string;
-        console.warn(`Payment failed for customer ${customerId}`);
+        console.warn(`[STRIPE] Payment failed for customer ${customerId}`);
         break;
       }
     }
   } catch (err) {
-    console.error("Webhook handler error:", err);
+    console.error("[STRIPE] Webhook handler error:", err);
   }
 
   return new Response("OK", { status: 200 });

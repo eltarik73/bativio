@@ -10,37 +10,78 @@ export function getStripe(): Stripe {
   return _stripe;
 }
 
-// New V2 plans
+// Plan configuration with Stripe price IDs
 export const PLAN_CONFIG = {
-  STARTER: { price: 1900, name: "Starter", lookupKey: "starter_monthly" },
-  PRO: { price: 3900, name: "Pro", lookupKey: "pro_monthly" },
-  BUSINESS: { price: 5900, name: "Business", lookupKey: "business_monthly" },
-  // Legacy plan names (map to new ones)
-  ESSENTIEL: { price: 1900, name: "Starter", lookupKey: "starter_monthly" },
-  PRO_PLUS: { price: 5900, name: "Business", lookupKey: "business_monthly" },
+  STARTER: {
+    name: "Starter",
+    monthlyPrice: 19,
+    yearlyPrice: 190,
+    priceMonthly: process.env.STRIPE_PRICE_STARTER_MONTHLY || null,
+    priceYearly: process.env.STRIPE_PRICE_STARTER_YEARLY || null,
+  },
+  PRO: {
+    name: "Pro",
+    monthlyPrice: 39,
+    yearlyPrice: 390,
+    priceMonthly: process.env.STRIPE_PRICE_PRO_MONTHLY || null,
+    priceYearly: process.env.STRIPE_PRICE_PRO_YEARLY || null,
+  },
+  BUSINESS: {
+    name: "Business",
+    monthlyPrice: 59,
+    yearlyPrice: 590,
+    priceMonthly: process.env.STRIPE_PRICE_BUSINESS_MONTHLY || null,
+    priceYearly: process.env.STRIPE_PRICE_BUSINESS_YEARLY || null,
+  },
+  // Legacy mappings
+  ESSENTIEL: {
+    name: "Starter",
+    monthlyPrice: 19,
+    yearlyPrice: 190,
+    priceMonthly: process.env.STRIPE_PRICE_STARTER_MONTHLY || null,
+    priceYearly: process.env.STRIPE_PRICE_STARTER_YEARLY || null,
+  },
+  PRO_PLUS: {
+    name: "Business",
+    monthlyPrice: 59,
+    yearlyPrice: 590,
+    priceMonthly: process.env.STRIPE_PRICE_BUSINESS_MONTHLY || null,
+    priceYearly: process.env.STRIPE_PRICE_BUSINESS_YEARLY || null,
+  },
 } as const;
 
 export type PaidPlan = keyof typeof PLAN_CONFIG;
 
-// Price ID resolution: env var > ad-hoc
+// Resolve the Stripe price ID for a given plan and billing interval
 export function getStripePriceId(plan: string, annual: boolean): string | null {
+  const key = plan.toUpperCase() as keyof typeof PLAN_CONFIG;
+  const config = PLAN_CONFIG[key];
+  if (!config) return null;
+
+  // Direct config lookup (uses env vars loaded at startup)
+  if (annual && config.priceYearly) return config.priceYearly;
+  if (!annual && config.priceMonthly) return config.priceMonthly;
+
+  // Fallback: try env vars with explicit naming
   const prefix = annual ? "YEARLY" : "MONTHLY";
-  // Try new plan names first
-  const envKey = `NEXT_PUBLIC_STRIPE_PRICE_${plan.toUpperCase()}_${prefix}`;
+  const normalized = key === "ESSENTIEL" ? "STARTER" : key === "PRO_PLUS" ? "BUSINESS" : key;
+  const envKey = `STRIPE_PRICE_${normalized}_${prefix}`;
   if (process.env[envKey]) return process.env[envKey]!;
-  // Try legacy names
-  const legacyMap: Record<string, string> = {
-    ESSENTIEL: "STARTER", STARTER: "STARTER",
-    PRO: "PRO",
-    PRO_PLUS: "BUSINESS", BUSINESS: "BUSINESS",
-  };
-  const mapped = legacyMap[plan.toUpperCase()];
-  if (mapped) {
-    const mappedKey = `NEXT_PUBLIC_STRIPE_PRICE_${mapped}_${prefix}`;
-    if (process.env[mappedKey]) return process.env[mappedKey]!;
-  }
-  // Try old format (STRIPE_PRICE_ESSENTIEL etc.)
-  const oldKey = `STRIPE_PRICE_${plan.toUpperCase()}`;
+
+  // Legacy fallback (old single-price format)
+  const oldKey = `STRIPE_PRICE_${key}`;
   if (process.env[oldKey]) return process.env[oldKey]!;
+
+  return null;
+}
+
+// Reverse: map a Stripe price ID back to a plan name
+export function getPlanFromPriceId(priceId: string): string | null {
+  for (const [planKey, config] of Object.entries(PLAN_CONFIG)) {
+    if (planKey === "ESSENTIEL" || planKey === "PRO_PLUS") continue; // Skip legacy
+    if (config.priceMonthly === priceId || config.priceYearly === priceId) {
+      return planKey;
+    }
+  }
   return null;
 }
