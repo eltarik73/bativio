@@ -34,6 +34,7 @@ const STEPS = [
 export default function Home() {
   const [villeFilter, setVilleFilter] = useState("");
   const [villeLabel, setVilleLabel] = useState("");
+  const [villeCoords, setVilleCoords] = useState<{ lat: number; lon: number } | null>(null);
   const [locating, setLocating] = useState(false);
   const [metierFilter, setMetierFilter] = useState("all");
   const [search, setSearch] = useState("");
@@ -44,6 +45,14 @@ export default function Home() {
     const slug = commune.slug || commune.nom.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
     setVilleFilter(slug);
     setVilleLabel(commune.nom);
+    if (commune.latitude && commune.longitude) {
+      setVilleCoords({ lat: commune.latitude, lon: commune.longitude });
+      // Fetch artisans by proximity
+      fetch(`/api/v1/public/artisans?lat=${commune.latitude}&lon=${commune.longitude}&radius=30&size=100`)
+        .then(r => r.json())
+        .then(d => { if (d.data?.content?.length > 0) setAllArtisans(d.data.content); })
+        .catch(() => {});
+    }
   };
 
   const handleLocate = () => {
@@ -91,8 +100,11 @@ export default function Home() {
   }, []);
 
   const filtered = allArtisans.filter((a) => {
-    const vs = (a.ville || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
-    if (villeFilter && (!a.ville || vs !== villeFilter)) return false;
+    // If we have coords, the API already filtered by proximity — don't filter by slug
+    if (villeFilter && !villeCoords) {
+      const vs = (a.ville || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
+      if (!a.ville || vs !== villeFilter) return false;
+    }
     if (metierFilter !== "all") {
       if (!a.metierNom) return false;
       const ms = (a.metierNom || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, "");
@@ -144,7 +156,7 @@ export default function Home() {
               {locating ? "Localisation..." : "Me localiser"}
             </button>
             {villeFilter && (
-              <button onClick={() => { setVilleFilter(""); setVilleLabel(""); }} style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 13, color: "var(--pierre)", background: "none", border: "none", cursor: "pointer", fontFamily: "'Karla',sans-serif" }}>
+              <button onClick={() => { setVilleFilter(""); setVilleLabel(""); setVilleCoords(null); getArtisans({ size: 100 }).then(p => { if (p.content?.length) setAllArtisans(p.content); }).catch(() => {}); }} style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 13, color: "var(--pierre)", background: "none", border: "none", cursor: "pointer", fontFamily: "'Karla',sans-serif" }}>
                 <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" /></svg>
                 Toutes les villes
               </button>

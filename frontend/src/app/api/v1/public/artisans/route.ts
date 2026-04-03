@@ -78,18 +78,27 @@ export async function GET(request: NextRequest) {
 
     const totalPages = Math.ceil(totalElements / size);
 
-    // If geo coordinates provided, calculate distance and sort
+    // If geo coordinates provided, calculate distance and filter by proximity
+    // An artisan matches if:
+    // 1. The client is within the artisan's zone d'intervention (zoneRayonKm from artisan)
+    // 2. OR the artisan is within the search radius from the client
+    // 3. OR the artisan has no coordinates (include them, don't exclude)
     let sortedArtisans = artisans;
     if (lat && lon) {
       sortedArtisans = artisans
-        .map((a) => ({
-          ...a,
-          _distance: a.latitude && a.longitude
+        .map((a) => {
+          const dist = a.latitude && a.longitude
             ? haversine(lat, lon, a.latitude, a.longitude)
-            : 9999,
-        }))
-        .filter((a) => a._distance <= radius)
-        .sort((a, b) => a._distance - b._distance);
+            : null;
+          return { ...a, _distance: dist };
+        })
+        .filter((a) => {
+          if (a._distance === null) return true; // No coords → include (don't punish)
+          const artisanZone = a.zoneRayonKm || 25; // Default 25km
+          // Include if client is within artisan's zone OR artisan is within search radius
+          return a._distance <= Math.max(radius, artisanZone);
+        })
+        .sort((a, b) => (a._distance ?? 999) - (b._distance ?? 999));
     }
 
     const content = sortedArtisans.map((a) => ({
