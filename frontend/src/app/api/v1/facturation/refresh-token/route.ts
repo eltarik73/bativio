@@ -3,6 +3,14 @@ import { requireAuth } from "@/lib/auth-server";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { SignJWT } from "jose";
 
+// Invoquo embed uses EMBED_JWT_SECRET (not JWT_SECRET)
+// Token must have: sub=tenantId, siret, type="embed", modules=[]
+
+const ALL_MODULES = [
+  "dashboard", "invoices", "received", "quotes",
+  "clients", "reporting", "export", "compliance", "settings",
+];
+
 export async function GET() {
   try {
     const session = await requireAuth();
@@ -14,21 +22,17 @@ export async function GET() {
 
     const siret = artisan.invoquoSiret || artisan.siret || "";
 
-    // Sign a fresh token with INVOQUO_JWT_SECRET for the embed iframe
-    const invoquoSecret = process.env.INVOQUO_JWT_SECRET;
-    if (!invoquoSecret) {
-      console.error("[FACTURATION] INVOQUO_JWT_SECRET not configured");
+    const embedSecret = process.env.EMBED_JWT_SECRET;
+    if (!embedSecret) {
+      console.error("[FACTURATION] EMBED_JWT_SECRET not configured");
       return apiError("Configuration facturation manquante", 500);
     }
 
-    const secret = new TextEncoder().encode(invoquoSecret);
-
-    // First, get the Invoquo user/tenant IDs by logging in
+    // Get the Invoquo tenant ID by logging in
     const invoquoEmail = `bativio-${artisan.id}@bativio.fr`;
     const invoquoPassword = artisan.invoquoApiKey || "";
 
-    let invoquoUserId = artisan.id;
-    let tenantId = artisan.id;
+    let tenantId = artisan.id; // fallback
 
     try {
       const loginRes = await fetch("https://invoquo.vercel.app/api/auth/login", {
@@ -39,29 +43,29 @@ export async function GET() {
       });
 
       if (loginRes.ok) {
-        // Extract IDs from the login cookie token
         const setCookieHeader = loginRes.headers.get("set-cookie") || "";
         const tokenMatch = setCookieHeader.match(/invoquo-session=([^;]+)/);
         if (tokenMatch?.[1]) {
           try {
             const parts = tokenMatch[1].split(".");
             const payload = JSON.parse(Buffer.from(parts[1], "base64url").toString());
-            invoquoUserId = payload.sub || invoquoUserId;
             tenantId = payload.tenantId || tenantId;
-          } catch { /* use defaults */ }
+          } catch { /* use fallback */ }
         }
       }
-    } catch { /* use defaults */ }
+    } catch { /* use fallback */ }
 
-    // Sign the token with Invoquo's secret — same claims as Invoquo generates
+    // Sign embed token with EMBED_JWT_SECRET — must match Invoquo's verifyEmbedToken()
+    const secret = new TextEncoder().encode(embedSecret);
     const token = await new SignJWT({
-      sub: invoquoUserId,
-      role: "user",
-      tenantId: tenantId,
+      sub: tenantId,
+      siret,
+      type: "embed",
+      modules: ALL_MODULES,
     })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
-      .setExpirationTime("7d")
+      .setExpirationTime("1h")
       .sign(secret);
 
     return apiSuccess({ token, siret });
