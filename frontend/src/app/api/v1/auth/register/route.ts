@@ -13,6 +13,9 @@ const registerSchema = z.object({
   telephone: z.string().optional(),
   metierId: z.string().optional(),
   ville: z.string().optional(),
+  codeInsee: z.string().optional(),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
   zoneRayonKm: z.number().int().min(5).max(80).optional(),
 });
 
@@ -58,6 +61,9 @@ export async function POST(request: NextRequest) {
     const siret = data.siret;
     const { metierId, zoneRayonKm } = data;
     const ville = data.ville ? stripHtml(data.ville) : undefined;
+    const latitude = typeof data.latitude === "number" ? data.latitude : undefined;
+    const longitude = typeof data.longitude === "number" ? data.longitude : undefined;
+    const codeInsee = typeof data.codeInsee === "string" ? data.codeInsee : undefined;
 
     // Check for duplicates: email, siret, telephone
     const existingEmail = await prisma.user.findUnique({ where: { email } });
@@ -157,6 +163,9 @@ export async function POST(request: NextRequest) {
           telephone,
           metierId: resolvedMetierId,
           ville: ville || null,
+          codeInsee: codeInsee || null,
+          latitude: latitude ?? null,
+          longitude: longitude ?? null,
           zoneRayonKm: zoneRayonKm ?? 15,
           slug,
           actif: false,

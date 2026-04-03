@@ -38,6 +38,7 @@ export default function InscriptionPage() {
   const [form, setForm] = useState({
     siret: "", raisonSociale: "", adresse: "", codePostal: "", codeNaf: "",
     email: "", telephone: "", password: "", nomAffichage: "", metierId: "", metierNom: "", ville: "",
+    codeInsee: "", latitude: "", longitude: "",
   });
 
   const update = (f: string, v: string) => setForm((p) => ({ ...p, [f]: v }));
@@ -146,6 +147,9 @@ export default function InscriptionPage() {
         telephone: form.telephone,
         metierId: form.metierId || undefined,
         ville: form.ville || undefined,
+        codeInsee: form.codeInsee || undefined,
+        latitude: form.latitude ? parseFloat(form.latitude) : undefined,
+        longitude: form.longitude ? parseFloat(form.longitude) : undefined,
         zoneRayonKm: 25,
       }),
     });
@@ -440,6 +444,9 @@ export default function InscriptionPage() {
                     onSelect={(commune) => {
                       update("ville", commune.nom);
                       update("codePostal", commune.codesPostaux[0] || "");
+                      update("codeInsee", commune.codeInsee || "");
+                      update("latitude", String(commune.latitude || ""));
+                      update("longitude", String(commune.longitude || ""));
                       setError("");
                     }}
                     defaultValue={form.ville}

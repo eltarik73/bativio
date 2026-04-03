@@ -8,6 +8,9 @@ export async function GET(request: NextRequest) {
     const ville = searchParams.get("ville");
     const metier = searchParams.get("metier");
     const search = searchParams.get("search");
+    const lat = searchParams.get("lat") ? parseFloat(searchParams.get("lat")!) : null;
+    const lon = searchParams.get("lon") ? parseFloat(searchParams.get("lon")!) : null;
+    const radius = searchParams.get("radius") ? parseFloat(searchParams.get("radius")!) : 30;
     const page = parseInt(searchParams.get("page") || "0", 10);
     const size = parseInt(searchParams.get("size") || "20", 10);
 
@@ -75,7 +78,21 @@ export async function GET(request: NextRequest) {
 
     const totalPages = Math.ceil(totalElements / size);
 
-    const content = artisans.map((a) => ({
+    // If geo coordinates provided, calculate distance and sort
+    let sortedArtisans = artisans;
+    if (lat && lon) {
+      sortedArtisans = artisans
+        .map((a) => ({
+          ...a,
+          _distance: a.latitude && a.longitude
+            ? haversine(lat, lon, a.latitude, a.longitude)
+            : 9999,
+        }))
+        .filter((a) => a._distance <= radius)
+        .sort((a, b) => a._distance - b._distance);
+    }
+
+    const content = sortedArtisans.map((a) => ({
       id: a.id,
       nomAffichage: a.nomAffichage,
       slug: a.slug,
@@ -86,6 +103,7 @@ export async function GET(request: NextRequest) {
       nombreAvis: a.nombreAvis,
       experienceAnnees: a.experienceAnnees,
       plan: a.plan,
+      distance: (a as unknown as { _distance?: number })._distance ?? null,
       metierNom: a.metier?.nom ?? null,
       metierSlug: a.metier?.slug ?? null,
       metierIcone: a.metier?.icone ?? null,
@@ -116,4 +134,15 @@ export async function GET(request: NextRequest) {
     console.error("GET /api/v1/public/artisans error:", error);
     return apiError("Erreur interne du serveur", 500);
   }
+}
+
+// Haversine formula — distance in km between 2 GPS points
+function haversine(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
