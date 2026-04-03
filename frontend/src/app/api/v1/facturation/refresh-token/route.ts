@@ -12,68 +12,37 @@ export async function GET() {
     if (!artisan?.invoquoEnabled) return apiError("Facturation non activée", 400);
 
     const siret = artisan.invoquoSiret || artisan.siret || "";
-    const invoquoEmail = `bativio-${artisan.id}@bativio.fr`;
-    const invoquoPassword = artisan.invoquoApiKey || "";
+    const apiKey = artisan.invoquoApiKey || "";
 
-    // Step 1: Login to Invoquo to get a session cookie
-    const loginRes = await fetch("https://invoquo.vercel.app/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: invoquoEmail, password: invoquoPassword }),
-      redirect: "manual",
-    });
-
-    if (!loginRes.ok) {
-      console.error("[FACTURATION] Invoquo login failed:", loginRes.status);
-      return apiError("Connexion facturation impossible", 502);
+    if (!apiKey) {
+      return apiError("API key facturation non configurée", 500);
     }
 
-    // Extract session cookie
-    const setCookieHeader = loginRes.headers.get("set-cookie") || "";
-    const cookieMatch = setCookieHeader.match(/invoquo-session=([^;]+)/);
-    const sessionCookie = cookieMatch?.[1] || "";
+    // Call Invoquo's official embed-tokens API with the tenant's API key
+    const embedRes = await fetch("https://invoquo.vercel.app/api/v1/embed-tokens", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+      },
+      body: JSON.stringify({
+        siret,
+        modules: ["dashboard", "invoices", "received", "quotes", "clients", "reporting", "export", "compliance", "settings"],
+      }),
+    });
 
-    if (!sessionCookie) {
-      console.error("[FACTURATION] No session cookie from Invoquo login");
+    if (!embedRes.ok) {
+      console.error("[FACTURATION] Invoquo embed-tokens failed:", embedRes.status);
+      return apiError("Impossible de générer le token facturation", 502);
+    }
+
+    const embedData = await embedRes.json();
+    if (!embedData.success || !embedData.data?.token) {
+      console.error("[FACTURATION] No token in embed response:", embedData);
       return apiError("Token facturation introuvable", 502);
     }
 
-    // Step 2: Use the session cookie to call the embed-tokens API
-    // First, get the tenant's API key
-    const meRes = await fetch("https://invoquo.vercel.app/api/auth/me", {
-      headers: { Cookie: `invoquo-session=${sessionCookie}` },
-    });
-
-    let apiKey = "";
-    if (meRes.ok) {
-      const meData = await meRes.json();
-      apiKey = meData.data?.tenant?.apiKey || "";
-    }
-
-    if (apiKey) {
-      // Use the official embed-tokens endpoint
-      const embedRes = await fetch("https://invoquo.vercel.app/api/v1/embed-tokens", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": apiKey,
-        },
-        body: JSON.stringify({
-          siret,
-          modules: ["dashboard", "invoices", "received", "quotes", "clients", "reporting", "export", "compliance", "settings"],
-        }),
-      });
-
-      if (embedRes.ok) {
-        const embedData = await embedRes.json();
-        if (embedData.success && embedData.data?.token) {
-          return apiSuccess({ token: embedData.data.token, siret });
-        }
-      }
-    }
-
-    // Fallback: use the session cookie token directly (middleware accepts it)
-    return apiSuccess({ token: sessionCookie, siret });
+    return apiSuccess({ token: embedData.data.token, siret });
   } catch (error: unknown) {
     const err = error as Error;
     if (err.message === "UNAUTHORIZED") return apiError("Non autorisé", 401);
