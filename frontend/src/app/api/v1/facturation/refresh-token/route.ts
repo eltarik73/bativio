@@ -1,15 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth-server";
 import { apiSuccess, apiError } from "@/lib/api-response";
-import { SignJWT } from "jose";
-
-// Invoquo embed uses EMBED_JWT_SECRET (not JWT_SECRET)
-// Token must have: sub=tenantId, siret, type="embed", modules=[]
-
-const ALL_MODULES = [
-  "dashboard", "invoices", "received", "quotes",
-  "clients", "reporting", "export", "compliance", "settings",
-];
 
 export async function GET() {
   try {
@@ -21,58 +12,72 @@ export async function GET() {
     if (!artisan?.invoquoEnabled) return apiError("Facturation non activée", 400);
 
     const siret = artisan.invoquoSiret || artisan.siret || "";
-
-    const embedSecret = process.env.EMBED_JWT_SECRET;
-    if (!embedSecret) {
-      console.error("[FACTURATION] EMBED_JWT_SECRET not configured");
-      return apiError("Configuration facturation manquante", 500);
-    }
-
-    // Get the Invoquo tenant ID by logging in
     const invoquoEmail = `bativio-${artisan.id}@bativio.fr`;
     const invoquoPassword = artisan.invoquoApiKey || "";
 
-    let tenantId = artisan.id; // fallback
+    // Step 1: Login to Invoquo to get a session cookie
+    const loginRes = await fetch("https://invoquo.vercel.app/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: invoquoEmail, password: invoquoPassword }),
+      redirect: "manual",
+    });
 
-    try {
-      const loginRes = await fetch("https://invoquo.vercel.app/api/auth/login", {
+    if (!loginRes.ok) {
+      console.error("[FACTURATION] Invoquo login failed:", loginRes.status);
+      return apiError("Connexion facturation impossible", 502);
+    }
+
+    // Extract session cookie
+    const setCookieHeader = loginRes.headers.get("set-cookie") || "";
+    const cookieMatch = setCookieHeader.match(/invoquo-session=([^;]+)/);
+    const sessionCookie = cookieMatch?.[1] || "";
+
+    if (!sessionCookie) {
+      console.error("[FACTURATION] No session cookie from Invoquo login");
+      return apiError("Token facturation introuvable", 502);
+    }
+
+    // Step 2: Use the session cookie to call the embed-tokens API
+    // First, get the tenant's API key
+    const meRes = await fetch("https://invoquo.vercel.app/api/auth/me", {
+      headers: { Cookie: `invoquo-session=${sessionCookie}` },
+    });
+
+    let apiKey = "";
+    if (meRes.ok) {
+      const meData = await meRes.json();
+      apiKey = meData.data?.tenant?.apiKey || "";
+    }
+
+    if (apiKey) {
+      // Use the official embed-tokens endpoint
+      const embedRes = await fetch("https://invoquo.vercel.app/api/v1/embed-tokens", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: invoquoEmail, password: invoquoPassword }),
-        redirect: "manual",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey,
+        },
+        body: JSON.stringify({
+          siret,
+          modules: ["dashboard", "invoices", "received", "quotes", "clients", "reporting", "export", "compliance", "settings"],
+        }),
       });
 
-      if (loginRes.ok) {
-        const setCookieHeader = loginRes.headers.get("set-cookie") || "";
-        const tokenMatch = setCookieHeader.match(/invoquo-session=([^;]+)/);
-        if (tokenMatch?.[1]) {
-          try {
-            const parts = tokenMatch[1].split(".");
-            const payload = JSON.parse(Buffer.from(parts[1], "base64url").toString());
-            tenantId = payload.tenantId || tenantId;
-          } catch { /* use fallback */ }
+      if (embedRes.ok) {
+        const embedData = await embedRes.json();
+        if (embedData.success && embedData.data?.token) {
+          return apiSuccess({ token: embedData.data.token, siret });
         }
       }
-    } catch { /* use fallback */ }
+    }
 
-    // Sign embed token with EMBED_JWT_SECRET — must match Invoquo's verifyEmbedToken()
-    const secret = new TextEncoder().encode(embedSecret);
-    const token = await new SignJWT({
-      sub: tenantId,
-      siret,
-      type: "embed",
-      modules: ALL_MODULES,
-    })
-      .setProtectedHeader({ alg: "HS256" })
-      .setIssuedAt()
-      .setExpirationTime("1h")
-      .sign(secret);
-
-    return apiSuccess({ token, siret });
+    // Fallback: use the session cookie token directly (middleware accepts it)
+    return apiSuccess({ token: sessionCookie, siret });
   } catch (error: unknown) {
     const err = error as Error;
     if (err.message === "UNAUTHORIZED") return apiError("Non autorisé", 401);
-    console.error("Facturation refresh-token error:", err);
+    console.error("[FACTURATION] refresh-token error:", err);
     return apiError("Erreur interne", 500);
   }
 }
