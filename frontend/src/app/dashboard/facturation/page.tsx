@@ -191,15 +191,42 @@ export default function FacturationPage() {
     );
   }
 
-  // Iframe Invoquo
-  const embedUrl = `https://invoquo.vercel.app/embed/${siret}/dashboard?token=${embedToken}&accent=C4531A`;
+  // Iframe Invoquo with module navigation
+  const [activeModule, setActiveModule] = useState("dashboard");
+  const modules = [
+    { key: "dashboard", label: "Tableau de bord", icon: "📊" },
+    { key: "invoices", label: "Factures", icon: "📄" },
+    { key: "quotes", label: "Devis", icon: "📋" },
+    { key: "clients", label: "Clients", icon: "👥" },
+  ];
+  const embedUrl = `https://invoquo.vercel.app/embed/${siret}/${activeModule}?token=${embedToken}&accent=C4531A`;
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "calc(100vh - 64px)" }}>
+    <div style={{ width: "100%", height: "calc(100vh - 64px)", display: "flex", flexDirection: "column" }}>
+      {/* Module tabs */}
+      <div style={{ display: "flex", gap: 0, borderBottom: "1px solid var(--sable,#E8D5C0)", background: "var(--blanc,#fff)", flexShrink: 0, padding: "0 8px" }}>
+        {modules.map((m) => (
+          <button
+            key={m.key}
+            onClick={() => setActiveModule(m.key)}
+            style={{
+              padding: "10px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer",
+              background: "none", border: "none", fontFamily: "'Karla',sans-serif",
+              borderBottom: activeModule === m.key ? "2px solid var(--terre,#C4531A)" : "2px solid transparent",
+              color: activeModule === m.key ? "var(--terre,#C4531A)" : "var(--pierre,#9C958D)",
+              display: "flex", alignItems: "center", gap: 6, transition: "all .15s",
+            }}
+          >
+            <span style={{ fontSize: 15 }}>{m.icon}</span>
+            {m.label}
+          </button>
+        ))}
+      </div>
+      {/* Iframe */}
       <iframe
         ref={iframeRef}
         src={embedUrl}
-        style={{ width: "100%", height: "100%", border: "none" }}
+        style={{ flex: 1, width: "100%", border: "none" }}
         allow="clipboard-write"
         title="Facturation"
       />
