@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { hasFeature } from "@/lib/plans";
 import type { PlanType } from "@/lib/plans";
@@ -9,18 +10,34 @@ import { LayoutGrid, Receipt, FileSignature, Users2, FileText, ShieldCheck, Zap,
 
 const INVOQUO_URL = process.env.NEXT_PUBLIC_INVOQUO_URL || "https://invoquo.vercel.app";
 
+const TAB_TO_MODULE: Record<string, string> = {
+  factures: "invoices",
+  devis: "quotes",
+  clients: "clients",
+};
+
 export default function FacturationPage() {
   const { user, fetchWithAuth } = useAuth();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const initialModule = (tabParam && TAB_TO_MODULE[tabParam]) || "dashboard";
+
   const [state, setState] = useState<"loading" | "upsell" | "onboarding" | "iframe" | "error">("loading");
   const [embedToken, setEmbedToken] = useState("");
   const [siret, setSiret] = useState("");
   const [activating, setActivating] = useState(false);
-  const [activeModule, setActiveModule] = useState("dashboard");
+  const [activeModule, setActiveModule] = useState(initialModule);
   const [allowedModules, setAllowedModules] = useState<string[]>([]);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const plan = ((user?.plan as string) || "GRATUIT") as PlanType;
   const hasReception = hasFeature(plan, "invoquo_reception");
+
+  // Sync tab query param with active module
+  useEffect(() => {
+    const mod = (tabParam && TAB_TO_MODULE[tabParam]) || "dashboard";
+    setActiveModule(mod);
+  }, [tabParam]);
 
   useEffect(() => {
     if (!user) return;

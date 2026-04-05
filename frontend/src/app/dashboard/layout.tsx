@@ -16,7 +16,7 @@ const NAV: { href: string; label: string; icon: string; badge?: string; sep?: bo
   { href: "/dashboard/photos", label: "Mes photos", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>' },
   { href: "/dashboard/demandes", label: "Demandes", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>' },
   { href: "/dashboard/devis-ia", label: "Devis IA", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 008.5 14.063l-6.135-1.582a.5.5 0 010-.962L8.5 9.937A2 2 0 009.937 8.5l1.582-6.135a.5.5 0 01.962 0L14.063 8.5A2 2 0 0015.5 9.937l6.135 1.582a.5.5 0 010 .962L15.5 14.063a2 2 0 00-1.437 1.437l-1.582 6.135a.5.5 0 01-.962 0L9.937 15.5z"/><path d="M3.5 2v3M2 3.5h3M5 18v2.5M3.75 19.25h2.5"/></svg>', badge: "Business" },
-  { href: "/dashboard/facturation", label: "Facturation", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14h.01M13 14h2M9 18h.01M13 18h2"/></svg>' },
+  // Facturation sub-menu rendered separately in JSX
   { href: "/dashboard/rdv", label: "Mes RDV", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>' },
   // Séparateur avant paramètres et abonnement
   { href: "/dashboard/abonnement", label: "Mon abonnement", icon: ICON_STAR, sep: true },
@@ -101,8 +101,32 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <nav style={{ flex: 1, minHeight: 0, overflowY: "auto", display: "flex", flexDirection: "column", gap: 2, padding: "0 12px" }}>
             {NAV.map((item) => {
               const active = p === item.href;
+              // Insert Facturation sub-menu before RDV
+              const showFactuSub = item.href === "/dashboard/rdv";
               return (
                 <div key={item.href}>
+                  {showFactuSub && (
+                    <>
+                      <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: "#8A8A8E", padding: "14px 16px 4px", marginTop: 4 }}>Facturation</div>
+                      {[
+                        { href: "/dashboard/facturation", query: "", label: "Tableau de bord", icon: '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>' },
+                        { href: "/dashboard/facturation?tab=factures", query: "factures", label: "Factures", icon: '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>' },
+                        { href: "/dashboard/facturation?tab=devis", query: "devis", label: "Devis", icon: '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6M9 15l3 3 3-3"/></svg>' },
+                        { href: "/dashboard/facturation?tab=clients", query: "clients", label: "Clients", icon: '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>' },
+                      ].map((sub) => {
+                        const isFactuActive = p === "/dashboard/facturation" && (
+                          (!sub.query && !new URLSearchParams(typeof window !== "undefined" ? window.location.search : "").get("tab")) ||
+                          new URLSearchParams(typeof window !== "undefined" ? window.location.search : "").get("tab") === sub.query
+                        );
+                        return (
+                          <Link key={sub.href} href={sub.href} prefetch={false} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 14px 8px 42px", borderRadius: 8, fontSize: 13, fontWeight: isFactuActive ? 600 : 500, color: isFactuActive ? "#C4531A" : "#6B6560", background: isFactuActive ? "rgba(196,83,26,.08)" : "transparent", textDecoration: "none", transition: "all .15s" }}>
+                            <span dangerouslySetInnerHTML={{ __html: sub.icon }} style={{ display: "flex", flexShrink: 0, width: 18, height: 18, opacity: isFactuActive ? 1 : 0.6 }} />
+                            {sub.label}
+                          </Link>
+                        );
+                      })}
+                    </>
+                  )}
                   {item.sep && <div style={{ height: 1, background: "#F7F5F2", margin: "14px 8px" }} />}
                   <Link href={item.href} prefetch={false} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", borderRadius: 10, fontSize: 14, fontWeight: active ? 600 : 500, color: active ? "#C4531A" : "#6B6560", background: active ? "rgba(196,83,26,.08)" : "transparent", textDecoration: "none", transition: "all .15s" }}>
                     <span dangerouslySetInnerHTML={{ __html: item.icon }} style={{ display: "flex", flexShrink: 0, width: 20, height: 20 }} />
