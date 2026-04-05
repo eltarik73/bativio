@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { sendEmail } from "@/lib/email";
 import { sendSmsWithQuota, smsTemplates } from "@/lib/sms";
+import { getEffectivePlan } from "@/lib/plan-gates";
 import { z } from "zod";
 import crypto from "crypto";
 
@@ -105,7 +106,7 @@ export async function POST(
     if (urgence === "urgent" && artisan.telephone) {
       await sendSmsWithQuota({
         artisanId: artisan.id,
-        artisanPlan: artisan.plan,
+        artisanPlan: getEffectivePlan(artisan).toUpperCase(),
         to: artisan.telephone,
         content: smsTemplates.nouveauDevisUrgent(nomClient),
         artisanEmail: artisan.user.email,
