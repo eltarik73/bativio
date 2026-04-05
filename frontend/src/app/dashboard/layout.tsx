@@ -104,7 +104,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               return (
                 <div key={item.href}>
                   {item.sep && <div style={{ height: 1, background: "#F7F5F2", margin: "14px 8px" }} />}
-                  <Link href={item.href} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", borderRadius: 10, fontSize: 14, fontWeight: active ? 600 : 500, color: active ? "#C4531A" : "#6B6560", background: active ? "rgba(196,83,26,.08)" : "transparent", textDecoration: "none", transition: "all .15s" }}>
+                  <Link href={item.href} prefetch={false} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", borderRadius: 10, fontSize: 14, fontWeight: active ? 600 : 500, color: active ? "#C4531A" : "#6B6560", background: active ? "rgba(196,83,26,.08)" : "transparent", textDecoration: "none", transition: "all .15s" }}>
                     <span dangerouslySetInnerHTML={{ __html: item.icon }} style={{ display: "flex", flexShrink: 0, width: 20, height: 20 }} />
                     {item.label}
                     {item.badge && <span style={{ marginLeft: "auto", fontSize: 10, fontWeight: 600, padding: "3px 10px", borderRadius: 6, background: "rgba(196,83,26,.06)", color: "#C4531A", letterSpacing: 0.2 }}>{item.badge}</span>}
@@ -158,7 +158,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Mobile nav — safe area aware */}
         <nav style={{ position: "fixed", bottom: 0, left: 0, right: 0, paddingBottom: "env(safe-area-inset-bottom, 0px)", height: "calc(60px + env(safe-area-inset-bottom, 0px))", background: "rgba(255,255,255,.96)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderTop: "1.5px solid #EDEBE7", zIndex: 50 }} className="flex md:!hidden">
           {MOB.map((item) => (
-            <Link key={item.href} href={item.href} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, fontSize: 10, fontWeight: p === item.href ? 600 : 500, color: p === item.href ? "#C4531A" : "#9B9590", textDecoration: "none", transition: "color .15s" }}>
+            <Link key={item.href} href={item.href} prefetch={false} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, fontSize: 10, fontWeight: p === item.href ? 600 : 500, color: p === item.href ? "#C4531A" : "#9B9590", textDecoration: "none", transition: "color .15s" }}>
               <span dangerouslySetInnerHTML={{ __html: item.icon }} style={{ display: "flex" }} />
               {item.label}
             </Link>
@@ -197,7 +197,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   { href: "/dashboard/abonnement", label: "Mon abonnement" },
                   { href: "/dashboard/parametres", label: "Param\u00e8tres" },
                 ].map((l) => (
-                  <Link key={l.href} href={l.href} onClick={() => setMobileMenuOpen(false)} style={{ display: "block", padding: "12px 4px", fontSize: 15, fontWeight: 500, color: "var(--bois,#3D2E1F)", textDecoration: "none", borderBottom: "1px solid var(--sable-light,#F2EAE0)" }}>
+                  <Link key={l.href} href={l.href} prefetch={false} onClick={() => setMobileMenuOpen(false)} style={{ display: "block", padding: "12px 4px", fontSize: 15, fontWeight: 500, color: "var(--bois,#3D2E1F)", textDecoration: "none", borderBottom: "1px solid var(--sable-light,#F2EAE0)" }}>
                     {l.label}
                   </Link>
                 ))}
