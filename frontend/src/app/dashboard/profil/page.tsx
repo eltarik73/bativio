@@ -61,7 +61,7 @@ export default function ProfilPage() {
           nomAffichage: user.nomAffichage || "",
           description: (user.description as string) || "",
           telephone: (user.telephone as string) || "",
-          adresse: (user.ville as string) || "",
+          adresse: (user.adresse as string) || "",
           ville: (user.ville as string) || "",
           codePostal: "",
           experienceAnnees: "",
