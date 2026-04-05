@@ -8,6 +8,8 @@ import { getVille, getMetiers } from "@/lib/api";
 import type { ArtisanPublic, MetierData } from "@/lib/api";
 import { VILLES } from "@/lib/constants";
 import VilleClient from "./VilleClient";
+import { prisma } from "@/lib/prisma";
+import MetierVilleListing from "./MetierVilleListing";
 
 export const revalidate = 3600;
 
@@ -17,12 +19,40 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ ville: string }> }): Promise<Metadata> {
   const { ville: villeSlug } = await params;
+
+  // Check if this is a metier-ville composite slug
+  const knownVille = VILLES.find((v) => v.slug === villeSlug);
+  if (!knownVille) {
+    // Try metier-ville lookup
+    const match = await prisma.artisan.findFirst({
+      where: { actif: true, deletedAt: null, metierSlugSeo: { not: null }, villeSlug: { not: null } },
+      select: { metierSlugSeo: true, villeSlug: true, ville: true, metier: { select: { nom: true } } },
+    }).then(async () => {
+      const combos = await prisma.artisan.findMany({
+        where: { actif: true, deletedAt: null, metierSlugSeo: { not: null }, villeSlug: { not: null } },
+        select: { metierSlugSeo: true, villeSlug: true, ville: true, metier: { select: { nom: true } } },
+        distinct: ["metierSlugSeo", "villeSlug"],
+      });
+      for (const c of combos) {
+        if (c.metierSlugSeo && c.villeSlug && `${c.metierSlugSeo}-${c.villeSlug}` === villeSlug) return c;
+      }
+      return null;
+    });
+
+    if (match) {
+      const metierName = match.metier?.nom || match.metierSlugSeo || "";
+      const villeName = match.ville || match.villeSlug || "";
+      const title = `${metierName} à ${villeName} — Devis gratuit | Bativio`;
+      const description = `Trouvez les meilleurs ${metierName.toLowerCase()}s à ${villeName}. Comparez les artisans, demandez un devis gratuit.`;
+      return { title, description, alternates: { canonical: `https://www.bativio.fr/${villeSlug}` }, openGraph: { title, description, url: `https://www.bativio.fr/${villeSlug}` } };
+    }
+  }
+
   let nom = villeSlug;
   let seoTitle = "";
   let seoDesc = "";
   try {
     const data = await getVille(villeSlug);
-    // getVille returns { ville: {...}, artisans: [...] } or { nom, slug, ... }
     const villeObj = (data as unknown as Record<string, unknown>).ville as Record<string, unknown> || data;
     nom = (villeObj.nom as string) || (data.nom as string) || villeSlug;
     seoTitle = (villeObj.seoTitle as string) || "";
@@ -66,9 +96,35 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
     if (metiersData && metiersData.length > 0) metiers = metiersData;
   } catch { /* fallback mock */ }
 
-  // If this slug is not a known city and no artisans found, return 404
+  // If this slug is not a known city, check if it's a metier-ville composite slug
   const knownVille = VILLES.find((v) => v.slug === villeSlug);
   if (!knownVille && artisans.length === 0) {
+    // Try to find a metier-ville match: e.g. "reparation-mobile-chambery"
+    const metierVilleMatch = await prisma.artisan.findFirst({
+      where: {
+        actif: true,
+        deletedAt: null,
+      },
+      select: { metierSlugSeo: true, villeSlug: true, ville: true, metier: { select: { nom: true } } },
+    }).then(async () => {
+      // Find all unique metierSlugSeo-villeSlug combinations
+      const combos = await prisma.artisan.findMany({
+        where: { actif: true, deletedAt: null, metierSlugSeo: { not: null }, villeSlug: { not: null } },
+        select: { metierSlugSeo: true, villeSlug: true, ville: true, metier: { select: { nom: true } } },
+        distinct: ["metierSlugSeo", "villeSlug"],
+      });
+      for (const c of combos) {
+        if (c.metierSlugSeo && c.villeSlug && `${c.metierSlugSeo}-${c.villeSlug}` === villeSlug) {
+          return { metierSlug: c.metierSlugSeo, villeSlug: c.villeSlug, metierDisplay: c.metier?.nom || c.metierSlugSeo, villeDisplay: c.ville || c.villeSlug };
+        }
+      }
+      return null;
+    });
+
+    if (metierVilleMatch) {
+      return <MetierVilleListing {...metierVilleMatch} />;
+    }
+
     notFound();
   }
 
