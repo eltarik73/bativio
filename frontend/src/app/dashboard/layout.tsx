@@ -191,9 +191,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <div style={{ padding: "12px 0", display: "flex", flexDirection: "column", gap: 4 }}>
                 {[
                   { href: "/dashboard/demandes", label: "Demandes" },
-                  { href: "/dashboard/vitrine", label: "Ma vitrine" },
+                  { href: "/dashboard/agenda", label: "Agenda & RDV" },
                   { href: "/dashboard/facturation", label: "Facturation" },
-                  { href: "/dashboard/rdv", label: "Mes RDV" },
+                  { href: "/dashboard/devis-ia", label: "Devis IA" },
+                  { href: "/dashboard/vitrine", label: "Ma vitrine" },
+                  { href: "/dashboard/abonnement", label: "Mon abonnement" },
                   { href: "/dashboard/parametres", label: "Param\u00e8tres" },
                 ].map((l) => (
                   <Link key={l.href} href={l.href} onClick={() => setMobileMenuOpen(false)} style={{ display: "block", padding: "12px 4px", fontSize: 15, fontWeight: 500, color: "var(--bois,#3D2E1F)", textDecoration: "none", borderBottom: "1px solid var(--sable-light,#F2EAE0)" }}>
