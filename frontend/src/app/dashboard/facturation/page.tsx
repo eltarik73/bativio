@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { hasFeature } from "@/lib/plans";
 import type { PlanType } from "@/lib/plans";
@@ -64,6 +64,7 @@ function getInitials(name: string): string {
 function FacturationContent() {
   const { user, fetchWithAuth } = useAuth();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const tab = searchParams.get("tab") || "devis";
 
   const plan = ((user?.plan as string) || "GRATUIT") as PlanType;
@@ -75,6 +76,25 @@ function FacturationContent() {
   const [clients, setClients] = useState<InvClient[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [converting, setConverting] = useState<string | null>(null);
+
+  async function handleConvert(quoteId: string) {
+    if (!confirm("Convertir ce devis en facture ?")) return;
+    setConverting(quoteId);
+    try {
+      const res = await fetchWithAuth("/facturation/convert", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ quoteId }),
+      });
+      router.push("/dashboard/facturation?tab=factures");
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur conversion");
+    } finally {
+      setConverting(null);
+    }
+  }
 
   const inv = user as unknown as { invoquoEnabled?: boolean } | null;
 
@@ -164,10 +184,10 @@ function FacturationContent() {
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
         <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#3D2E1F" }}>Facturation</h1>
-        <a href={embedIframeUrl} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, background: "#C4531A", color: "#fff", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
+        <Link href={tab === "clients" ? embedIframeUrl : `/dashboard/facturation/nouveau?type=${tab === "factures" ? "facture" : "devis"}`} prefetch={false} {...(tab === "clients" ? { target: "_blank", rel: "noopener noreferrer" } : {})} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, background: "#C4531A", color: "#fff", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
           <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
           {tab === "factures" ? "Nouvelle facture" : tab === "clients" ? "Nouveau client" : "Nouveau devis"}
-        </a>
+        </Link>
       </div>
 
       {/* Tabs */}
@@ -247,7 +267,7 @@ function FacturationContent() {
       ) : (
         /* Documents table */
         docs.length === 0 ? (
-          <EmptyState type={tab === "factures" ? "facture" : "devis"} href={embedIframeUrl} />
+          <EmptyState type={tab === "factures" ? "facture" : "devis"} href={`/dashboard/facturation/nouveau?type=${tab === "factures" ? "facture" : "devis"}`} />
         ) : (
           <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #E8D5C0", overflow: "hidden" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
@@ -258,6 +278,7 @@ function FacturationContent() {
                   <th style={thStyle}>Date</th>
                   <th style={{ ...thStyle, textAlign: "right" }}>Montant TTC</th>
                   <th style={{ ...thStyle, textAlign: "right" }}>Statut</th>
+                  {tab === "devis" && <th style={{ ...thStyle, textAlign: "right" }}></th>}
                 </tr>
               </thead>
               <tbody>
@@ -280,6 +301,20 @@ function FacturationContent() {
                       <td style={{ ...tdStyle, textAlign: "right" }}>
                         <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 6, background: st.bg, color: st.color }}>{st.label}</span>
                       </td>
+                      {tab === "devis" && (
+                        <td style={{ ...tdStyle, textAlign: "right" }}>
+                          {d.status !== "expired" && (
+                            <button
+                              onClick={() => handleConvert(d.id)}
+                              disabled={converting === d.id}
+                              title="Convertir en facture"
+                              style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #1C1C1E", background: converting === d.id ? "#6b7280" : "#1C1C1E", color: "#fff", fontSize: 11, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap", opacity: converting === d.id ? 0.6 : 1 }}
+                            >
+                              {converting === d.id ? "..." : "↗ Facture"}
+                            </button>
+                          )}
+                        </td>
+                      )}
                     </tr>
                   );
                 })}
@@ -303,10 +338,10 @@ function EmptyState({ type, href }: { type: string; href: string }) {
       </div>
       <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 17, fontWeight: 700, color: "#3D2E1F", marginBottom: 6 }}>Aucun {type} pour le moment</h3>
       <p style={{ fontSize: 13, color: "#9C958D", marginBottom: 20 }}>Cr&eacute;ez votre premier {type} en quelques clics</p>
-      <a href={href} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 20px", borderRadius: 10, background: "#C4531A", color: "#fff", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
+      <Link href={href} prefetch={false} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 20px", borderRadius: 10, background: "#C4531A", color: "#fff", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
         <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
         Cr&eacute;er un {type}
-      </a>
+      </Link>
     </div>
   );
 }
