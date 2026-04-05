@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth-server";
-import { apiSuccess, apiError } from "@/lib/api-response";
+import { apiSuccess, apiError, handleAuthError } from "@/lib/api-response";
+import { hasFeature } from "@/lib/plans";
+import type { PlanType } from "@/lib/plans";
 
 const INVOQUO_URL = process.env.INVOQUO_URL || "https://invoquo.vercel.app";
 const PROVISION_SECRET = process.env.PROVISION_SECRET;
@@ -20,6 +22,12 @@ export async function POST() {
       include: { user: { select: { email: true } } },
     });
     if (!artisan) return apiError("Artisan introuvable", 404);
+
+    // ── SERVER-SIDE PLAN CHECK ──
+    const plan = (artisan.plan || "GRATUIT") as PlanType;
+    if (!hasFeature(plan, "invoquo_reception")) {
+      return apiError("La facturation électronique est disponible à partir du plan Starter (19€/mois)", 403);
+    }
 
     // Already activated with a valid API key
     if (artisan.invoquoEnabled && artisan.invoquoApiKey?.startsWith("inv_")) {
@@ -139,9 +147,9 @@ export async function POST() {
 
     return apiSuccess({ message: "Facturation activée" });
   } catch (error: unknown) {
-    const err = error as Error;
-    if (err.message === "UNAUTHORIZED") return apiError("Non autorisé", 401);
-    console.error("[FACTURATION] Activate error:", err);
+    const authErr = handleAuthError(error);
+    if (authErr) return authErr;
+    console.error("[FACTURATION] Activate error:", error);
     return apiError("Erreur interne", 500);
   }
 }

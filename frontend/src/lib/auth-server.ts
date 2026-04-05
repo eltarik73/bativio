@@ -56,6 +56,28 @@ export async function requireAdmin() {
   return session;
 }
 
+/**
+ * Require authenticated artisan with a specific plan feature.
+ * Throws UNAUTHORIZED, ARTISAN_NOT_FOUND, or PLAN_REQUIRED:{feature}.
+ */
+export async function requireFeature(feature: import("@/lib/plans").FeatureKey) {
+  const session = await requireAuth();
+  const { prisma } = await import("@/lib/prisma");
+  const { hasFeature } = await import("@/lib/plans");
+
+  const artisan = await prisma.artisan.findUnique({
+    where: { userId: session.userId },
+  });
+  if (!artisan) throw new Error("ARTISAN_NOT_FOUND");
+
+  const plan = (artisan.plan || "GRATUIT") as import("@/lib/plans").PlanType;
+  if (!hasFeature(plan, feature)) {
+    throw new Error(`PLAN_REQUIRED:${feature}`);
+  }
+
+  return { session, artisan, plan };
+}
+
 export async function clearAuthCookie() {
   const cookieStore = await cookies();
   cookieStore.delete(COOKIE_NAME);

@@ -15,6 +15,7 @@ export default function FacturationPage() {
   const [siret, setSiret] = useState("");
   const [activating, setActivating] = useState(false);
   const [activeModule, setActiveModule] = useState("dashboard");
+  const [allowedModules, setAllowedModules] = useState<string[]>([]);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const plan = ((user?.plan as string) || "GRATUIT") as PlanType;
@@ -22,7 +23,6 @@ export default function FacturationPage() {
 
   useEffect(() => {
     if (!user) return;
-    // Si le plan ne donne pas acces a la facturation → upsell
     if (!hasReception) {
       setState("upsell");
       return;
@@ -35,8 +35,9 @@ export default function FacturationPage() {
     setSiret(inv.invoquoSiret || inv.siret || "");
     fetchWithAuth("/facturation/refresh-token")
       .then((data) => {
-        const d = data as { token: string };
+        const d = data as { token: string; modules?: string[] };
         setEmbedToken(d.token);
+        if (d.modules) setAllowedModules(d.modules);
         setState("iframe");
       })
       .catch(() => setState("error"));
@@ -193,13 +194,16 @@ export default function FacturationPage() {
     );
   }
 
-  // Iframe Invoquo with module navigation
-  const modules = [
+  // Iframe Invoquo with module navigation — only show tabs the plan allows
+  const allModules = [
     { key: "dashboard", label: "Tableau de bord", icon: "📊" },
     { key: "invoices", label: "Factures", icon: "📄" },
     { key: "quotes", label: "Devis", icon: "📋" },
     { key: "clients", label: "Clients", icon: "👥" },
   ];
+  const modules = allowedModules.length > 0
+    ? allModules.filter((m) => allowedModules.includes(m.key))
+    : allModules.filter((m) => m.key === "dashboard" || m.key === "clients");
   const embedUrl = `${INVOQUO_URL}/embed/${siret}/${activeModule}?token=${embedToken}&accent=C4531A`;
 
   return (

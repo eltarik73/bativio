@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { requireAuth } from "@/lib/auth-server";
-import { apiSuccess, apiError } from "@/lib/api-response";
+import { requireFeature } from "@/lib/auth-server";
+import { apiSuccess, apiError, handleAuthError } from "@/lib/api-response";
 import { JourSemaine } from "@prisma/client";
 
 const JOUR_ORDER: JourSemaine[] = [
@@ -16,12 +16,7 @@ const JOUR_ORDER: JourSemaine[] = [
 
 export async function GET() {
   try {
-    const session = await requireAuth();
-
-    const artisan = await prisma.artisan.findUnique({
-      where: { userId: session.userId },
-    });
-    if (!artisan) return apiError("Artisan non trouve", 404);
+    const { artisan } = await requireFeature("agenda");
 
     const disponibilites = await prisma.disponibiliteHebdo.findMany({
       where: { artisanId: artisan.id },
@@ -35,8 +30,8 @@ export async function GET() {
 
     return apiSuccess(disponibilites);
   } catch (e: unknown) {
-    if (e instanceof Error && e.message === "UNAUTHORIZED")
-      return apiError("Non autorise", 401);
+    const authErr = handleAuthError(e);
+    if (authErr) return authErr;
     console.error("GET disponibilites error:", e);
     return apiError("Erreur serveur", 500);
   }
@@ -44,12 +39,7 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    const session = await requireAuth();
-
-    const artisan = await prisma.artisan.findUnique({
-      where: { userId: session.userId },
-    });
-    if (!artisan) return apiError("Artisan non trouve", 404);
+    const { artisan } = await requireFeature("agenda");
 
     const body: Array<{
       jour: JourSemaine;
@@ -118,8 +108,8 @@ export async function PUT(request: NextRequest) {
 
     return apiSuccess(disponibilites);
   } catch (e: unknown) {
-    if (e instanceof Error && e.message === "UNAUTHORIZED")
-      return apiError("Non autorise", 401);
+    const authErr = handleAuthError(e);
+    if (authErr) return authErr;
     console.error("PUT disponibilites error:", e);
     return apiError("Erreur serveur", 500);
   }

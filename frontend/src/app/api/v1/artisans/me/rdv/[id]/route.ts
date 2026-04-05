@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { requireAuth } from "@/lib/auth-server";
-import { apiSuccess, apiError } from "@/lib/api-response";
+import { requireFeature } from "@/lib/auth-server";
+import { apiSuccess, apiError, handleAuthError } from "@/lib/api-response";
 import { RdvStatut } from "@prisma/client";
 
 export async function GET(
@@ -9,13 +9,8 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await requireAuth();
+    const { artisan } = await requireFeature("agenda");
     const { id } = await params;
-
-    const artisan = await prisma.artisan.findUnique({
-      where: { userId: session.userId },
-    });
-    if (!artisan) return apiError("Artisan non trouve", 404);
 
     const rdv = await prisma.rendezVousBativio.findUnique({
       where: { id },
@@ -26,8 +21,8 @@ export async function GET(
 
     return apiSuccess(rdv);
   } catch (e: unknown) {
-    if (e instanceof Error && e.message === "UNAUTHORIZED")
-      return apiError("Non autorise", 401);
+    const authErr = handleAuthError(e);
+    if (authErr) return authErr;
     console.error("GET rdv/[id] error:", e);
     return apiError("Erreur serveur", 500);
   }
@@ -38,13 +33,8 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await requireAuth();
+    const { artisan } = await requireFeature("agenda");
     const { id } = await params;
-
-    const artisan = await prisma.artisan.findUnique({
-      where: { userId: session.userId },
-    });
-    if (!artisan) return apiError("Artisan non trouve", 404);
 
     const rdv = await prisma.rendezVousBativio.findUnique({
       where: { id },
@@ -96,8 +86,8 @@ export async function PUT(
 
     return apiSuccess(updated);
   } catch (e: unknown) {
-    if (e instanceof Error && e.message === "UNAUTHORIZED")
-      return apiError("Non autorise", 401);
+    const authErr = handleAuthError(e);
+    if (authErr) return authErr;
     console.error("PUT rdv/[id] error:", e);
     return apiError("Erreur serveur", 500);
   }
@@ -108,13 +98,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await requireAuth();
+    const { artisan } = await requireFeature("agenda");
     const { id } = await params;
-
-    const artisan = await prisma.artisan.findUnique({
-      where: { userId: session.userId },
-    });
-    if (!artisan) return apiError("Artisan non trouve", 404);
 
     const rdv = await prisma.rendezVousBativio.findUnique({
       where: { id },
@@ -131,8 +116,8 @@ export async function DELETE(
 
     return apiSuccess({ message: "RDV annule" });
   } catch (e: unknown) {
-    if (e instanceof Error && e.message === "UNAUTHORIZED")
-      return apiError("Non autorise", 401);
+    const authErr = handleAuthError(e);
+    if (authErr) return authErr;
     console.error("DELETE rdv/[id] error:", e);
     return apiError("Erreur serveur", 500);
   }

@@ -1,17 +1,13 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { requireAuth } from "@/lib/auth-server";
-import { apiSuccess, apiError } from "@/lib/api-response";
+import { requireAuth, requireFeature } from "@/lib/auth-server";
+import { apiSuccess, apiError, handleAuthError } from "@/lib/api-response";
 import { RdvStatut } from "@prisma/client";
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await requireAuth();
-
-    const artisan = await prisma.artisan.findUnique({
-      where: { userId: session.userId },
-    });
-    if (!artisan) return apiError("Artisan non trouve", 404);
+    const { artisan } = await requireFeature("agenda");
+    void artisan;
 
     const searchParams = request.nextUrl.searchParams;
     const from = searchParams.get("from");
@@ -46,8 +42,8 @@ export async function GET(request: NextRequest) {
 
     return apiSuccess(rdvList);
   } catch (e: unknown) {
-    if (e instanceof Error && e.message === "UNAUTHORIZED")
-      return apiError("Non autorise", 401);
+    const authErr = handleAuthError(e);
+    if (authErr) return authErr;
     console.error("GET rdv error:", e);
     return apiError("Erreur serveur", 500);
   }
@@ -55,12 +51,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await requireAuth();
-
-    const artisan = await prisma.artisan.findUnique({
-      where: { userId: session.userId },
-    });
-    if (!artisan) return apiError("Artisan non trouve", 404);
+    const { artisan } = await requireFeature("agenda");
 
     const body: {
       clientNom: string;
@@ -114,8 +105,8 @@ export async function POST(request: NextRequest) {
 
     return apiSuccess(rdv, 201);
   } catch (e: unknown) {
-    if (e instanceof Error && e.message === "UNAUTHORIZED")
-      return apiError("Non autorise", 401);
+    const authErr = handleAuthError(e);
+    if (authErr) return authErr;
     console.error("POST rdv error:", e);
     return apiError("Erreur serveur", 500);
   }
