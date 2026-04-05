@@ -4,6 +4,7 @@ import { apiSuccess, apiError } from "@/lib/api-response";
 import { requireAuth } from "@/lib/auth-server";
 import { checkLimit } from "@/lib/plans";
 import type { PlanType } from "@/lib/plans";
+import { getEffectivePlan } from "@/lib/plan-gates";
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({ secure: true });
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check plan photo limits via centralized plans.ts
-    const { allowed, limit } = checkLimit((artisan.plan || "GRATUIT") as PlanType, "photosMax", artisan._count.photos);
+    const { allowed, limit } = checkLimit(getEffectivePlan(artisan).toUpperCase() as PlanType, "photosMax", artisan._count.photos);
     if (!allowed) {
       return apiError(
         `Limite de ${limit} photos atteinte pour votre plan. Passez au plan supérieur pour en ajouter davantage.`,

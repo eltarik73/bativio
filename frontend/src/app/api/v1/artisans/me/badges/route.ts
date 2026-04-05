@@ -3,15 +3,9 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { requireAuth } from "@/lib/auth-server";
-
-const BADGE_LIMITS: Record<string, number> = {
-  GRATUIT: 2,
-  STARTER: Infinity,
-  ESSENTIEL: Infinity,
-  PRO: Infinity,
-  BUSINESS: Infinity,
-  PRO_PLUS: Infinity,
-};
+import { checkLimit } from "@/lib/plans";
+import type { PlanType } from "@/lib/plans";
+import { getEffectivePlan } from "@/lib/plan-gates";
 
 const badgeSchema = z.object({
   nom: z.string().min(1, "Le nom du badge est requis"),
@@ -33,9 +27,10 @@ export async function POST(request: NextRequest) {
       return apiError("Artisan introuvable", 404);
     }
 
-    // Check plan badge limits
-    const limit = BADGE_LIMITS[artisan.plan] ?? 2;
-    if (artisan._count.badges >= limit) {
+    // Check plan badge limits (uses effective plan for overrides)
+    const effectivePlan = getEffectivePlan(artisan).toUpperCase() as PlanType;
+    const { allowed, limit } = checkLimit(effectivePlan, "badgesMax", artisan._count.badges);
+    if (!allowed) {
       return apiError(
         `Limite de badges atteinte pour votre plan (${limit} max). Passez à un plan supérieur pour en ajouter davantage.`,
         403

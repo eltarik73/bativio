@@ -5,6 +5,7 @@ import { apiSuccess, apiError } from "@/lib/api-response";
 import { requireAuth } from "@/lib/auth-server";
 import { hasFeature } from "@/lib/plans";
 import type { PlanType } from "@/lib/plans";
+import { getEffectivePlan } from "@/lib/plan-gates";
 import crypto from "crypto";
 
 const devisIASchema = z.object({
@@ -63,7 +64,7 @@ export async function POST(request: NextRequest) {
       return apiError("Artisan introuvable", 404);
     }
 
-    if (!hasFeature((artisan.plan || "GRATUIT") as PlanType, "devis_ia")) {
+    if (!hasFeature(getEffectivePlan(artisan).toUpperCase() as PlanType, "devis_ia")) {
       return apiError("Le devis IA est disponible avec le plan Business. Passez à Business pour en profiter.", 403);
     }
 

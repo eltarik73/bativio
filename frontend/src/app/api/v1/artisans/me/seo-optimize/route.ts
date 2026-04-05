@@ -2,6 +2,9 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { requireAuth } from "@/lib/auth-server";
+import { hasFeature } from "@/lib/plans";
+import type { PlanType } from "@/lib/plans";
+import { getEffectivePlan } from "@/lib/plan-gates";
 
 export async function POST(_request: NextRequest) {
   try {
@@ -21,7 +24,7 @@ export async function POST(_request: NextRequest) {
     }
 
     // Check plan — BUSINESS only
-    if (artisan.plan !== "BUSINESS" && artisan.plan !== "PRO_PLUS") {
+    if (!hasFeature(getEffectivePlan(artisan).toUpperCase() as PlanType, "agent_ia")) {
       return apiError(
         "L'optimisation SEO est réservée au plan Business. Passez au plan supérieur pour en profiter.",
         403

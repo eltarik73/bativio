@@ -2,6 +2,9 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { requireAuth } from "@/lib/auth-server";
+import { hasFeature } from "@/lib/plans";
+import type { PlanType } from "@/lib/plans";
+import { getEffectivePlan } from "@/lib/plan-gates";
 
 export async function POST(
   _request: NextRequest,
@@ -24,8 +27,8 @@ export async function POST(
       return apiError("Artisan introuvable", 404);
     }
 
-    // 2. Plan gate: BUSINESS or PRO_PLUS only
-    if (artisan.plan !== "BUSINESS" && artisan.plan !== "PRO_PLUS") {
+    // 2. Plan gate: BUSINESS only (uses effective plan for overrides)
+    if (!hasFeature(getEffectivePlan(artisan).toUpperCase() as PlanType, "devis_ia")) {
       return apiError("Le devis IA est réservé au plan Business", 403);
     }
 
