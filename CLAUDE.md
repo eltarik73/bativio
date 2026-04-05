@@ -2,389 +2,246 @@
 
 ## Projet
 
-Bativio est un SaaS B2B pour artisans du bâtiment (plombiers, électriciens, peintres, maçons, carreleurs, couvreurs, chauffagistes, menuisiers, etc.). C'est un "Planity des artisans" : annuaire public par ville, vitrines artisan avec URL perso, espace pro de gestion, et facturation électronique intégrée.
+Bativio est un SaaS B2B pour artisans du bâtiment (plombiers, électriciens, peintres, maçons, etc.) en Rhône-Alpes.
+Annuaire public par ville, vitrines artisan personnalisées, espace pro de gestion (devis, RDV, CRM), facturation électronique (Invoquo).
 
-Lancement : Chambéry via le réseau Klik&Go, puis scaling Rhône-Alpes ville par ville.
-Volume cible : 10-30 artisans en 6 mois, 200-300 à 18 mois.
-Modèle : abonnement uniquement, zéro commission, zéro frais cachés.
-
----
-
-## Stack technique
-
-| Couche | Technologie | Hébergement |
-|--------|------------|-------------|
-| App (frontend + API) | Next.js 16 (App Router + API Routes) | Vercel |
-| ORM | Prisma 6 | — |
-| Auth | JWT cookie HttpOnly (jose + bcryptjs) | — |
-| Base de données | PostgreSQL | Railway |
-| Photos | Cloudinary | — |
-| Emails | Resend | — |
-| Paiements | Stripe | — |
-| IA | Anthropic Claude API | — |
-| SIRET auto-fill | recherche-entreprises.api.gouv.fr | — |
+- **Repo** : https://github.com/eltarik73/bativio
+- **Prod** : https://bativio.fr
+- **Vercel project** : `bativio` (team_FdEiwAUDJ71q2MGrK6QH6Eag)
+- **DB** : PostgreSQL sur Railway
 
 ---
 
-## Design system
+## Stack détectée
 
-### Couleurs
-- Terre : `#C4531A` (primaire, CTA, accents)
-- Terre light : `#D4733A` (hover)
-- Anthracite : `#1C1C1E` (texte, fonds sombres)
-- Or : `#E8A84C` (badges, étoiles, accents secondaires)
-- Crème : `#FAF8F5` (fond principal)
-- Blanc : `#FFFFFF` (cards, surfaces)
-
-### Typographie
-- Display / titres : **Fraunces** (serif, variable)
-- Body / texte : **Karla** (sans-serif)
-
-### UI patterns
-- Badges frosted glass : `background: rgba(255,255,255,0.85); backdrop-filter: blur(12px);`
-- Micro-interactions hover : `translateY(-4px)` + box-shadow sur les cards
-- Séparateurs section : `w-10 h-0.5 bg-terre`
-- CTA principal : bg-terre, texte blanc, border-radius 8px
-- CTA secondaire : outline blanc ou anthracite
-
-### Inspiration
-- Planity, Doctolib — premium, moderne, efficace
+| Couche | Technologie | Version |
+|--------|------------|---------|
+| Framework | Next.js (App Router) | 16.2.1 |
+| Runtime | React | 19.2.4 |
+| Langage | TypeScript (strict) | ^5 |
+| CSS | Tailwind CSS v4 + PostCSS | ^4 |
+| ORM | Prisma | ^6.19.2 |
+| Auth | JWT cookie HttpOnly (jose + bcryptjs) | jose ^6.2 |
+| Validation | Zod | ^4.3.6 |
+| Images | Cloudinary | ^2.9 |
+| Emails | Resend | ^6.9 |
+| Paiements | Stripe | ^21.0 |
+| Icônes | lucide-react | ^1.7 |
+| Hébergement | Vercel | — |
+| DB | PostgreSQL | Railway |
 
 ---
 
-## Architecture URL (SEO)
+## Structure des fichiers clés
 
 ```
-bativio.fr/                          → Landing page nationale (SSG)
-bativio.fr/[ville]                   → Page annuaire par ville (SSG + ISR)
-bativio.fr/[ville]/[metier]          → Page métier × ville (SSG + ISR) — V2
-bativio.fr/[ville]/[slug-artisan]    → Vitrine artisan publique (SSR)
-bativio.fr/inscription               → Onboarding artisan (CSR)
-bativio.fr/connexion                 → Login (CSR)
-bativio.fr/dashboard/*               → Espace pro artisan (CSR, noindex)
-bativio.fr/admin/*                   → Back-office webmaster (CSR, noindex)
-bativio.fr/facturation-electronique  → Page SEO Invoquo (SSG)
-[slug].bativio.fr                    → Site dédié artisan Premium — V2
+bativio/
+├── frontend/                      ← Dossier Next.js (CWD pour npm)
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── page.tsx           ← Landing page
+│   │   │   ├── layout.tsx         ← Root layout (Fraunces + Karla + Playfair)
+│   │   │   ├── globals.css        ← Tailwind v4 @theme inline + design tokens
+│   │   │   ├── [ville]/           ← Pages annuaire par ville (SSR)
+│   │   │   │   └── [slug]/        ← Vitrine artisan publique
+│   │   │   ├── dashboard/         ← Espace pro artisan (auth required)
+│   │   │   │   ├── profil/
+│   │   │   │   ├── photos/
+│   │   │   │   ├── demandes/
+│   │   │   │   ├── devis/
+│   │   │   │   ├── devis-ia/
+│   │   │   │   ├── agenda/
+│   │   │   │   ├── rdv/
+│   │   │   │   ├── facturation/
+│   │   │   │   ├── vitrine/
+│   │   │   │   ├── abonnement/
+│   │   │   │   └── parametres/
+│   │   │   ├── admin/             ← Back-office webmaster (ADMIN role)
+│   │   │   │   ├── artisans/
+│   │   │   │   ├── villes/
+│   │   │   │   ├── metiers/
+│   │   │   │   ├── validations/
+│   │   │   │   ├── abonnements/
+│   │   │   │   ├── statistiques/
+│   │   │   │   ├── seo/
+│   │   │   │   └── parametres/
+│   │   │   ├── api/v1/            ← API Routes
+│   │   │   │   ├── auth/          ← login, register, magic-link, forgot-password
+│   │   │   │   ├── artisans/me/   ← CRUD artisan connecté
+│   │   │   │   ├── artisan/       ← demandes, scoring
+│   │   │   │   ├── public/        ← endpoints publics (artisans, villes, siret, devis)
+│   │   │   │   ├── admin/         ← endpoints admin
+│   │   │   │   ├── stripe/        ← checkout, portal, webhook
+│   │   │   │   ├── facturation/   ← Invoquo (activate, badge, refresh-token)
+│   │   │   │   ├── upload/        ← signature Cloudinary
+│   │   │   │   └── cron/          ← rappels-rdv
+│   │   │   ├── inscription/       ← Onboarding artisan
+│   │   │   ├── connexion/         ← Login
+│   │   │   ├── tarifs/            ← Page pricing
+│   │   │   ├── facturation-electronique/ ← Page SEO Invoquo
+│   │   │   ├── robots.ts
+│   │   │   └── sitemap.ts
+│   │   ├── components/
+│   │   │   ├── vitrines/          ← Templates vitrine (Classique, Moderne, Portfolio, Vitrine)
+│   │   │   ├── pricing/           ← PricingGrid
+│   │   │   ├── ChatDevis/         ← Chat devis interactif
+│   │   │   ├── FilConversation/   ← Messagerie artisan-client
+│   │   │   ├── VilleAutocomplete/ ← Autocomplete villes
+│   │   │   ├── AuthProvider.tsx
+│   │   │   ├── Navbar.tsx
+│   │   │   ├── Footer.tsx
+│   │   │   ├── DevisForm.tsx / DevisForm3Steps.tsx
+│   │   │   ├── ArtisanCard.tsx
+│   │   │   ├── FeatureGate.tsx / DashboardFeatureGate.tsx
+│   │   │   └── ProtectedRoute.tsx
+│   │   ├── context/
+│   │   │   └── AuthContext.tsx     ← Auth state global
+│   │   ├── lib/
+│   │   │   ├── prisma.ts          ← Client Prisma singleton
+│   │   │   ├── auth.ts            ← authFetch, token refresh mutex
+│   │   │   ├── auth-server.ts     ← JWT verify côté serveur
+│   │   │   ├── api-response.ts    ← apiSuccess() / apiError()
+│   │   │   ├── stripe.ts          ← Client Stripe
+│   │   │   ├── email.ts           ← Resend
+│   │   │   ├── sms.ts             ← OVH SMS
+│   │   │   ├── plans.ts           ← Feature gates par plan (hasFeature, checkLimit)
+│   │   │   ├── plan-gates.ts      ← Plan restrictions
+│   │   │   ├── constants.ts       ← VILLES, METIERS, PLANS, COLORS
+│   │   │   ├── config.ts          ← SiteConfig avec cache TTL
+│   │   │   ├── scoring.ts         ← Scoring artisan
+│   │   │   └── vitrine-config.ts  ← Config templates vitrine
+│   │   └── middleware.ts          ← Auth middleware (JWT verify, role check)
+│   ├── prisma/
+│   │   ├── schema.prisma          ← 20+ modèles (User, Artisan, Metier, DemandeDevis, Devis...)
+│   │   ├── seed.ts                ← Seed principal
+│   │   ├── seed-metiers.ts
+│   │   ├── seed-seo.ts
+│   │   └── seed-config.ts
+│   ├── public/
+│   │   ├── manifest.json
+│   │   └── icons/
+│   ├── next.config.ts             ← Images (Cloudinary, Unsplash, placehold.co)
+│   ├── vercel.json                ← Crons (rappels-rdv 18h, relances 8h)
+│   ├── package.json
+│   └── tsconfig.json              ← Alias @/* → ./src/*
+├── vitrines/                      ← Fichiers .pen (vitrines artisan)
+├── CLAUDE.md                      ← Ce fichier
+└── README.md
 ```
 
-### SEO technique
-- `generateMetadata()` Next.js pour meta tags dynamiques
-- JSON-LD Schema.org sur chaque vitrine : `LocalBusiness`, `AggregateRating`, `Service`, `AreaServed`
-- `ItemList` sur les pages villes
-- Sitemap XML dynamique (mis à jour à chaque inscription)
-- Robots.txt : indexer pages publiques, exclure dashboard/admin
-- Canonical URLs sur toutes les pages
-- Contenu unique par ville (généré par IA, pas de doorway pages)
+---
 
-### Villes V1
-Chambéry, Annecy, Grenoble, Lyon, Valence
+## Commandes de développement
+
+Toutes les commandes npm doivent être exécutées depuis `frontend/` :
+
+```bash
+cd frontend
+npm run dev          # next dev — port 3000
+npm run build        # prisma generate && next build
+npm run lint         # eslint
+npm run start        # next start (production)
+npx prisma studio    # GUI base de données
+npx prisma migrate dev --name <nom>   # nouvelle migration
+npx prisma db push   # push schema sans migration
+npx prisma generate  # régénérer le client
+npx tsx prisma/seed.ts               # seed DB
+```
 
 ---
 
-## Les 4 briques
+## Architecture & patterns du code
 
-### Brique 1 — Annuaire public
-Page d'accueil avec recherche par métier + ville. Pages par ville avec contenu SEO unique. Cards artisan avec : nom, métier, photo, note, ville, description courte. Filtres par métier (pills cliquables). Résultats filtrés côté client (données SSR).
+### Réponses API standardisées
+Toutes les API Routes utilisent `apiSuccess()` et `apiError()` de `@/lib/api-response.ts` :
+```ts
+return apiSuccess(data)       // { success: true, data, timestamp }
+return apiError("msg", 400)   // { success: false, error, timestamp }
+```
 
-### Brique 2 — Espace artisan (inscription + profil)
-Inscription SIRET → auto-fill Pappers → nom d'affichage, email, tel, mot de passe → en ligne.
-Personnalisation progressive depuis le dashboard : photos, description, badges, zone, horaires.
-Barre de complétion profil gamifiée.
+### Authentification
+- Cookie `bativio-session` (JWT signé avec `jose`, HttpOnly)
+- Middleware Next.js vérifie JWT sur `/dashboard/*`, `/admin/*`, `/api/v1/artisans/*`, `/api/v1/admin/*`
+- Rôles : `ARTISAN`, `ADMIN`
+- Côté client : `authFetch()` dans `@/lib/auth.ts` avec mutex refresh token
+- Magic link disponible en alternative au mot de passe
 
-### Brique 3 — Vitrine artisan (mini-site)
-Page publique à `bativio.fr/[ville]/[slug]`. Disponible complète à partir du plan Pro (49€).
-Sections : hero, badges, présentation, services, galerie avant/après, avis, zone d'intervention, contact/devis, footer SIRET.
-CTA sticky mobile (Appeler + Devis). JSON-LD structuré.
+### Feature gates
+- `hasFeature(plan, feature)` dans `@/lib/plans.ts`
+- `checkLimit(plan, key, count)` pour limites (photos, badges, SMS, devis IA)
+- Plans : GRATUIT → STARTER (19€) → PRO (39€) → BUSINESS (59€)
+- Legacy plans (ESSENTIEL, PRO_PLUS) mappés sur les nouveaux
 
-### Brique 4 — Back-office webmaster
-Interface admin pour gérer la plateforme : artisans, villes, métiers, reporting, modération, Stripe.
-
----
-
-## Plans tarifaires
-
-| Feature | Gratuit | Essentiel 19€ | Pro 49€ | Pro+ 79€ |
-|---------|---------|---------------|---------|----------|
-| **VISIBILITÉ** | | | | |
-| Fiche annuaire | ✅ | ✅ | ✅ | ✅ |
-| URL perso (vitrine complète) | ❌ | ❌ | ✅ | ✅ |
-| Photos chantiers | 3 max | 10 | Illimité | Illimité |
-| Photos avant/après | ❌ | ✅ | ✅ | ✅ |
-| Badges qualifications | 2 max | Illimité | Illimité | Illimité |
-| QR Code vitrine | ❌ | ❌ | ✅ | ✅ |
-| Bouton RDV Google/réseaux | ❌ | ❌ | ✅ | ✅ |
-| **INTERACTION CLIENT** | | | | |
-| Formulaire devis (4 champs) | ✅ | ✅ | ✅ | ✅ |
-| Agenda visible clients 24/7 | ❌ | ✅ | ✅ | ✅ |
-| Prise de RDV en ligne | ❌ | ✅ | ✅ | ✅ |
-| Annulation/report par client | ❌ | ✅ | ✅ | ✅ |
-| SMS rappel avant RDV | ❌ | ✅ | ✅ | ✅ |
-| Compte à rebours 20min + relance SMS | ❌ | ✅ | ✅ | ✅ |
-| Agent IA répondeur client | ❌ | ❌ | ❌ | ✅ |
-| **GESTION** | | | | |
-| Dashboard stats | Basique | ✅ | ✅ complet | ✅ complet |
-| Fiches clients / mini-CRM | ❌ | ❌ | ✅ | ✅ |
-| Historique échanges par client | ❌ | ❌ | ✅ | ✅ |
-| Notifications (email+SMS+dashboard) | Email seul | ✅ | ✅ | ✅ |
-| Progression profil gamifiée | ✅ | ✅ | ✅ | ✅ |
-| **FACTURATION (Invoquo)** | | | | |
-| Réception factures PA | ❌ | ✅ | ✅ | ✅ |
-| Dépôt/transmission PA | ❌ | ❌ | ✅ | ✅ |
-| Création factures Bativio | ❌ | ❌ | ❌ | ✅ |
-| Devis IA | ❌ | ❌ | ❌ | ✅ |
-| Export comptable (CSV/Excel) | ❌ | ❌ | ✅ | ✅ |
-| **ABONNEMENT** | | | | |
-| Zéro commission | ✅ | ✅ | ✅ | ✅ |
-| Gestion abo Stripe | — | ✅ | ✅ | ✅ |
-| Support | — | Email | Prioritaire | Dédié |
-
----
-
-## Authentification
-
-- **Artisan** : email + mot de passe OU magic link (au choix)
-- **Admin/Webmaster** : même système, rôle ADMIN
-- **Tokens** : JWT access 15min + refresh rotatif hashé en BDD
-- **Rôles** : ARTISAN, ADMIN
-- **CORS** : configuré par environnement (dev / staging / prod)
-- **Inscription** : libre, artisan visible immédiatement dans l'annuaire
-
----
-
-## Onboarding artisan
-
-Flow en étapes progressives (max 3 min) :
-
-1. **SIRET** → auto-fill Pappers (raison sociale, adresse, code NAF, date création)
-2. **Nom d'affichage** + email + téléphone + mot de passe
-3. **Métier** — sélection visuelle (gros boutons avec icônes)
-4. **Zone d'intervention** — ville + slider rayon (5-80 km)
-5. **Photos** — upload drag & drop ou appareil photo mobile (optionnel, peut skip)
-6. **Aperçu** — preview de la fiche → "Publier ma page"
-
-Principe : capturer le minimum pour mettre en ligne. L'artisan complète ensuite depuis le dashboard.
-
----
-
-## Fonctionnalités détaillées
-
-### Formulaire de devis (côté client)
-- 4 champs : nom, téléphone, email, description du besoin (texte libre)
-- À la soumission → email + SMS + notification dashboard à l'artisan
-- Compte à rebours de 20 minutes démarre
-- Si pas de réponse artisan à 20min → SMS de relance automatique
-- Si toujours pas de réponse → notification "Vous risquez de perdre ce client"
-
-### Agenda / RDV
-- L'artisan définit ses créneaux disponibles depuis le dashboard
-- L'agenda est visible publiquement 24h/24 sur la vitrine
-- Le client réserve un créneau directement
-- SMS de confirmation au client + notification artisan
-- SMS de rappel automatique la veille du RDV
-- Le client peut annuler/reporter via un lien dans le SMS
-- 50% des RDV pris en dehors des heures d'ouverture (insight Planity)
-
-### Avis clients (V2)
-- Réservés aux clients ayant demandé un devis via la plateforme
-- Note étoiles + texte + service concerné + date
-- Mention "Avis vérifié"
-- L'artisan peut répondre
-- Modération admin possible (signalement)
-
-### Agent IA répondeur (Pro+ uniquement)
-- Quand un client envoie un message ou une demande de devis
-- L'IA répond immédiatement avec des questions de qualification
-- Questions : type de travaux, urgence, adresse, budget estimé
-- Une fois le brief complet → transmis à l'artisan avec un résumé structuré
-- L'artisan prend le relai pour le contact humain
-
-### Devis IA (Pro+ uniquement)
-- L'artisan décrit le besoin en 2 phrases
-- L'IA génère un devis structuré : postes, quantités estimées, fourchettes de prix
-- L'artisan ajuste et envoie au client
-
-### Fiches clients / mini-CRM (Pro et Pro+)
-- Fiche par client : nom, coordonnées, historique RDV, historique messages, devis envoyés
-- Notes internes de l'artisan
-- Tous les échanges regroupés dans la fiche
-
-### Photos
-- Upload via API Route Next.js → Cloudinary
-- Validation côté backend : taille max 10 Mo, formats JPG/PNG/WebP
-- Compression automatique
-- Deux modes : photo simple OU paire avant/après avec titre commun
-- Limites selon le plan (3 / 10 / illimité)
-
-### Badges qualifications
-- Pré-programmés : RGE, Qualibat, Qualifelec, Qualibois, Qualipac, QualitENR, CAPEB, assurance décennale, garantie décennale
-- Personnalisables par l'artisan (texte + icône)
-- Limites : 2 badges max en Gratuit, illimité sinon
-
-### Statistiques dashboard
-- Gratuit : nombre de vues
-- Essentiel+ : vues, demandes de devis reçues, RDV ce mois, note moyenne
-- Pro+ : + taux de réponse, évolution mensuelle, source des visites
-
-### QR Code (Pro et Pro+)
-- Généré automatiquement à partir de l'URL de la vitrine
-- Téléchargeable en PDF depuis le dashboard
-- Pour cartes de visite, camion, flyers
-
-### Notifications
-- Email : Resend (transactionnel)
-- SMS : OVH SMS (confirmations, rappels, relances)
-- Dashboard : notification in-app temps réel
-
-### Export comptable (Pro et Pro+)
-- Export CSV/Excel des factures et paiements
-- Transmissible au comptable
-
----
-
-## Stripe — Abonnements
-
-- Stripe Checkout pour la souscription
-- Stripe Customer Portal pour que l'artisan gère son abo (upgrade/downgrade/annulation)
-- Webhooks Stripe → API Route Next.js : `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_failed`
-- L'artisan peut activer/changer de plan depuis son dashboard
-- Le webmaster peut depuis l'admin :
-  - Voir le statut d'abonnement de chaque artisan
-  - Offrir un mois gratuit / coupon
-  - Forcer un upgrade/downgrade
-  - Voir les logs Stripe (paiements, échecs, annulations)
-
----
-
-## Invoquo — Facturation électronique (V3)
-
-Architecture : `Artisan → Bativio → Invoquo (OD interne) → API PA (IOPOLE / Sequino)`
-
-Invoquo est un OD (Opérateur de Dématérialisation), pas une PA. Il consomme les API PA en marque blanche.
-
-- **Essentiel** : réception PA uniquement (artisan garde son logiciel de facturation)
-- **Pro** : artisan glisse/dépose ses factures → Invoquo transmet en PA
-- **Pro+** : artisan crée/modifie ses factures dans Bativio → transmission PA sur demande + assistant IA
-
-Communication : "connecté à une plateforme certifiée par l'État" (sans prétendre être une PA).
-
-Mandat PA : reporté à V3 (intégré dans l'onboarding quand Invoquo est prêt).
-
----
-
-## Back-office webmaster (admin)
-
-| Fonctionnalité | Description |
-|----------------|-------------|
-| Liste artisans | Tous les artisans : actifs, inactifs, suspendus |
-| Activation/suspension | Activer, désactiver, suspendre un compte |
-| Plans Stripe | Voir le plan de chaque artisan, forcer changement |
-| Gestion villes | Ajouter/retirer des villes actives |
-| Gestion métiers | Ajouter/modifier les métiers disponibles |
-| Reporting | Inscriptions, vues, devis, RDV, revenus (global + par ville) |
-| Modération | Signaler/masquer du contenu, gérer les avis signalés |
-| Logs Stripe | Paiements, échecs, annulations |
-
----
-
-## Sécurité (recommandations audit)
-
-- Access tokens : 15 minutes
-- Refresh tokens : rotatifs, hashés en BDD
-- CORS : configuré par environnement
-- Backup : tests de restauration mensuels
-- HMAC signature sur les webhooks entrants (Stripe, PA)
-- Idempotency keys sur les webhooks
-- Rate limiting sur les endpoints publics
-
----
-
-## Roadmap
-
-### V1 — Plateforme de visibilité
-- Landing page bativio.fr
-- Pages villes SSG (5 villes, contenu IA unique)
-- Vitrines artisans SSR
-- Onboarding SIRET (Pappers)
-- Dashboard artisan basique (profil, photos, stats simples)
-- Upload photos → Cloudinary
-- Formulaire demande de devis (email + notification)
-- Auth JWT + refresh rotatif
-- SEO : schema.org, sitemap, meta tags
-- Monitoring Sentry
-- Progression profil gamifiée
-
-### V2 — Interactions & engagement
-- Prise de RDV : agenda visible, créneaux, réservation 24/7
-- SMS rappel avant RDV
-- Compte à rebours 20min + relance SMS
-- Messagerie artisan ↔ client
-- Fiches clients / mini-CRM
-- Avis clients vérifiés
-- Stripe : abonnements 4 plans
-- Notifications email + SMS + dashboard
-- QR Code vitrine
-- Bouton RDV sur Google/réseaux
-- Agent IA répondeur client (Pro+)
-- Devis IA (Pro+)
-- Pages métier × ville (SEO)
-- Dashboard avancé (stats complètes)
-- Export comptable
-- Annulation/report RDV par client
-
-### V3 — Invoquo & facturation
-- Module Invoquo : couche OD
-- Connexion API PA partenaire (IOPOLE / Sequino)
-- Mandat PA dans l'onboarding
-- Réception factures (Essentiel)
-- Dépôt + transmission (Pro)
-- Création factures + transmission (Pro+)
-- Gestion statuts de facture
-- Webhook inbox PA (signature, idempotence, retries)
-- Stockage documents S3
-- Génération PDF
-- E-reporting (périmètre à confirmer avec PA)
-
----
-
-## Conventions de code
-
-### Frontend (Next.js)
-- App Router (pas Pages Router)
-- TypeScript strict
-- Tailwind CSS (config étendue avec les tokens Bativio)
-- Composants dans `src/components/`
-- Pages dans `src/app/`
-- Server Components par défaut, Client Components quand nécessaire
-- `generateMetadata()` sur chaque page publique
-- `generateStaticParams()` pour les pages villes
-
-### API Routes (Next.js)
-- Toutes dans `src/app/api/v1/`
-- Auth : JWT cookie HttpOnly (jose), pas de header Authorization
-- Validation : Zod
-- ORM : Prisma
-- Réponses standardisées : `{ success, data, error, timestamp }`
-- Middleware Next.js pour protection des routes /dashboard et /admin
-
-### Base de données (Prisma)
-- Nommage : snake_case via `@@map`
+### Prisma
+- Nommage : camelCase TS → snake_case SQL via `@map()`
 - Toutes les tables avec `id` (cuid), `created_at`, `updated_at`
-- Soft delete (`deleted_at`) sur les entités principales
-- Indexes sur les colonnes de recherche fréquente
-- Schema dans `prisma/schema.prisma`
+- Soft delete via `deleted_at` sur `Artisan`
+- Client singleton dans `@/lib/prisma.ts` (cache global en dev)
 
-### API REST
-- Préfixe : `/api/v1/`
-- Auth : cookie HttpOnly `bativio-session` (JWT 7j)
-- Pagination : `?page=0&size=20`
-- Filtres : query params (`?ville=chambery&metier=plombier`)
-- Codes HTTP standards : 200, 201, 400, 401, 403, 404, 500
+### Tailwind CSS v4
+- Design tokens dans `globals.css` avec `@theme inline { ... }`
+- Couleurs custom : `terre`, `anthracite`, `or`, `creme`, `sable`, `bois`, `mousse`, `pierre`
+- Fonts : `--font-display` (Fraunces), `--font-body` (Karla), `--font-calli` (Playfair Display)
+- Variables CSS dupliquées dans `:root` pour usage hors Tailwind
+
+### Images
+- Upload via signature Cloudinary (`/api/v1/upload/signature`)
+- Remote patterns configurés : `res.cloudinary.com`, `images.unsplash.com`, `placehold.co`
+- Formats : WebP + AVIF
+
+---
+
+## Règles non négociables
+
+### Sécurité
+- **JAMAIS** de secret dans le code source (JWT_SECRET, API keys, etc.)
+- **JAMAIS** de `Authorization: Bearer` header — utiliser uniquement le cookie HttpOnly `bativio-session`
+- Toujours valider les inputs avec Zod dans les API Routes
+- Vérifier le rôle ADMIN sur tous les endpoints `/api/v1/admin/*`
+- Vérifier que l'artisan accède uniquement à SES données sur `/api/v1/artisans/me/*`
+- Stripe webhooks : toujours vérifier la signature HMAC
+- Rate limiting sur les endpoints publics sensibles (login, register, forgot-password)
+
+### Next.js 16 / App Router
+- **LIRE la doc dans `node_modules/next/dist/docs/`** avant d'utiliser une API — Next.js 16 a des breaking changes par rapport aux versions précédentes
+- Server Components par défaut, `"use client"` uniquement quand nécessaire
+- `generateMetadata()` sur chaque page publique pour le SEO
+- Ne jamais importer `prisma` ou des modules Node dans un Client Component
+- Les API Routes sont dans `src/app/api/v1/` — préfixe `/api/v1/` obligatoire
+
+### Prisma
+- Toujours faire `npx prisma generate` après avoir modifié `schema.prisma`
+- Ne jamais modifier manuellement les fichiers dans `src/generated/prisma`
+- Utiliser les transactions Prisma pour les opérations multi-tables critiques
+
+### TypeScript
+- Mode `strict: true` — pas de `any` sauf nécessité absolue documentée
+- Alias `@/*` pour les imports depuis `src/`
+
+### Git
+- Ne jamais committer `.env`, `.env.local`, ou tout fichier contenant des secrets
+- Les fichiers `.claude/` sont dans `.gitignore`
+
+---
+
+## Erreurs fréquentes à éviter
+
+1. **Oublier `"use client"` sur un composant utilisant useState/useEffect** — erreur runtime obscure
+2. **Importer `@prisma/client` dans un Client Component** — crash module Node côté navigateur
+3. **Oublier `npx prisma generate` après modif schema** — types TS désynchronisés
+4. **Utiliser Tailwind v3 syntax** (`bg-[#C4531A]`) au lieu des tokens v4 (`bg-terre`)
+5. **Mettre `async` sur un Client Component** — Server Components only
+6. **Oublier `onDelete: Cascade`** sur les relations Prisma enfant → parent critique
+7. **Ne pas vérifier le plan artisan** avant d'autoriser une feature premium
+8. **Écrire les commandes npm à la racine** au lieu de `frontend/`
+9. **Utiliser `fetch()` nu** côté client au lieu de `authFetch()` — perd l'auth
+10. **Créer une migration en dev** sur la branche main sans review
 
 ---
 
 ## Variables d'environnement requises
 
-### .env.local
+Fichier `frontend/.env.local` :
 ```
 DATABASE_URL=
 JWT_SECRET=
@@ -393,16 +250,138 @@ CLOUDINARY_URL=
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
 STRIPE_SECRET_KEY=
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+```
+
+Variables optionnelles (features avancées) :
+```
+INVOQUO_API_KEY=
+INVOQUO_JWT_SECRET=
+OVH_SMS_*=
+ANTHROPIC_API_KEY=
 SENTRY_DSN=
 ```
 
 ---
 
-## Principes directeurs
+## Design system
 
-1. **Simplicité** — L'artisan est non-tech. Chaque écran doit être compréhensible en 3 secondes.
-2. **Mobile-first** — L'artisan est sur chantier, pas derrière un PC.
-3. **Réactivité** — Le temps de réponse est le premier facteur de conversion. Tout est conçu pour pousser l'artisan à répondre vite.
-4. **Zéro commission** — C'est l'argument différenciant. Le mettre en avant partout.
-5. **SEO local** — Chaque artisan inscrit renforce le SEO de Bativio, et Bativio booste la visibilité de l'artisan. Cercle vertueux.
-6. **Pas d'over-engineering** — PostgreSQL-based job queue, pas de Redis/Bull en V1. On complexifie quand le volume le justifie.
+### Couleurs
+| Token | Hex | Usage |
+|-------|-----|-------|
+| `terre` | `#C4531A` | Primaire, CTA, accents |
+| `terre-light` | `#D4733A` | Hover |
+| `anthracite` | `#1C1C1E` | Texte, fonds sombres |
+| `or` | `#C9943A` | Badges, étoiles, accents |
+| `creme` | `#FAF8F5` | Fond principal |
+| `blanc` | `#FFFFFF` | Cards, surfaces |
+
+### Typographie
+- Display / titres : **Fraunces** (serif, variable) — `font-display`
+- Body / texte : **Karla** (sans-serif) — `font-body`
+- Accents calligraphiques : **Playfair Display** — `font-calli`
+
+### UI patterns
+- Cards : classe `.bv-card` (hover translateY(-3px) + shadow)
+- Badges frosted glass : `bg-white/85 backdrop-blur-[12px]`
+- CTA principal : `bg-terre text-white rounded-lg`
+- Nav : sticky, glassmorphism, 64px height
+
+---
+
+## Facturation électronique (Invoquo)
+
+Bativio intègre Invoquo (invoquo.vercel.app) en iframe embed.
+
+### Architecture
+- **Activation** : `POST /api/v1/facturation/activate` → provisionne tenant Invoquo → stocke API key (`inv_...`)
+- **Token embed** : `GET /api/v1/facturation/refresh-token` → appelle Invoquo `/api/v1/embed-tokens` → retourne JWT + modules autorisés
+- **Iframe** : `invoquo.vercel.app/embed/{siret}/{module}?token=...&accent=C4531A`
+- **Formulaires embed** : route catch-all `[...module]` dans Invoquo pour `/invoices/new`, `/quotes/new`, `/clients/new`
+- **API embed** : `/api/v1/embed/invoices`, `/api/v1/embed/clients`, `/api/v1/embed/quotes` (auth par `x-embed-token`)
+- **Recherche INSEE** : appel direct à `recherche-entreprises.api.gouv.fr` (gratuit, côté client)
+
+### Modules par plan
+| Plan | Modules autorisés |
+|------|------------------|
+| STARTER | dashboard, received, clients, reporting, compliance, settings |
+| PRO | + quotes, export |
+| BUSINESS | + invoices (création) |
+
+### Règles critiques
+- **TOUJOURS** utiliser `getEffectivePlan(artisan)` — jamais `artisan.plan` directement (planOverride)
+- L'API key doit commencer par `inv_` — sinon le refresh-token auto-repair
+- Le `NEXT_PUBLIC_INVOQUO_URL` permet de pointer sur l'Invoquo local en dev
+
+---
+
+## Plan enforcement
+
+### Helpers
+- `requireFeature(feature)` dans `auth-server.ts` — auth + artisan + plan check en une ligne
+- `handleAuthError(e)` dans `api-response.ts` — gère UNAUTHORIZED, PLAN_REQUIRED, ARTISAN_NOT_FOUND
+- `getEffectivePlan(artisan)` dans `plan-gates.ts` — max(stripePlan, planOverride)
+
+### Endpoints protégés
+| Endpoint | Feature | Plan min |
+|----------|---------|----------|
+| `/facturation/activate` | invoquo_reception | STARTER |
+| `/facturation/refresh-token` | invoquo_reception | STARTER |
+| `/artisans/me/rdv/*` | agenda | STARTER |
+| `/artisans/me/disponibilites` | agenda | STARTER |
+| `/artisans/me/devis-ia` | devis_ia | BUSINESS |
+| `/artisans/me/seo-optimize` | agent_ia | BUSINESS |
+| `/artisans/me/photos/upload` | photosMax (limit) | ALL |
+| `/artisans/me/badges` | badgesMax (limit) | ALL |
+
+---
+
+## Déploiement
+
+### Bativio
+Les pushes GitHub déclenchent des builds Vercel CANCELED (root directory issue).
+**Déployer via CLI :**
+```bash
+cd frontend
+npm run build
+find .next/cache -type f -size +50M -delete  # éviter erreur file size
+npx vercel deploy --prod --yes
+```
+
+### Invoquo
+Les pushes GitHub déploient automatiquement. Vérifier le build sur Vercel dashboard.
+**Attention :** `useRef()` sans argument initial = erreur React 19. Toujours `useRef(undefined)`.
+
+---
+
+## PWA / Webapp
+
+- `manifest.json` : `display: standalone`, `start_url: /dashboard`
+- `viewport-fit: cover` pour iPhones avec encoche
+- Safe-area padding sur la nav mobile
+- `prefetch={false}` sur tous les liens sidebar/nav mobile (évite 20+ requêtes au chargement)
+
+### Navigation mobile (barre bas)
+Accueil | Demandes | Factures | Devis IA | Plus (→ Profil, Agenda, Vitrine, Photos, Abonnement, Paramètres)
+
+---
+
+## Villes actives (V1)
+
+Chambéry, Annecy, Grenoble, Lyon, Valence
+
+## Crons Vercel
+
+- `/api/v1/cron/rappels-rdv` — tous les jours à 18h
+- `/api/cron/relances` — tous les jours à 8h
+
+---
+
+## Workflow automatique après chaque modification UI
+
+Après chaque modification d'un fichier .tsx, .jsx ou .html dans src/components ou app/ :
+1. Vérifie l'accessibilité : contrastes WCAG AA, labels aria, focus clavier, touch targets ≥ 44px
+2. Vérifie la performance : pas d'animations sans prefers-reduced-motion, pas de layout shift, images optimisées
+3. Corrige automatiquement les problèmes trouvés sans demander
+4. Lance npm run build pour vérifier que ça compile
+
+Ne me demande PAS avant de corriger ces problèmes — fais-le automatiquement.
