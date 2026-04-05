@@ -210,37 +210,42 @@ export default function FacturationPage() {
   }
 
   // ── Iframe with tabs ──
-  const allModules = [
-    { key: "dashboard", label: "Tableau de bord", Icon: LayoutGrid },
-    { key: "invoices", label: "Factures", Icon: Receipt },
-    { key: "quotes", label: "Devis", Icon: FileSignature },
-    { key: "clients", label: "Clients", Icon: Users2 },
+  const allTabs = [
+    { key: "dashboard", label: "Tableau de bord" },
+    { key: "invoices", label: "Factures" },
+    { key: "quotes", label: "Devis" },
+    { key: "clients", label: "Clients" },
   ];
-  const modules = allowedModules.length > 0
-    ? allModules.filter((m) => allowedModules.includes(m.key))
-    : allModules.filter((m) => m.key === "dashboard" || m.key === "clients");
+  const tabs = allowedModules.length > 0
+    ? allTabs.filter((m) => allowedModules.includes(m.key))
+    : allTabs.filter((m) => m.key === "dashboard" || m.key === "clients");
   const embedUrl = `${INVOQUO_URL}/embed/${siret}/${activeModule}?token=${embedToken}&accent=C4531A`;
 
   return (
     <div className="w-full flex flex-col" style={{ height: "calc(100vh - 64px)" }}>
       {/* Tabs */}
-      <div className="flex items-center border-b border-sable bg-blanc flex-shrink-0 px-2 gap-1">
-        {modules.map((m) => {
-          const isActive = activeModule === m.key;
+      <div className="flex items-end border-b border-sable bg-blanc flex-shrink-0 px-4">
+        {tabs.map((tab) => {
+          const active = activeModule === tab.key;
           return (
             <button
-              key={m.key}
-              onClick={() => setActiveModule(m.key)}
-              className="relative flex items-center gap-2.5 px-5 py-3.5 text-sm font-semibold font-body border-none bg-transparent cursor-pointer transition-all duration-150 whitespace-nowrap"
+              key={tab.key}
+              onClick={() => setActiveModule(tab.key)}
               style={{
-                color: isActive ? "var(--terre,#C4531A)" : "var(--pierre,#9C958D)",
+                padding: "14px 24px",
+                fontSize: 15,
+                fontWeight: active ? 700 : 500,
+                fontFamily: "'Karla', sans-serif",
+                color: active ? "#C4531A" : "#9C958D",
+                background: "none",
+                border: "none",
+                borderBottom: active ? "3px solid #C4531A" : "3px solid transparent",
+                cursor: "pointer",
+                transition: "all 0.15s",
+                marginBottom: -1,
               }}
             >
-              <m.Icon size={17} strokeWidth={isActive ? 2 : 1.6} className="flex-shrink-0" />
-              <span>{m.label}</span>
-              {isActive && (
-                <span className="absolute bottom-0 left-3 right-3 h-[2.5px] rounded-full bg-terre" />
-              )}
+              {tab.label}
             </button>
           );
         })}
