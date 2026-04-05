@@ -165,10 +165,18 @@ model Artisan {
   planOverrideRaison   String?   @map("plan_override_raison")
   planOverrideExpireAt DateTime? @map("plan_override_expire_at")
 
+  // Vitrine SEO (Business only)
+  villeSlug       String?  @map("ville_slug")
+  metierSlugSeo   String?  @map("metier_slug_seo")
+  seoTitle        String?  @map("seo_title")
+  horairesTexte   String?  @map("horaires_texte") @db.Text
+  zoneTexte       String?  @map("zone_texte") @db.Text
+
   @@index([ville, metierId])
   @@index([slug])
   @@index([plan])
   @@index([actif, visible])
+  @@index([villeSlug, metierSlugSeo])
   @@map("artisans")
 }
 

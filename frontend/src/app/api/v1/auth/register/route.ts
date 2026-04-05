@@ -155,6 +155,9 @@ export async function POST(request: NextRequest) {
         },
       });
 
+      // Resolve metier slug for SEO
+      const metierForSlug = resolvedMetierId ? await tx.metier.findUnique({ where: { id: resolvedMetierId }, select: { slug: true } }) : null;
+
       const artisan = await tx.artisan.create({
         data: {
           userId: user.id,
@@ -163,6 +166,8 @@ export async function POST(request: NextRequest) {
           telephone,
           metierId: resolvedMetierId,
           ville: ville || null,
+          villeSlug: ville ? ville.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : null,
+          metierSlugSeo: metierForSlug?.slug || null,
           codeInsee: codeInsee || null,
           latitude: latitude ?? null,
           longitude: longitude ?? null,

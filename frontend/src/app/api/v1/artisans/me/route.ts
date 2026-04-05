@@ -104,18 +104,24 @@ export async function PUT(request: NextRequest) {
     }
 
     // Resolve metierId if it's a slug
-    const updateData = { ...parsed.data };
+    const updateData: Record<string, unknown> = { ...parsed.data };
     if (updateData.metierId) {
       const metier = await prisma.metier.findFirst({
         where: {
           OR: [
-            { id: updateData.metierId },
-            { slug: updateData.metierId },
-            { nom: { equals: updateData.metierId, mode: "insensitive" as const } },
+            { id: updateData.metierId as string },
+            { slug: updateData.metierId as string },
+            { nom: { equals: updateData.metierId as string, mode: "insensitive" as const } },
           ],
         },
       });
       updateData.metierId = metier?.id || undefined;
+      if (metier?.slug) updateData.metierSlugSeo = metier.slug;
+    }
+
+    // Auto-generate villeSlug when ville changes
+    if (updateData.ville && typeof updateData.ville === "string") {
+      updateData.villeSlug = updateData.ville.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
     }
 
     // Update artisan fields
