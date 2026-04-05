@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { hasFeature } from "@/lib/plans";
 import type { PlanType } from "@/lib/plans";
 import PricingGrid from "@/components/pricing/PricingGrid";
+
+const INVOQUO_URL = process.env.NEXT_PUBLIC_INVOQUO_URL || "https://invoquo.vercel.app";
 
 export default function FacturationPage() {
   const { user, fetchWithAuth } = useAuth();
@@ -13,6 +14,7 @@ export default function FacturationPage() {
   const [embedToken, setEmbedToken] = useState("");
   const [siret, setSiret] = useState("");
   const [activating, setActivating] = useState(false);
+  const [activeModule, setActiveModule] = useState("dashboard");
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const plan = ((user?.plan as string) || "GRATUIT") as PlanType;
@@ -56,10 +58,10 @@ export default function FacturationPage() {
   useEffect(() => {
     if (state !== "iframe") return;
     function handleMessage(event: MessageEvent) {
-      if (event.origin !== "https://invoquo.vercel.app") return;
+      if (event.origin !== INVOQUO_URL) return;
       const { type, payload } = event.data;
       if (type === "invoquo:navigate" && iframeRef.current) {
-        iframeRef.current.src = `https://invoquo.vercel.app/embed/${siret}/${payload.module}?token=${embedToken}&accent=C4531A`;
+        iframeRef.current.src = `${INVOQUO_URL}/embed/${siret}/${payload.module}?token=${embedToken}&accent=C4531A`;
       }
       if (type === "invoquo:token-expiring") {
         fetchWithAuth("/facturation/refresh-token")
@@ -68,7 +70,7 @@ export default function FacturationPage() {
             setEmbedToken(data.token);
             iframeRef.current?.contentWindow?.postMessage(
               { type: "bativio:new-token", payload: { token: data.token } },
-              "https://invoquo.vercel.app"
+              INVOQUO_URL
             );
           })
           .catch(() => {});
@@ -192,14 +194,13 @@ export default function FacturationPage() {
   }
 
   // Iframe Invoquo with module navigation
-  const [activeModule, setActiveModule] = useState("dashboard");
   const modules = [
     { key: "dashboard", label: "Tableau de bord", icon: "📊" },
     { key: "invoices", label: "Factures", icon: "📄" },
     { key: "quotes", label: "Devis", icon: "📋" },
     { key: "clients", label: "Clients", icon: "👥" },
   ];
-  const embedUrl = `https://invoquo.vercel.app/embed/${siret}/${activeModule}?token=${embedToken}&accent=C4531A`;
+  const embedUrl = `${INVOQUO_URL}/embed/${siret}/${activeModule}?token=${embedToken}&accent=C4531A`;
 
   return (
     <div style={{ width: "100%", height: "calc(100vh - 64px)", display: "flex", flexDirection: "column" }}>
