@@ -3,6 +3,7 @@ import { requireAuth } from "@/lib/auth-server";
 import { apiSuccess, apiError, handleAuthError } from "@/lib/api-response";
 import { hasFeature } from "@/lib/plans";
 import type { PlanType } from "@/lib/plans";
+import { getEffectivePlan } from "@/lib/plan-gates";
 
 const INVOQUO_URL = process.env.INVOQUO_URL || "https://invoquo.vercel.app";
 
@@ -76,7 +77,7 @@ export async function GET() {
     if (!artisan?.invoquoEnabled) return apiError("Facturation non activée", 400);
 
     // ── SERVER-SIDE PLAN CHECK ──
-    const plan = (artisan.plan || "GRATUIT") as PlanType;
+    const plan = getEffectivePlan(artisan).toUpperCase() as PlanType;
     if (!hasFeature(plan, "invoquo_reception")) {
       return apiError("Votre plan ne donne pas accès à la facturation", 403);
     }

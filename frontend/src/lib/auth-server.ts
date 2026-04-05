@@ -64,13 +64,16 @@ export async function requireFeature(feature: import("@/lib/plans").FeatureKey) 
   const session = await requireAuth();
   const { prisma } = await import("@/lib/prisma");
   const { hasFeature } = await import("@/lib/plans");
+  const { getEffectivePlan } = await import("@/lib/plan-gates");
 
   const artisan = await prisma.artisan.findUnique({
     where: { userId: session.userId },
   });
   if (!artisan) throw new Error("ARTISAN_NOT_FOUND");
 
-  const plan = (artisan.plan || "GRATUIT") as import("@/lib/plans").PlanType;
+  // Use effective plan (max of Stripe plan and admin override)
+  const effectivePlan = getEffectivePlan(artisan);
+  const plan = effectivePlan.toUpperCase() as import("@/lib/plans").PlanType;
   if (!hasFeature(plan, feature)) {
     throw new Error(`PLAN_REQUIRED:${feature}`);
   }
