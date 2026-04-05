@@ -32,7 +32,7 @@ const configs: ConfigEntry[] = [
   // ==================== EMAIL ====================
   { cle: "email.enabled", valeur: "true", type: "boolean", categorie: "email", label: "Emails actives" },
   { cle: "email.from_name", valeur: "Bativio", type: "string", categorie: "email", label: "Nom expediteur" },
-  { cle: "email.from_address", valeur: "onboarding@resend.dev", type: "string", categorie: "email", label: "Adresse expediteur" },
+  { cle: "email.from_address", valeur: "contact@bativio.fr", type: "string", categorie: "email", label: "Adresse expediteur" },
   { cle: "email.bienvenue", valeur: "true", type: "boolean", categorie: "email", label: "Email de bienvenue" },
   { cle: "email.validation", valeur: "true", type: "boolean", categorie: "email", label: "Email de validation" },
   { cle: "email.nouveau_devis", valeur: "true", type: "boolean", categorie: "email", label: "Email nouveau devis" },
