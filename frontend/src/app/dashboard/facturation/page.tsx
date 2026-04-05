@@ -5,7 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { hasFeature } from "@/lib/plans";
 import type { PlanType } from "@/lib/plans";
 import PricingGrid from "@/components/pricing/PricingGrid";
-import { LayoutDashboard, FileText, ClipboardList, Users, ShieldCheck, Zap, FileDown, AlertCircle, RefreshCw, Loader2 } from "lucide-react";
+import { LayoutGrid, Receipt, FileSignature, Users2, FileText, ShieldCheck, Zap, FileDown, AlertCircle, RefreshCw, Loader2 } from "lucide-react";
 
 const INVOQUO_URL = process.env.NEXT_PUBLIC_INVOQUO_URL || "https://invoquo.vercel.app";
 
@@ -211,10 +211,10 @@ export default function FacturationPage() {
 
   // ── Iframe with tabs ──
   const allModules = [
-    { key: "dashboard", label: "Tableau de bord", Icon: LayoutDashboard },
-    { key: "invoices", label: "Factures", Icon: FileText },
-    { key: "quotes", label: "Devis", Icon: ClipboardList },
-    { key: "clients", label: "Clients", Icon: Users },
+    { key: "dashboard", label: "Tableau de bord", Icon: LayoutGrid },
+    { key: "invoices", label: "Factures", Icon: Receipt },
+    { key: "quotes", label: "Devis", Icon: FileSignature },
+    { key: "clients", label: "Clients", Icon: Users2 },
   ];
   const modules = allowedModules.length > 0
     ? allModules.filter((m) => allowedModules.includes(m.key))
@@ -224,22 +224,22 @@ export default function FacturationPage() {
   return (
     <div className="w-full flex flex-col" style={{ height: "calc(100vh - 64px)" }}>
       {/* Tabs */}
-      <div className="flex items-center gap-0 border-b border-sable bg-blanc flex-shrink-0 px-1">
+      <div className="flex items-center border-b border-sable bg-blanc flex-shrink-0 px-2 gap-1">
         {modules.map((m) => {
           const isActive = activeModule === m.key;
           return (
             <button
               key={m.key}
               onClick={() => setActiveModule(m.key)}
-              className="relative flex items-center gap-2 px-4 py-3 text-[13px] font-semibold font-body border-none bg-transparent cursor-pointer transition-all duration-150"
+              className="relative flex items-center gap-2.5 px-5 py-3.5 text-sm font-semibold font-body border-none bg-transparent cursor-pointer transition-all duration-150 whitespace-nowrap"
               style={{
                 color: isActive ? "var(--terre,#C4531A)" : "var(--pierre,#9C958D)",
               }}
             >
-              <m.Icon size={16} strokeWidth={isActive ? 2.2 : 1.8} />
-              {m.label}
+              <m.Icon size={17} strokeWidth={isActive ? 2 : 1.6} className="flex-shrink-0" />
+              <span>{m.label}</span>
               {isActive && (
-                <span className="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-terre" />
+                <span className="absolute bottom-0 left-3 right-3 h-[2.5px] rounded-full bg-terre" />
               )}
             </button>
           );
