@@ -90,7 +90,7 @@ export async function POST(
               <p>${descriptionBesoin}</p>
             </div>
             <p>Répondez rapidement pour maximiser vos chances de décrocher ce chantier !</p>
-            <a href="${process.env.NEXT_PUBLIC_SITE_URL || "https://bativio.vercel.app"}/dashboard/devis/${demandeDevis.id}"
+            <a href="${process.env.NEXT_PUBLIC_SITE_URL || "https://www.bativio.fr"}/dashboard/devis/${demandeDevis.id}"
                style="display: inline-block; background: #C4531A; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin-top: 8px;">
               Voir la demande
             </a>

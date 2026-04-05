@@ -49,7 +49,7 @@ export async function POST(
         <h1>Felicitations, ${updatedArtisan.nomAffichage} !</h1>
         <p>Votre compte Bativio a ete valide par notre equipe. Votre fiche est desormais visible dans l'annuaire.</p>
         <p>Connectez-vous a votre espace pour completer votre profil et commencer a recevoir des demandes de devis.</p>
-        <p><a href="${process.env.NEXT_PUBLIC_APP_URL || "https://bativio.fr"}/dashboard" style="display:inline-block;padding:12px 24px;background:#C4531A;color:#fff;text-decoration:none;border-radius:8px;">Acceder a mon espace</a></p>
+        <p><a href="${process.env.NEXT_PUBLIC_APP_URL || "https://www.bativio.fr"}/dashboard" style="display:inline-block;padding:12px 24px;background:#C4531A;color:#fff;text-decoration:none;border-radius:8px;">Acceder a mon espace</a></p>
       `
     ).catch(() => {});
 

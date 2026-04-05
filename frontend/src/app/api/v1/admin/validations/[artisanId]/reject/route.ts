@@ -69,7 +69,7 @@ export async function POST(
         <p><strong>Motif :</strong></p>
         <blockquote style="border-left:3px solid #C4531A;padding-left:12px;margin:16px 0;color:#555;">${motif}</blockquote>
         <p>Vous pouvez completer votre profil et soumettre une nouvelle demande a tout moment.</p>
-        <p><a href="${process.env.NEXT_PUBLIC_APP_URL || "https://bativio.fr"}/dashboard" style="display:inline-block;padding:12px 24px;background:#C4531A;color:#fff;text-decoration:none;border-radius:8px;">Completer mon profil</a></p>
+        <p><a href="${process.env.NEXT_PUBLIC_APP_URL || "https://www.bativio.fr"}/dashboard" style="display:inline-block;padding:12px 24px;background:#C4531A;color:#fff;text-decoration:none;border-radius:8px;">Completer mon profil</a></p>
         <p>L'equipe Bativio</p>
       `
     ).catch(() => {});

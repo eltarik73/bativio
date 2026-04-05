@@ -1,3 +1,6 @@
+export const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.bativio.fr";
+export const SITE_NAME = "Bativio";
+
 export const COLORS = {
   terre: "#C4531A",
   terreLight: "#D4733A",
@@ -124,8 +127,3 @@ export const PLANS = [
     ],
   },
 ] as const;
-
-export const SITE_NAME = "Bativio";
-export const SITE_URL = "https://bativio.fr";
-export const SITE_DESCRIPTION =
-  "Trouvez les meilleurs artisans du bâtiment près de chez vous. Plombier, électricien, peintre, maçon... Comparez, contactez, zéro commission.";

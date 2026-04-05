@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
               <p><strong>Demande initiale :</strong></p>
               <p>${demandeDevis.descriptionBesoin}</p>
             </div>
-            <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://bativio.fr"}/dashboard/devis/${demandeDevis.id}"
+            <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://www.bativio.fr"}/dashboard/devis/${demandeDevis.id}"
                style="display: inline-block; background: #C4531A; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin-top: 8px;">
               Voir le détail
             </a>

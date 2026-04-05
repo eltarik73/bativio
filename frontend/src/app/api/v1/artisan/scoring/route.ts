@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
         <p><strong>Resultat :</strong> ${resultLabel}</p>
         ${
           !isAutoAccepted
-            ? `<p><a href="${process.env.NEXT_PUBLIC_APP_URL || "https://bativio.fr"}/admin/validations">Valider manuellement</a></p>`
+            ? `<p><a href="${process.env.NEXT_PUBLIC_APP_URL || "https://www.bativio.fr"}/admin/validations">Valider manuellement</a></p>`
             : ""
         }
       `

@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     }
 
     const stripe = getStripe();
-    const appUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://bativio.vercel.app";
+    const appUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.bativio.fr";
 
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: artisan.stripeCustomerId,

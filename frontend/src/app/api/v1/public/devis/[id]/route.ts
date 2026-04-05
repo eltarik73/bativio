@@ -155,7 +155,7 @@ export async function POST(
     // Send email notification to artisan
     const actionLabel = action === "accept" ? "accepte" : "refuse";
     const actionLabelFem = action === "accept" ? "acceptee" : "refusee";
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://bativio.fr";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.bativio.fr";
 
     await sendEmail(
       devis.artisan.user.email,

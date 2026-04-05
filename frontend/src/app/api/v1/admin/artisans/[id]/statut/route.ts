@@ -51,7 +51,7 @@ export async function PUT(
           `
             <h1>Bienvenue sur Bativio, ${artisan.nomAffichage} !</h1>
             <p>Votre compte a été validé par notre équipe. Votre fiche est désormais visible dans l'annuaire.</p>
-            <p><a href="${process.env.NEXT_PUBLIC_APP_URL || "https://bativio.fr"}/dashboard">Accéder à mon espace</a></p>
+            <p><a href="${process.env.NEXT_PUBLIC_APP_URL || "https://www.bativio.fr"}/dashboard">Accéder à mon espace</a></p>
           `,
         );
     }

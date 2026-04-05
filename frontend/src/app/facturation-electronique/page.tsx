@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "Facturation électronique pour artisans — Bativio est prêt",
   description:
     "Obligation sept. 2026 : recevez et émettez vos factures électroniques. Bativio est connecté à une plateforme agréée. Conforme, simple, intégré.",
-  alternates: { canonical: "https://bativio.fr/facturation-electronique" },
+  alternates: { canonical: "https://www.bativio.fr/facturation-electronique" },
 };
 
 const TIMELINE = [
@@ -149,8 +149,8 @@ function JsonLd() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Bativio",
-    url: "https://bativio.fr",
-    logo: "https://bativio.fr/og-image.png",
+    url: "https://www.bativio.fr",
+    logo: "https://www.bativio.fr/og-image.png",
     description:
       "Plateforme de visibilité et de gestion pour artisans du bâtiment en Rhône-Alpes. Annuaire, vitrines, facturation électronique.",
     sameAs: [],

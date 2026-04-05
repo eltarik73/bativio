@@ -40,7 +40,7 @@ export async function POST(
     });
 
     // Build view link
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://bativio.fr";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.bativio.fr";
     const viewLink = `${baseUrl}/devis/${devis.viewToken}`;
 
     // Build postes summary

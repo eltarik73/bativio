@@ -8,7 +8,7 @@ export const revalidate = 86400;
 export const metadata: Metadata = {
   title: "Bativio pour les artisans — Le seul outil tout-en-un",
   description: "Annuaire, facturation, site internet, CRM, IA. Zéro commission, abonnement fixe. Conforme réforme 2026.",
-  alternates: { canonical: "https://bativio.fr/artisan" },
+  alternates: { canonical: "https://www.bativio.fr/artisan" },
 };
 
 const FlagFR = () => <svg width="20" height="14" viewBox="0 0 22 16" fill="none"><rect x="0.5" y="0.5" width="21" height="15" rx="2" fill="#fff" stroke="#E8D5C0" strokeWidth="0.5" /><rect x="1" y="1" width="6.67" height="14" fill="#002395" /><rect x="7.67" y="1" width="6.67" height="14" fill="#fff" /><rect x="14.33" y="1" width="6.67" height="14" fill="#ED2939" /></svg>;

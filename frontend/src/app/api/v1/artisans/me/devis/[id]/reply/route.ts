@@ -67,7 +67,7 @@ export async function POST(
 
     // Send email to client
     if (devis.emailClient) {
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://bativio.fr";
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.bativio.fr";
       await sendEmail(
           devis.emailClient,
           `${artisan.nomAffichage} a répondu à votre demande de devis`,

@@ -3,7 +3,7 @@ import { VILLES } from "@/lib/constants";
 import { MOCK_ARTISANS } from "@/lib/mock-data";
 import { TRAVAUX } from "@/lib/travaux-data";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://bativio.vercel.app";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.bativio.fr";
 const API_URL = `${SITE_URL}/api/v1`;
 
 async function fetchActiveArtisans(): Promise<{ slug: string; ville: string; updatedAt?: string }[]> {
@@ -36,7 +36,7 @@ const VILLES_SLUGS = [
 ] as const;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://bativio.fr";
+  const baseUrl = "https://www.bativio.fr";
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },

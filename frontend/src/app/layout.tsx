@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   },
   description:
     "Trouvez votre artisan du bâtiment en Rhône-Alpes. Profils vérifiés, avis clients, devis gratuit. Zéro commission.",
-  metadataBase: new URL("https://bativio.fr"),
+  metadataBase: new URL("https://www.bativio.fr"),
   alternates: { canonical: "/" },
   manifest: "/manifest.json",
   appleWebApp: {
@@ -54,8 +54,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "fr_FR",
     siteName: "Bativio",
-    url: "https://bativio.fr",
-    images: [{ url: "https://bativio.fr/og-image.png", width: 1200, height: 630, alt: "Bativio — La plateforme des artisans du bâtiment" }],
+    url: "https://www.bativio.fr",
+    images: [{ url: "https://www.bativio.fr/og-image.png", width: 1200, height: 630, alt: "Bativio — La plateforme des artisans du bâtiment" }],
   },
 };
 

@@ -36,12 +36,12 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
   return {
     title,
     description,
-    alternates: { canonical: `https://bativio.fr/${villeSlug}` },
+    alternates: { canonical: `https://www.bativio.fr/${villeSlug}` },
     openGraph: {
       title,
       description,
-      url: `https://bativio.fr/${villeSlug}`,
-      images: [{ url: "https://bativio.fr/og-image.png", width: 1200, height: 630 }],
+      url: `https://www.bativio.fr/${villeSlug}`,
+      images: [{ url: "https://www.bativio.fr/og-image.png", width: 1200, height: 630 }],
     },
   };
 }
@@ -121,7 +121,7 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
               item: {
                 "@type": "LocalBusiness",
                 name: a.nomAffichage,
-                url: `https://bativio.fr/${villeSlug}/${a.slug}`,
+                url: `https://www.bativio.fr/${villeSlug}/${a.slug}`,
               },
             })),
           }),
@@ -135,7 +135,7 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Accueil", item: "https://bativio.fr" },
+              { "@type": "ListItem", position: 1, name: "Accueil", item: "https://www.bativio.fr" },
               { "@type": "ListItem", position: 2, name: ville?.nom || villeSlug },
             ],
           }),

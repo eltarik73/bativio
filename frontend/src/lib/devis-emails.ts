@@ -1,7 +1,7 @@
 import { sendEmail } from "@/lib/email";
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://bativio.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL || "https://www.bativio.fr";
 
 // ---------------------------------------------------------------------------
 // Shared HTML helpers

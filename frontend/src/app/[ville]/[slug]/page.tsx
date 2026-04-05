@@ -105,15 +105,15 @@ export async function generateMetadata({
       title,
       description,
       alternates: {
-        canonical: `https://bativio.fr/${villeParam}/${slug}`,
+        canonical: `https://www.bativio.fr/${villeParam}/${slug}`,
       },
       openGraph: {
         title,
         description,
-        url: `https://bativio.fr/${villeParam}/${slug}`,
+        url: `https://www.bativio.fr/${villeParam}/${slug}`,
         images: [
           {
-            url: "https://bativio.fr/og-image.png",
+            url: "https://www.bativio.fr/og-image.png",
             width: 1200,
             height: 630,
           },
@@ -143,12 +143,12 @@ export async function generateMetadata({
     description:
       metaDesc.length > 160 ? metaDesc.substring(0, 157) + "..." : metaDesc,
     alternates: {
-      canonical: `https://bativio.fr/${villeParam}/${a.slug}`,
+      canonical: `https://www.bativio.fr/${villeParam}/${a.slug}`,
     },
     openGraph: {
       title: `${a.nomAffichage} \u2014 ${a.metierNom || "Artisan"} \u00e0 ${a.ville || villeParam}`,
       description: `Devis gratuit \u00b7 \u2605 ${a.noteMoyenne || 0}/5${a.experienceAnnees ? " \u00b7 " + a.experienceAnnees + " ans" : ""}`,
-      url: `https://bativio.fr/${villeParam}/${a.slug}`,
+      url: `https://www.bativio.fr/${villeParam}/${a.slug}`,
       images: [
         {
           url: ogImage,
@@ -296,7 +296,7 @@ export default async function SlugPage({
             name: a.nomAffichage,
             description: a.description || "",
             telephone: a.telephone || "",
-            url: `https://bativio.fr/${villeSlug}/${a.slug}`,
+            url: `https://www.bativio.fr/${villeSlug}/${a.slug}`,
             image: photo,
             address: {
               "@type": "PostalAddress",

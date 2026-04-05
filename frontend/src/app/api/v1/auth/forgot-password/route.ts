@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
 
     // Build reset link
     const baseUrl =
-      process.env.NEXT_PUBLIC_SITE_URL || "https://bativio.vercel.app";
+      process.env.NEXT_PUBLIC_SITE_URL || "https://www.bativio.fr";
     const resetLink = `${baseUrl}/reinitialiser-mot-de-passe?token=${token}`;
 
     // Send email

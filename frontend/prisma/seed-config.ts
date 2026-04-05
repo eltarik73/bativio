@@ -74,7 +74,7 @@ const configs: ConfigEntry[] = [
   // ==================== SEO / DESIGN ====================
   { cle: "seo.site_name", valeur: "Bativio", type: "string", categorie: "seo", label: "Nom du site" },
   { cle: "seo.site_description", valeur: "Trouvez votre artisan de confiance en Rh\u00f4ne-Alpes.", type: "string", categorie: "seo", label: "Description du site" },
-  { cle: "seo.site_url", valeur: "https://bativio.vercel.app", type: "string", categorie: "seo", label: "URL du site" },
+  { cle: "seo.site_url", valeur: "https://www.bativio.fr", type: "string", categorie: "seo", label: "URL du site" },
   { cle: "seo.google_analytics_id", valeur: "", type: "string", categorie: "seo", label: "Google Analytics ID" },
   { cle: "design.hero_title", valeur: "Trouvez votre artisan de confiance", type: "string", categorie: "seo", label: "Titre Hero" },
   { cle: "design.hero_subtitle", valeur: "Artisans qualifi\u00e9s en Rh\u00f4ne-Alpes. Z\u00e9ro commission.", type: "string", categorie: "seo", label: "Sous-titre Hero" },

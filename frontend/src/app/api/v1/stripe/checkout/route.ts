@@ -22,7 +22,7 @@ export async function POST(request: Request) {
 
     const stripe = getStripe();
     const config = PLAN_CONFIG[plan as keyof typeof PLAN_CONFIG];
-    const appUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://bativio.vercel.app";
+    const appUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.bativio.fr";
 
     // Create or retrieve Stripe customer
     let customerId = artisan.stripeCustomerId;

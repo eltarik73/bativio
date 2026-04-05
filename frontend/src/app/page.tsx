@@ -303,8 +303,8 @@ export default function Home() {
 
       {/* JSON-LD WebSite + Organization */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([
-        { "@context": "https://schema.org", "@type": "WebSite", name: "Bativio", url: "https://bativio.fr", potentialAction: { "@type": "SearchAction", target: "https://bativio.fr/?search={search_term_string}", "query-input": "required name=search_term_string" } },
-        { "@context": "https://schema.org", "@type": "Organization", name: "Bativio", url: "https://bativio.fr", logo: "https://bativio.fr/og-image.png", description: "La plateforme des artisans du bâtiment en Rhône-Alpes. Zéro commission.", areaServed: { "@type": "State", name: "Rhône-Alpes" } }
+        { "@context": "https://schema.org", "@type": "WebSite", name: "Bativio", url: "https://www.bativio.fr", potentialAction: { "@type": "SearchAction", target: "https://www.bativio.fr/?search={search_term_string}", "query-input": "required name=search_term_string" } },
+        { "@context": "https://schema.org", "@type": "Organization", name: "Bativio", url: "https://www.bativio.fr", logo: "https://www.bativio.fr/og-image.png", description: "La plateforme des artisans du bâtiment en Rhône-Alpes. Zéro commission.", areaServed: { "@type": "State", name: "Rhône-Alpes" } }
       ]) }} />
     </>
   );

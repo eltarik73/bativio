@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     });
 
     // Send email
-    const appUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://bativio.vercel.app";
+    const appUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.bativio.fr";
     const magicUrl = `${appUrl}/auth/magic?token=${magicToken}`;
 
     await sendEmail(

@@ -575,7 +575,7 @@ export default function MetierVillePage({
       item: {
         "@type": "LocalBusiness",
         name: a.nomAffichage,
-        url: `https://bativio.fr/${ville}/${a.slug}`,
+        url: `https://www.bativio.fr/${ville}/${a.slug}`,
         ...(a.description ? { description: a.description } : {}),
         ...(a.noteMoyenne > 0
           ? {
@@ -602,7 +602,7 @@ export default function MetierVillePage({
     provider: {
       "@type": "Organization",
       name: "Bativio",
-      url: "https://bativio.fr",
+      url: "https://www.bativio.fr",
     },
   };
 
@@ -627,19 +627,19 @@ export default function MetierVillePage({
         "@type": "ListItem",
         position: 1,
         name: "Accueil",
-        item: "https://bativio.fr",
+        item: "https://www.bativio.fr",
       },
       {
         "@type": "ListItem",
         position: 2,
         name: vNom,
-        item: `https://bativio.fr/${ville}`,
+        item: `https://www.bativio.fr/${ville}`,
       },
       {
         "@type": "ListItem",
         position: 3,
         name: mNom,
-        item: `https://bativio.fr/${ville}/${metier}`,
+        item: `https://www.bativio.fr/${ville}/${metier}`,
       },
     ],
   };
