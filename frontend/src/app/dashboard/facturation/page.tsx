@@ -5,6 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { hasFeature } from "@/lib/plans";
 import type { PlanType } from "@/lib/plans";
 import PricingGrid from "@/components/pricing/PricingGrid";
+import { LayoutDashboard, FileText, ClipboardList, Users, ShieldCheck, Zap, FileDown, AlertCircle, RefreshCw, Loader2 } from "lucide-react";
 
 const INVOQUO_URL = process.env.NEXT_PUBLIC_INVOQUO_URL || "https://invoquo.vercel.app";
 
@@ -81,125 +82,139 @@ export default function FacturationPage() {
     return () => window.removeEventListener("message", handleMessage);
   }, [state, siret, embedToken, fetchWithAuth]);
 
-  // Loading
+  // ── Loading ──
   if (state === "loading") {
     return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "60vh" }}>
-        <div style={{ textAlign: "center" }}>
-          <div style={{ width: 32, height: 32, border: "3px solid #E5E0DB", borderTopColor: "#C4531A", borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 16px" }} />
-          <p style={{ fontSize: 14, color: "var(--pierre,#9C958D)" }}>Chargement...</p>
+      <div className="flex items-center justify-center" style={{ height: "60vh" }}>
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 text-terre animate-spin mx-auto mb-3" />
+          <p className="text-sm text-pierre">Chargement de la facturation...</p>
         </div>
       </div>
     );
   }
 
-  // Upsell — plan insuffisant — design premium
+  // ── Upsell ──
   if (state === "upsell") {
     return (
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: "20px 0" }}>
-        {/* Hero banner gradient */}
-        <div style={{ background: "linear-gradient(135deg, #1C1C1E 0%, #2d1a0e 50%, #C4531A 100%)", borderRadius: 20, padding: "48px 40px", marginBottom: 28, position: "relative", overflow: "hidden" }}>
-          <div style={{ position: "absolute", top: -40, right: -40, width: 200, height: 200, borderRadius: "50%", background: "rgba(232,168,76,.15)" }} />
-          <div style={{ position: "absolute", bottom: -60, left: -20, width: 160, height: 160, borderRadius: "50%", background: "rgba(196,83,26,.2)" }} />
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(220,38,38,.2)", border: "1px solid rgba(220,38,38,.3)", padding: "6px 14px", borderRadius: 20, marginBottom: 16 }}>
-              <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#ef4444", animation: "pulse 2s infinite" }} />
-              <span style={{ fontSize: 12, fontWeight: 600, color: "#fca5a5" }}>Obligation septembre 2026</span>
+      <div className="max-w-[900px] mx-auto py-5">
+        {/* Hero */}
+        <div className="relative overflow-hidden rounded-2xl mb-7" style={{ background: "linear-gradient(135deg, #1C1C1E 0%, #2d1a0e 50%, #C4531A 100%)", padding: "48px 40px" }}>
+          <div className="absolute -top-10 -right-10 w-[200px] h-[200px] rounded-full" style={{ background: "rgba(232,168,76,.15)" }} />
+          <div className="absolute -bottom-[60px] -left-5 w-[160px] h-[160px] rounded-full" style={{ background: "rgba(196,83,26,.2)" }} />
+          <div className="relative z-[1]">
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full mb-4" style={{ background: "rgba(220,38,38,.2)", border: "1px solid rgba(220,38,38,.3)" }}>
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              <span className="text-xs font-semibold text-red-300">Obligation septembre 2026</span>
             </div>
-            <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(26px,4vw,36px)", fontWeight: 700, color: "#fff", lineHeight: 1.15, marginBottom: 10 }}>
+            <h1 className="font-display text-white font-bold leading-tight mb-2.5" style={{ fontSize: "clamp(26px,4vw,36px)" }}>
               La facturation papier, c&apos;est bientôt fini.
             </h1>
-            <p style={{ fontSize: 16, color: "rgba(255,255,255,.6)", lineHeight: 1.6, maxWidth: 480 }}>
-              Toutes les entreprises du bâtiment devront recevoir leurs factures au format électronique. <strong style={{ color: "rgba(255,255,255,.9)" }}>15€ d&apos;amende par facture non conforme.</strong>
+            <p className="text-base text-white/60 leading-relaxed max-w-[480px]">
+              Toutes les entreprises du bâtiment devront recevoir leurs factures au format électronique. <strong className="text-white/90">15€ d&apos;amende par facture non conforme.</strong>
             </p>
           </div>
         </div>
 
         {/* Avantages */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 14, marginBottom: 28 }}>
+        <div className="grid grid-cols-4 gap-3.5 mb-7">
           {[
-            { icon: <svg width="24" height="24" fill="none" stroke="#059669" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>, title: "Conforme", desc: "Connecté à une plateforme agréée par l'État", bg: "rgba(5,150,105,.08)" },
-            { icon: <svg width="24" height="24" fill="none" stroke="#E8A84C" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>, title: "Instantané", desc: "Activez en 1 clic depuis votre dashboard", bg: "rgba(232,168,76,.08)" },
-            { icon: <svg width="24" height="24" fill="none" stroke="#2563EB" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>, title: "Automatique", desc: "Factures reçues et classées automatiquement", bg: "rgba(37,99,235,.08)" },
-            { icon: <svg width="24" height="24" fill="none" stroke="#C4531A" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>, title: "Export", desc: "CSV/Excel pour votre comptable en 1 clic", bg: "rgba(196,83,26,.08)" },
+            { Icon: ShieldCheck, title: "Conforme", desc: "Plateforme agréée par l'État", color: "#059669", bg: "rgba(5,150,105,.08)" },
+            { Icon: Zap, title: "Instantané", desc: "Activez en 1 clic depuis votre dashboard", color: "#E8A84C", bg: "rgba(232,168,76,.08)" },
+            { Icon: RefreshCw, title: "Automatique", desc: "Factures reçues et classées automatiquement", color: "#2563EB", bg: "rgba(37,99,235,.08)" },
+            { Icon: FileDown, title: "Export", desc: "CSV/Excel pour votre comptable en 1 clic", color: "#C4531A", bg: "rgba(196,83,26,.08)" },
           ].map((f) => (
-            <div key={f.title} style={{ background: "#fff", borderRadius: 14, border: "1px solid var(--sable,#E8D5C0)", padding: "24px 18px", textAlign: "center", transition: "transform .2s, box-shadow .2s", cursor: "default" }} className="stat-card-hover">
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: f.bg, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>{f.icon}</div>
-              <div style={{ fontFamily: "'Fraunces',serif", fontSize: 15, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 4 }}>{f.title}</div>
-              <div style={{ fontSize: 12, color: "var(--pierre,#9C958D)", lineHeight: 1.4 }}>{f.desc}</div>
+            <div key={f.title} className="bv-card bg-blanc rounded-[14px] border border-sable p-5 text-center">
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto mb-2.5" style={{ background: f.bg }}>
+                <f.Icon size={22} color={f.color} strokeWidth={1.8} />
+              </div>
+              <div className="font-display text-[15px] font-bold text-bois mb-1">{f.title}</div>
+              <div className="text-xs text-pierre leading-snug">{f.desc}</div>
             </div>
           ))}
         </div>
 
-        {/* Plans Bativio */}
         <PricingGrid currentPlan={plan} ctaHref="/dashboard/parametres" />
 
-        {/* Bottom urgence */}
-        <div style={{ background: "#1C1C1E", borderRadius: 16, padding: "28px 32px", textAlign: "center" }}>
-          <p style={{ fontSize: 13, color: "rgba(255,255,255,.4)", marginBottom: 6 }}>Ne restez pas sans protection</p>
-          <p style={{ fontFamily: "'Fraunces',serif", fontSize: 20, fontWeight: 700, color: "#fff" }}>
-            Activez la facturation électronique en <span style={{ color: "#E8A84C" }}>moins de 2 minutes</span>
+        {/* Bottom CTA */}
+        <div className="bg-anthracite rounded-2xl px-8 py-7 text-center mt-7">
+          <p className="text-[13px] text-white/40 mb-1.5">Ne restez pas sans protection</p>
+          <p className="font-display text-xl font-bold text-white">
+            Activez la facturation électronique en <span className="text-or">moins de 2 minutes</span>
           </p>
-          <p style={{ fontSize: 14, color: "rgba(255,255,255,.35)", marginTop: 8 }}>Zéro configuration technique · Zéro risque d&apos;amende · Annulable à tout moment</p>
+          <p className="text-sm text-white/35 mt-2">Zéro configuration technique · Zéro risque d&apos;amende · Annulable à tout moment</p>
         </div>
       </div>
     );
   }
 
-  // Onboarding — plan OK mais pas encore active
+  // ── Onboarding ──
   if (state === "onboarding") {
     return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh", padding: 32 }}>
-        <div style={{ maxWidth: 520, textAlign: "center" }}>
-          <div style={{ width: 64, height: 64, borderRadius: "50%", background: "rgba(196,83,26,.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px", fontSize: 32 }}>📄</div>
-          <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 26, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 8 }}>Facturation électronique</h1>
-          <p style={{ fontSize: 15, color: "var(--bois-mid,#5C4A3A)", lineHeight: 1.6, marginBottom: 28 }}>
+      <div className="flex items-center justify-center min-h-[60vh] p-8">
+        <div className="max-w-[520px] text-center">
+          <div className="w-16 h-16 rounded-full bg-terre/8 flex items-center justify-center mx-auto mb-6">
+            <FileText size={32} className="text-terre" strokeWidth={1.5} />
+          </div>
+          <h1 className="font-display text-[26px] font-bold text-bois mb-2">Facturation électronique</h1>
+          <p className="text-[15px] text-bois-mid leading-relaxed mb-7">
             À partir de septembre 2026, toutes les entreprises doivent pouvoir recevoir des factures électroniques. Activez le module pour être conforme.
           </p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14, marginBottom: 28, textAlign: "center" }}>
+          <div className="grid grid-cols-3 gap-3.5 mb-7 text-center">
             {[
-              { icon: "🛡️", title: "Conforme", desc: "Plateforme certifiée par l'État" },
-              { icon: "⚡", title: "Automatique", desc: "Factures reçues automatiquement" },
-              { icon: "📄", title: "Tout-en-un", desc: "Créez et gérez vos factures" },
+              { Icon: ShieldCheck, title: "Conforme", desc: "Plateforme certifiée par l'État", color: "#059669" },
+              { Icon: Zap, title: "Automatique", desc: "Factures reçues automatiquement", color: "#E8A84C" },
+              { Icon: FileText, title: "Tout-en-un", desc: "Créez et gérez vos factures", color: "#C4531A" },
             ].map((f) => (
-              <div key={f.title} style={{ background: "#fff", borderRadius: 12, border: "1px solid #E5E0DB", padding: 16 }}>
-                <div style={{ fontSize: 24, marginBottom: 8 }}>{f.icon}</div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: "var(--bois,#3D2E1F)" }}>{f.title}</div>
-                <div style={{ fontSize: 12, color: "var(--pierre,#9C958D)", marginTop: 4 }}>{f.desc}</div>
+              <div key={f.title} className="bg-blanc rounded-xl border border-sable/60 p-4">
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-2" style={{ background: `${f.color}12` }}>
+                  <f.Icon size={20} color={f.color} strokeWidth={1.8} />
+                </div>
+                <div className="text-sm font-semibold text-bois">{f.title}</div>
+                <div className="text-xs text-pierre mt-1">{f.desc}</div>
               </div>
             ))}
           </div>
-          <button onClick={handleActivate} disabled={activating} style={{
-            padding: "14px 32px", borderRadius: 12, background: "#C4531A", color: "#fff", fontSize: 16, fontWeight: 600,
-            border: "none", cursor: activating ? "wait" : "pointer", opacity: activating ? 0.6 : 1,
-          }}>
-            {activating ? "Activation en cours..." : "Activer la facturation"}
+          <button
+            onClick={handleActivate}
+            disabled={activating}
+            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-terre text-white text-base font-semibold border-none cursor-pointer disabled:opacity-60 disabled:cursor-wait hover:bg-terre-light transition-colors"
+          >
+            {activating ? <><Loader2 size={18} className="animate-spin" /> Activation en cours...</> : "Activer la facturation"}
           </button>
-          <p style={{ fontSize: 12, color: "#C5C0B9", marginTop: 12 }}>Gratuit pendant 1 mois · Sans engagement</p>
+          <p className="text-xs text-pierre/70 mt-3">Gratuit pendant 1 mois · Sans engagement</p>
         </div>
       </div>
     );
   }
 
-  // Error
+  // ── Error ──
   if (state === "error") {
     return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "40vh", padding: 32 }}>
-        <div style={{ textAlign: "center" }}>
-          <p style={{ fontSize: 15, fontWeight: 600, color: "#dc2626" }}>Impossible de charger la facturation</p>
-          <p style={{ fontSize: 13, color: "var(--pierre,#9C958D)", marginTop: 8 }}>Réessayez dans quelques instants.</p>
-          <button onClick={() => window.location.reload()} style={{ marginTop: 16, padding: "10px 20px", background: "#F7F5F2", borderRadius: 8, border: "none", fontSize: 13, color: "var(--bois-mid,#5C4A3A)", cursor: "pointer" }}>Réessayer</button>
+      <div className="flex items-center justify-center min-h-[40vh] p-8">
+        <div className="text-center">
+          <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-3">
+            <AlertCircle size={24} className="text-red-500" />
+          </div>
+          <p className="text-[15px] font-semibold text-red-600">Impossible de charger la facturation</p>
+          <p className="text-[13px] text-pierre mt-2">Réessayez dans quelques instants.</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 inline-flex items-center gap-1.5 px-5 py-2.5 bg-creme rounded-lg border-none text-[13px] text-bois-mid font-medium cursor-pointer hover:bg-sable/40 transition-colors"
+          >
+            <RefreshCw size={14} /> Réessayer
+          </button>
         </div>
       </div>
     );
   }
 
-  // Iframe Invoquo with module navigation — only show tabs the plan allows
+  // ── Iframe with tabs ──
   const allModules = [
-    { key: "dashboard", label: "Tableau de bord", icon: "📊" },
-    { key: "invoices", label: "Factures", icon: "📄" },
-    { key: "quotes", label: "Devis", icon: "📋" },
-    { key: "clients", label: "Clients", icon: "👥" },
+    { key: "dashboard", label: "Tableau de bord", Icon: LayoutDashboard },
+    { key: "invoices", label: "Factures", Icon: FileText },
+    { key: "quotes", label: "Devis", Icon: ClipboardList },
+    { key: "clients", label: "Clients", Icon: Users },
   ];
   const modules = allowedModules.length > 0
     ? allModules.filter((m) => allowedModules.includes(m.key))
@@ -207,31 +222,34 @@ export default function FacturationPage() {
   const embedUrl = `${INVOQUO_URL}/embed/${siret}/${activeModule}?token=${embedToken}&accent=C4531A`;
 
   return (
-    <div style={{ width: "100%", height: "calc(100vh - 64px)", display: "flex", flexDirection: "column" }}>
-      {/* Module tabs */}
-      <div style={{ display: "flex", gap: 0, borderBottom: "1px solid var(--sable,#E8D5C0)", background: "var(--blanc,#fff)", flexShrink: 0, padding: "0 8px" }}>
-        {modules.map((m) => (
-          <button
-            key={m.key}
-            onClick={() => setActiveModule(m.key)}
-            style={{
-              padding: "10px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer",
-              background: "none", border: "none", fontFamily: "'Karla',sans-serif",
-              borderBottom: activeModule === m.key ? "2px solid var(--terre,#C4531A)" : "2px solid transparent",
-              color: activeModule === m.key ? "var(--terre,#C4531A)" : "var(--pierre,#9C958D)",
-              display: "flex", alignItems: "center", gap: 6, transition: "all .15s",
-            }}
-          >
-            <span style={{ fontSize: 15 }}>{m.icon}</span>
-            {m.label}
-          </button>
-        ))}
+    <div className="w-full flex flex-col" style={{ height: "calc(100vh - 64px)" }}>
+      {/* Tabs */}
+      <div className="flex items-center gap-0 border-b border-sable bg-blanc flex-shrink-0 px-1">
+        {modules.map((m) => {
+          const isActive = activeModule === m.key;
+          return (
+            <button
+              key={m.key}
+              onClick={() => setActiveModule(m.key)}
+              className="relative flex items-center gap-2 px-4 py-3 text-[13px] font-semibold font-body border-none bg-transparent cursor-pointer transition-all duration-150"
+              style={{
+                color: isActive ? "var(--terre,#C4531A)" : "var(--pierre,#9C958D)",
+              }}
+            >
+              <m.Icon size={16} strokeWidth={isActive ? 2.2 : 1.8} />
+              {m.label}
+              {isActive && (
+                <span className="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-terre" />
+              )}
+            </button>
+          );
+        })}
       </div>
       {/* Iframe */}
       <iframe
         ref={iframeRef}
         src={embedUrl}
-        style={{ flex: 1, width: "100%", border: "none" }}
+        className="flex-1 w-full border-none"
         allow="clipboard-write"
         title="Facturation"
       />
