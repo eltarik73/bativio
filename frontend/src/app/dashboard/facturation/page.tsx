@@ -222,9 +222,9 @@ export default function FacturationPage() {
   const embedUrl = `${INVOQUO_URL}/embed/${siret}/${activeModule}?token=${embedToken}&accent=C4531A`;
 
   return (
-    <div className="w-full flex flex-col" style={{ height: "calc(100vh - 64px)" }}>
-      {/* Tabs */}
-      <div className="flex items-end border-b border-sable bg-blanc flex-shrink-0 px-4">
+    <div className="w-full flex flex-col" style={{ height: "calc(100vh - 64px - env(safe-area-inset-bottom, 0px))" }}>
+      {/* Tabs — responsive padding */}
+      <div className="flex items-end border-b border-sable bg-blanc flex-shrink-0 px-1 sm:px-4 overflow-x-auto">
         {tabs.map((tab) => {
           const active = activeModule === tab.key;
           return (
@@ -232,8 +232,8 @@ export default function FacturationPage() {
               key={tab.key}
               onClick={() => setActiveModule(tab.key)}
               style={{
-                padding: "14px 24px",
-                fontSize: 15,
+                padding: "12px 14px",
+                fontSize: 14,
                 fontWeight: active ? 700 : 500,
                 fontFamily: "'Karla', sans-serif",
                 color: active ? "#C4531A" : "#9C958D",
@@ -243,6 +243,7 @@ export default function FacturationPage() {
                 cursor: "pointer",
                 transition: "all 0.15s",
                 marginBottom: -1,
+                whiteSpace: "nowrap",
               }}
             >
               {tab.label}

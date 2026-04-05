@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Karla, Playfair_Display } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
 import "./globals.css";
@@ -23,6 +23,15 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#C4531A",
+};
+
 export const metadata: Metadata = {
   title: {
     default: "Bativio — Artisans du bâtiment en Rhône-Alpes",
@@ -33,7 +42,6 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://bativio.fr"),
   alternates: { canonical: "/" },
   manifest: "/manifest.json",
-  themeColor: "#C4531A",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

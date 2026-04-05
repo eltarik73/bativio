@@ -48,9 +48,9 @@ function getPlanBadgeStyle(plan: string): React.CSSProperties {
 
 const MOB = [
   { href: "/dashboard", label: "Accueil", icon: '<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>' },
-  { href: "/dashboard/profil", label: "Profil", icon: '<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>' },
   { href: "/dashboard/demandes", label: "Demandes", icon: '<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>' },
-  { href: "/dashboard/photos", label: "Photos", icon: '<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>' },
+  { href: "/dashboard/facturation", label: "Factures", icon: '<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14h.01M13 14h2M9 18h.01M13 18h2"/></svg>' },
+  { href: "/dashboard/devis-ia", label: "Devis IA", icon: '<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 008.5 14.063l-6.135-1.582a.5.5 0 010-.962L8.5 9.937A2 2 0 009.937 8.5l1.582-6.135a.5.5 0 01.962 0L14.063 8.5A2 2 0 0015.5 9.937l6.135 1.582a.5.5 0 010 .962L15.5 14.063a2 2 0 00-1.437 1.437l-1.582 6.135a.5.5 0 01-.962 0L9.937 15.5z"/></svg>' },
 ];
 
 function slugifyVille(ville: string): string {
@@ -155,8 +155,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <main style={{ padding: "28px 32px", maxWidth: 1000, margin: "0 auto" }} className="max-md:p-4">{children}</main>
         </div>
 
-        {/* Mobile nav */}
-        <nav style={{ position: "fixed", bottom: 0, left: 0, right: 0, height: 60, background: "rgba(255,255,255,.96)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderTop: "1.5px solid #EDEBE7", zIndex: 50 }} className="flex md:!hidden">
+        {/* Mobile nav — safe area aware */}
+        <nav style={{ position: "fixed", bottom: 0, left: 0, right: 0, paddingBottom: "env(safe-area-inset-bottom, 0px)", height: "calc(60px + env(safe-area-inset-bottom, 0px))", background: "rgba(255,255,255,.96)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderTop: "1.5px solid #EDEBE7", zIndex: 50 }} className="flex md:!hidden">
           {MOB.map((item) => (
             <Link key={item.href} href={item.href} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, fontSize: 10, fontWeight: p === item.href ? 600 : 500, color: p === item.href ? "#C4531A" : "#9B9590", textDecoration: "none", transition: "color .15s" }}>
               <span dangerouslySetInnerHTML={{ __html: item.icon }} style={{ display: "flex" }} />
@@ -190,11 +190,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {/* Quick links */}
               <div style={{ padding: "12px 0", display: "flex", flexDirection: "column", gap: 4 }}>
                 {[
-                  { href: "/dashboard/demandes", label: "Demandes" },
+                  { href: "/dashboard/profil", label: "Mon profil" },
                   { href: "/dashboard/agenda", label: "Agenda & RDV" },
-                  { href: "/dashboard/facturation", label: "Facturation" },
-                  { href: "/dashboard/devis-ia", label: "Devis IA" },
                   { href: "/dashboard/vitrine", label: "Ma vitrine" },
+                  { href: "/dashboard/photos", label: "Mes photos" },
                   { href: "/dashboard/abonnement", label: "Mon abonnement" },
                   { href: "/dashboard/parametres", label: "Param\u00e8tres" },
                 ].map((l) => (
