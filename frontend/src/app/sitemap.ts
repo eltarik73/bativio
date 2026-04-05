@@ -2,6 +2,8 @@ import { MetadataRoute } from "next";
 import { VILLES } from "@/lib/constants";
 import { MOCK_ARTISANS } from "@/lib/mock-data";
 import { TRAVAUX } from "@/lib/travaux-data";
+import { prisma } from "@/lib/prisma";
+import { getEffectivePlan } from "@/lib/plan-gates";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.bativio.fr";
 const API_URL = `${SITE_URL}/api/v1`;
@@ -91,5 +93,40 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   );
 
-  return [...staticPages, ...villePages, ...villeMetierPages, ...artisanPages, ...travauxPages];
+  // --- Business vitrine pages (metier-ville composite URLs) ---
+  let businessCategoryPages: MetadataRoute.Sitemap = [];
+  let businessVitrinePages: MetadataRoute.Sitemap = [];
+  try {
+    const businessArtisans = await prisma.artisan.findMany({
+      where: { actif: true, visible: true, deletedAt: null, metierSlugSeo: { not: null }, villeSlug: { not: null } },
+      select: { slug: true, metierSlugSeo: true, villeSlug: true, plan: true, planOverride: true, planOverrideExpireAt: true, updatedAt: true },
+    });
+
+    const biz = businessArtisans.filter((a) => getEffectivePlan(a) === "business");
+    const seenCombos = new Set<string>();
+
+    for (const a of biz) {
+      if (!a.metierSlugSeo || !a.villeSlug) continue;
+      const combo = `${a.metierSlugSeo}-${a.villeSlug}`;
+      if (!seenCombos.has(combo)) {
+        seenCombos.add(combo);
+        businessCategoryPages.push({
+          url: `${baseUrl}/${combo}`,
+          lastModified: new Date(),
+          changeFrequency: "weekly",
+          priority: 0.8,
+        });
+      }
+      businessVitrinePages.push({
+        url: `${baseUrl}/${combo}/${a.slug}`,
+        lastModified: a.updatedAt,
+        changeFrequency: "weekly",
+        priority: 0.7,
+      });
+    }
+  } catch {
+    // Prisma may fail during build — skip silently
+  }
+
+  return [...staticPages, ...villePages, ...villeMetierPages, ...artisanPages, ...travauxPages, ...businessCategoryPages, ...businessVitrinePages];
 }

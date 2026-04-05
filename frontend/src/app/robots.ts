@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/dashboard/", "/admin/", "/api/", "/devis/"],
+        disallow: ["/dashboard/", "/admin/", "/api/", "/devis/", "/connexion", "/inscription", "/onboarding/"],
       },
     ],
     sitemap: "https://www.bativio.fr/sitemap.xml",
