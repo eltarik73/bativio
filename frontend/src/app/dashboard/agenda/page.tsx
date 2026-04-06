@@ -7,6 +7,16 @@ import { DashboardFeatureGate } from "@/components/DashboardFeatureGate";
 import { CHANTIER_COLORS } from "@/lib/planning-config";
 
 /* ── Types ── */
+interface CollabData {
+  id: string;
+  nom: string;
+  email: string | null;
+  telephone: string | null;
+  role: string | null;
+  source: string;
+  artisanBativioId: string | null;
+}
+
 interface ChantierData {
   id: string;
   nom: string;
@@ -22,6 +32,17 @@ interface ChantierData {
   notes: string | null;
   statut: string;
   montantDevis: number | null;
+  collaborateurs?: CollabData[];
+  _invite?: boolean;
+  _invitePar?: string | null;
+}
+
+interface BativioSearchResult {
+  id: string;
+  nomAffichage: string;
+  email: string;
+  metierNom: string | null;
+  ville: string | null;
 }
 
 interface RdvData {
@@ -116,6 +137,15 @@ function PlanningContent() {
   // Detail
   const [detailChantier, setDetailChantier] = useState<ChantierData | null>(null);
   const [expandedRdv, setExpandedRdv] = useState<string | null>(null);
+
+  // Collaborateur
+  const [showAddCollab, setShowAddCollab] = useState(false);
+  const [collabTab, setCollabTab] = useState<"manuel" | "bativio" | "gmail">("manuel");
+  const [collabForm, setCollabForm] = useState({ nom: "", telephone: "", role: "" });
+  const [collabSaving, setCollabSaving] = useState(false);
+  const [bativioQuery, setBativioQuery] = useState("");
+  const [bativioResults, setBativioResults] = useState<BativioSearchResult[]>([]);
+  const [bativioSearching, setBativioSearching] = useState(false);
 
   const days = Array.from({ length: 7 }, (_, i) => addDays(monday, i));
   const todayStr = fmtDate(new Date());
@@ -223,6 +253,72 @@ function PlanningContent() {
       setExpandedRdv(null);
     } catch { /* silent */ }
   };
+
+  /* ── Collaborateurs ── */
+  const addCollabManuel = async (chantierId: string) => {
+    if (!collabForm.nom) return;
+    setCollabSaving(true);
+    try {
+      await fetchWithAuth(`/artisans/me/chantiers/${chantierId}/collaborateurs`, {
+        method: "POST",
+        body: JSON.stringify({ nom: collabForm.nom, telephone: collabForm.telephone || undefined, role: collabForm.role || undefined, source: "MANUEL" }),
+      });
+      setCollabForm({ nom: "", telephone: "", role: "" });
+      setShowAddCollab(false);
+      await fetchData(monday);
+      if (detailChantier) {
+        const updated = await fetchWithAuth(`/artisans/me/chantiers?start=${fmtDate(monday)}&end=${fmtDate(addDays(monday, 6))}`) as { chantiers: ChantierData[] };
+        const refreshed = updated.chantiers.find(c => c.id === chantierId);
+        if (refreshed) setDetailChantier(refreshed);
+      }
+    } catch { /* silent */ }
+    finally { setCollabSaving(false); }
+  };
+
+  const addCollabBativio = async (chantierId: string, result: BativioSearchResult) => {
+    setCollabSaving(true);
+    try {
+      await fetchWithAuth(`/artisans/me/chantiers/${chantierId}/collaborateurs`, {
+        method: "POST",
+        body: JSON.stringify({ nom: result.nomAffichage, email: result.email, source: "BATIVIO", artisanBativioId: result.id }),
+      });
+      setBativioQuery("");
+      setBativioResults([]);
+      setShowAddCollab(false);
+      await fetchData(monday);
+      if (detailChantier) {
+        const updated = await fetchWithAuth(`/artisans/me/chantiers?start=${fmtDate(monday)}&end=${fmtDate(addDays(monday, 6))}`) as { chantiers: ChantierData[] };
+        const refreshed = updated.chantiers.find(c => c.id === chantierId);
+        if (refreshed) setDetailChantier(refreshed);
+      }
+    } catch { /* silent */ }
+    finally { setCollabSaving(false); }
+  };
+
+  const removeCollab = async (chantierId: string, collabId: string) => {
+    try {
+      await fetchWithAuth(`/artisans/me/chantiers/${chantierId}/collaborateurs/${collabId}`, { method: "DELETE" });
+      await fetchData(monday);
+      if (detailChantier) {
+        setDetailChantier(prev => prev ? { ...prev, collaborateurs: (prev.collaborateurs || []).filter(c => c.id !== collabId) } : null);
+      }
+    } catch { /* silent */ }
+  };
+
+  const searchBativio = async (q: string) => {
+    setBativioQuery(q);
+    if (q.length < 2) { setBativioResults([]); return; }
+    setBativioSearching(true);
+    try {
+      const results = await fetchWithAuth(`/artisans/search?q=${encodeURIComponent(q)}`);
+      setBativioResults(Array.isArray(results) ? results as BativioSearchResult[] : []);
+    } catch { setBativioResults([]); }
+    finally { setBativioSearching(false); }
+  };
+
+  function getInitials(name: string): string {
+    return name.split(/\s+/).map(w => w[0]).join("").substring(0, 2).toUpperCase();
+  }
 
   /* ── Compute chantier bars for week view ── */
   function getChantierBars() {
@@ -363,7 +459,7 @@ function PlanningContent() {
                   >
                     <div style={{
                       gridColumn: `${b.colStart + 1} / span ${b.colSpan}`,
-                      background: b.couleur,
+                      background: b._invite ? "#9CA3AF" : b.couleur,
                       color: "#fff",
                       borderRadius: 8,
                       padding: "6px 10px",
@@ -376,10 +472,20 @@ function PlanningContent() {
                       display: "flex",
                       alignItems: "center",
                       gap: 6,
-                      opacity: b.statut === "ANNULE" ? 0.4 : b.statut === "TERMINE" ? 0.6 : 1,
+                      opacity: b.statut === "ANNULE" ? 0.4 : b.statut === "TERMINE" ? 0.6 : b._invite ? 0.7 : 1,
                     }}>
-                      <span>{b.nom}</span>
+                      <span>{b._invite ? `\u2709 ${b.nom}` : b.nom}</span>
                       {b.adresse && <span style={{ opacity: 0.7, fontSize: 11 }}>{b.adresse}</span>}
+                      {(b.collaborateurs || []).length > 0 && (
+                        <span style={{ display: "inline-flex", gap: 2, marginLeft: "auto", flexShrink: 0 }}>
+                          {(b.collaborateurs || []).slice(0, 3).map(col => (
+                            <span key={col.id} style={{ width: 20, height: 20, borderRadius: "50%", background: "rgba(255,255,255,.3)", fontSize: 8, fontWeight: 700, display: "inline-flex", alignItems: "center", justifyContent: "center" }} title={col.nom}>
+                              {getInitials(col.nom)}
+                            </span>
+                          ))}
+                          {(b.collaborateurs || []).length > 3 && <span style={{ fontSize: 9, opacity: 0.7 }}>+{(b.collaborateurs || []).length - 3}</span>}
+                        </span>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -476,15 +582,25 @@ function PlanningContent() {
                     const cEnd = new Date(c.dateFin); cEnd.setHours(0, 0, 0, 0);
                     const span = daysBetween(cStart, cEnd) + 1;
                     return (
-                      <div key={c.id} onClick={() => setDetailChantier(c)} style={{ padding: "12px 14px", borderRadius: 12, background: "#fff", borderLeft: `4px solid ${c.couleur}`, border: `1px solid ${c.couleur}33`, cursor: "pointer" }}>
+                      <div key={c.id} onClick={() => setDetailChantier(c)} style={{ padding: "12px 14px", borderRadius: 12, background: c._invite ? "#F9FAFB" : "#fff", borderLeft: `4px solid ${c._invite ? "#9CA3AF" : c.couleur}`, border: `1px solid ${c._invite ? "#D1D5DB" : c.couleur + "33"}`, cursor: "pointer", opacity: c._invite ? 0.8 : 1 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <div style={{ width: 10, height: 10, borderRadius: "50%", background: c.couleur, flexShrink: 0 }} />
-                          <span style={{ fontSize: 14, fontWeight: 700, color: "#3D2E1F" }}>{c.nom}</span>
+                          <div style={{ width: 10, height: 10, borderRadius: "50%", background: c._invite ? "#9CA3AF" : c.couleur, flexShrink: 0 }} />
+                          <span style={{ fontSize: 14, fontWeight: 700, color: "#3D2E1F" }}>{c._invite ? `\u2709 ` : ""}{c.nom}</span>
                         </div>
+                        {c._invite && c._invitePar && <div style={{ fontSize: 11, color: "#9CA3AF", marginTop: 2, paddingLeft: 18 }}>Invit&eacute; par {c._invitePar}</div>}
                         {c.adresse && <div style={{ fontSize: 12, color: "#6B6560", marginTop: 4, paddingLeft: 18 }}>{c.adresse}{c.ville ? ` \u2013 ${c.ville}` : ""}</div>}
-                        <div style={{ fontSize: 11, color: "#9C958D", marginTop: 4, paddingLeft: 18 }}>
-                          {span > 1 ? `${span} jours` : "1 jour"}{c.heureDebut ? ` \u00b7 ${c.heureDebut}${c.heureFin ? `\u2013${c.heureFin}` : ""}` : ""}
-                          {c.clientNom ? ` \u00b7 ${c.clientNom}` : ""}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 4, paddingLeft: 18 }}>
+                          <span style={{ fontSize: 11, color: "#9C958D" }}>
+                            {span > 1 ? `${span} jours` : "1 jour"}{c.heureDebut ? ` \u00b7 ${c.heureDebut}${c.heureFin ? `\u2013${c.heureFin}` : ""}` : ""}
+                            {c.clientNom ? ` \u00b7 ${c.clientNom}` : ""}
+                          </span>
+                          {(c.collaborateurs || []).length > 0 && (
+                            <span style={{ display: "inline-flex", gap: 2 }}>
+                              {(c.collaborateurs || []).slice(0, 3).map(col => (
+                                <span key={col.id} style={{ width: 22, height: 22, borderRadius: "50%", background: col.source === "BATIVIO" ? "#C4531A" : "#6B7280", color: "#fff", fontSize: 8, fontWeight: 700, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{getInitials(col.nom)}</span>
+                              ))}
+                            </span>
+                          )}
                         </div>
                       </div>
                     );
@@ -538,12 +654,17 @@ function PlanningContent() {
 
       {/* ── Chantier detail panel ── */}
       {detailChantier && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.4)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }} onClick={() => setDetailChantier(null)}>
-          <div onClick={e => e.stopPropagation()} style={{ background: "#fff", borderRadius: 16, padding: 28, maxWidth: 440, width: "100%", maxHeight: "80vh", overflow: "auto" }}>
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.4)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }} onClick={() => { setDetailChantier(null); setShowAddCollab(false); }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: "#fff", borderRadius: 16, padding: 28, maxWidth: 480, width: "100%", maxHeight: "85vh", overflow: "auto" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-              <div style={{ width: 14, height: 14, borderRadius: "50%", background: detailChantier.couleur }} />
+              <div style={{ width: 14, height: 14, borderRadius: "50%", background: detailChantier._invite ? "#9CA3AF" : detailChantier.couleur }} />
               <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 20, fontWeight: 700, color: "#3D2E1F", margin: 0 }}>{detailChantier.nom}</h2>
             </div>
+            {detailChantier._invite && detailChantier._invitePar && (
+              <div style={{ padding: "6px 12px", borderRadius: 8, background: "#F3F4F6", fontSize: 12, color: "#6B7280", marginBottom: 12 }}>
+                Invit&eacute; par <strong>{detailChantier._invitePar}</strong> &mdash; lecture seule
+              </div>
+            )}
             <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 13, color: "#6B6560" }}>
               <div><span style={{ fontWeight: 600, color: "#3D2E1F" }}>P&eacute;riode :</span> {new Date(detailChantier.dateDebut).toLocaleDateString("fr-FR")} &rarr; {new Date(detailChantier.dateFin).toLocaleDateString("fr-FR")}</div>
               {detailChantier.heureDebut && <div><span style={{ fontWeight: 600, color: "#3D2E1F" }}>Horaires :</span> {detailChantier.heureDebut}{detailChantier.heureFin ? ` \u2013 ${detailChantier.heureFin}` : ""}</div>}
@@ -553,10 +674,116 @@ function PlanningContent() {
               {detailChantier.montantDevis != null && <div><span style={{ fontWeight: 600, color: "#3D2E1F" }}>Montant :</span> {detailChantier.montantDevis.toLocaleString("fr-FR")} &euro;</div>}
               <div><span style={{ fontWeight: 600, color: "#3D2E1F" }}>Statut :</span> {detailChantier.statut.replace("_", " ")}</div>
             </div>
+
+            {/* ── Equipe / Collaborateurs ── */}
+            {!detailChantier._invite && (
+              <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid #EDEBE7" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: "#3D2E1F" }}>&Eacute;quipe</span>
+                  <button onClick={() => { setShowAddCollab(v => !v); setCollabTab("manuel"); setCollabForm({ nom: "", telephone: "", role: "" }); setBativioQuery(""); setBativioResults([]); }} style={{ fontSize: 12, fontWeight: 600, color: "#C4531A", background: "none", border: "none", cursor: "pointer" }}>
+                    {showAddCollab ? "Annuler" : "+ Ajouter"}
+                  </button>
+                </div>
+
+                {/* Collab list */}
+                {(detailChantier.collaborateurs || []).length > 0 ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {(detailChantier.collaborateurs || []).map(col => (
+                      <div key={col.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 10px", borderRadius: 8, background: "#FAF8F5", border: "1px solid #EDEBE7" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <span style={{ width: 28, height: 28, borderRadius: "50%", background: col.source === "BATIVIO" ? "#C4531A" : "#6B7280", color: "#fff", fontSize: 10, fontWeight: 700, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                            {getInitials(col.nom)}
+                          </span>
+                          <div>
+                            <div style={{ fontSize: 13, fontWeight: 600, color: "#3D2E1F" }}>{col.nom}</div>
+                            <div style={{ fontSize: 11, color: "#9C958D" }}>
+                              {col.role || "collaborateur"}{col.source === "BATIVIO" ? " \u2014 Bativio" : ""}
+                              {col.telephone ? ` \u00b7 ${col.telephone}` : ""}
+                            </div>
+                          </div>
+                        </div>
+                        <button onClick={() => removeCollab(detailChantier.id, col.id)} style={{ fontSize: 16, color: "#9C958D", background: "none", border: "none", cursor: "pointer", padding: "0 4px" }}>&times;</button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p style={{ fontSize: 12, color: "#C5C0B9", fontStyle: "italic" }}>Aucun collaborateur</p>
+                )}
+
+                {/* Add collab form */}
+                {showAddCollab && (
+                  <div style={{ marginTop: 12, padding: 14, borderRadius: 10, background: "#FAF8F5", border: "1px solid #EDEBE7" }}>
+                    {/* Tabs */}
+                    <div style={{ display: "flex", gap: 4, marginBottom: 12 }}>
+                      {(["manuel", "bativio", "gmail"] as const).map(t => (
+                        <button key={t} onClick={() => { if (t !== "gmail") setCollabTab(t); }} style={{
+                          flex: 1, padding: "6px 8px", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: t === "gmail" ? "default" : "pointer", border: "none",
+                          background: collabTab === t ? "#C4531A" : t === "gmail" ? "#F3F4F6" : "#fff",
+                          color: collabTab === t ? "#fff" : t === "gmail" ? "#C5C0B9" : "#3D2E1F",
+                          opacity: t === "gmail" ? 0.6 : 1,
+                        }}>
+                          {t === "manuel" ? "Manuel" : t === "bativio" ? "Bativio" : "Gmail"}
+                        </button>
+                      ))}
+                    </div>
+
+                    {collabTab === "manuel" && (
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        <input value={collabForm.nom} onChange={e => setCollabForm(f => ({ ...f, nom: e.target.value }))} placeholder="Nom *" style={inputStyle} />
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                          <input value={collabForm.telephone} onChange={e => setCollabForm(f => ({ ...f, telephone: e.target.value }))} placeholder="T&eacute;l&eacute;phone" style={inputStyle} />
+                          <input value={collabForm.role} onChange={e => setCollabForm(f => ({ ...f, role: e.target.value }))} placeholder="R&ocirc;le" style={inputStyle} />
+                        </div>
+                        <button onClick={() => addCollabManuel(detailChantier.id)} disabled={collabSaving || !collabForm.nom} style={{ ...btnPrimary, opacity: collabSaving || !collabForm.nom ? 0.5 : 1, fontSize: 12, padding: "8px 16px" }}>
+                          {collabSaving ? "..." : "Ajouter"}
+                        </button>
+                      </div>
+                    )}
+
+                    {collabTab === "bativio" && (
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        <input value={bativioQuery} onChange={e => searchBativio(e.target.value)} placeholder="Rechercher un artisan Bativio..." style={inputStyle} />
+                        {bativioSearching && <p style={{ fontSize: 11, color: "#9C958D" }}>Recherche...</p>}
+                        {bativioResults.length > 0 && (
+                          <div style={{ display: "flex", flexDirection: "column", gap: 4, maxHeight: 160, overflow: "auto" }}>
+                            {bativioResults.map(r => (
+                              <button key={r.id} onClick={() => addCollabBativio(detailChantier.id, r)} disabled={collabSaving} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderRadius: 8, background: "#fff", border: "1px solid #EDEBE7", cursor: "pointer", textAlign: "left", width: "100%", opacity: collabSaving ? 0.5 : 1 }}>
+                                <span style={{ width: 28, height: 28, borderRadius: "50%", background: "#C4531A", color: "#fff", fontSize: 10, fontWeight: 700, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                                  {getInitials(r.nomAffichage)}
+                                </span>
+                                <div>
+                                  <div style={{ fontSize: 13, fontWeight: 600, color: "#3D2E1F" }}>{r.nomAffichage}</div>
+                                  <div style={{ fontSize: 11, color: "#9C958D" }}>{r.metierNom || ""}{r.ville ? ` \u00b7 ${r.ville}` : ""}</div>
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                        {bativioQuery.length >= 2 && !bativioSearching && bativioResults.length === 0 && (
+                          <p style={{ fontSize: 12, color: "#C5C0B9" }}>Aucun artisan trouv&eacute;</p>
+                        )}
+                      </div>
+                    )}
+
+                    {collabTab === "gmail" && (
+                      <div style={{ textAlign: "center", padding: 16 }}>
+                        <p style={{ fontSize: 13, color: "#9C958D" }}>Import Google Contacts</p>
+                        <p style={{ fontSize: 12, color: "#C5C0B9", marginTop: 4 }}>Bient&ocirc;t disponible</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
             <div style={{ display: "flex", gap: 8, marginTop: 20 }}>
-              <button onClick={() => openEditChantier(detailChantier)} style={btnPrimary}>Modifier</button>
-              <button onClick={() => deleteChantier(detailChantier.id)} style={{ ...btnSecondary, color: "#DC2626", borderColor: "#FCA5A5" }}>Supprimer</button>
-              <button onClick={() => setDetailChantier(null)} style={btnSecondary}>Fermer</button>
+              {!detailChantier._invite && (
+                <>
+                  <button onClick={() => openEditChantier(detailChantier)} style={btnPrimary}>Modifier</button>
+                  <button onClick={() => deleteChantier(detailChantier.id)} style={{ ...btnSecondary, color: "#DC2626", borderColor: "#FCA5A5" }}>Supprimer</button>
+                </>
+              )}
+              <button onClick={() => { setDetailChantier(null); setShowAddCollab(false); }} style={btnSecondary}>Fermer</button>
             </div>
           </div>
         </div>

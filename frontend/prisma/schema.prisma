@@ -55,6 +55,7 @@ enum NotificationType {
   RDV_ANNULE
   RELANCE
   AVIS
+  CHANTIER_INVITE
 }
 
 model User {
@@ -669,16 +670,18 @@ model Chantier {
 }
 
 model ChantierCollaborateur {
-  id          String              @id @default(cuid())
-  chantierId  String              @map("chantier_id")
-  nom         String
-  email       String?
-  telephone   String?
-  role        String?             @default("collaborateur")
-  source      CollaborateurSource @default(MANUEL)
+  id               String              @id @default(cuid())
+  chantierId       String              @map("chantier_id")
+  nom              String
+  email            String?
+  telephone        String?
+  role             String?             @default("collaborateur")
+  source           CollaborateurSource @default(MANUEL)
+  artisanBativioId String?             @map("artisan_bativio_id")
 
-  chantier    Chantier            @relation(fields: [chantierId], references: [id], onDelete: Cascade)
+  chantier         Chantier            @relation(fields: [chantierId], references: [id], onDelete: Cascade)
 
   @@index([chantierId])
+  @@index([artisanBativioId])
   @@map("chantier_collaborateurs")
 }

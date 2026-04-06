@@ -37,14 +37,31 @@ export async function GET(request: NextRequest) {
     const startDate = new Date(start + "T00:00:00Z");
     const endDate = new Date(end + "T23:59:59Z");
 
-    const [chantiers, rdvs] = await Promise.all([
+    const [chantiers, chantiersInvite, rdvs] = await Promise.all([
+      // My own chantiers
       prisma.chantier.findMany({
         where: {
           artisanId: artisan.id,
           dateDebut: { lte: endDate },
           dateFin: { gte: startDate },
         },
-        include: { collaborateurs: true },
+        include: {
+          collaborateurs: true,
+          artisan: { select: { nomAffichage: true } },
+        },
+        orderBy: { dateDebut: "asc" },
+      }),
+      // Chantiers where I'm invited as Bativio collaborator
+      prisma.chantier.findMany({
+        where: {
+          collaborateurs: { some: { artisanBativioId: artisan.id, source: "BATIVIO" } },
+          dateDebut: { lte: endDate },
+          dateFin: { gte: startDate },
+        },
+        include: {
+          collaborateurs: true,
+          artisan: { select: { nomAffichage: true } },
+        },
         orderBy: { dateDebut: "asc" },
       }),
       prisma.rendezVousBativio.findMany({
@@ -56,7 +73,16 @@ export async function GET(request: NextRequest) {
       }),
     ]);
 
-    return apiSuccess({ chantiers, rdvs });
+    // Mark invited chantiers
+    const inviteIds = new Set(chantiersInvite.map(c => c.id));
+    const allChantiers = [
+      ...chantiers.map(c => ({ ...c, _invite: false, _invitePar: null as string | null })),
+      ...chantiersInvite
+        .filter(c => !chantiers.some(own => own.id === c.id))
+        .map(c => ({ ...c, _invite: true, _invitePar: c.artisan.nomAffichage })),
+    ];
+
+    return apiSuccess({ chantiers: allChantiers, rdvs });
   } catch (e) {
     const authErr = handleAuthError(e);
     if (authErr) return authErr;
