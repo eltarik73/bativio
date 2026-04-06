@@ -17,7 +17,7 @@
 
   <!-- Text -->
   <text x="62" y="34" font-family="Georgia, 'Times New Roman', serif" font-size="30" font-weight="700" letter-spacing="-0.3">
-    <tspan fill="#C4531A">B</tspan><tspan fill="#1C1C1E">ativio</tspan>
+    <tspan fill="#1C1C1E">B</tspan><tspan fill="#C4531A">ativio</tspan>
   </text>
   <text x="62" y="46" font-family="'Helvetica Neue', Arial, sans-serif" font-size="8" font-weight="600" letter-spacing="3" fill="#9C958D">PLATEFORME ARTISANS</text>
 </svg>
