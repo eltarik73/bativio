@@ -72,3 +72,39 @@ export function getEffectivePlan(artisan: {
 
   return PLAN_HIERARCHY[Math.max(stripeLevel, overrideLevel)];
 }
+
+// ─── Dashboard module gating ───────────────────────────────────────
+
+export type DashboardModuleId =
+  | "tableau-de-bord" | "profil" | "photos" | "abonnement" | "parametres"
+  | "devis" | "demandes" | "agenda" | "facturation" | "rdv" | "vitrine" | "devis-ia";
+
+interface DashboardModuleConfig {
+  requiredPlan: PlanId;
+  label: string;
+}
+
+export const DASHBOARD_MODULES: Record<string, DashboardModuleConfig> = {
+  "tableau-de-bord": { requiredPlan: "gratuit", label: "Tableau de bord" },
+  profil:       { requiredPlan: "gratuit",  label: "Mon profil" },
+  photos:       { requiredPlan: "gratuit",  label: "Photos" },
+  abonnement:   { requiredPlan: "gratuit",  label: "Abonnement" },
+  parametres:   { requiredPlan: "gratuit",  label: "Paramètres" },
+  demandes:     { requiredPlan: "gratuit",  label: "Demandes" },
+  agenda:       { requiredPlan: "starter",  label: "Agenda" },
+  facturation:  { requiredPlan: "starter",  label: "Facturation" },
+  rdv:          { requiredPlan: "starter",  label: "Mes RDV" },
+  vitrine:      { requiredPlan: "pro",      label: "Vitrine" },
+  "devis-ia":   { requiredPlan: "business", label: "Devis IA" },
+};
+
+/** Returns the badge plan to show (null if module is accessible) */
+export function getModuleBadge(effectivePlan: PlanId, moduleHref: string): PlanId | null {
+  // Extract module id from href like "/dashboard/facturation" -> "facturation"
+  const parts = moduleHref.replace("/dashboard/", "").replace("/dashboard", "tableau-de-bord").split("?")[0];
+  const moduleId = parts || "tableau-de-bord";
+  const mod = DASHBOARD_MODULES[moduleId];
+  if (!mod) return null;
+  if (hasAccess(effectivePlan, mod.requiredPlan)) return null;
+  return mod.requiredPlan;
+}
