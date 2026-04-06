@@ -173,7 +173,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Main */}
         <div style={{ flex: 1, paddingBottom: 72 }} className="md:pb-0">
-          <main style={{ padding: "28px 32px", maxWidth: 1000, margin: "0 auto" }} className="max-md:p-4">{children}</main>
+          <main style={{ padding: "28px 32px", maxWidth: 1000, margin: "0 auto" }} className="max-md:!px-4 max-md:!pt-4 max-md:!pb-24">{children}</main>
         </div>
 
         {/* Mobile nav — safe area aware */}

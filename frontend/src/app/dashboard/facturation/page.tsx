@@ -364,7 +364,7 @@ function FacturationContent() {
       ) : tab === "clients" ? (
         /* Clients list */
         clients.length === 0 ? (
-          <EmptyState type="client" href={embedIframeUrl} />
+          <EmptyState type="client" href="/dashboard/facturation/nouveau?type=devis" />
         ) : (
           <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #E8D5C0", overflow: "hidden" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
