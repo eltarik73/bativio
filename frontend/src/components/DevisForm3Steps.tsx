@@ -134,12 +134,22 @@ export default function DevisForm3Steps({ slug, artisanName, ville, artisanMetie
         </div>
         <div className="field">
           <label>Photos <span style={{ color: "#9B9590", fontWeight: 400 }}>(facultatif &middot; max 5)</span></label>
-          <div className="photo-drop" onClick={() => fileRef.current?.click()}>
-            <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => { if (e.target.files) setPhotos((p) => [...p, ...Array.from(e.target.files!)].slice(0, 5)); }} />
-            <div className="photo-drop-text">&#128247; Glissez vos photos ici ou <b>parcourir</b></div>
-            <div className="photo-drop-sub">JPG, PNG ou WebP &middot; max 10 Mo par photo</div>
-          </div>
-          {photos.length > 0 && <p style={{ fontSize: 12, color: "#16a34a", marginTop: 6 }}>{photos.length} photo{photos.length > 1 ? "s" : ""} s&eacute;lectionn&eacute;e{photos.length > 1 ? "s" : ""}</p>}
+          <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => { if (e.target.files) setPhotos((p) => [...p, ...Array.from(e.target.files!)].slice(0, 5)); }} />
+          <button type="button" onClick={() => fileRef.current?.click()} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%", padding: "14px 20px", borderRadius: 10, border: "2px dashed #E8D5C0", background: "#FAF8F5", color: "#5C4A3A", fontSize: 14, fontWeight: 600, cursor: "pointer", transition: "all .15s" }}>
+            <svg width="20" height="20" fill="none" stroke="#C4531A" strokeWidth="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            Ajouter des photos
+          </button>
+          <div style={{ fontSize: 11, color: "#9B9590", marginTop: 4, textAlign: "center" }}>JPG, PNG ou WebP &middot; max 10 Mo par photo</div>
+          {photos.length > 0 && (
+            <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
+              {photos.map((f, i) => (
+                <div key={i} style={{ position: "relative", width: 56, height: 56, borderRadius: 8, overflow: "hidden", border: "1px solid #E8D5C0" }}>
+                  <img src={URL.createObjectURL(f)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <button type="button" onClick={(e) => { e.stopPropagation(); setPhotos(p => p.filter((_, j) => j !== i)); }} style={{ position: "absolute", top: 2, right: 2, width: 18, height: 18, borderRadius: "50%", background: "rgba(0,0,0,.6)", color: "#fff", fontSize: 11, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>&times;</button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         <div className="btn-row-devis">
           <button className="btn-back" onClick={() => go(0)}>&larr; Retour</button>
