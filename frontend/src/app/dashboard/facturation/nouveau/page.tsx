@@ -32,13 +32,15 @@ function NouveauContent() {
   const demandeId = searchParams.get("demandeId");
   const descriptionParam = searchParams.get("description");
   const isAvoir = typeParam === "avoir";
+  const fromInvoiceNum = searchParams.get("fromNum") || "";
+  const fromInvoiceId = searchParams.get("fromInvoice") || "";
   const [docType, setDocType] = useState<"DEVIS" | "FACTURE">(typeParam === "facture" || typeParam === "avoir" ? "FACTURE" : "DEVIS");
-  const [clientNom, setClientNom] = useState(searchParams.get("clientNom") || "");
+  const [clientNom, setClientNom] = useState(searchParams.get("clientNom") || searchParams.get("fromClient") || "");
   const [clientEmail, setClientEmail] = useState(searchParams.get("clientEmail") || "");
   const [clientTel, setClientTel] = useState(searchParams.get("clientTelephone") || "");
   const [clientAdresse, setClientAdresse] = useState("");
   const [lignes, setLignes] = useState<Ligne[]>([newLigne()]);
-  const [notes, setNotes] = useState(descriptionParam || "");
+  const [notes, setNotes] = useState(isAvoir && fromInvoiceNum ? `Avoir sur facture n\u00b0${fromInvoiceNum}` : descriptionParam || "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -169,9 +171,16 @@ function NouveauContent() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <Link href="/dashboard/facturation" style={{ color: "#9C958D", textDecoration: "none", fontSize: 14 }}>&larr; Retour</Link>
-          <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#3D2E1F" }}>
-            {isAvoir ? "Nouvel avoir" : docType === "DEVIS" ? "Nouveau devis" : "Nouvelle facture"}
-          </h1>
+          <div>
+            <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#3D2E1F", display: "inline" }}>
+              {isAvoir ? "Nouvel avoir" : docType === "DEVIS" ? "Nouveau devis" : "Nouvelle facture"}
+            </h1>
+            {isAvoir && fromInvoiceNum && (
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "4px 12px", borderRadius: 8, background: "rgba(220,38,38,.06)", border: "1px solid rgba(220,38,38,.15)", marginLeft: 12, fontSize: 13, color: "#DC2626", fontWeight: 600, verticalAlign: "middle" }}>
+                Facture n&deg;{fromInvoiceNum}
+              </span>
+            )}
+          </div>
         </div>
         {/* Type toggle */}
         <div style={{ display: "flex", borderRadius: 10, border: "1px solid #E8D5C0", overflow: "hidden" }}>

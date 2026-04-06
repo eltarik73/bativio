@@ -229,7 +229,7 @@ function FacturationContent() {
   const ACTIONS = [
     { href: "/dashboard/facturation/nouveau?type=devis", label: "Nouveau devis", desc: "Cr\u00e9er un devis client", icon: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6M9 15l3 3 3-3"/>', color: "#C4531A" },
     { href: "/dashboard/facturation/nouveau?type=facture", label: "Nouvelle facture", desc: "Facturer un client", icon: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>', color: "#2563EB" },
-    { href: "/dashboard/facturation/nouveau?type=avoir", label: "Nouvel avoir", desc: "Avoir sur facture", icon: '<path d="M3 12h18M3 6h18M3 18h18"/><path d="M19 6l-7 12"/>', color: "#DC2626" },
+    { href: "/dashboard/facturation?tab=factures", label: "Cr\u00e9er un avoir", desc: "Depuis une facture existante", icon: '<path d="M3 12h18M3 6h18M3 18h18"/><path d="M19 6l-7 12"/>', color: "#DC2626" },
     { href: embedIframeUrl || "/dashboard/facturation?tab=clients", label: "Nouveau client", desc: "Ajouter un contact", icon: '<path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/>', color: "#16A34A", external: true },
   ];
 
@@ -410,7 +410,7 @@ function FacturationContent() {
                   <th style={thStyle}>Date</th>
                   <th style={{ ...thStyle, textAlign: "right" }}>Montant TTC</th>
                   <th style={{ ...thStyle, textAlign: "right" }}>Statut</th>
-                  {tab === "devis" && <th style={{ ...thStyle, textAlign: "right" }}></th>}
+                  {(tab === "devis" || tab === "factures") && <th style={{ ...thStyle, textAlign: "right" }}></th>}
                 </tr>
               </thead>
               <tbody>
@@ -442,8 +442,21 @@ function FacturationContent() {
                               title="Convertir en facture"
                               style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #1C1C1E", background: converting === d.id ? "#6b7280" : "#1C1C1E", color: "#fff", fontSize: 11, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap", opacity: converting === d.id ? 0.6 : 1 }}
                             >
-                              {converting === d.id ? "..." : "↗ Facture"}
+                              {converting === d.id ? "..." : "\u2197 Facture"}
                             </button>
+                          )}
+                        </td>
+                      )}
+                      {tab === "factures" && (
+                        <td style={{ ...tdStyle, textAlign: "right" }}>
+                          {d.status !== "draft" && (
+                            <Link
+                              href={`/dashboard/facturation/nouveau?type=avoir&fromInvoice=${d.id}&fromNum=${encodeURIComponent(num)}&fromClient=${encodeURIComponent(clientName(d.client))}&fromTTC=${d.totalTTC}`}
+                              prefetch={false}
+                              style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #DC2626", background: "rgba(220,38,38,.05)", color: "#DC2626", fontSize: 11, fontWeight: 600, textDecoration: "none", whiteSpace: "nowrap" }}
+                            >
+                              Avoir
+                            </Link>
                           )}
                         </td>
                       )}
