@@ -77,7 +77,7 @@ export function getEffectivePlan(artisan: {
 
 export type DashboardModuleId =
   | "tableau-de-bord" | "profil" | "photos" | "abonnement" | "parametres"
-  | "devis" | "demandes" | "agenda" | "facturation" | "vitrine" | "devis-ia";
+  | "devis" | "demandes" | "agenda" | "facturation" | "tarifs" | "vitrine" | "devis-ia";
 
 interface DashboardModuleConfig {
   requiredPlan: PlanId;
@@ -92,6 +92,7 @@ export const DASHBOARD_MODULES: Record<string, DashboardModuleConfig> = {
   parametres:   { requiredPlan: "gratuit",  label: "Paramètres" },
   demandes:     { requiredPlan: "gratuit",  label: "Demandes" },
   agenda:       { requiredPlan: "starter",  label: "Planning" },
+  tarifs:       { requiredPlan: "starter",  label: "Mes tarifs" },
   facturation:  { requiredPlan: "starter",  label: "Facturation" },
   vitrine:      { requiredPlan: "pro",      label: "Vitrine" },
   "devis-ia":   { requiredPlan: "business", label: "Devis IA" },
