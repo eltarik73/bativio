@@ -69,8 +69,8 @@ const FALLBACK_ARBRE: ArbreData = {
   root: {
     id: "root",
     type: "free_text",
-    text: "Bonjour ! Decrivez-nous votre projet en quelques mots.",
-    placeholder: "Ex: renovation salle de bain, fuite d'eau...",
+    text: "Bonjour ! D\u00e9crivez-nous votre projet en quelques mots.",
+    placeholder: "Ex: r\u00e9novation salle de bain, fuite d'eau...",
     next: "summary",
   },
   questions: {

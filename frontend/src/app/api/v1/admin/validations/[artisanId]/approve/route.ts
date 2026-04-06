@@ -44,11 +44,11 @@ export async function POST(
     // Send welcome email (fire & forget)
     sendEmail(
       updatedArtisan.user.email,
-      "Bienvenue sur Bativio ! Votre compte est active",
+      "Bienvenue sur Bativio ! Votre compte est activ\u00e9",
       `
-        <h1>Felicitations, ${updatedArtisan.nomAffichage} !</h1>
-        <p>Votre compte Bativio a ete valide par notre equipe. Votre fiche est desormais visible dans l'annuaire.</p>
-        <p>Connectez-vous a votre espace pour completer votre profil et commencer a recevoir des demandes de devis.</p>
+        <h1>F\u00e9licitations, ${updatedArtisan.nomAffichage} !</h1>
+        <p>Votre compte Bativio a \u00e9t\u00e9 valid\u00e9 par notre \u00e9quipe. Votre fiche est d\u00e9sormais visible dans l'annuaire.</p>
+        <p>Connectez-vous \u00e0 votre espace pour compl\u00e9ter votre profil et commencer \u00e0 recevoir des demandes de devis.</p>
         <p><a href="${process.env.NEXT_PUBLIC_APP_URL || "https://www.bativio.fr"}/dashboard" style="display:inline-block;padding:12px 24px;background:#C4531A;color:#fff;text-decoration:none;border-radius:8px;">Acceder a mon espace</a></p>
       `
     ).catch(() => {});

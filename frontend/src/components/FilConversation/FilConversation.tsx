@@ -166,7 +166,7 @@ export default function FilConversation({
           `/artisan/demandes/${demandeId}`
         )) as DemandeData;
       } else {
-        setError("Parametres manquants.");
+        setError("Param\u00e8tres manquants.");
         return;
       }
 

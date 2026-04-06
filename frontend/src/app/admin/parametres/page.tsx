@@ -108,7 +108,7 @@ export default function AdminParametresPage() {
         body: JSON.stringify(entries.map(([cle, valeur]) => ({ cle, valeur }))),
       });
       setDirty({});
-      setToast("Parametres enregistres");
+      setToast("Param\u00e8tres enregistr\u00e9s");
       setTimeout(() => setToast(null), 3000);
     } catch (e) {
       console.error("Erreur sauvegarde:", e);
