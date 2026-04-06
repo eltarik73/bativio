@@ -226,34 +226,32 @@ function FacturationContent() {
 
   const embedIframeUrl = embedToken ? `${INVOQUO_URL}/embed/${(user as unknown as { invoquoSiret?: string; siret?: string })?.invoquoSiret || (user as unknown as { siret?: string })?.siret || ""}/${tab === "factures" ? "invoices" : tab === "clients" ? "clients" : "quotes"}/new?token=${embedToken}&accent=C4531A` : "";
 
+  const ACTIONS = [
+    { href: "/dashboard/facturation/nouveau?type=devis", label: "Nouveau devis", desc: "Cr\u00e9er un devis client", icon: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6M9 15l3 3 3-3"/>', color: "#C4531A" },
+    { href: "/dashboard/facturation/nouveau?type=facture", label: "Nouvelle facture", desc: "Facturer un client", icon: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>', color: "#2563EB" },
+    { href: "/dashboard/facturation/nouveau?type=avoir", label: "Nouvel avoir", desc: "Avoir sur facture", icon: '<path d="M3 12h18M3 6h18M3 18h18"/><path d="M19 6l-7 12"/>', color: "#DC2626" },
+    { href: embedIframeUrl || "/dashboard/facturation?tab=clients", label: "Nouveau client", desc: "Ajouter un contact", icon: '<path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/>', color: "#16A34A", external: true },
+  ];
+
   return (
     <div>
       {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
-        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#3D2E1F" }}>Facturation</h1>
-        <div style={{ display: "flex", gap: 8 }}>
-          {tab === "reporting" ? (
-            <div style={{ display: "flex", gap: 8 }}>
-              <button onClick={exportCSV} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 16px", borderRadius: 10, border: "1px solid #E8D5C0", background: "#fff", color: "#3D2E1F", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
-                Export CSV
-              </button>
-              <button onClick={exportFEC} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 16px", borderRadius: 10, border: "1px solid #E8D5C0", background: "#fff", color: "#3D2E1F", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
-                Export FEC
-              </button>
-            </div>
-          ) : (
-            <div style={{ display: "flex", gap: 8 }}>
-              {tab === "factures" && (
-                <Link href="/dashboard/facturation/nouveau?type=avoir" prefetch={false} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 16px", borderRadius: 10, border: "1px solid #E8D5C0", background: "#fff", color: "#3D2E1F", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
-                  Avoir
-                </Link>
-              )}
-              <Link href={tab === "clients" ? embedIframeUrl : `/dashboard/facturation/nouveau?type=${tab === "factures" ? "facture" : "devis"}`} prefetch={false} {...(tab === "clients" ? { target: "_blank", rel: "noopener noreferrer" } : {})} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, background: "#C4531A", color: "#fff", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
-                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
-                {tab === "factures" ? "Nouvelle facture" : tab === "clients" ? "Nouveau client" : "Nouveau devis"}
-              </Link>
-            </div>
-          )}
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#3D2E1F", marginBottom: 16 }}>Facturation</h1>
+
+        {/* Action cards */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(180px,1fr))", gap: 12 }}>
+          {ACTIONS.map(a => (
+            <Link key={a.label} href={a.href} prefetch={false} {...(a.external ? { target: "_blank" } : {})} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: "20px 16px", borderRadius: 14, border: "1px solid #EDEBE7", background: "#fff", textDecoration: "none", transition: "all .15s", textAlign: "center" }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: `${a.color}10`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <svg width="22" height="22" fill="none" stroke={a.color} strokeWidth="1.5" viewBox="0 0 24 24" dangerouslySetInnerHTML={{ __html: a.icon }} />
+              </div>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: "#1C1C1E" }}>{a.label}</div>
+                <div style={{ fontSize: 11, color: "#9C958D", marginTop: 2 }}>{a.desc}</div>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
 
@@ -261,7 +259,7 @@ function FacturationContent() {
       <div style={{ display: "flex", gap: 0, borderBottom: "2px solid #EDEBE7", marginBottom: 20 }}>
         {[
           { key: "devis", label: "Devis", count: quotes.length },
-          { key: "factures", label: "Factures", count: invoices.length },
+          { key: "factures", label: "Factures & Avoirs", count: invoices.length },
           { key: "clients", label: "Clients", count: clients.length },
           { key: "reporting", label: "Reporting", count: null },
         ].map((t) => (
