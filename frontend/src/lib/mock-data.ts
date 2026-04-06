@@ -23,7 +23,7 @@ export const MOCK_METIERS: MetierData[] = [
 
 export const MOCK_ARTISANS: ArtisanPublic[] = [
   {
-    id: "1", nomAffichage: "Martin Plomberie", slug: "martin-plomberie", metierNom: "Plombier", metierIcone: "\u{1F527}",
+    id: "1", nomAffichage: "Martin Plomberie", slug: "martin-plomberie", metierNom: "Plombier", metierSlug: "plombier", metierIcone: "\u{1F527}",
     ville: "Chambéry", noteMoyenne: 0, nombreAvis: 0,
     description: "Plombier-chauffagiste depuis 15 ans. Dépannage urgent, rénovation salle de bain, installation chauffage.",
     telephone: "04 79 12 34 56", adresse: "Chambéry", codePostal: "73000", zoneRayonKm: 25, experienceAnnees: 15, plan: "PRO",
@@ -46,7 +46,7 @@ export const MOCK_ARTISANS: ArtisanPublic[] = [
     zones: ["Chambéry", "Cognin", "Bissy", "La Motte-Servolex", "Bassens", "Saint-Alban-Leysse"],
   },
   {
-    id: "2", nomAffichage: "Élec Savoie", slug: "elec-savoie", metierNom: "Électricien", metierIcone: "⚡",
+    id: "2", nomAffichage: "Élec Savoie", slug: "elec-savoie", metierNom: "Électricien", metierSlug: "electricien", metierIcone: "⚡",
     ville: "Chambéry", noteMoyenne: 0, nombreAvis: 0,
     description: "Électricien qualifié à Chambéry. Tous travaux électriques dans le respect des normes NF C 15-100.",
     telephone: "04 79 23 45 67", adresse: "Chambéry", codePostal: "73000", zoneRayonKm: 25, experienceAnnees: 8, plan: "ESSENTIEL",
@@ -59,7 +59,7 @@ export const MOCK_ARTISANS: ArtisanPublic[] = [
     photos: [], horaires: [], zones: ["Chambéry", "Aix-les-Bains"],
   },
   {
-    id: "3", nomAffichage: "Dupont Peinture", slug: "dupont-peinture", metierNom: "Peintre", metierIcone: "\u{1F3A8}",
+    id: "3", nomAffichage: "Dupont Peinture", slug: "dupont-peinture", metierNom: "Peintre", metierSlug: "peintre", metierIcone: "\u{1F3A8}",
     ville: "Annecy", noteMoyenne: 0, nombreAvis: 0,
     description: "Peinture décorative, ravalement de façades, pose de revêtements muraux. Devis gratuit.",
     telephone: "04 50 34 56 78", adresse: "Annecy", codePostal: "74000", zoneRayonKm: 25, experienceAnnees: 12, plan: "GRATUIT",
@@ -72,7 +72,7 @@ export const MOCK_ARTISANS: ArtisanPublic[] = [
     photos: [], horaires: [], zones: ["Annecy", "Seynod"],
   },
   {
-    id: "4", nomAffichage: "Alpes Maçonnerie", slug: "alpes-maconnerie", metierNom: "Maçon", metierIcone: "\u{1F9F1}",
+    id: "4", nomAffichage: "Alpes Maçonnerie", slug: "alpes-maconnerie", metierNom: "Maçon", metierSlug: "macon", metierIcone: "\u{1F9F1}",
     ville: "Chambéry", noteMoyenne: 0, nombreAvis: 0,
     description: "Construction traditionnelle savoyarde et rénovation du bâti ancien depuis 20 ans.",
     telephone: "04 79 45 67 89", adresse: "Chambéry", codePostal: "73000", zoneRayonKm: 25, experienceAnnees: 20, plan: "BUSINESS",
@@ -85,7 +85,7 @@ export const MOCK_ARTISANS: ArtisanPublic[] = [
     photos: [], horaires: [], zones: ["Chambéry", "Cognin"],
   },
   {
-    id: "5", nomAffichage: "Savoie Carrelage", slug: "savoie-carrelage", metierNom: "Carreleur", metierIcone: "\u{1F532}",
+    id: "5", nomAffichage: "Savoie Carrelage", slug: "savoie-carrelage", metierNom: "Carreleur", metierSlug: "carreleur", metierIcone: "\u{1F532}",
     ville: "Chambéry", noteMoyenne: 0, nombreAvis: 0,
     description: "Carreleur professionnel à Chambéry, pose tous types de carrelages et faïences.",
     telephone: "04 79 56 78 90", adresse: "Chambéry", codePostal: "73000", zoneRayonKm: 25, experienceAnnees: 6, plan: "ESSENTIEL",

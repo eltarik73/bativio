@@ -171,7 +171,7 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
       {/* Devis 3 etapes + Contact card — layout 60/40 */}
       <section id="devis" style={{ background: "#FAF8F5", padding: "32px 0 60px" }}>
         <div className="devis-layout">
-          <DevisForm3Steps slug={a.slug} artisanName={a.nomAffichage} ville={a.ville} />
+          <DevisForm3Steps slug={a.slug} artisanName={a.nomAffichage} ville={a.ville} artisanMetiers={a.metierNom ? [{ id: "m", nom: a.metierNom, slug: a.metierSlug || "", icone: a.metierIcone }] : undefined} />
           <ContactCard a={a} />
         </div>
       </section>

@@ -34,6 +34,7 @@ export interface ArtisanPublic {
   nomAffichage: string;
   slug: string;
   metierNom: string;
+  metierSlug: string;
   metierIcone: string;
   ville: string;
   noteMoyenne: number;

@@ -27,10 +27,24 @@ const METIERS = [
   { id: "autre", emoji: "\uD83C\uDFD7️", name: "Autre" },
 ];
 
-export default function DevisForm3Steps({ slug, artisanName, ville }: { slug: string; artisanName: string; ville: string }) {
-  const [step, setStep] = useState(0);
-  const [metier, setMetier] = useState("plomberie");
-  const [subOpt, setSubOpt] = useState(SUB.plomberie.opts[0]);
+interface ArtisanMetier {
+  id: string;
+  nom: string;
+  slug: string;
+  icone?: string | null;
+}
+
+export default function DevisForm3Steps({ slug, artisanName, ville, artisanMetiers }: { slug: string; artisanName: string; ville: string; artisanMetiers?: ArtisanMetier[] }) {
+  // If artisan has specific metiers, use those; otherwise fallback to all
+  const displayMetiers = artisanMetiers && artisanMetiers.length > 0
+    ? artisanMetiers.map((m) => ({ id: m.slug, emoji: m.icone || "\uD83D\uDD28", name: m.nom }))
+    : METIERS;
+  const skipMetierStep = displayMetiers.length === 1;
+  const defaultMetier = displayMetiers[0]?.id || "plomberie";
+
+  const [step, setStep] = useState(skipMetierStep ? 1 : 0);
+  const [metier, setMetier] = useState(defaultMetier);
+  const [subOpt, setSubOpt] = useState(SUB[defaultMetier]?.opts[0] || "Autre");
   const [delai, setDelai] = useState("Sous 2 semaines");
   const [desc, setDesc] = useState("");
   const [nom, setNom] = useState("");
@@ -51,7 +65,7 @@ export default function DevisForm3Steps({ slug, artisanName, ville }: { slug: st
     try {
       const { submitDevis } = await import("@/lib/api");
       const isUrgent = delai.toLowerCase().includes("urgent");
-      await submitDevis(slug, { nomClient: nom, telephoneClient: tel, emailClient: email, descriptionBesoin: `[${METIERS.find((m) => m.id === metier)?.name} - ${subOpt}] ${delai}. ${desc}`, urgence: isUrgent ? "urgent" : "normal" });
+      await submitDevis(slug, { nomClient: nom, telephoneClient: tel, emailClient: email, descriptionBesoin: `[${displayMetiers.find((m) => m.id === metier)?.name} - ${subOpt}] ${delai}. ${desc}`, urgence: isUrgent ? "urgent" : "normal" });
       setStep(3);
     } catch (err) {
       alert(err instanceof Error ? err.message : "Erreur lors de l'envoi");
@@ -87,7 +101,7 @@ export default function DevisForm3Steps({ slug, artisanName, ville }: { slug: st
       <div className={`devis-step ${step === 0 ? "active" : ""}`}>
         <div className="devis-step-title">Quel type de travaux ?</div>
         <div className="metier-grid">
-          {METIERS.map((m) => (
+          {displayMetiers.map((m) => (
             <div key={m.id} className={`metier-btn ${metier === m.id ? "selected" : ""}`} onClick={() => { setMetier(m.id); setSubOpt(SUB[m.id]?.opts[0] || ""); }}>
               <span className="emoji">{m.emoji}</span>
               <span className="name">{m.name}</span>
@@ -176,7 +190,7 @@ export default function DevisForm3Steps({ slug, artisanName, ville }: { slug: st
           <div className="conf-title">Votre demande a &eacute;t&eacute; envoy&eacute;e !</div>
           <div className="conf-sub">{artisanName} vous r&eacute;pondra sous 24h.</div>
           <div className="conf-recap">
-            <div className="conf-recap-row"><span className="label">Type de travaux</span><span className="val">{METIERS.find((m) => m.id === metier)?.name} &mdash; {subOpt}</span></div>
+            <div className="conf-recap-row"><span className="label">Type de travaux</span><span className="val">{displayMetiers.find((m) => m.id === metier)?.name} &mdash; {subOpt}</span></div>
             <div className="conf-recap-row"><span className="label">D&eacute;lai</span><span className="val">{delai}</span></div>
             <div className="conf-recap-row"><span className="label">Artisan</span><span className="val">{artisanName} &middot; {ville}</span></div>
           </div>
