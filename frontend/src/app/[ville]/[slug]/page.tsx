@@ -10,6 +10,9 @@ import VitrineClassique from "@/components/vitrines/VitrineClassique";
 import VitrinePortfolio from "@/components/vitrines/VitrinePortfolio";
 import VitrineModerne from "@/components/vitrines/VitrineModerne";
 import VitrineVitrine from "@/components/vitrines/VitrineVitrine";
+import VitrineBusiness from "@/components/vitrines/VitrineBusiness";
+import { getEffectivePlan } from "@/lib/plan-gates";
+import type { SeoGenerated } from "@/lib/vitrine-config";
 import MetierVillePageComponent, {
   METIER_SLUGS,
   villeNom,
@@ -133,20 +136,28 @@ export async function generateMetadata({
   const metierImg = METIER_PHOTOS[ms] || METIER_PHOTOS.plombier;
   const ogImage =
     a.photos && a.photos.length > 0 ? a.photos[0].url : metierImg;
-  const seoDesc = a.seoDescription;
-  const expPart = a.experienceAnnees ? ` ${a.experienceAnnees} ans d'expérience.` : "";
+
+  // Use AI-generated SEO if available
+  const seoGen = a.seoGenerated as SeoGenerated | null;
+  const isWhiteLabel = getEffectivePlan({ plan: a.plan, planOverride: a.planOverride, planOverrideExpireAt: a.planOverrideExpireAt }) === "business";
+
+  const seoTitle = seoGen?.title || `${a.nomAffichage} \u2014 ${a.metierNom || "Artisan"} \u00e0 ${a.ville || villeParam}`;
+  const title = isWhiteLabel ? seoTitle : `${seoTitle}${seoTitle.includes("Bativio") ? "" : " | Bativio"}`;
+
+  const seoDesc = seoGen?.metaDescription || a.seoDescription;
+  const expPart = a.experienceAnnees ? ` ${a.experienceAnnees} ans d'exp\u00e9rience.` : "";
   const metaDesc =
     seoDesc ||
-    `${a.nomAffichage}, ${(a.metierNom || "artisan").toLowerCase()} à ${a.ville || villeParam}.${expPart} ${a.description || ""} Devis gratuit.`;
+    `${a.nomAffichage}, ${(a.metierNom || "artisan").toLowerCase()} \u00e0 ${a.ville || villeParam}.${expPart} ${a.description || ""} Devis gratuit.`;
   return {
-    title: `${a.nomAffichage} — ${a.metierNom || "Artisan"} à ${a.ville || villeParam}`,
+    title,
     description:
       metaDesc.length > 160 ? metaDesc.substring(0, 157) + "..." : metaDesc,
     alternates: {
       canonical: `https://www.bativio.fr/${villeParam}/${a.slug}`,
     },
     openGraph: {
-      title: `${a.nomAffichage} \u2014 ${a.metierNom || "Artisan"} \u00e0 ${a.ville || villeParam}`,
+      title: seoTitle,
       description: `Devis gratuit \u00b7 \u2605 ${a.noteMoyenne || 0}/5${a.experienceAnnees ? " \u00b7 " + a.experienceAnnees + " ans" : ""}`,
       url: `https://www.bativio.fr/${villeParam}/${a.slug}`,
       images: [
@@ -216,6 +227,85 @@ export default async function SlugPage({
   const lat = villeInfo?.lat ?? 45.5646;
   const lng = villeInfo?.lng ?? 5.9178;
 
+  const isWhiteLabel = getEffectivePlan({
+    plan: a.plan,
+    planOverride: a.planOverride,
+    planOverrideExpireAt: a.planOverrideExpireAt,
+  }) === "business";
+
+  // Business plan: white-label vitrine
+  if (isWhiteLabel) {
+    const seoGen = (a.seoGenerated || null) as SeoGenerated | null;
+    const vitrineConfig = a.vitrineConfig;
+
+    return (
+      <>
+        <VitrineBusiness
+          a={a}
+          photo={photo}
+          primary={primary}
+          accent={accent}
+          villeSlug={villeSlug}
+          vitrineConfig={vitrineConfig}
+          seoGenerated={seoGen}
+        />
+
+        {/* JSON-LD */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "LocalBusiness",
+              name: a.nomAffichage,
+              description: seoGen?.metaDescription || a.description || "",
+              telephone: a.telephone || "",
+              url: `https://www.bativio.fr/${villeSlug}/${a.slug}`,
+              image: a.photos?.[0]?.url || photo,
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: a.adresse || "",
+                addressLocality: a.ville || villeSlug,
+                postalCode: a.codePostal || "",
+                addressCountry: "FR",
+              },
+              geo: { "@type": "GeoCoordinates", latitude: lat, longitude: lng },
+              areaServed: {
+                "@type": "GeoCircle",
+                geoMidpoint: { "@type": "GeoCoordinates", latitude: lat, longitude: lng },
+                geoRadius: `${a.zoneRayonKm || 25}000`,
+              },
+              aggregateRating:
+                a.nombreAvis > 0
+                  ? { "@type": "AggregateRating", ratingValue: a.noteMoyenne, reviewCount: a.nombreAvis, bestRating: 5 }
+                  : undefined,
+              priceRange: "$$",
+            }),
+          }}
+        />
+
+        {/* FAQ JSON-LD if available */}
+        {seoGen?.faq && seoGen.faq.length > 0 && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                mainEntity: seoGen.faq.map(f => ({
+                  "@type": "Question",
+                  name: f.question,
+                  acceptedAnswer: { "@type": "Answer", text: f.answer },
+                })),
+              }),
+            }}
+          />
+        )}
+      </>
+    );
+  }
+
+  // Non-Business: classic template with Bativio branding
   const cssVars = {
     "--v-primary": primary,
     "--v-accent": accent,

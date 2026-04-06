@@ -59,6 +59,8 @@ export interface ArtisanPublic {
   photoLayout?: string;
   seoDescription?: string;
   seoKeywords?: string;
+  vitrineConfig?: unknown;
+  seoGenerated?: unknown;
   distance?: number;
 }
 

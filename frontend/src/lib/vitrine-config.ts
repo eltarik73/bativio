@@ -38,3 +38,58 @@ export const PHOTO_LAYOUTS = [
 
 export type PhotoLayoutType = "grid" | "masonry" | "slider" | "before-after";
 export type TemplateId = "classique" | "portfolio" | "moderne" | "vitrine";
+
+/* ── Vitrine sections config (Business) ── */
+
+export interface VitrineConfig {
+  sections: Record<string, boolean>;
+  ordre: string[];
+}
+
+export const VITRINE_SECTIONS = [
+  { id: "hero", label: "En-t\u00eate", locked: true },
+  { id: "services", label: "Services / Prestations" },
+  { id: "photos", label: "R\u00e9alisations / Photos" },
+  { id: "description", label: "\u00c0 propos" },
+  { id: "avis", label: "Avis clients" },
+  { id: "devis", label: "Formulaire de devis", locked: true },
+  { id: "horaires", label: "Horaires d'ouverture" },
+  { id: "zone", label: "Zone d'intervention" },
+  { id: "contact", label: "Coordonn\u00e9es" },
+  { id: "faq", label: "FAQ (g\u00e9n\u00e9r\u00e9e par IA)" },
+] as const;
+
+export const DEFAULT_VITRINE_CONFIG: VitrineConfig = {
+  sections: {
+    hero: true,
+    services: true,
+    photos: true,
+    avis: true,
+    description: true,
+    horaires: true,
+    zone: true,
+    devis: true,
+    contact: true,
+    faq: false,
+  },
+  ordre: ["hero", "services", "photos", "description", "avis", "devis", "horaires", "zone", "contact"],
+};
+
+export function getVitrineConfig(raw: unknown): VitrineConfig {
+  if (!raw || typeof raw !== "object") return DEFAULT_VITRINE_CONFIG;
+  const obj = raw as Record<string, unknown>;
+  return {
+    sections: { ...DEFAULT_VITRINE_CONFIG.sections, ...(typeof obj.sections === "object" ? obj.sections as Record<string, boolean> : {}) },
+    ordre: Array.isArray(obj.ordre) && obj.ordre.length > 0 ? obj.ordre as string[] : DEFAULT_VITRINE_CONFIG.ordre,
+  };
+}
+
+/* ── SEO Generated type ── */
+
+export interface SeoGenerated {
+  title: string;
+  metaDescription: string;
+  aboutText: string;
+  faq: Array<{ question: string; answer: string }>;
+  keywords: string[];
+}

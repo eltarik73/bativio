@@ -119,6 +119,13 @@ model Artisan {
   photoLayout     String   @default("grid") @map("photo_layout")
   seoDescription  String?  @map("seo_description") @db.Text
   seoKeywords     String?  @map("seo_keywords") @db.Text
+  vitrineConfig   Json?    @map("vitrine_config")
+  seoGenerated    Json?    @map("seo_generated")
+  seoGeneratedAt  DateTime? @map("seo_generated_at")
+  googleBusinessUrl String? @map("google_business_url")
+  facebookUrl     String?  @map("facebook_url")
+  instagramUrl    String?  @map("instagram_url")
+  siteWebUrl      String?  @map("site_web_url")
   actif           Boolean  @default(false)
   visible         Boolean  @default(true)
   slug            String   @unique

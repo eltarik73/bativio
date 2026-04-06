@@ -65,6 +65,8 @@ export async function GET(
       photoLayout: artisan.photoLayout,
       seoDescription: artisan.seoDescription,
       seoKeywords: artisan.seoKeywords,
+      vitrineConfig: artisan.vitrineConfig ?? null,
+      seoGenerated: artisan.seoGenerated ?? null,
       createdAt: artisan.createdAt,
       metierNom: artisan.metier?.nom ?? null,
       metierSlug: artisan.metier?.slug ?? null,

@@ -82,6 +82,10 @@ const updateSchema = z.object({
   colorPrimary: z.string().optional(),
   colorAccent: z.string().optional(),
   photoLayout: z.string().optional(),
+  vitrineConfig: z.object({
+    sections: z.record(z.string(), z.boolean()),
+    ordre: z.array(z.string()),
+  }).optional(),
 });
 
 export async function PUT(request: NextRequest) {
