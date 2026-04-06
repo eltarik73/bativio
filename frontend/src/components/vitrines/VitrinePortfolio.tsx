@@ -33,7 +33,7 @@ export default function VitrinePortfolio({ a, photo, primary, accent, villeSlug 
       {/* Hero split */}
       <section style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: 420 }} className="max-md:grid-cols-1">
         <div style={{ position: "relative", overflow: "hidden" }}>
-          <Image src={photo} alt={`${a.nomAffichage} - ${a.metierNom || "Artisan"}`} fill style={{ objectFit: "cover", minHeight: 320 }} unoptimized />
+          <Image src={photo} alt={`${a.nomAffichage} - ${a.metierNom || "Artisan"}`} fill style={{ objectFit: "cover", minHeight: 320 }} />
         </div>
         <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", padding: "48px 40px", background: "#FAF8F5" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>

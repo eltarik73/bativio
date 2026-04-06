@@ -46,7 +46,7 @@ export default function ArtisanCard({ artisan, villeSlug }: { artisan: ArtisanPu
             fill
             style={{ objectFit: "cover" }}
             onError={() => setImgSrc(FALLBACK_PHOTO)}
-            unoptimized
+            sizes="(max-width: 768px) 100vw, 400px"
           />
           <div className="card-badge" style={{ background: color }}>
             <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" dangerouslySetInnerHTML={{ __html: icon }} />

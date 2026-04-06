@@ -45,7 +45,7 @@ export default async function TravauxPage({ params }: { params: Promise<{ slug: 
         {/* Hero */}
         <section style={{ position: "relative", overflow: "hidden", background: "#1C1C1E", padding: "48px 32px 56px" }}>
           <div style={{ position: "absolute", inset: 0, opacity: 0.15 }}>
-            <Image src={t.photo} alt={t.nom} fill style={{ objectFit: "cover" }} unoptimized />
+            <Image src={t.photo} alt={t.nom} fill style={{ objectFit: "cover" }} />
           </div>
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(28,28,30,.6), rgba(28,28,30,.9))" }} />
           <div style={{ position: "relative", zIndex: 1, maxWidth: 800, margin: "0 auto" }}>

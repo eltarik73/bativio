@@ -60,7 +60,7 @@ export default function VitrineBusiness({ a, photo, primary, villeSlug, vitrineC
   function HeroSection() {
     return (
       <section style={{ position: "relative", overflow: "hidden", minHeight: 480 }}>
-        <Image src={heroImg} alt={`${a.nomAffichage} - ${a.metierNom || "Artisan"}`} fill style={{ objectFit: "cover" }} unoptimized priority />
+        <Image src={heroImg} alt={`${a.nomAffichage} - ${a.metierNom || "Artisan"}`} fill style={{ objectFit: "cover" }} priority />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,.25) 0%, rgba(0,0,0,.65) 100%)" }} />
         <div style={{ position: "relative", zIndex: 1, maxWidth: 800, margin: "0 auto", padding: "100px 24px 80px", color: "#fff" }}>
           <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(36px,6vw,56px)", fontWeight: 700, lineHeight: 1.1, marginBottom: 12 }}>
@@ -138,7 +138,7 @@ export default function VitrineBusiness({ a, photo, primary, villeSlug, vitrineC
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))", gap: 12 }}>
             {galleryPhotos.map((url, i) => (
               <div key={i} style={{ borderRadius: 12, overflow: "hidden", position: "relative", aspectRatio: "4/3", boxShadow: "0 2px 12px rgba(0,0,0,.06)" }}>
-                <Image src={url} alt={`${a.nomAffichage} - r\u00e9alisation ${i + 1}`} fill style={{ objectFit: "cover" }} unoptimized />
+                <Image src={url} alt={`${a.nomAffichage} - r\u00e9alisation ${i + 1}`} fill style={{ objectFit: "cover" }} />
               </div>
             ))}
           </div>
@@ -163,7 +163,7 @@ export default function VitrineBusiness({ a, photo, primary, villeSlug, vitrineC
             )}
           </div>
           <div style={{ borderRadius: 16, overflow: "hidden", position: "relative", aspectRatio: "4/3" }}>
-            <Image src={defaults.heroPhotos[defaults.heroPhotos.length > 1 ? 1 : 0] || photo} alt={`${a.nomAffichage} - ${a.metierNom}`} fill style={{ objectFit: "cover" }} unoptimized />
+            <Image src={defaults.heroPhotos[defaults.heroPhotos.length > 1 ? 1 : 0] || photo} alt={`${a.nomAffichage} - ${a.metierNom}`} fill style={{ objectFit: "cover" }} />
           </div>
         </div>
       </section>

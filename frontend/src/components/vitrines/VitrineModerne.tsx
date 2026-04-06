@@ -58,7 +58,7 @@ export default function VitrineModerne({ a, photo, primary, accent, villeSlug }:
         <div style={{ maxWidth: 960, margin: "0 auto", display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gridTemplateRows: "auto auto", gap: 14 }} className="max-md:grid-cols-1">
           {/* Big photo */}
           <div style={{ borderRadius: 16, overflow: "hidden", gridRow: "1/3", position: "relative", minHeight: 300 }}>
-            <Image src={photo} alt={`${a.nomAffichage} - ${a.metierNom || "Artisan"}`} fill style={{ objectFit: "cover" }} unoptimized />
+            <Image src={photo} alt={`${a.nomAffichage} - ${a.metierNom || "Artisan"}`} fill style={{ objectFit: "cover" }} />
           </div>
 
           {/* Stat cards */}
