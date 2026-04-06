@@ -356,10 +356,10 @@ function FacturationContent() {
           {/* Export section */}
           <div style={{ marginTop: 24, background: "#fff", borderRadius: 14, border: "1px solid #E8D5C0", padding: 24 }}>
             <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, color: "#3D2E1F", marginBottom: 8 }}>Export comptable</h3>
-            <p style={{ fontSize: 13, color: "#6B6560", marginBottom: 16 }}>T\u00e9l\u00e9chargez vos factures et devis au format CSV pour votre comptable.</p>
+            <p style={{ fontSize: 13, color: "#6B6560", marginBottom: 16 }}>T&eacute;l&eacute;chargez vos factures et devis au format CSV pour votre comptable.</p>
             <button onClick={exportCSV} style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 24px", borderRadius: 10, border: "1px solid #E8D5C0", background: "#fff", color: "#3D2E1F", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
               <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-              T\u00e9l\u00e9charger CSV ({invoices.length + quotes.length} documents)
+              T&eacute;l&eacute;charger CSV ({invoices.length + quotes.length} documents)
             </button>
           </div>
         </div>
