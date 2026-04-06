@@ -142,7 +142,8 @@ export async function generateMetadata({
   const isWhiteLabel = getEffectivePlan({ plan: a.plan, planOverride: a.planOverride, planOverrideExpireAt: a.planOverrideExpireAt }) === "business";
 
   const seoTitle = seoGen?.title || `${a.nomAffichage} \u2014 ${a.metierNom || "Artisan"} \u00e0 ${a.ville || villeParam}`;
-  const title = isWhiteLabel ? seoTitle : `${seoTitle}${seoTitle.includes("Bativio") ? "" : " | Bativio"}`;
+  // Business white-label: absolute title (bypass layout template "| Bativio")
+  const title = isWhiteLabel ? { absolute: seoTitle } : seoTitle;
 
   const seoDesc = seoGen?.metaDescription || a.seoDescription;
   const expPart = a.experienceAnnees ? ` ${a.experienceAnnees} ans d'exp\u00e9rience.` : "";
