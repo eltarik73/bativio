@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { getEffectivePlan, normalizePlan } from "@/lib/plan-gates";
 import ArtisanBadges from "@/components/ArtisanBadges";
@@ -122,7 +123,7 @@ export default async function MetierVilleListing({ metierSlug, villeSlug, metier
                     <Link key={a.id} href={`/${composedSlug}/${a.slug}`} style={{ display: "flex", gap: 20, padding: 24, background: "#fff", borderRadius: 14, border: "1px solid #E8D5C0", textDecoration: "none", transition: "all .2s" }}>
                       {/* Avatar/Photo */}
                       {photo ? (
-                        <img src={photo} alt={a.nomAffichage} style={{ width: 80, height: 80, borderRadius: 12, objectFit: "cover", flexShrink: 0 }} loading="lazy" />
+                        <Image src={photo} alt={a.nomAffichage} width={80} height={80} style={{ borderRadius: 12, objectFit: "cover", flexShrink: 0 }} />
                       ) : (
                         <div style={{ width: 80, height: 80, borderRadius: 12, background: "linear-gradient(135deg, #C4531A, #D4956B)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                           <span style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#fff" }}>{initials}</span>
