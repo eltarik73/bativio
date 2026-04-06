@@ -18,9 +18,11 @@ interface DevisIA {
   id: string;
   numero: string;
   clientNom: string;
+  clientEmail?: string | null;
   objet: string;
   totalTTC: number;
   statut: string;
+  viewToken?: string | null;
   createdAt: string;
 }
 
@@ -47,6 +49,22 @@ function DevisIAListContent() {
   const { fetchWithAuth } = useAuth();
   const [devisList, setDevisList] = useState<DevisIA[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sendingId, setSendingId] = useState<string | null>(null);
+
+  const handleSendEmail = async (d: DevisIA) => {
+    if (!d.clientEmail) { alert("Ce client n'a pas d'email."); return; }
+    setSendingId(d.id);
+    try {
+      await fetchWithAuth("/artisans/me/devis-send", { method: "POST", body: JSON.stringify({ devisId: d.id }) });
+      alert(`Devis envoy\u00e9 par email \u00e0 ${d.clientEmail}`);
+      await fetchDevis();
+    } catch (e) { alert(e instanceof Error ? e.message : "Erreur"); }
+    finally { setSendingId(null); }
+  };
+
+  const handlePrintPreview = (d: DevisIA) => {
+    window.open(`/devis/${d.viewToken || d.id}/print`, "_blank");
+  };
 
   const fetchDevis = useCallback(async () => {
     setLoading(true);
@@ -228,16 +246,17 @@ function DevisIAListContent() {
                     >
                       {formatEuros(d.totalTTC)}
                     </span>
-                    <span
-                      style={{
-                        marginLeft: "auto",
-                        fontSize: 13,
-                        fontWeight: 600,
-                        color: "#C4531A",
-                      }}
-                    >
-                      Voir &rarr;
-                    </span>
+                    <div style={{ marginLeft: "auto", display: "flex", gap: 6, alignItems: "center" }}>
+                      <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handlePrintPreview(d); }} title="Aper\u00e7u PDF" style={{ width: 32, height: 32, borderRadius: 6, border: "1px solid #E8D5C0", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <svg width="14" height="14" fill="none" stroke="#6B6560" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+                      </button>
+                      {d.clientEmail && (
+                        <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleSendEmail(d); }} disabled={sendingId === d.id} title="Envoyer par email" style={{ width: 32, height: 32, borderRadius: 6, border: "1px solid #E8D5C0", background: sendingId === d.id ? "#F3F4F6" : "#fff", cursor: sendingId === d.id ? "wait" : "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <svg width="14" height="14" fill="none" stroke="#6B6560" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+                        </button>
+                      )}
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "#C4531A" }}>Voir &rarr;</span>
+                    </div>
                   </div>
                 </div>
               </Link>
