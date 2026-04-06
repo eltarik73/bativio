@@ -62,7 +62,7 @@ const DEFAULTS: Record<string, DefaultMetierContent> = {
     galleryPhotos: [
       "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600&h=400&fit=crop",
       "https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=600&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1580910051074-3eb694886571?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=600&h=400&fit=crop",
       "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&h=400&fit=crop",
     ],
     whyChoose: ["Diagnostic gratuit", "R\u00e9paration en 30 min", "Pi\u00e8ces de qualit\u00e9 garanties", "Toutes marques"],
