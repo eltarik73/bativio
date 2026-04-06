@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useAuth } from "@/context/AuthContext";
 import type { PhotoData } from "@/lib/api";
+import { processImageFiles } from "@/lib/image-compress";
 
 const API_URL = "/api/v1";
 
@@ -35,12 +36,11 @@ export default function PhotosPage() {
       .catch(() => {});
   }, [fetchWithAuth]);
 
-  const handleFiles = (files: FileList | null) => {
+  const handleFiles = async (files: FileList | null) => {
     if (!files) return;
     const remaining = (planLimit === Infinity ? 100 : planLimit) - totalPhotos;
-    const valid = Array.from(files)
-      .filter((f) => f.type.startsWith("image/") && f.size <= 10 * 1024 * 1024)
-      .slice(0, remaining);
+    const compressed = await processImageFiles(files);
+    const valid = compressed.slice(0, remaining);
     setLocalPhotos((p) => [...p, ...valid.map((file) => ({ file, preview: URL.createObjectURL(file) }))]);
   };
 

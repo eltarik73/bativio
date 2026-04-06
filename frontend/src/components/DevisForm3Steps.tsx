@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
+import { validateImageSize } from "@/lib/image-compress";
 
 const SUB: Record<string, { label: string; opts: string[] }> = {
   plomberie: { label: "Quel type d'intervention ?", opts: ["Fuite / Dépannage", "Rénovation salle de bain", "Installation chauffage", "Chauffe-eau", "Autre"] },
@@ -134,7 +135,7 @@ export default function DevisForm3Steps({ slug, artisanName, ville, artisanMetie
         </div>
         <div className="field">
           <label>Photos <span style={{ color: "#9B9590", fontWeight: 400 }}>(facultatif &middot; max 5)</span></label>
-          <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => { if (e.target.files) setPhotos((p) => [...p, ...Array.from(e.target.files!)].slice(0, 5)); }} />
+          <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => { if (e.target.files) { const valid = Array.from(e.target.files).filter(f => { const err = validateImageSize(f); if (err) { alert(err); return false; } return true; }); setPhotos((p) => [...p, ...valid].slice(0, 5)); } }} />
           <button type="button" onClick={() => fileRef.current?.click()} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%", padding: "14px 20px", borderRadius: 10, border: "2px dashed #E8D5C0", background: "#FAF8F5", color: "#5C4A3A", fontSize: 14, fontWeight: 600, cursor: "pointer", transition: "all .15s" }}>
             <svg width="20" height="20" fill="none" stroke="#C4531A" strokeWidth="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
             Ajouter des photos
