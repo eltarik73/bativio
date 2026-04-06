@@ -74,7 +74,7 @@ export default function Navbar() {
       {/* Logo */}
       <Link href="/" className="nav-logo" style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <img src="/icons/icon.svg" alt="" width={24} height={24} style={{ flexShrink: 0 }} />
-        Bativio
+        <span><span style={{ color: "#1C1C1E" }}>B</span>ativio</span>
       </Link>
 
       {/* Desktop right side */}
