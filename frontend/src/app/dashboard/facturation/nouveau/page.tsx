@@ -29,13 +29,15 @@ function NouveauContent() {
   const typeParam = searchParams.get("type");
   const { fetchWithAuth } = useAuth();
 
+  const demandeId = searchParams.get("demandeId");
+  const descriptionParam = searchParams.get("description");
   const [docType, setDocType] = useState<"DEVIS" | "FACTURE">(typeParam === "facture" ? "FACTURE" : "DEVIS");
   const [clientNom, setClientNom] = useState(searchParams.get("clientNom") || "");
   const [clientEmail, setClientEmail] = useState(searchParams.get("clientEmail") || "");
   const [clientTel, setClientTel] = useState(searchParams.get("clientTelephone") || "");
   const [clientAdresse, setClientAdresse] = useState("");
   const [lignes, setLignes] = useState<Ligne[]>([newLigne()]);
-  const [notes, setNotes] = useState("");
+  const [notes, setNotes] = useState(descriptionParam || "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -140,6 +142,16 @@ function NouveauContent() {
       });
       const docData = await docRes.json();
       if (!docData.success) throw new Error(docData.error || "Erreur création document");
+
+      // Mark demande as replied if this devis was created from a demande
+      if (demandeId) {
+        try {
+          await fetchWithAuth(`/artisans/me/devis/${demandeId}`, {
+            method: "PUT",
+            body: JSON.stringify({ statut: "REPONDU" }),
+          });
+        } catch { /* non-blocking */ }
+      }
 
       router.push(`/dashboard/facturation?tab=${docType === "FACTURE" ? "factures" : "devis"}`);
     } catch (err) {

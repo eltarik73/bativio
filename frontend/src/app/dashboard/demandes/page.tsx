@@ -205,7 +205,7 @@ export default function DemandesPage() {
             return (
               <div
                 key={d.id}
-                onClick={() => router.push(`/dashboard/demandes/${d.id}`)}
+                onClick={() => router.push(`/dashboard/devis/${d.id}`)}
                 style={{
                   background: "#fff", borderRadius: 14,
                   border: isMasked ? "1px solid rgba(196,83,26,.15)" : isNew ? "1.5px solid var(--terre,#C4531A)" : "1px solid var(--sable,#E8D5C0)",
