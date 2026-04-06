@@ -317,139 +317,73 @@ export default function NouveauDevisIAPage() {
 
       {/* ──── STEP 1 ──── */}
       {step === 1 && (
-        <div
-          style={{
-            background: "#fff",
-            border: "1px solid var(--sable,#E8D5C0)",
-            borderRadius: 14,
-            padding: 28,
-          }}
-        >
-          <h2
-            style={{
-              fontFamily: "'Fraunces', serif",
-              fontSize: 18,
-              fontWeight: 700,
-              color: "var(--bois,#3D2E1F)",
-              marginBottom: 20,
-            }}
-          >
-            Informations client &amp; travaux
-          </h2>
-
-          {/* Client info */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: 16,
-              marginBottom: 16,
-            }}
-            className="max-md:grid-cols-1"
-          >
-            <div>
-              <label style={labelStyle}>
-                Nom du client <span style={{ color: "#dc2626" }}>*</span>
-              </label>
-              <input
-                type="text"
-                value={clientNom}
-                onChange={(e) => setClientNom(e.target.value)}
-                placeholder="Jean Dupont"
-                style={inputStyle}
-              />
+        <div>
+          {/* IA Hero */}
+          <div style={{ background: "linear-gradient(135deg, #1C1C1E 0%, #2d1a0e 100%)", borderRadius: 16, padding: "32px 28px", marginBottom: 20, color: "#fff" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+              <svg width="24" height="24" fill="none" stroke="#E8A84C" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 008.5 14.063l-6.135-1.582a.5.5 0 010-.962L8.5 9.937A2 2 0 009.937 8.5l1.582-6.135a.5.5 0 01.962 0L14.063 8.5A2 2 0 0015.5 9.937l6.135 1.582a.5.5 0 010 .962L15.5 14.063a2 2 0 00-1.437 1.437l-1.582 6.135a.5.5 0 01-.962 0L9.937 15.5z"/></svg>
+              <span style={{ fontSize: 12, fontWeight: 700, color: "#E8A84C", textTransform: "uppercase", letterSpacing: 1 }}>Intelligence artificielle</span>
             </div>
-            <div>
-              <label style={labelStyle}>Email</label>
-              <input
-                type="email"
-                value={clientEmail}
-                onChange={(e) => setClientEmail(e.target.value)}
-                placeholder="jean@exemple.fr"
-                style={inputStyle}
-              />
-            </div>
-            <div>
-              <label style={labelStyle}>T&eacute;l&eacute;phone</label>
-              <input
-                type="tel"
-                value={clientTelephone}
-                onChange={(e) => setClientTelephone(e.target.value)}
-                placeholder="06 12 34 56 78"
-                style={inputStyle}
-              />
-            </div>
-            <div>
-              <label style={labelStyle}>Surface</label>
-              <input
-                type="text"
-                value={surface}
-                onChange={(e) => setSurface(e.target.value)}
-                placeholder={"ex: 8m\u00b2"}
-                style={inputStyle}
-              />
-            </div>
+            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, lineHeight: 1.2, marginBottom: 8 }}>
+              D&eacute;crivez les travaux, l&apos;IA g&eacute;n&egrave;re le devis
+            </h2>
+            <p style={{ fontSize: 14, opacity: 0.5 }}>L&apos;IA analyse votre description et cr&eacute;e un devis d&eacute;taill&eacute; avec les postes, quantit&eacute;s et prix bas&eacute;s sur vos tarifs.</p>
           </div>
 
-          <div style={{ marginBottom: 16 }}>
-            <label style={labelStyle}>Adresse du client</label>
-            <textarea
-              value={clientAdresse}
-              onChange={(e) => setClientAdresse(e.target.value)}
-              placeholder="Adresse du chantier ou du client"
-              rows={2}
-              style={{ ...inputStyle, resize: "vertical" }}
-            />
-          </div>
-
-          <div style={{ marginBottom: 16 }}>
-            <label style={labelStyle}>
-              Description des travaux{" "}
-              <span style={{ color: "#dc2626" }}>*</span>
+          {/* Description — the MAIN field */}
+          <div style={{ background: "#fff", border: "1px solid #E8D5C0", borderRadius: 14, padding: 24, marginBottom: 16 }}>
+            <label style={{ ...labelStyle, fontSize: 15, fontWeight: 700, marginBottom: 8 }}>
+              Que doit faire le client ? <span style={{ color: "#dc2626" }}>*</span>
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder={"D\u00e9crivez les travaux souhait\u00e9s..."}
+              placeholder={"R\u00e9novation compl\u00e8te salle de bain 6m\u00b2 : d\u00e9pose carrelage, plomberie, pose fa\u00efence et douche italienne..."}
               rows={4}
-              style={{ ...inputStyle, resize: "vertical" }}
+              style={{ ...inputStyle, fontSize: 15, resize: "vertical", border: "2px solid #E8D5C0" }}
             />
-          </div>
-
-          {/* Niveau de gamme */}
-          <div style={{ marginBottom: 24 }}>
-            <label style={labelStyle}>Niveau de gamme</label>
-            <div style={{ display: "flex", gap: 10 }}>
-              {(["STANDARD", "PREMIUM"] as const).map((level) => (
-                <button
-                  key={level}
-                  type="button"
-                  onClick={() => setNiveauGamme(level)}
-                  style={{
-                    flex: 1,
-                    padding: "10px 0",
-                    borderRadius: 8,
-                    fontSize: 14,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    transition: "all .15s",
-                    border:
-                      niveauGamme === level
-                        ? "2px solid #C4531A"
-                        : "1.5px solid #E0DDD8",
-                    background:
-                      niveauGamme === level
-                        ? "rgba(196,83,26,.06)"
-                        : "#fff",
-                    color:
-                      niveauGamme === level ? "#C4531A" : "#6B6560",
-                  }}
-                >
-                  {level === "STANDARD" ? "Standard" : "Premium"}
-                </button>
-              ))}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 12 }} className="max-md:!grid-cols-1">
+              <div>
+                <label style={labelStyle}>Surface</label>
+                <input type="text" value={surface} onChange={(e) => setSurface(e.target.value)} placeholder={"ex: 8m\u00b2"} style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Niveau de gamme</label>
+                <div style={{ display: "flex", gap: 8 }}>
+                  {(["STANDARD", "PREMIUM"] as const).map((level) => (
+                    <button key={level} type="button" onClick={() => setNiveauGamme(level)} style={{ flex: 1, padding: "10px 0", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", border: niveauGamme === level ? "2px solid #C4531A" : "1.5px solid #E0DDD8", background: niveauGamme === level ? "rgba(196,83,26,.06)" : "#fff", color: niveauGamme === level ? "#C4531A" : "#6B6560" }}>
+                      {level === "STANDARD" ? "Standard" : "Premium"}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
+
+          {/* Client info — secondary */}
+          <div style={{ background: "#fff", border: "1px solid #E8D5C0", borderRadius: 14, padding: 24, marginBottom: 16 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: "#3D2E1F", marginBottom: 12 }}>Client</h3>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }} className="max-md:!grid-cols-1">
+              <div>
+                <label style={labelStyle}>Nom <span style={{ color: "#dc2626" }}>*</span></label>
+                <input type="text" value={clientNom} onChange={(e) => setClientNom(e.target.value)} placeholder="Jean Dupont" style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Email</label>
+                <input type="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} placeholder="jean@exemple.fr" style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>{"T\u00e9l\u00e9phone"}</label>
+                <input type="tel" value={clientTelephone} onChange={(e) => setClientTelephone(e.target.value)} placeholder="06 12 34 56 78" style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Adresse</label>
+                <input type="text" value={clientAdresse} onChange={(e) => setClientAdresse(e.target.value)} placeholder="Adresse du chantier" style={inputStyle} />
+              </div>
+            </div>
+          </div>
+
+          {/* Fourniture moved here */}
 
           {/* Fourniture option */}
           {showFourniture && (
@@ -509,30 +443,26 @@ export default function NouveauDevisIAPage() {
             disabled={generating || !clientNom.trim() || !description.trim()}
             style={{
               width: "100%",
-              padding: "14px 0",
-              borderRadius: 8,
-              background:
-                generating || !clientNom.trim() || !description.trim()
-                  ? "#D4733A"
-                  : "#C4531A",
+              padding: "16px 0",
+              borderRadius: 12,
+              background: generating || !clientNom.trim() || !description.trim()
+                ? "#9CA3AF"
+                : "linear-gradient(135deg, #C4531A 0%, #E8A84C 100%)",
               color: "#fff",
-              fontSize: 15,
+              fontSize: 16,
               fontWeight: 700,
               fontFamily: "'Karla', sans-serif",
               border: "none",
-              cursor:
-                generating || !clientNom.trim() || !description.trim()
-                  ? "not-allowed"
-                  : "pointer",
-              opacity:
-                generating || !clientNom.trim() || !description.trim()
-                  ? 0.6
-                  : 1,
+              cursor: generating || !clientNom.trim() || !description.trim()
+                ? "not-allowed"
+                : "pointer",
+              opacity: generating ? 0.8 : 1,
               transition: "all .15s",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              gap: 8,
+              gap: 10,
+              boxShadow: generating ? "none" : "0 4px 16px rgba(196,83,26,.3)",
             }}
           >
             {generating && (
