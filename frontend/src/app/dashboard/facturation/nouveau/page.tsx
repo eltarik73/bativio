@@ -39,6 +39,29 @@ function NouveauContent() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
+  // Client autocomplete
+  const [clientSuggestions, setClientSuggestions] = useState<Array<{ id: string; nom: string; email: string | null; telephone: string | null; adresse: string | null; ville: string | null }>>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  async function searchClients(q: string) {
+    setClientNom(q);
+    if (q.length < 2) { setClientSuggestions([]); setShowSuggestions(false); return; }
+    try {
+      const data = await fetchWithAuth(`/artisans/me/clients?q=${encodeURIComponent(q)}`);
+      const results = Array.isArray(data) ? data : [];
+      setClientSuggestions(results as typeof clientSuggestions);
+      setShowSuggestions(results.length > 0);
+    } catch { setClientSuggestions([]); }
+  }
+
+  function selectClient(c: typeof clientSuggestions[0]) {
+    setClientNom(c.nom);
+    setClientEmail(c.email || "");
+    setClientTel(c.telephone || "");
+    setClientAdresse(c.adresse ? `${c.adresse}${c.ville ? `, ${c.ville}` : ""}` : "");
+    setShowSuggestions(false);
+  }
+
   const totals = useMemo(() => {
     let totalHT = 0, totalTVA = 0;
     for (const l of lignes) {
@@ -163,7 +186,19 @@ function NouveauContent() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }} className="max-md:!grid-cols-1">
               <div>
                 <label style={labelStyle}>Nom / Entreprise <span style={{ color: "#C4531A" }}>*</span></label>
-                <input style={inputStyle} placeholder="Ex: Marie Laurent" value={clientNom} onChange={(e) => setClientNom(e.target.value)} />
+                <div style={{ position: "relative" }}>
+                  <input style={inputStyle} placeholder="Ex: Marie Laurent" value={clientNom} onChange={(e) => searchClients(e.target.value)} onFocus={() => { if (clientSuggestions.length > 0) setShowSuggestions(true); }} onBlur={() => setTimeout(() => setShowSuggestions(false), 200)} />
+                  {showSuggestions && (
+                    <div style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 50, background: "#fff", borderRadius: "0 0 10px 10px", border: "1px solid #E8D5C0", borderTop: "none", boxShadow: "0 4px 12px rgba(0,0,0,.08)", maxHeight: 200, overflow: "auto" }}>
+                      {clientSuggestions.map(c => (
+                        <button key={c.id} type="button" onMouseDown={() => selectClient(c)} style={{ display: "block", width: "100%", padding: "10px 14px", textAlign: "left", background: "none", border: "none", borderBottom: "1px solid #F3F4F6", cursor: "pointer", fontSize: 13 }}>
+                          <div style={{ fontWeight: 600, color: "#3D2E1F" }}>{c.nom}</div>
+                          <div style={{ fontSize: 11, color: "#9C958D" }}>{[c.telephone, c.email, c.ville].filter(Boolean).join(" \u00b7 ")}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
               <div>
                 <label style={labelStyle}>Email</label>

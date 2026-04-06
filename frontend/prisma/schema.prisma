@@ -156,6 +156,7 @@ model Artisan {
   joursFeries     JourFerie[]
   rdvList         RendezVousBativio[]
   chantiers       Chantier[]
+  clients         Client[]
   artisanMetiers  ArtisanMetier[]
   tarifsHoraire   Float?              @map("tarifs_horaire")
   tarifsMarges    Json?               @map("tarifs_marges")
@@ -355,11 +356,13 @@ model DemandeDevis {
   devisIAGenere    Boolean     @default(false) @map("devis_ia_genere")
   devisFinalUrl    String?     @map("devis_final_url")
   devisMontantHT   Float?      @map("devis_montant_ht")
+  clientId         String?     @map("client_id")
   expiresAt        DateTime?   @map("expires_at")
   createdAt        DateTime    @default(now()) @map("created_at")
   updatedAt        DateTime    @updatedAt @map("updated_at")
 
   artisan          Artisan     @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  client           Client?     @relation(fields: [clientId], references: [id])
   replies          DevisReply[]
   messages         MessageDevis[]
   photosDevis      DevisPhoto[]
@@ -691,4 +694,30 @@ model ChantierCollaborateur {
   @@index([chantierId])
   @@index([artisanBativioId])
   @@map("chantier_collaborateurs")
+}
+
+// ── CRM Client ──
+
+model Client {
+  id              String   @id @default(cuid())
+  artisanId       String   @map("artisan_id")
+  nom             String
+  prenom          String?
+  email           String?
+  telephone       String?
+  adresse         String?
+  codePostal      String?  @map("code_postal")
+  ville           String?
+  siret           String?
+  notes           String?  @db.Text
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  artisan         Artisan  @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  demandes        DemandeDevis[]
+
+  @@unique([artisanId, email])
+  @@index([artisanId])
+  @@index([artisanId, nom])
+  @@map("clients")
 }

@@ -64,6 +64,31 @@ export async function POST(
       },
     });
 
+    // Auto-create or link client
+    try {
+      let client = emailClient
+        ? await prisma.client.findFirst({ where: { artisanId: artisan.id, email: emailClient } })
+        : await prisma.client.findFirst({ where: { artisanId: artisan.id, telephone: telephoneClient } });
+
+      if (!client) {
+        client = await prisma.client.create({
+          data: {
+            artisanId: artisan.id,
+            nom: nomClient,
+            email: emailClient || null,
+            telephone: telephoneClient,
+          },
+        });
+      }
+
+      await prisma.demandeDevis.update({
+        where: { id: demandeDevis.id },
+        data: { clientId: client.id },
+      });
+    } catch {
+      // Non-blocking — if client creation fails, the demande still works
+    }
+
     // Create notification for artisan
     await prisma.notification.create({
       data: {
