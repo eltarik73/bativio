@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { requireAuth } from "@/lib/auth-server";
 import { getLeadLimit } from "@/lib/lead-limits";
+import { getEffectivePlan } from "@/lib/plan-gates";
 
 export async function GET(request: NextRequest) {
   try {
@@ -59,7 +60,7 @@ export async function GET(request: NextRequest) {
     ]);
 
     // Determine lead limit for this artisan's plan
-    const leadLimit = getLeadLimit(artisan.plan);
+    const leadLimit = getLeadLimit(getEffectivePlan(artisan).toUpperCase());
 
     // To determine rank: count all demandes created before each one
     // We need total demandes ordered by createdAt ASC to assign rank

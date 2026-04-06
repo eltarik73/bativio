@@ -230,7 +230,7 @@ function FacturationContent() {
     { href: "/dashboard/facturation/nouveau?type=devis", label: "Nouveau devis", desc: "Cr\u00e9er un devis client", icon: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6M9 15l3 3 3-3"/>', color: "#C4531A" },
     { href: "/dashboard/facturation/nouveau?type=facture", label: "Nouvelle facture", desc: "Facturer un client", icon: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>', color: "#2563EB" },
     { href: "/dashboard/facturation?tab=factures", label: "Cr\u00e9er un avoir", desc: "Depuis une facture existante", icon: '<path d="M3 12h18M3 6h18M3 18h18"/><path d="M19 6l-7 12"/>', color: "#DC2626" },
-    { href: embedIframeUrl || "/dashboard/facturation?tab=clients", label: "Nouveau client", desc: "Ajouter un contact", icon: '<path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/>', color: "#16A34A", external: true },
+    { href: "/dashboard/facturation?tab=clients", label: "Nouveau client", desc: "Ajouter un contact", icon: '<path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/>', color: "#16A34A" },
   ];
 
   return (
@@ -242,7 +242,7 @@ function FacturationContent() {
         {/* Action cards */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(180px,1fr))", gap: 12 }}>
           {ACTIONS.map(a => (
-            <Link key={a.label} href={a.href} prefetch={false} {...(a.external ? { target: "_blank" } : {})} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: "20px 16px", borderRadius: 14, border: "1px solid #EDEBE7", background: "#fff", textDecoration: "none", transition: "all .15s", textAlign: "center" }}>
+            <Link key={a.label} href={a.href} prefetch={false} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: "20px 16px", borderRadius: 14, border: "1px solid #EDEBE7", background: "#fff", textDecoration: "none", transition: "all .15s", textAlign: "center" }}>
               <div style={{ width: 44, height: 44, borderRadius: 12, background: `${a.color}10`, display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <svg width="22" height="22" fill="none" stroke={a.color} strokeWidth="1.5" viewBox="0 0 24 24" dangerouslySetInnerHTML={{ __html: a.icon }} />
               </div>
