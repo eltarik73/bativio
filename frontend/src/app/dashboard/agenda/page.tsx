@@ -116,7 +116,8 @@ function PlanningContent() {
   const [rdvs, setRdvs] = useState<RdvData[]>([]);
   const [loading, setLoading] = useState(true);
   const [mobileDay, setMobileDay] = useState(() => new Date().getDay() === 0 ? 6 : new Date().getDay() - 1);
-  const [viewMode, setViewMode] = useState<"semaine" | "mois">("semaine");
+  const [viewMode, setViewMode] = useState<"jour" | "semaine" | "mois">("semaine");
+  const [selectedDay, setSelectedDay] = useState(() => new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   // Modal state
@@ -152,11 +153,19 @@ function PlanningContent() {
   const days = Array.from({ length: 7 }, (_, i) => addDays(monday, i));
   const todayStr = fmtDate(new Date());
 
-  const fetchData = useCallback(async (mon: Date) => {
+  const fetchData = useCallback(async (mon: Date, view: string) => {
     setLoading(true);
     try {
-      const start = fmtDate(mon);
-      const end = fmtDate(addDays(mon, 6));
+      let start: string, end: string;
+      if (view === "mois") {
+        const firstOfMonth = new Date(mon.getFullYear(), mon.getMonth(), 1);
+        const lastOfMonth = new Date(mon.getFullYear(), mon.getMonth() + 1, 0);
+        start = fmtDate(addDays(firstOfMonth, -7)); // include prev week for display
+        end = fmtDate(addDays(lastOfMonth, 7)); // include next week
+      } else {
+        start = fmtDate(mon);
+        end = fmtDate(addDays(mon, 6));
+      }
       const data = await fetchWithAuth(`/artisans/me/chantiers?start=${start}&end=${end}`);
       const d = data as { chantiers: ChantierData[]; rdvs: RdvData[] };
       setChantiers(d.chantiers || []);
@@ -169,11 +178,17 @@ function PlanningContent() {
     }
   }, [fetchWithAuth]);
 
-  useEffect(() => { fetchData(monday); }, [monday, fetchData]);
+  useEffect(() => { fetchData(monday, viewMode); }, [monday, viewMode, fetchData]);
 
-  const prevWeek = () => setMonday(m => viewMode === "mois" ? new Date(m.getFullYear(), m.getMonth() - 1, 1) : addDays(m, -7));
-  const nextWeek = () => setMonday(m => viewMode === "mois" ? new Date(m.getFullYear(), m.getMonth() + 1, 1) : addDays(m, 7));
-  const goToday = () => { setMonday(getMonday(new Date())); setMobileDay(new Date().getDay() === 0 ? 6 : new Date().getDay() - 1); };
+  const navigate = (dir: -1 | 1) => {
+    if (viewMode === "jour") { setSelectedDay(d => addDays(d, dir)); setMonday(m => { const nd = addDays(selectedDay, dir); return getMonday(nd); }); }
+    else if (viewMode === "mois") setMonday(m => new Date(m.getFullYear(), m.getMonth() + dir, 1));
+    else setMonday(m => addDays(m, dir * 7));
+  };
+  const prevWeek = () => navigate(-1);
+  const nextWeek = () => navigate(1);
+  const goToday = () => { const now = new Date(); setMonday(getMonday(now)); setSelectedDay(now); setMobileDay(now.getDay() === 0 ? 6 : now.getDay() - 1); };
+  const goToDay = (d: Date) => { setSelectedDay(d); setMonday(getMonday(d)); setViewMode("jour"); };
 
   /* ── Chantier CRUD ── */
   const openNewChantier = (dayIndex?: number) => {
@@ -209,7 +224,7 @@ function PlanningContent() {
         body: JSON.stringify(form),
       });
       setShowModal(false);
-      await fetchData(monday);
+      await fetchData(monday, viewMode);
     } catch (e) {
       setFormError(e instanceof Error ? e.message : "Erreur");
     } finally {
@@ -222,7 +237,7 @@ function PlanningContent() {
     try {
       await fetchWithAuth(`/artisans/me/chantiers/${id}`, { method: "DELETE" });
       setDetailChantier(null);
-      await fetchData(monday);
+      await fetchData(monday, viewMode);
     } catch { /* silent */ }
   };
 
@@ -240,7 +255,7 @@ function PlanningContent() {
       });
       setRdvForm({ clientNom: "", clientTelephone: "", date: "", heure: "", objet: "" });
       setShowRdvForm(false);
-      await fetchData(monday);
+      await fetchData(monday, viewMode);
     } catch (e) {
       setRdvError(e instanceof Error ? e.message : "Erreur");
     } finally {
@@ -251,7 +266,7 @@ function PlanningContent() {
   const handleRdvAction = async (rdvId: string, action: string) => {
     try {
       await fetchWithAuth(`/artisans/me/rdv/${rdvId}/${action}`, { method: "PUT" });
-      await fetchData(monday);
+      await fetchData(monday, viewMode);
       setExpandedRdv(null);
     } catch { /* silent */ }
   };
@@ -267,7 +282,7 @@ function PlanningContent() {
       });
       setCollabForm({ nom: "", telephone: "", role: "" });
       setShowAddCollab(false);
-      await fetchData(monday);
+      await fetchData(monday, viewMode);
       if (detailChantier) {
         const updated = await fetchWithAuth(`/artisans/me/chantiers?start=${fmtDate(monday)}&end=${fmtDate(addDays(monday, 6))}`) as { chantiers: ChantierData[] };
         const refreshed = updated.chantiers.find(c => c.id === chantierId);
@@ -287,7 +302,7 @@ function PlanningContent() {
       setBativioQuery("");
       setBativioResults([]);
       setShowAddCollab(false);
-      await fetchData(monday);
+      await fetchData(monday, viewMode);
       if (detailChantier) {
         const updated = await fetchWithAuth(`/artisans/me/chantiers?start=${fmtDate(monday)}&end=${fmtDate(addDays(monday, 6))}`) as { chantiers: ChantierData[] };
         const refreshed = updated.chantiers.find(c => c.id === chantierId);
@@ -300,7 +315,7 @@ function PlanningContent() {
   const removeCollab = async (chantierId: string, collabId: string) => {
     try {
       await fetchWithAuth(`/artisans/me/chantiers/${chantierId}/collaborateurs/${collabId}`, { method: "DELETE" });
-      await fetchData(monday);
+      await fetchData(monday, viewMode);
       if (detailChantier) {
         setDetailChantier(prev => prev ? { ...prev, collaborateurs: (prev.collaborateurs || []).filter(c => c.id !== collabId) } : null);
       }
@@ -412,9 +427,9 @@ function PlanningContent() {
       {/* View toggle + Nav */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
         <div style={{ display: "flex", gap: 2, background: "#F3F4F6", borderRadius: 8, padding: 2 }}>
-          {(["semaine", "mois"] as const).map(v => (
-            <button key={v} onClick={() => setViewMode(v)} style={{ padding: "6px 14px", borderRadius: 6, fontSize: 12, fontWeight: 600, border: "none", cursor: "pointer", background: viewMode === v ? "#fff" : "transparent", color: viewMode === v ? "#3D2E1F" : "#9CA3AF", boxShadow: viewMode === v ? "0 1px 3px rgba(0,0,0,.08)" : "none" }}>
-              {v === "semaine" ? "Semaine" : "Mois"}
+          {(["jour", "semaine", "mois"] as const).map(v => (
+            <button key={v} onClick={() => setViewMode(v)} style={{ padding: "6px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600, border: "none", cursor: "pointer", background: viewMode === v ? "#fff" : "transparent", color: viewMode === v ? "#3D2E1F" : "#9CA3AF", boxShadow: viewMode === v ? "0 1px 3px rgba(0,0,0,.08)" : "none" }}>
+              {v === "jour" ? "Jour" : v === "semaine" ? "Semaine" : "Mois"}
             </button>
           ))}
         </div>
@@ -423,7 +438,7 @@ function PlanningContent() {
           <button onClick={prevWeek} style={navBtn}><svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
           <div style={{ textAlign: "center", position: "relative" }}>
             <button onClick={() => setShowDatePicker(p => !p)} style={{ fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, color: "var(--bois,#3D2E1F)", background: "none", border: "none", cursor: "pointer" }}>
-              {viewMode === "mois" ? `${MOIS[monday.getMonth()]} ${monday.getFullYear()}` : weekLabel(monday)}
+              {viewMode === "jour" ? `${JOURS_FULL[selectedDay.getDay()]} ${selectedDay.getDate()} ${MOIS[selectedDay.getMonth()]} ${selectedDay.getFullYear()}` : viewMode === "mois" ? `${MOIS[monday.getMonth()]} ${monday.getFullYear()}` : weekLabel(monday)}
             </button>
             {fmtDate(monday) !== fmtDate(getMonday(new Date())) && (
               <button onClick={goToday} style={{ display: "block", margin: "2px auto 0", fontSize: 11, fontWeight: 600, color: "#C4531A", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}>Aujourd&apos;hui</button>
@@ -444,6 +459,103 @@ function PlanningContent() {
         <div style={{ textAlign: "center", padding: 60, color: "#9C958D", fontSize: 14 }}>Chargement...</div>
       ) : (
         <>
+          {/* ── DAY VIEW ── */}
+          {viewMode === "jour" && (
+            <div style={CARD} className="max-md:!rounded-none max-md:!border-x-0">
+              <div style={{ padding: "12px 16px", borderBottom: "1px solid #EDEBE7", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: fmtDate(selectedDay) === todayStr ? "#C4531A" : "#3D2E1F" }}>
+                  {JOURS_FULL[selectedDay.getDay()]} {selectedDay.getDate()} {MOIS[selectedDay.getMonth()]}
+                </span>
+                <button onClick={() => openNewChantier()} style={{ fontSize: 12, fontWeight: 600, color: "#C4531A", background: "none", border: "none", cursor: "pointer" }}>+ Ajouter</button>
+              </div>
+
+              {/* All-day chantiers */}
+              {(() => {
+                const ds = fmtDate(selectedDay);
+                const dayChantiers = getChantiersForDay(ds);
+                const dayRdvs = getRdvsForDay(ds);
+
+                return (
+                  <div style={{ padding: 16 }}>
+                    {dayChantiers.length > 0 && (
+                      <div style={{ marginBottom: 16 }}>
+                        <div style={{ fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Chantiers</div>
+                        {dayChantiers.map(c => {
+                          const cStart = new Date(c.dateDebut); cStart.setHours(0, 0, 0, 0);
+                          const cEnd = new Date(c.dateFin); cEnd.setHours(0, 0, 0, 0);
+                          const span = daysBetween(cStart, cEnd) + 1;
+                          return (
+                            <div key={c.id} onClick={() => setDetailChantier(c)} style={{ display: "flex", gap: 12, padding: "14px 16px", marginBottom: 8, borderRadius: 10, background: c._invite ? "#F9FAFB" : "#fff", borderLeft: `4px solid ${c._invite ? "#9CA3AF" : c.couleur}`, border: `1px solid ${c._invite ? "#D1D5DB" : c.couleur + "33"}`, cursor: "pointer" }}>
+                              <div style={{ flex: 1 }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                                  <span style={{ fontSize: 15, fontWeight: 700, color: "#3D2E1F" }}>{c.nom}</span>
+                                  {c._invite && <span style={{ fontSize: 10, color: "#9CA3AF" }}>Invit&eacute;</span>}
+                                </div>
+                                {c.adresse && <div style={{ fontSize: 13, color: "#6B6560" }}>{c.adresse}{c.ville ? ` \u2013 ${c.ville}` : ""}</div>}
+                                <div style={{ fontSize: 12, color: "#9C958D", marginTop: 4 }}>
+                                  {span > 1 ? `${span} jours` : "1 jour"}{c.heureDebut ? ` \u00b7 ${c.heureDebut}${c.heureFin ? `\u2013${c.heureFin}` : ""}` : " \u00b7 Journ\u00e9e enti\u00e8re"}
+                                  {c.clientNom ? ` \u00b7 Client: ${c.clientNom}` : ""}
+                                </div>
+                                {c.notes && <div style={{ fontSize: 12, color: "#9C958D", marginTop: 4, fontStyle: "italic" }}>{c.notes}</div>}
+                              </div>
+                              {(c.collaborateurs || []).length > 0 && (
+                                <div style={{ display: "flex", flexDirection: "column", gap: 2, alignItems: "flex-end" }}>
+                                  {(c.collaborateurs || []).slice(0, 3).map(col => (
+                                    <span key={col.id} style={{ width: 24, height: 24, borderRadius: "50%", background: col.source === "BATIVIO" ? "#C4531A" : "#6B7280", color: "#fff", fontSize: 9, fontWeight: 700, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{getInitials(col.nom)}</span>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {dayRdvs.length > 0 && (
+                      <div>
+                        <div style={{ fontSize: 11, fontWeight: 600, color: "#9B9590", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Rendez-vous</div>
+                        {dayRdvs.map(r => {
+                          const st = RDV_STATUT[r.statut] || RDV_STATUT.EN_ATTENTE;
+                          const time = r.dateDebut ? new Date(r.dateDebut).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "";
+                          return (
+                            <div key={r.id} onClick={() => setExpandedRdv(expandedRdv === r.id ? null : r.id)} style={{ padding: "14px 16px", marginBottom: 8, borderRadius: 10, background: st.bg, border: `1px solid ${st.border}`, cursor: "pointer" }}>
+                              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                <div>
+                                  <span style={{ fontSize: 14, fontWeight: 700, color: st.text }}>{time}</span>
+                                  <span style={{ fontSize: 15, fontWeight: 600, color: "#3D2E1F", marginLeft: 10 }}>{r.clientNom}</span>
+                                </div>
+                                <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: st.border, color: st.text }}>{st.label}</span>
+                              </div>
+                              <div style={{ fontSize: 13, color: "#6B6560", marginTop: 4 }}>{r.objet}</div>
+                              {r.adresse && <div style={{ fontSize: 12, color: "#9C958D", marginTop: 2 }}>{r.adresse}</div>}
+                              {expandedRdv === r.id && (
+                                <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${st.border}` }}>
+                                  {r.clientTelephone && <div style={{ marginBottom: 4 }}><a href={`tel:${r.clientTelephone}`} style={{ fontSize: 14, color: "#C4531A", fontWeight: 600 }}>{r.clientTelephone}</a></div>}
+                                  {r.notes && <div style={{ fontSize: 13, color: "#6B6560" }}>{r.notes}</div>}
+                                  <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+                                    {r.statut === "EN_ATTENTE" && <button onClick={(e) => { e.stopPropagation(); handleRdvAction(r.id, "confirmer"); }} style={{ ...miniBtn, background: "#22c55e", color: "#fff" }}>Confirmer</button>}
+                                    {(r.statut === "EN_ATTENTE" || r.statut === "CONFIRME") && <button onClick={(e) => { e.stopPropagation(); handleRdvAction(r.id, "annuler"); }} style={{ ...miniBtn, background: "#FEF2F2", color: "#991B1B" }}>Annuler</button>}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {dayChantiers.length === 0 && dayRdvs.length === 0 && (
+                      <div style={{ textAlign: "center", padding: "40px 16px" }}>
+                        <p style={{ fontSize: 14, color: "#9C958D", marginBottom: 12 }}>Rien de pr&eacute;vu ce jour</p>
+                        <button onClick={() => openNewChantier()} style={btnPrimary}>+ Ajouter un chantier</button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
+          )}
+
           {/* ── MONTH VIEW ── */}
           {viewMode === "mois" && (
             <div style={CARD}>
@@ -469,7 +581,7 @@ function PlanningContent() {
                     const dayRdvs = getRdvsForDay(ds);
                     const hasEvents = dayChantiers.length > 0 || dayRdvs.length > 0;
                     return (
-                      <div key={i} onClick={() => { setMonday(getMonday(cell.date)); setViewMode("semaine"); }} style={{ padding: "6px 4px", minHeight: 64, borderRight: (i + 1) % 7 !== 0 ? "1px solid #F3F4F6" : "none", borderBottom: "1px solid #F3F4F6", cursor: "pointer", background: isToday ? "rgba(196,83,26,.04)" : "transparent", opacity: cell.inMonth ? 1 : 0.3 }}>
+                      <div key={i} onClick={() => goToDay(cell.date)} style={{ padding: "6px 4px", minHeight: 64, borderRight: (i + 1) % 7 !== 0 ? "1px solid #F3F4F6" : "none", borderBottom: "1px solid #F3F4F6", cursor: "pointer", background: isToday ? "rgba(196,83,26,.04)" : "transparent", opacity: cell.inMonth ? 1 : 0.3 }}>
                         <div style={{ fontSize: 13, fontWeight: isToday ? 700 : 400, color: isToday ? "#C4531A" : "#3D2E1F", textAlign: "center", marginBottom: 4 }}>{cell.date.getDate()}</div>
                         {dayChantiers.slice(0, 2).map(c => (
                           <div key={c.id} style={{ fontSize: 9, fontWeight: 600, color: "#fff", background: c._invite ? "#9CA3AF" : c.couleur, borderRadius: 3, padding: "1px 4px", marginBottom: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.nom}</div>
