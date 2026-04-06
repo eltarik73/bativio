@@ -68,8 +68,9 @@ export async function POST(request: NextRequest) {
       return apiError("Le devis IA est disponible avec le plan Business. Passez à Business pour en profiter.", 403);
     }
 
-    if (!artisan.tarification) {
-      return apiError("Configurez d'abord votre tarification", 400);
+    // Tarification optionnelle — utiliser des defauts si absente
+    if (!artisan.tarification && artisan.prestationTypes.length === 0) {
+      return apiError("Configurez d'abord vos tarifs dans Mes tarifs", 400);
     }
 
     const body = await request.json();
@@ -91,7 +92,7 @@ export async function POST(request: NextRequest) {
       devisRequestId,
     } = parsed.data;
 
-    const tarif = artisan.tarification;
+    const tarif = artisan.tarification || { tarifHoraire: 45, fraisDeplacementMontant: 30, fraisDeplacementType: "forfait", margeFournitures: 20, tvaDefault: 20 };
     const metierNom = artisan.metier?.nom || "artisan du batiment";
 
     // Build prestations library string
