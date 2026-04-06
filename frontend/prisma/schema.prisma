@@ -147,6 +147,7 @@ model Artisan {
   disponibilites  DisponibiliteHebdo[]
   joursFeries     JourFerie[]
   rdvList         RendezVousBativio[]
+  chantiers       Chantier[]
   artisanMetiers  ArtisanMetier[]
   tarifsHoraire   Float?              @map("tarifs_horaire")
   tarifsMarges    Json?               @map("tarifs_marges")
@@ -621,4 +622,63 @@ model Settings {
   adminEmail String   @default("contact@bativio.com") @map("admin_email")
   updatedAt  DateTime @updatedAt @map("updated_at")
   @@map("settings")
+}
+
+// ── Planning chantier ──
+
+enum ChantierStatut {
+  PLANIFIE
+  EN_COURS
+  TERMINE
+  ANNULE
+  REPORTE
+}
+
+enum CollaborateurSource {
+  MANUEL
+  BATIVIO
+  GMAIL
+}
+
+model Chantier {
+  id              String          @id @default(cuid())
+  artisanId       String          @map("artisan_id")
+  nom             String
+  adresse         String?
+  ville           String?
+  clientNom       String?         @map("client_nom")
+  clientTelephone String?         @map("client_telephone")
+  couleur         String          @default("#C4531A")
+  dateDebut       DateTime        @map("date_debut")
+  dateFin         DateTime        @map("date_fin")
+  heureDebut      String?         @map("heure_debut")
+  heureFin        String?         @map("heure_fin")
+  notes           String?         @db.Text
+  statut          ChantierStatut  @default(PLANIFIE)
+  devisId         String?         @map("devis_id")
+  montantDevis    Float?          @map("montant_devis")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  artisan         Artisan         @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  collaborateurs  ChantierCollaborateur[]
+
+  @@index([artisanId, dateDebut])
+  @@index([artisanId, statut])
+  @@map("chantiers")
+}
+
+model ChantierCollaborateur {
+  id          String              @id @default(cuid())
+  chantierId  String              @map("chantier_id")
+  nom         String
+  email       String?
+  telephone   String?
+  role        String?             @default("collaborateur")
+  source      CollaborateurSource @default(MANUEL)
+
+  chantier    Chantier            @relation(fields: [chantierId], references: [id], onDelete: Cascade)
+
+  @@index([chantierId])
+  @@map("chantier_collaborateurs")
 }

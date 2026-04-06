@@ -11,7 +11,7 @@ const ICON_STAR = '<svg width="20" height="20" fill="none" stroke="currentColor"
 
 const NAV: { href: string; label: string; icon: string; badge?: string; sep?: boolean }[] = [
   { href: "/dashboard", label: "Tableau de bord", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>' },
-  { href: "/dashboard/agenda", label: "Agenda", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>' },
+  { href: "/dashboard/agenda", label: "Planning", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>' },
   { href: "/dashboard/profil", label: "Mon profil", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>' },
   { href: "/dashboard/vitrine", label: "Ma vitrine", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>' },
   { href: "/dashboard/photos", label: "Mes photos", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>' },
@@ -236,7 +236,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <div style={{ padding: "12px 0", display: "flex", flexDirection: "column", gap: 4 }}>
                 {[
                   { href: "/dashboard/profil", label: "Mon profil" },
-                  { href: "/dashboard/agenda", label: "Agenda & RDV" },
+                  { href: "/dashboard/agenda", label: "Planning" },
                   { href: "/dashboard/vitrine", label: "Ma vitrine" },
                   { href: "/dashboard/photos", label: "Mes photos" },
                   { href: "/dashboard/abonnement", label: "Mon abonnement" },

@@ -91,7 +91,7 @@ export const DASHBOARD_MODULES: Record<string, DashboardModuleConfig> = {
   abonnement:   { requiredPlan: "gratuit",  label: "Abonnement" },
   parametres:   { requiredPlan: "gratuit",  label: "Paramètres" },
   demandes:     { requiredPlan: "gratuit",  label: "Demandes" },
-  agenda:       { requiredPlan: "starter",  label: "Agenda" },
+  agenda:       { requiredPlan: "starter",  label: "Planning" },
   facturation:  { requiredPlan: "starter",  label: "Facturation" },
   rdv:          { requiredPlan: "starter",  label: "Mes RDV" },
   vitrine:      { requiredPlan: "pro",      label: "Vitrine" },
