@@ -39,6 +39,7 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
         </div>
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(28,28,30,.5), rgba(28,28,30,.8), #1C1C1E)" }} />
         <div style={{ position: "relative", zIndex: 1, maxWidth: 880, margin: "0 auto", padding: "56px 32px 64px" }}>
+          {a.nombreAvis > 0 && (
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <span style={{ background: accent, color: "#1C1C1E", padding: "7px 16px", borderRadius: 22, fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 6 }}>
               <svg width="16" height="16" fill="#1C1C1E" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
@@ -46,6 +47,7 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
             </span>
             <span style={{ fontSize: 13, color: "rgba(255,255,255,.45)" }}>{a.nombreAvis} avis</span>
           </div>
+          )}
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 14 }}>
             <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(34px,6vw,60px)", fontWeight: 700, color: "#fff", lineHeight: 1.1 }}>{a.nomAffichage}</h1>
             <span style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(22,163,74,.15)", backdropFilter: "blur(8px)", border: "1px solid rgba(22,163,74,.25)", color: "#4ade80", padding: "5px 12px", borderRadius: 20, fontSize: 12, fontWeight: 600, whiteSpace: "nowrap", flexShrink: 0, alignSelf: "center" }}>

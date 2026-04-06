@@ -546,3 +546,13 @@ a{text-decoration:none;color:inherit;transition:color .15s}button{font-family:'K
 .stat-card-hover:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(196,83,26,.1)}
 
 ::selection{background-color:rgba(196,83,26,.2)}
+
+/* Accessibility: reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

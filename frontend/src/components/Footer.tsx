@@ -23,15 +23,15 @@ export default function Footer() {
           <div className="footer-col">
             <div className="footer-col-title">Pour les artisans</div>
             <Link href="/inscription">Cr&eacute;er ma page</Link>
-            <Link href="/artisan">Tarifs</Link>
+            <Link href="/tarifs">Tarifs</Link>
             <Link href="/facturation-electronique">Facturation</Link>
           </div>
           <div className="footer-col">
             <div className="footer-col-title">Bativio</div>
-            <Link href="/artisan">&Agrave; propos</Link>
+            <Link href="/rejoindre">&Agrave; propos</Link>
             <a href="mailto:contact@bativio.fr">Contact</a>
-            <Link href="#">Mentions l&eacute;gales</Link>
-            <Link href="#">CGU</Link>
+            <Link href="/mentions-legales">Mentions l&eacute;gales</Link>
+            <Link href="/cgu">CGU</Link>
           </div>
         </div>
         <div className="footer-bottom">
