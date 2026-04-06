@@ -385,7 +385,7 @@ function ResetPasswordForm() {
           >
             <CriteriaItem
               met={criteria.hasMinLength}
-              label="8 caract\u00e8res minimum"
+              label={"8 caract\u00e8res minimum"}
             />
             <CriteriaItem met={criteria.hasUpper} label="Une majuscule" />
             <CriteriaItem met={criteria.hasLower} label="Une minuscule" />

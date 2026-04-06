@@ -385,7 +385,7 @@ export default function NouveauDevisIAPage() {
                 type="text"
                 value={surface}
                 onChange={(e) => setSurface(e.target.value)}
-                placeholder="ex: 8m\u00b2"
+                placeholder={"ex: 8m\u00b2"}
                 style={inputStyle}
               />
             </div>
@@ -410,7 +410,7 @@ export default function NouveauDevisIAPage() {
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="D\u00e9crivez les travaux souhait\u00e9s..."
+              placeholder={"D\u00e9crivez les travaux souhait\u00e9s..."}
               rows={4}
               style={{ ...inputStyle, resize: "vertical" }}
             />

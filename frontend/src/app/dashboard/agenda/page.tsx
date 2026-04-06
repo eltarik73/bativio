@@ -411,7 +411,7 @@ function PlanningContent() {
           <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 12 }}>Nouveau RDV</h3>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(180px,1fr))", gap: 10 }}>
             <input value={rdvForm.clientNom} onChange={e => setRdvForm(f => ({ ...f, clientNom: e.target.value }))} placeholder="Nom du client *" style={inputStyle} />
-            <input value={rdvForm.clientTelephone} onChange={e => setRdvForm(f => ({ ...f, clientTelephone: e.target.value }))} placeholder="T\u00e9l\u00e9phone" style={inputStyle} />
+            <input value={rdvForm.clientTelephone} onChange={e => setRdvForm(f => ({ ...f, clientTelephone: e.target.value }))} placeholder={"T\u00e9l\u00e9phone"} style={inputStyle} />
             <input type="date" value={rdvForm.date} onChange={e => setRdvForm(f => ({ ...f, date: e.target.value }))} style={inputStyle} />
             <input type="time" value={rdvForm.heure} onChange={e => setRdvForm(f => ({ ...f, heure: e.target.value }))} style={inputStyle} />
             <input value={rdvForm.objet} onChange={e => setRdvForm(f => ({ ...f, objet: e.target.value }))} placeholder="Objet *" style={{ ...inputStyle, gridColumn: "1 / -1" }} />

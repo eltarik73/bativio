@@ -247,7 +247,7 @@ function DevisIAListContent() {
                       {formatEuros(d.totalTTC)}
                     </span>
                     <div style={{ marginLeft: "auto", display: "flex", gap: 6, alignItems: "center" }}>
-                      <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handlePrintPreview(d); }} title="Aper\u00e7u PDF" style={{ width: 32, height: 32, borderRadius: 6, border: "1px solid #E8D5C0", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); handlePrintPreview(d); }} title={"Aper\u00e7u PDF"} style={{ width: 32, height: 32, borderRadius: 6, border: "1px solid #E8D5C0", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <svg width="14" height="14" fill="none" stroke="#6B6560" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
                       </button>
                       {d.clientEmail && (
