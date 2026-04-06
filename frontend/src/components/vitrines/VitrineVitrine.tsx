@@ -10,6 +10,7 @@ import PhotoGallery from "@/components/vitrines/PhotoGallery";
 import type { PhotoLayoutType } from "@/lib/vitrine-config";
 import { METIER_PHOTOS } from "@/lib/metier-config";
 import ChatDevis from "@/components/ChatDevis/ChatDevis";
+import ArtisanBadges from "@/components/ArtisanBadges";
 
 const JOURS = ["", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 const PLACEHOLDERS = Object.values(METIER_PHOTOS).slice(0, 4);
@@ -51,6 +52,9 @@ export default function VitrineVitrine({ a, photo, primary, accent, villeSlug }:
       <section style={{ background: "#fff", padding: "40px 32px", textAlign: "center" }}>
         <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(28px,5vw,44px)", fontWeight: 700, color: "#1C1C1E" }}>{a.nomAffichage}</h1>
         <p style={{ fontSize: 16, color: "#9B9590", marginTop: 6 }}>{a.metierNom || "Artisan"} &agrave; {a.ville || "Chambéry"}</p>
+        <div style={{ display: "flex", justifyContent: "center", marginTop: 10 }}>
+          <ArtisanBadges plan={a.plan} planOverride={a.planOverride} planOverrideExpireAt={a.planOverrideExpireAt} experienceAnnees={a.experienceAnnees} size="md" />
+        </div>
         {(a.badgesNoms || []).length > 0 && (
           <div style={{ display: "flex", gap: 6, justifyContent: "center", marginTop: 14, flexWrap: "wrap" }}>
             {(a.badgesNoms || []).map((b) => (

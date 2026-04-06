@@ -57,6 +57,8 @@ export async function GET(
       noteMoyenne: artisan.noteMoyenne,
       nombreAvis: artisan.nombreAvis,
       plan: artisan.plan,
+      planOverride: artisan.planOverride ?? null,
+      planOverrideExpireAt: artisan.planOverrideExpireAt?.toISOString() ?? null,
       templateId: artisan.templateId,
       colorPrimary: artisan.colorPrimary,
       colorAccent: artisan.colorAccent,

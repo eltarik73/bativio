@@ -6,6 +6,7 @@ import Image from "next/image";
 import type { ArtisanPublic } from "@/lib/api";
 import { METIER_COLORS, METIER_ICONS } from "@/lib/metier-config";
 import { getArtisanPhoto, FALLBACK_PHOTO } from "@/lib/artisan-photos";
+import ArtisanBadges from "@/components/ArtisanBadges";
 
 function slugify(str: string) {
   return str.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -71,6 +72,12 @@ export default function ArtisanCard({ artisan, villeSlug }: { artisan: ArtisanPu
               </div>
             )}
           </div>
+          <ArtisanBadges
+            plan={artisan.plan}
+            planOverride={artisan.planOverride}
+            planOverrideExpireAt={artisan.planOverrideExpireAt}
+            experienceAnnees={artisan.experienceAnnees}
+          />
           <div className="card-meta">
             {artisan.ville}
             {artisan.distance != null && artisan.distance < 100 && (

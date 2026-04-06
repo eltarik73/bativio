@@ -46,6 +46,8 @@ export interface ArtisanPublic {
   zoneRayonKm: number;
   experienceAnnees: number;
   plan: string;
+  planOverride?: string | null;
+  planOverrideExpireAt?: string | null;
   badgesNoms: string[];
   services: ServiceData[] | null;
   photos: PhotoData[] | null;

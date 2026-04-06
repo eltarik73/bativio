@@ -1,8 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { getEffectivePlan, getPlanLimits, PLAN_LABELS } from "@/lib/plan-gates";
+
+interface MetierItem { id: string; nom: string; icone: string | null; principal: boolean }
+interface PrestationItem { id: string; designation: string; unite: string; prixUnitaire: number; categorie: string | null; isCustom: boolean }
 
 export default function ParametresPage() {
   const [copied, setCopied] = useState(false);
@@ -15,6 +20,50 @@ export default function ParametresPage() {
   const [showPlans, setShowPlans] = useState(false);
   const router = useRouter();
   const { user, logout, fetchWithAuth } = useAuth();
+
+  // Métiers & prestations
+  const [metiers, setMetiers] = useState<MetierItem[]>([]);
+  const [allMetiers, setAllMetiers] = useState<{ id: string; nom: string; icone: string | null }[]>([]);
+  const [prestations, setPrestations] = useState<PrestationItem[]>([]);
+  const [showAddMetier, setShowAddMetier] = useState(false);
+  const [addingMetier, setAddingMetier] = useState<string | null>(null);
+
+  const effectivePlan = getEffectivePlan({
+    plan: (user?.plan as string) || "GRATUIT",
+    planOverride: (user as Record<string, unknown> | null)?.planOverride as string | null,
+    planOverrideExpireAt: (user as Record<string, unknown> | null)?.planOverrideExpireAt as string | null,
+  });
+  const planLimits = getPlanLimits(effectivePlan);
+  const maxMetiers = planLimits.maxMetiers;
+
+  const loadMetiersAndPrestations = useCallback(async () => {
+    try {
+      const data = await fetchWithAuth("/artisans/me/metiers-prestations") as { metiers: MetierItem[]; prestations: PrestationItem[]; allMetiers: { id: string; nom: string; icone: string | null }[] };
+      setMetiers(data.metiers || []);
+      setPrestations(data.prestations || []);
+      setAllMetiers(data.allMetiers || []);
+    } catch { /* ignore */ }
+  }, [fetchWithAuth]);
+
+  useEffect(() => { loadMetiersAndPrestations(); }, [loadMetiersAndPrestations]);
+
+  const handleAddMetier = async (metierId: string) => {
+    setAddingMetier(metierId);
+    try {
+      await fetchWithAuth("/artisans/me/metiers", { method: "POST", body: JSON.stringify({ metierId }) });
+      await loadMetiersAndPrestations();
+      setShowAddMetier(false);
+    } catch (e) { alert(e instanceof Error ? e.message : "Erreur"); }
+    finally { setAddingMetier(null); }
+  };
+
+  const handleRemoveMetier = async (metierId: string) => {
+    if (!confirm("Retirer ce métier ?")) return;
+    try {
+      await fetchWithAuth(`/artisans/me/metiers/${metierId}`, { method: "DELETE" });
+      await loadMetiersAndPrestations();
+    } catch (e) { alert(e instanceof Error ? e.message : "Erreur"); }
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -211,6 +260,72 @@ export default function ParametresPage() {
           )}
         </div>
       )}
+
+      {/* Mes métiers */}
+      <div style={CARD}>
+        <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 18, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 6 }}>Mes m&eacute;tiers</h2>
+        <p style={{ fontSize: 13, color: "var(--pierre,#9C958D)", marginBottom: 16 }}>
+          Votre plan {PLAN_LABELS[effectivePlan]} vous permet d&apos;avoir {maxMetiers} m&eacute;tier{maxMetiers > 1 ? "s" : ""}.
+        </p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {metiers.map((m) => (
+            <div key={m.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", background: "#FAF8F5", borderRadius: 10, border: "1px solid #EDEBE7" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ fontSize: 20 }}>{m.icone || "\uD83D\uDD28"}</span>
+                <span style={{ fontSize: 14, fontWeight: 600, color: "#3D2E1F" }}>{m.nom}</span>
+                {m.principal && <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 10, background: "rgba(196,83,26,.08)", color: "#C4531A" }}>Principal</span>}
+              </div>
+              {!m.principal && (
+                <button onClick={() => handleRemoveMetier(m.id)} style={{ fontSize: 12, color: "#dc2626", background: "none", border: "none", cursor: "pointer", fontWeight: 500 }}>Retirer</button>
+              )}
+            </div>
+          ))}
+        </div>
+        {metiers.length < maxMetiers ? (
+          !showAddMetier ? (
+            <button onClick={() => setShowAddMetier(true)} style={{ marginTop: 12, fontSize: 13, color: "#C4531A", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}>+ Ajouter un m&eacute;tier</button>
+          ) : (
+            <div style={{ marginTop: 12, display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {allMetiers.filter((m) => !metiers.some((am) => am.id === m.id)).map((m) => (
+                <button key={m.id} onClick={() => handleAddMetier(m.id)} disabled={addingMetier === m.id} style={{ padding: "6px 14px", borderRadius: 8, border: "1px solid #E8D5C0", background: "#fff", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, opacity: addingMetier === m.id ? 0.5 : 1 }}>
+                  <span>{m.icone || "\uD83D\uDD28"}</span> {m.nom}
+                </button>
+              ))}
+              <button onClick={() => setShowAddMetier(false)} style={{ padding: "6px 14px", borderRadius: 8, border: "none", background: "none", fontSize: 12, color: "#9C958D", cursor: "pointer" }}>Annuler</button>
+            </div>
+          )
+        ) : (
+          <p style={{ marginTop: 12, fontSize: 12, color: "#C5C0B9" }}>
+            Limite atteinte. <Link href="/dashboard/abonnement" style={{ color: "#C4531A", textDecoration: "underline" }}>Passez au plan sup&eacute;rieur</Link> pour ajouter plus de m&eacute;tiers.
+          </p>
+        )}
+      </div>
+
+      {/* Mes tarifs */}
+      <div style={CARD}>
+        <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 18, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 6 }}>Mes tarifs</h2>
+        <p style={{ fontSize: 13, color: "var(--pierre,#9C958D)", marginBottom: 16 }}>
+          Vos prix de r&eacute;f&eacute;rence utilis&eacute;s pour les devis. Modifiez-les selon vos tarifs r&eacute;els.
+        </p>
+        {prestations.length === 0 ? (
+          <p style={{ fontSize: 13, color: "#C5C0B9", fontStyle: "italic" }}>Aucune prestation configur&eacute;e.</p>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {prestations.map((p) => (
+              <div key={p.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 14px", background: "#FAF8F5", borderRadius: 8, border: "1px solid #EDEBE7" }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: "#3D2E1F" }}>{p.designation}</span>
+                  {p.categorie && <span style={{ fontSize: 11, color: "#9C958D", marginLeft: 8 }}>{p.categorie}</span>}
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "#C4531A", fontFamily: "monospace" }}>{p.prixUnitaire}&euro;</span>
+                  <span style={{ fontSize: 11, color: "#9C958D" }}>/{p.unite}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Zone de danger */}
       <div style={{ background: "rgba(220,38,38,.02)", borderRadius: 16, border: "1.5px solid rgba(220,38,38,.15)", padding: 28, marginBottom: 20 }}>

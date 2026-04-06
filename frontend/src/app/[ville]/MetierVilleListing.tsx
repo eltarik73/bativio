@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { getEffectivePlan } from "@/lib/plan-gates";
+import { getEffectivePlan, normalizePlan } from "@/lib/plan-gates";
+import ArtisanBadges from "@/components/ArtisanBadges";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { BASE_URL } from "@/lib/constants";
@@ -13,9 +14,22 @@ interface Props {
 }
 
 export default async function MetierVilleListing({ metierSlug, villeSlug, metierDisplay, villeDisplay }: Props) {
+  // Find metier by slug to query via artisanMetiers
+  const metier = await prisma.metier.findFirst({
+    where: {
+      OR: [
+        { slug: metierSlug },
+        { slug: { contains: metierSlug, mode: "insensitive" } },
+      ],
+    },
+  });
+
+  // Query artisans who have this metier (primary OR secondary)
   const artisans = await prisma.artisan.findMany({
     where: {
-      metierSlugSeo: metierSlug,
+      ...(metier
+        ? { artisanMetiers: { some: { metierId: metier.id } } }
+        : { metierSlugSeo: metierSlug }),
       villeSlug: villeSlug,
       actif: true,
       visible: true,
@@ -25,21 +39,31 @@ export default async function MetierVilleListing({ metierSlug, villeSlug, metier
       photos: { take: 1, orderBy: { ordre: "asc" } },
       badges: true,
       metier: true,
+      artisanMetiers: {
+        include: { metier: { select: { id: true, nom: true, slug: true, icone: true } } },
+        orderBy: { principal: "desc" },
+      },
     },
     orderBy: { noteMoyenne: "desc" },
   });
 
-  // Only Business plan artisans
-  const businessArtisans = artisans.filter((a) => getEffectivePlan(a) === "business");
+  // Sort by plan: Business first, then Pro, then rest
+  const PLAN_HIERARCHY = ["gratuit", "starter", "pro", "business"];
+  const sorted = [...artisans].sort((a, b) => {
+    const planA = PLAN_HIERARCHY.indexOf(normalizePlan(getEffectivePlan(a)));
+    const planB = PLAN_HIERARCHY.indexOf(normalizePlan(getEffectivePlan(b)));
+    if (planB !== planA) return planB - planA;
+    return (b.noteMoyenne || 0) - (a.noteMoyenne || 0);
+  });
 
   const composedSlug = `${metierSlug}-${villeSlug}`;
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: `${metierDisplay} à ${villeDisplay}`,
-    numberOfItems: businessArtisans.length,
-    itemListElement: businessArtisans.map((a, i) => ({
+    name: `${metierDisplay} \u00e0 ${villeDisplay}`,
+    numberOfItems: sorted.length,
+    itemListElement: sorted.map((a, i) => ({
       "@type": "ListItem",
       position: i + 1,
       item: {
@@ -73,7 +97,7 @@ export default async function MetierVilleListing({ metierSlug, villeSlug, metier
               {metierDisplay} &agrave; <span style={{ color: "#D4956B" }}>{villeDisplay}</span>
             </h1>
             <p style={{ fontSize: 16, color: "rgba(255,255,255,.5)", maxWidth: 480, margin: "0 auto" }}>
-              {businessArtisans.length} artisan{businessArtisans.length > 1 ? "s" : ""} v&eacute;rifi&eacute;{businessArtisans.length > 1 ? "s" : ""} &middot; Devis gratuit &middot; Z&eacute;ro commission
+              {sorted.length} artisan{sorted.length > 1 ? "s" : ""} disponible{sorted.length > 1 ? "s" : ""} &middot; Devis gratuit &middot; Z&eacute;ro commission
             </p>
           </div>
         </section>
@@ -81,7 +105,7 @@ export default async function MetierVilleListing({ metierSlug, villeSlug, metier
         {/* List */}
         <section style={{ background: "#FAF8F5", padding: "32px" }}>
           <div style={{ maxWidth: 880, margin: "0 auto" }}>
-            {businessArtisans.length === 0 ? (
+            {sorted.length === 0 ? (
               <div style={{ textAlign: "center", padding: "48px 0" }}>
                 <p style={{ fontSize: 18, fontWeight: 600, color: "#3D2E1F", marginBottom: 8 }}>Aucun artisan pour le moment</p>
                 <p style={{ fontSize: 14, color: "#9C958D" }}>Soyez le premier {metierDisplay.toLowerCase()} r&eacute;f&eacute;renc&eacute; &agrave; {villeDisplay}</p>
@@ -91,7 +115,7 @@ export default async function MetierVilleListing({ metierSlug, villeSlug, metier
               </div>
             ) : (
               <div style={{ display: "grid", gap: 16 }}>
-                {businessArtisans.map((a) => {
+                {sorted.map((a) => {
                   const photo = a.photos[0]?.url;
                   const initials = a.nomAffichage.split(/\s+/).map(w => w[0]).join("").substring(0, 2).toUpperCase();
                   return (
@@ -105,7 +129,7 @@ export default async function MetierVilleListing({ metierSlug, villeSlug, metier
                         </div>
                       )}
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
                           <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#3D2E1F", margin: 0 }}>{a.nomAffichage}</h2>
                           {a.noteMoyenne > 0 && (
                             <span style={{ fontSize: 13, color: "#E8A84C", fontWeight: 600 }}>
@@ -113,16 +137,15 @@ export default async function MetierVilleListing({ metierSlug, villeSlug, metier
                             </span>
                           )}
                         </div>
-                        <p style={{ fontSize: 13, color: "#9C958D", marginBottom: 6 }}>{a.metier?.nom || metierDisplay} &middot; {a.ville || villeDisplay}</p>
+                        <ArtisanBadges
+                          plan={a.plan}
+                          planOverride={a.planOverride}
+                          planOverrideExpireAt={a.planOverrideExpireAt?.toISOString()}
+                          experienceAnnees={a.experienceAnnees}
+                        />
+                        <p style={{ fontSize: 13, color: "#9C958D", marginBottom: 6, marginTop: 4 }}>{a.metier?.nom || metierDisplay} &middot; {a.ville || villeDisplay}</p>
                         {a.description && (
                           <p style={{ fontSize: 13, color: "#6B6560", lineHeight: 1.5, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{a.description}</p>
-                        )}
-                        {a.badges.length > 0 && (
-                          <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
-                            {a.badges.slice(0, 3).map((b) => (
-                              <span key={b.id} style={{ fontSize: 11, fontWeight: 600, padding: "3px 8px", borderRadius: 4, background: "rgba(196,83,26,.06)", color: "#C4531A" }}>{b.nom}</span>
-                            ))}
-                          </div>
                         )}
                       </div>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8, flexShrink: 0 }}>

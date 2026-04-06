@@ -9,6 +9,7 @@ import ContactCard from "@/components/ContactCard";
 import PhotoGallery from "@/components/vitrines/PhotoGallery";
 import type { PhotoLayoutType } from "@/lib/vitrine-config";
 import ChatDevis from "@/components/ChatDevis/ChatDevis";
+import ArtisanBadges from "@/components/ArtisanBadges";
 
 const JOURS = ["", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 
@@ -53,9 +54,15 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
             </span>
           </div>
           <p style={{ fontSize: 18, color: "rgba(255,255,255,.45)", marginTop: 8 }}>{a.metierNom || "Artisan"} &agrave; {a.ville || "Chambéry"}</p>
-          {a.experienceAnnees && (
-            <p style={{ fontSize: 14, color: "rgba(255,255,255,.35)", marginTop: 4 }}>{a.experienceAnnees} ans d&apos;exp&eacute;rience</p>
-          )}
+          <div style={{ marginTop: 10 }}>
+            <ArtisanBadges
+              plan={a.plan}
+              planOverride={a.planOverride}
+              planOverrideExpireAt={a.planOverrideExpireAt}
+              experienceAnnees={a.experienceAnnees}
+              size="md"
+            />
+          </div>
           {(a.badgesNoms||[]).length > 0 && (
             <div style={{ display: "flex", gap: 8, marginTop: 16, flexWrap: "wrap" }}>
               {(a.badgesNoms||[]).map((b) => (

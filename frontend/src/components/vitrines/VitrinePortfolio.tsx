@@ -9,6 +9,7 @@ import ContactCard from "@/components/ContactCard";
 import PhotoGallery from "@/components/vitrines/PhotoGallery";
 import type { PhotoLayoutType } from "@/lib/vitrine-config";
 import ChatDevis from "@/components/ChatDevis/ChatDevis";
+import ArtisanBadges from "@/components/ArtisanBadges";
 
 export default function VitrinePortfolio({ a, photo, primary, accent, villeSlug }: { a: ArtisanPublic; photo: string; primary: string; accent: string; villeSlug: string }) {
   const [devisOpen, setDevisOpen] = useState(false);
@@ -44,7 +45,9 @@ export default function VitrinePortfolio({ a, photo, primary, accent, villeSlug 
           </div>
           <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(28px,5vw,48px)", fontWeight: 700, color: "#1C1C1E", lineHeight: 1.1 }}>{a.nomAffichage}</h1>
           <p style={{ fontSize: 16, color: "#9B9590", marginTop: 6 }}>{a.metierNom || "Artisan"} &agrave; {a.ville || "Chambéry"}</p>
-          {a.experienceAnnees && <p style={{ fontSize: 14, color: "#C5C0B9", marginTop: 2 }}>{a.experienceAnnees} ans d&apos;exp&eacute;rience</p>}
+          <div style={{ marginTop: 8 }}>
+            <ArtisanBadges plan={a.plan} planOverride={a.planOverride} planOverrideExpireAt={a.planOverrideExpireAt} experienceAnnees={a.experienceAnnees} size="md" />
+          </div>
           {(a.badgesNoms || []).length > 0 && (
             <div style={{ display: "flex", gap: 6, marginTop: 16, flexWrap: "wrap" }}>
               {(a.badgesNoms || []).map((b) => (

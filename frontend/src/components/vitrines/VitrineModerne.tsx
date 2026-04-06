@@ -9,6 +9,7 @@ import ContactCard from "@/components/ContactCard";
 import PhotoGallery from "@/components/vitrines/PhotoGallery";
 import type { PhotoLayoutType } from "@/lib/vitrine-config";
 import ChatDevis from "@/components/ChatDevis/ChatDevis";
+import ArtisanBadges from "@/components/ArtisanBadges";
 
 export default function VitrineModerne({ a, photo, primary, accent, villeSlug }: { a: ArtisanPublic; photo: string; primary: string; accent: string; villeSlug: string }) {
   const [devisOpen, setDevisOpen] = useState(false);
@@ -43,6 +44,9 @@ export default function VitrineModerne({ a, photo, primary, accent, villeSlug }:
           </div>
           <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(32px,5vw,52px)", fontWeight: 700, lineHeight: 1.1 }}>{a.nomAffichage}</h1>
           <p style={{ fontSize: 17, opacity: 0.65, marginTop: 6 }}>{a.metierNom || "Artisan"} &agrave; {a.ville || "Chambéry"}</p>
+          <div style={{ marginTop: 10 }}>
+            <ArtisanBadges plan={a.plan} planOverride={a.planOverride} planOverrideExpireAt={a.planOverrideExpireAt} experienceAnnees={a.experienceAnnees} size="md" />
+          </div>
           <div style={{ marginTop: 24 }}>
             <button onClick={() => setDevisOpen(true)} style={{ padding: "14px 28px", background: "#fff", color: primary, borderRadius: 10, fontSize: 15, fontWeight: 600, border: "none", cursor: "pointer" }}>Devis gratuit</button>
           </div>

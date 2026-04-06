@@ -1,6 +1,7 @@
 import { type NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
+import { getEffectivePlan } from "@/lib/plan-gates";
 
 export async function GET(request: NextRequest) {
   try {
@@ -31,13 +32,13 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Filter by metier slug
+    // Filter by metier slug — search in artisanMetiers (multi-metier support)
     if (metier) {
       const metierRecord = await prisma.metier.findUnique({
         where: { slug: metier },
       });
       if (metierRecord) {
-        where.metierId = metierRecord.id;
+        where.artisanMetiers = { some: { metierId: metierRecord.id } };
       } else {
         // Metier not found — return empty results
         return apiSuccess({
@@ -68,6 +69,10 @@ export async function GET(request: NextRequest) {
             orderBy: { ordre: "asc" },
           },
           badges: true,
+          artisanMetiers: {
+            include: { metier: { select: { id: true, nom: true, slug: true, icone: true } } },
+            orderBy: { principal: "desc" },
+          },
         },
         orderBy: { noteMoyenne: "desc" },
         skip: page * size,
@@ -101,6 +106,15 @@ export async function GET(request: NextRequest) {
         .sort((a, b) => (a._distance ?? 999) - (b._distance ?? 999));
     }
 
+    // Sort by plan: Business first, then Pro, then Starter, then Gratuit
+    const PLAN_HIERARCHY = ["gratuit", "starter", "pro", "business"];
+    sortedArtisans.sort((a, b) => {
+      const planA = PLAN_HIERARCHY.indexOf(getEffectivePlan(a));
+      const planB = PLAN_HIERARCHY.indexOf(getEffectivePlan(b));
+      if (planB !== planA) return planB - planA;
+      return (b.noteMoyenne || 0) - (a.noteMoyenne || 0);
+    });
+
     const content = sortedArtisans.map((a) => ({
       id: a.id,
       nomAffichage: a.nomAffichage,
@@ -112,6 +126,8 @@ export async function GET(request: NextRequest) {
       nombreAvis: a.nombreAvis,
       experienceAnnees: a.experienceAnnees,
       plan: a.plan,
+      planOverride: a.planOverride ?? null,
+      planOverrideExpireAt: a.planOverrideExpireAt?.toISOString() ?? null,
       distance: (a as unknown as { _distance?: number })._distance ?? null,
       metierNom: a.metier?.nom ?? null,
       metierSlug: a.metier?.slug ?? null,
