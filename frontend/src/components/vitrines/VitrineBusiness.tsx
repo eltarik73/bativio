@@ -4,8 +4,9 @@ import { useState } from "react";
 import Image from "next/image";
 import type { ArtisanPublic } from "@/lib/api";
 import DevisForm3Steps from "@/components/DevisForm3Steps";
-import type { VitrineConfig, SeoGenerated } from "@/lib/vitrine-config";
+import type { SeoGenerated } from "@/lib/vitrine-config";
 import { getVitrineConfig } from "@/lib/vitrine-config";
+import { getDefaultContent } from "@/lib/vitrine-defaults";
 
 const JOURS = ["", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 
@@ -24,33 +25,286 @@ export default function VitrineBusiness({ a, photo, primary, villeSlug, vitrineC
   const config = getVitrineConfig(rawConfig);
   const sec = config.sections;
 
-  const aboutText = seoGenerated?.aboutText || a.description || "";
-  const faq = seoGenerated?.faq || [];
+  // Smart defaults from metier
+  const metierSlug = (a.metierNom || "autre").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-");
+  const defaults = getDefaultContent(metierSlug);
 
-  // Build ordered sections
+  const aboutText = seoGenerated?.aboutText || a.description || defaults.description;
+  const faq = seoGenerated?.faq || [];
+  const hasRealServices = a.services && a.services.length > 0;
+  const services = hasRealServices ? a.services! : defaults.services.map((s, i) => ({ id: String(i), titre: s.titre, description: s.description, prixIndicatif: s.prix || "", ordre: i }));
+  const hasRealPhotos = a.photos && a.photos.length > 1;
+  const galleryPhotos = hasRealPhotos ? a.photos!.map(p => p.url) : defaults.galleryPhotos;
+  const heroImg = a.photos && a.photos.length > 0 ? a.photos[0].url : defaults.heroPhotos[0] || photo;
+  const whyChoose = defaults.whyChoose;
+
   const orderedSections = config.ordre.filter(id => sec[id] !== false);
 
   function renderSection(id: string) {
     switch (id) {
-      case "hero": return <SectionHero key={id} a={a} primary={primary} onDevis={() => setDevisOpen(true)} />;
-      case "services": return a.services && a.services.length > 0 ? <SectionServices key={id} a={a} /> : null;
-      case "photos": return a.photos && a.photos.length > 0 ? <SectionPhotos key={id} a={a} /> : null;
-      case "description": return aboutText ? <SectionAbout key={id} text={aboutText} name={a.nomAffichage} /> : null;
-      case "avis": return a.nombreAvis > 0 ? <SectionAvis key={id} a={a} /> : null;
-      case "devis": return <SectionDevis key={id} a={a} villeSlug={villeSlug} devisOpen={devisOpen} setDevisOpen={setDevisOpen} primary={primary} />;
-      case "horaires": return a.horaires && a.horaires.length > 0 ? <SectionHoraires key={id} a={a} /> : null;
-      case "zone": return <SectionZone key={id} a={a} /> ;
-      case "contact": return <SectionContact key={id} a={a} />;
-      case "faq": return faq.length > 0 ? <SectionFaq key={id} faq={faq} a={a} /> : null;
+      case "hero": return <HeroSection key={id} />;
+      case "services": return <ServicesSection key={id} />;
+      case "photos": return <PhotosSection key={id} />;
+      case "description": return <AboutSection key={id} />;
+      case "avis": return <AvisSection key={id} />;
+      case "devis": return <DevisSection key={id} />;
+      case "horaires": return a.horaires && a.horaires.length > 0 && a.horaires.some(h => h.ouvert) ? <HorairesSection key={id} /> : null;
+      case "zone": return <ZoneSection key={id} />;
+      case "contact": return <ContactSection key={id} />;
+      case "faq": return faq.length > 0 ? <FaqSection key={id} /> : null;
       default: return null;
     }
   }
 
+  /* ── HERO ── */
+  function HeroSection() {
+    return (
+      <section style={{ position: "relative", overflow: "hidden", minHeight: 480 }}>
+        <Image src={heroImg} alt={`${a.nomAffichage} - ${a.metierNom || "Artisan"}`} fill style={{ objectFit: "cover" }} unoptimized priority />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,.25) 0%, rgba(0,0,0,.65) 100%)" }} />
+        <div style={{ position: "relative", zIndex: 1, maxWidth: 800, margin: "0 auto", padding: "100px 24px 80px", color: "#fff" }}>
+          <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(36px,6vw,56px)", fontWeight: 700, lineHeight: 1.1, marginBottom: 12 }}>
+            {a.nomAffichage}
+          </h1>
+          <p style={{ fontSize: 20, opacity: 0.85, marginBottom: 24 }}>
+            {a.metierNom || "Artisan"} &agrave; {a.ville || "votre ville"}
+          </p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 16, fontSize: 14, opacity: 0.7, marginBottom: 32 }}>
+            {a.experienceAnnees && a.experienceAnnees > 0 && <span>{a.experienceAnnees} ans d&apos;exp&eacute;rience</span>}
+            {a.noteMoyenne > 0 && <span>{a.noteMoyenne.toFixed(1)}/5 ({a.nombreAvis} avis)</span>}
+            {a.zoneRayonKm && <span>Rayon {a.zoneRayonKm} km</span>}
+          </div>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <button onClick={() => { setDevisOpen(true); setTimeout(() => document.getElementById("devis-section")?.scrollIntoView({ behavior: "smooth" }), 100); }} style={{ padding: "14px 32px", borderRadius: 12, background: primary, color: "#fff", fontSize: 16, fontWeight: 600, border: "none", cursor: "pointer" }}>
+              Demander un devis gratuit
+            </button>
+            {a.telephone && (
+              <a href={`tel:${a.telephone.replace(/\s/g, "")}`} style={{ padding: "14px 32px", borderRadius: 12, border: "2px solid rgba(255,255,255,.4)", color: "#fff", fontSize: 16, fontWeight: 600, textDecoration: "none", backdropFilter: "blur(8px)" }}>
+                {a.telephone}
+              </a>
+            )}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  /* ── WHY CHOOSE + STATS ── */
+  function StatsBar() {
+    return (
+      <section style={{ background: "#F9FAFB", borderBottom: "1px solid #F3F4F6" }}>
+        <div style={{ maxWidth: 800, margin: "0 auto", padding: "32px 24px", display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 32 }}>
+          {whyChoose.map((w, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <svg width="18" height="18" fill="none" stroke={primary} strokeWidth="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              <span style={{ fontSize: 14, fontWeight: 500, color: "#374151" }}>{w}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  /* ── SERVICES ── */
+  function ServicesSection() {
+    return (
+      <section style={{ maxWidth: 800, margin: "0 auto", padding: "72px 24px" }}>
+        <div style={{ textAlign: "center", marginBottom: 40 }}>
+          <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "#1C1C1E", marginBottom: 8 }}>Nos services</h2>
+          <p style={{ fontSize: 15, color: "#6B7280" }}>Des solutions adapt&eacute;es &agrave; tous vos besoins</p>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 16 }}>
+          {services.map(s => (
+            <div key={s.id} style={{ padding: 24, borderRadius: 12, border: "1px solid #F3F4F6", background: "#FAFAFA", transition: "all .2s" }}>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1C1C1E", marginBottom: 8 }}>{s.titre}</h3>
+              <p style={{ fontSize: 13, color: "#6B7280", lineHeight: 1.6, marginBottom: 12 }}>{s.description}</p>
+              {s.prixIndicatif && <span style={{ fontSize: 13, fontWeight: 600, color: primary }}>{s.prixIndicatif}</span>}
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  /* ── PHOTOS ── */
+  function PhotosSection() {
+    return (
+      <section style={{ background: "#F9FAFB", borderTop: "1px solid #F3F4F6", borderBottom: "1px solid #F3F4F6" }}>
+        <div style={{ maxWidth: 960, margin: "0 auto", padding: "72px 24px" }}>
+          <div style={{ textAlign: "center", marginBottom: 40 }}>
+            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "#1C1C1E", marginBottom: 8 }}>R&eacute;alisations</h2>
+            <p style={{ fontSize: 15, color: "#6B7280" }}>D&eacute;couvrez nos travaux r&eacute;cents</p>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))", gap: 12 }}>
+            {galleryPhotos.map((url, i) => (
+              <div key={i} style={{ borderRadius: 12, overflow: "hidden", position: "relative", aspectRatio: "4/3", boxShadow: "0 2px 12px rgba(0,0,0,.06)" }}>
+                <Image src={url} alt={`${a.nomAffichage} - r\u00e9alisation ${i + 1}`} fill style={{ objectFit: "cover" }} unoptimized />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  /* ── ABOUT ── */
+  function AboutSection() {
+    return (
+      <section style={{ maxWidth: 800, margin: "0 auto", padding: "72px 24px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48, alignItems: "center" }} className="max-md:!grid-cols-1">
+          <div>
+            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "#1C1C1E", marginBottom: 16 }}>&Agrave; propos</h2>
+            <p style={{ fontSize: 16, color: "#374151", lineHeight: 1.8 }}>{aboutText}</p>
+            {a.experienceAnnees && a.experienceAnnees > 0 && (
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 24, padding: "16px 20px", borderRadius: 12, background: "#F9FAFB", border: "1px solid #F3F4F6" }}>
+                <div style={{ fontFamily: "'Fraunces',serif", fontSize: 32, fontWeight: 700, color: primary }}>{a.experienceAnnees}</div>
+                <div style={{ fontSize: 14, color: "#6B7280" }}>ann&eacute;es<br />d&apos;exp&eacute;rience</div>
+              </div>
+            )}
+          </div>
+          <div style={{ borderRadius: 16, overflow: "hidden", position: "relative", aspectRatio: "4/3" }}>
+            <Image src={defaults.heroPhotos[defaults.heroPhotos.length > 1 ? 1 : 0] || photo} alt={`${a.nomAffichage} - ${a.metierNom}`} fill style={{ objectFit: "cover" }} unoptimized />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  /* ── AVIS ── */
+  function AvisSection() {
+    if (a.nombreAvis <= 0) return null;
+    return (
+      <section style={{ background: "#F9FAFB", borderTop: "1px solid #F3F4F6", borderBottom: "1px solid #F3F4F6" }}>
+        <div style={{ maxWidth: 800, margin: "0 auto", padding: "72px 24px", textAlign: "center" }}>
+          <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "#1C1C1E", marginBottom: 24 }}>Avis clients</h2>
+          <div style={{ fontFamily: "'Fraunces',serif", fontSize: 48, fontWeight: 700, color: "#1C1C1E" }}>{a.noteMoyenne.toFixed(1)}</div>
+          <div style={{ color: "#F59E0B", fontSize: 24, marginTop: 4 }}>{"★".repeat(Math.round(a.noteMoyenne))}{"☆".repeat(5 - Math.round(a.noteMoyenne))}</div>
+          <div style={{ fontSize: 14, color: "#6B7280", marginTop: 8 }}>{a.nombreAvis} avis v&eacute;rifi&eacute;s</div>
+        </div>
+      </section>
+    );
+  }
+
+  /* ── DEVIS ── */
+  function DevisSection() {
+    return (
+      <section id="devis-section" style={{ background: "#1C1C1E" }}>
+        <div style={{ maxWidth: 800, margin: "0 auto", padding: "72px 24px" }}>
+          <div style={{ textAlign: "center", marginBottom: 32 }}>
+            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "#fff", marginBottom: 8 }}>Demandez votre devis gratuit</h2>
+            <p style={{ fontSize: 15, color: "rgba(255,255,255,.5)" }}>D&eacute;crivez votre projet, {a.nomAffichage} vous r&eacute;pond sous 24h</p>
+          </div>
+          {devisOpen ? (
+            <DevisForm3Steps slug={a.slug} artisanName={a.nomAffichage} ville={a.ville || villeSlug} />
+          ) : (
+            <div style={{ textAlign: "center" }}>
+              <button onClick={() => setDevisOpen(true)} style={{ padding: "16px 40px", borderRadius: 12, background: primary, color: "#fff", fontSize: 16, fontWeight: 600, border: "none", cursor: "pointer" }}>
+                Commencer ma demande
+              </button>
+              <div style={{ display: "flex", justifyContent: "center", gap: 24, marginTop: 24, fontSize: 13, color: "rgba(255,255,255,.4)" }}>
+                <span>Gratuit</span>
+                <span>Sans engagement</span>
+                <span>R&eacute;ponse sous 24h</span>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+    );
+  }
+
+  /* ── HORAIRES ── */
+  function HorairesSection() {
+    return (
+      <section style={{ maxWidth: 800, margin: "0 auto", padding: "72px 24px" }}>
+        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "#1C1C1E", marginBottom: 24 }}>Horaires</h2>
+        <div style={{ maxWidth: 400, display: "flex", flexDirection: "column", gap: 8 }}>
+          {(a.horaires || []).map(h => (
+            <div key={h.jourSemaine} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid #F3F4F6", fontSize: 15 }}>
+              <span style={{ color: "#374151", fontWeight: 500 }}>{JOURS[h.jourSemaine]}</span>
+              <span style={{ color: h.ouvert ? "#374151" : "#D1D5DB", fontWeight: h.ouvert ? 600 : 400 }}>
+                {h.ouvert ? `${h.heureOuverture} \u2013 ${h.heureFermeture}` : "Ferm\u00e9"}
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  /* ── ZONE ── */
+  function ZoneSection() {
+    return (
+      <section style={{ background: "#F9FAFB", borderTop: "1px solid #F3F4F6", borderBottom: "1px solid #F3F4F6" }}>
+        <div style={{ maxWidth: 800, margin: "0 auto", padding: "72px 24px", textAlign: "center" }}>
+          <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "#1C1C1E", marginBottom: 16 }}>Zone d&apos;intervention</h2>
+          <p style={{ fontSize: 16, color: "#374151" }}>
+            {a.nomAffichage} intervient dans un rayon de <strong>{a.zoneRayonKm || 25} km</strong> autour de <strong>{a.ville || "sa ville"}</strong>
+          </p>
+          {a.zones && a.zones.length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 20, justifyContent: "center" }}>
+              {a.zones.map(z => <span key={z} style={{ padding: "6px 16px", borderRadius: 20, background: "#fff", border: "1px solid #E5E7EB", fontSize: 13, color: "#374151" }}>{z}</span>)}
+            </div>
+          )}
+        </div>
+      </section>
+    );
+  }
+
+  /* ── CONTACT ── */
+  function ContactSection() {
+    return (
+      <section style={{ maxWidth: 800, margin: "0 auto", padding: "72px 24px" }}>
+        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "#1C1C1E", marginBottom: 24 }}>Contact</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(220px,1fr))", gap: 24 }}>
+          {a.telephone && (
+            <div style={{ padding: 24, borderRadius: 12, border: "1px solid #F3F4F6", background: "#FAFAFA" }}>
+              <svg width="24" height="24" fill="none" stroke={primary} strokeWidth="1.5" viewBox="0 0 24 24" style={{ marginBottom: 12 }}><path d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 013 5.18 2 2 0 015 3h3a2 2 0 012 1.72c.12.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0122 16.92z" /></svg>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "#9CA3AF", marginBottom: 4, textTransform: "uppercase", letterSpacing: 0.5 }}>T&eacute;l&eacute;phone</div>
+              <a href={`tel:${a.telephone.replace(/\s/g, "")}`} style={{ fontSize: 16, color: "#1C1C1E", fontWeight: 600, textDecoration: "none" }}>{a.telephone}</a>
+            </div>
+          )}
+          {a.adresse && (
+            <div style={{ padding: 24, borderRadius: 12, border: "1px solid #F3F4F6", background: "#FAFAFA" }}>
+              <svg width="24" height="24" fill="none" stroke={primary} strokeWidth="1.5" viewBox="0 0 24 24" style={{ marginBottom: 12 }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" /></svg>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "#9CA3AF", marginBottom: 4, textTransform: "uppercase", letterSpacing: 0.5 }}>Adresse</div>
+              <div style={{ fontSize: 15, color: "#374151" }}>{a.adresse}{a.codePostal ? `, ${a.codePostal}` : ""} {a.ville || ""}</div>
+            </div>
+          )}
+          <div style={{ padding: 24, borderRadius: 12, border: "1px solid #F3F4F6", background: "#FAFAFA" }}>
+            <svg width="24" height="24" fill="none" stroke={primary} strokeWidth="1.5" viewBox="0 0 24 24" style={{ marginBottom: 12 }}><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+            <div style={{ fontSize: 12, fontWeight: 600, color: "#9CA3AF", marginBottom: 4, textTransform: "uppercase", letterSpacing: 0.5 }}>Disponibilit&eacute;</div>
+            <div style={{ fontSize: 15, color: "#374151" }}>R&eacute;ponse sous 24h</div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  /* ── FAQ ── */
+  function FaqSection() {
+    return (
+      <section style={{ background: "#F9FAFB", borderTop: "1px solid #F3F4F6" }}>
+        <div style={{ maxWidth: 800, margin: "0 auto", padding: "72px 24px" }}>
+          <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "#1C1C1E", marginBottom: 32, textAlign: "center" }}>Questions fr&eacute;quentes</h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {faq.map((f, i) => (
+              <div key={i} style={{ padding: 24, borderRadius: 12, background: "#fff", border: "1px solid #F3F4F6" }}>
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1C1C1E", marginBottom: 8 }}>{f.question}</h3>
+                <p style={{ fontSize: 14, color: "#6B7280", lineHeight: 1.7 }}>{f.answer}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <div style={{ background: "#FFFFFF", color: "#1C1C1E" }}>
-      {/* Sticky minimal header */}
+      {/* Sticky header */}
       <header style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(255,255,255,.95)", backdropFilter: "blur(12px)", borderBottom: "1px solid #F3F4F6", padding: "10px 24px" }}>
-        <div style={{ maxWidth: 800, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ maxWidth: 960, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
             <span style={{ fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, color: "#1C1C1E" }}>{a.nomAffichage}</span>
             <span style={{ fontSize: 13, color: "#9CA3AF", marginLeft: 8 }}>{a.metierNom || "Artisan"}</span>
@@ -64,12 +318,16 @@ export default function VitrineBusiness({ a, photo, primary, villeSlug, vitrineC
         </div>
       </header>
 
-      {/* Sections */}
       <main>
-        {orderedSections.map(id => renderSection(id))}
+        {orderedSections.map(id => {
+          const el = renderSection(id);
+          // Insert stats bar after hero
+          if (id === "hero") return <>{el}<StatsBar /></>;
+          return el;
+        })}
       </main>
 
-      {/* Footer discret */}
+      {/* Footer */}
       <footer style={{ padding: "24px 0", textAlign: "center", borderTop: "1px solid #F3F4F6" }}>
         <span style={{ fontSize: 12, color: "#D1D5DB" }}>R&eacute;alis&eacute; avec Bativio</span>
       </footer>
@@ -80,179 +338,5 @@ export default function VitrineBusiness({ a, photo, primary, villeSlug, vitrineC
         <a href="#devis-section" className="devis" style={{ background: primary }}>Devis gratuit</a>
       </div>
     </div>
-  );
-}
-
-/* ── Section Components ── */
-
-function SectionHero({ a, primary, onDevis }: { a: ArtisanPublic; primary: string; onDevis: () => void }) {
-  return (
-    <section style={{ maxWidth: 800, margin: "0 auto", padding: "80px 24px 64px", textAlign: "center" }}>
-      <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(32px,5vw,48px)", fontWeight: 700, color: "#1C1C1E", lineHeight: 1.15, marginBottom: 12 }}>
-        {a.nomAffichage}
-      </h1>
-      <p style={{ fontSize: 18, color: "#6B7280", marginBottom: 16 }}>
-        {a.metierNom || "Artisan"} &agrave; {a.ville || "votre ville"}
-      </p>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, fontSize: 14, color: "#9CA3AF", marginBottom: 32 }}>
-        {a.noteMoyenne > 0 && (
-          <span style={{ color: "#374151", fontWeight: 600 }}>
-            <span style={{ color: "#F59E0B" }}>&#9733;</span> {a.noteMoyenne.toFixed(1)}/5 <span style={{ fontWeight: 400, color: "#9CA3AF" }}>({a.nombreAvis} avis)</span>
-          </span>
-        )}
-        {a.experienceAnnees && a.experienceAnnees > 0 && <span>{a.experienceAnnees} ans d&apos;exp&eacute;rience</span>}
-        {a.zoneRayonKm && <span>Rayon {a.zoneRayonKm} km</span>}
-      </div>
-      <button onClick={onDevis} style={{ padding: "14px 32px", borderRadius: 12, background: primary, color: "#fff", fontSize: 16, fontWeight: 600, border: "none", cursor: "pointer" }}>
-        Demander un devis gratuit
-      </button>
-    </section>
-  );
-}
-
-function SectionServices({ a }: { a: ArtisanPublic }) {
-  return (
-    <section style={{ maxWidth: 800, margin: "0 auto", padding: "64px 24px", borderTop: "1px solid #F3F4F6" }}>
-      <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 32 }}>Nos services</h2>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 16 }}>
-        {(a.services || []).map(s => (
-          <div key={s.id} style={{ padding: "20px 0", borderBottom: "1px solid #F9FAFB" }}>
-            <div style={{ fontSize: 15, fontWeight: 600, color: "#1C1C1E", marginBottom: 4 }}>{s.titre}</div>
-            {s.description && <div style={{ fontSize: 13, color: "#6B7280", lineHeight: 1.5 }}>{s.description}</div>}
-            {s.prixIndicatif && <div style={{ fontSize: 13, fontWeight: 600, color: "#C4531A", marginTop: 6 }}>{s.prixIndicatif}</div>}
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function SectionPhotos({ a }: { a: ArtisanPublic }) {
-  return (
-    <section style={{ maxWidth: 800, margin: "0 auto", padding: "64px 24px", borderTop: "1px solid #F3F4F6" }}>
-      <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 32 }}>R&eacute;alisations</h2>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(220px,1fr))", gap: 12 }}>
-        {(a.photos || []).map(p => (
-          <div key={p.id} style={{ borderRadius: 8, overflow: "hidden", position: "relative", aspectRatio: "4/3" }}>
-            <Image src={p.url} alt={p.titre || `${a.nomAffichage} - ${a.metierNom}`} fill style={{ objectFit: "cover" }} unoptimized />
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function SectionAbout({ text, name }: { text: string; name: string }) {
-  return (
-    <section style={{ maxWidth: 800, margin: "0 auto", padding: "64px 24px", borderTop: "1px solid #F3F4F6" }}>
-      <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 24 }}>&Agrave; propos de {name}</h2>
-      <p style={{ fontSize: 16, color: "#374151", lineHeight: 1.8, maxWidth: 640 }}>{text}</p>
-    </section>
-  );
-}
-
-function SectionAvis({ a }: { a: ArtisanPublic }) {
-  return (
-    <section style={{ maxWidth: 800, margin: "0 auto", padding: "64px 24px", borderTop: "1px solid #F3F4F6" }}>
-      <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 8 }}>Avis clients</h2>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 32 }}>
-        <span style={{ fontFamily: "'Fraunces',serif", fontSize: 32, fontWeight: 700, color: "#1C1C1E" }}>{a.noteMoyenne.toFixed(1)}</span>
-        <div>
-          <div style={{ color: "#F59E0B", fontSize: 16 }}>{"&#9733;".repeat(Math.round(a.noteMoyenne))}</div>
-          <div style={{ fontSize: 13, color: "#9CA3AF" }}>{a.nombreAvis} avis v&eacute;rifi&eacute;s</div>
-        </div>
-      </div>
-      <p style={{ fontSize: 14, color: "#9CA3AF" }}>Les avis sont collect&eacute;s aupr&egrave;s de clients ayant effectivement fait appel &agrave; {a.nomAffichage}.</p>
-    </section>
-  );
-}
-
-function SectionDevis({ a, villeSlug, devisOpen, setDevisOpen, primary }: { a: ArtisanPublic; villeSlug: string; devisOpen: boolean; setDevisOpen: (v: boolean) => void; primary: string }) {
-  return (
-    <section id="devis-section" style={{ maxWidth: 800, margin: "0 auto", padding: "64px 24px", borderTop: "1px solid #F3F4F6" }}>
-      <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 8 }}>Devis gratuit</h2>
-      <p style={{ fontSize: 14, color: "#6B7280", marginBottom: 24 }}>D&eacute;crivez votre projet, {a.nomAffichage} vous r&eacute;pond sous 24h.</p>
-      {devisOpen ? (
-        <DevisForm3Steps slug={a.slug} artisanName={a.nomAffichage} ville={a.ville || villeSlug} />
-      ) : (
-        <button onClick={() => setDevisOpen(true)} style={{ padding: "14px 32px", borderRadius: 12, background: primary, color: "#fff", fontSize: 15, fontWeight: 600, border: "none", cursor: "pointer" }}>
-          Demander un devis gratuit
-        </button>
-      )}
-    </section>
-  );
-}
-
-function SectionHoraires({ a }: { a: ArtisanPublic }) {
-  const horaires = (a.horaires || []).filter(h => h.ouvert);
-  if (horaires.length === 0) return null;
-  return (
-    <section style={{ maxWidth: 800, margin: "0 auto", padding: "64px 24px", borderTop: "1px solid #F3F4F6" }}>
-      <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 24 }}>Horaires</h2>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {(a.horaires || []).map(h => (
-          <div key={h.jourSemaine} style={{ display: "flex", justifyContent: "space-between", padding: "8px 0", borderBottom: "1px solid #F9FAFB", fontSize: 14 }}>
-            <span style={{ color: "#374151", fontWeight: 500 }}>{JOURS[h.jourSemaine]}</span>
-            <span style={{ color: h.ouvert ? "#374151" : "#D1D5DB" }}>
-              {h.ouvert ? `${h.heureOuverture} \u2013 ${h.heureFermeture}` : "Ferm\u00e9"}
-            </span>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function SectionZone({ a }: { a: ArtisanPublic }) {
-  return (
-    <section style={{ maxWidth: 800, margin: "0 auto", padding: "64px 24px", borderTop: "1px solid #F3F4F6" }}>
-      <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 24 }}>Zone d&apos;intervention</h2>
-      <p style={{ fontSize: 15, color: "#374151" }}>
-        {a.nomAffichage} intervient dans un rayon de <strong>{a.zoneRayonKm || 25} km</strong> autour de {a.ville || "sa ville"}.
-      </p>
-      {a.zones && a.zones.length > 0 && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 16 }}>
-          {a.zones.map(z => <span key={z} style={{ padding: "6px 14px", borderRadius: 20, background: "#F3F4F6", fontSize: 13, color: "#374151" }}>{z}</span>)}
-        </div>
-      )}
-    </section>
-  );
-}
-
-function SectionContact({ a }: { a: ArtisanPublic }) {
-  return (
-    <section style={{ maxWidth: 800, margin: "0 auto", padding: "64px 24px", borderTop: "1px solid #F3F4F6" }}>
-      <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 24 }}>Contact</h2>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: 24, fontSize: 14 }}>
-        {a.telephone && (
-          <div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: "#9CA3AF", marginBottom: 4, textTransform: "uppercase", letterSpacing: 0.5 }}>T&eacute;l&eacute;phone</div>
-            <a href={`tel:${a.telephone.replace(/\s/g, "")}`} style={{ color: "#1C1C1E", fontWeight: 600, textDecoration: "none" }}>{a.telephone}</a>
-          </div>
-        )}
-        {a.adresse && (
-          <div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: "#9CA3AF", marginBottom: 4, textTransform: "uppercase", letterSpacing: 0.5 }}>Adresse</div>
-            <div style={{ color: "#374151" }}>{a.adresse}{a.codePostal ? `, ${a.codePostal}` : ""} {a.ville || ""}</div>
-          </div>
-        )}
-      </div>
-    </section>
-  );
-}
-
-function SectionFaq({ faq, a }: { faq: Array<{ question: string; answer: string }>; a: ArtisanPublic }) {
-  return (
-    <section style={{ maxWidth: 800, margin: "0 auto", padding: "64px 24px", borderTop: "1px solid #F3F4F6" }}>
-      <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 32 }}>Questions fr&eacute;quentes</h2>
-      <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-        {faq.map((f, i) => (
-          <div key={i}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1C1C1E", marginBottom: 8 }}>{f.question}</h3>
-            <p style={{ fontSize: 14, color: "#6B7280", lineHeight: 1.7 }}>{f.answer}</p>
-          </div>
-        ))}
-      </div>
-    </section>
   );
 }
