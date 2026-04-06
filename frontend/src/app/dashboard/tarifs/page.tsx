@@ -31,7 +31,17 @@ export default function TarifsPage() {
   const load = useCallback(async () => {
     try {
       const data = await fetchWithAuth("/artisans/me/prestations");
-      setPrestations(Array.isArray(data) ? data as Prestation[] : []);
+      const list = Array.isArray(data) ? data as Prestation[] : [];
+      if (list.length === 0) {
+        // Auto-seed defaults
+        try {
+          await fetchWithAuth("/artisans/me/prestations/seed", { method: "POST" });
+          const seeded = await fetchWithAuth("/artisans/me/prestations");
+          setPrestations(Array.isArray(seeded) ? seeded as Prestation[] : []);
+          return;
+        } catch { /* seed failed, show empty */ }
+      }
+      setPrestations(list);
     } catch { setPrestations([]); }
     finally { setLoading(false); }
   }, [fetchWithAuth]);

@@ -362,4 +362,16 @@ Object.assign(defaultPrestations, {
     { designation: "Pose credence", unite: "ml", prixUnitaire: 60, categorie: "Credence", inclutFourniture: false },
     { designation: "Main d'oeuvre", unite: "h", prixUnitaire: 45, categorie: "Main d'oeuvre", inclutFourniture: false },
   ],
+  "reparation-mobile": [
+    { designation: "Remplacement \u00e9cran iPhone", unite: "u", prixUnitaire: 89, categorie: "\u00c9cran", inclutFourniture: true },
+    { designation: "Remplacement \u00e9cran Samsung", unite: "u", prixUnitaire: 79, categorie: "\u00c9cran", inclutFourniture: true },
+    { designation: "Remplacement batterie iPhone", unite: "u", prixUnitaire: 49, categorie: "Batterie", inclutFourniture: true },
+    { designation: "Remplacement batterie Samsung", unite: "u", prixUnitaire: 39, categorie: "Batterie", inclutFourniture: true },
+    { designation: "Connecteur de charge", unite: "u", prixUnitaire: 45, categorie: "Connecteur", inclutFourniture: true },
+    { designation: "Bouton home / power", unite: "u", prixUnitaire: 35, categorie: "Boutons", inclutFourniture: true },
+    { designation: "Cam\u00e9ra avant / arri\u00e8re", unite: "u", prixUnitaire: 55, categorie: "Cam\u00e9ra", inclutFourniture: true },
+    { designation: "Haut-parleur / micro", unite: "u", prixUnitaire: 35, categorie: "Audio", inclutFourniture: true },
+    { designation: "Diagnostic complet", unite: "u", prixUnitaire: 0, categorie: "Diagnostic", inclutFourniture: false },
+    { designation: "D\u00e9blocage logiciel", unite: "u", prixUnitaire: 29, categorie: "Logiciel", inclutFourniture: false },
+  ],
 });
