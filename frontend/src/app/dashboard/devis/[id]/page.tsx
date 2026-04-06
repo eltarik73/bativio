@@ -2,7 +2,9 @@
 
 import { useState, useEffect, use } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { getEffectivePlan } from "@/lib/plan-gates";
 
 const DOT: Record<string, string> = { NOUVEAU: "#dc2626", VU: "#E8A84C", REPONDU: "#2563EB", ACCEPTE: "#16a34a", REFUSE: "#9B9590", ARCHIVE: "#C5C0B9" };
 const LABEL: Record<string, string> = { NOUVEAU: "Nouveau", VU: "En attente", REPONDU: "Répondu", ACCEPTE: "Accepté", REFUSE: "Refusé", ARCHIVE: "Archivé" };
@@ -37,10 +39,12 @@ function formatDate(iso: string): string {
 export default function DevisDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { fetchWithAuth, user } = useAuth();
+  const router = useRouter();
   const [devis, setDevis] = useState<DevisDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [replyOpen, setReplyOpen] = useState(false);
   const [pdfOpen, setPdfOpen] = useState(false);
+  const [iaLoading, setIaLoading] = useState(false);
   const [replyMsg, setReplyMsg] = useState("");
   const [pdfMsg, setPdfMsg] = useState("");
   const [pdfFile, setPdfFile] = useState<File | null>(null);
@@ -115,6 +119,40 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
       });
       setDevis((prev) => prev ? { ...prev, statut: "ARCHIVE" } : prev);
     } catch { /* empty */ }
+  };
+
+  const effectivePlan = getEffectivePlan({
+    plan: (user?.plan as string) || "GRATUIT",
+    planOverride: (user as Record<string, unknown> | null)?.planOverride as string | null,
+    planOverrideExpireAt: (user as Record<string, unknown> | null)?.planOverrideExpireAt as string | null,
+  });
+  const isBusiness = effectivePlan === "business";
+
+  const handleCreateDevis = () => {
+    if (!devis) return;
+    const params = new URLSearchParams();
+    params.set("clientNom", devis.nomClient || "");
+    params.set("clientEmail", devis.emailClient || "");
+    params.set("clientTelephone", devis.telephoneClient || "");
+    params.set("description", devis.descriptionBesoin || "");
+    params.set("demandeId", id);
+    router.push(`/dashboard/facturation/nouveau?${params.toString()}`);
+  };
+
+  const handleDevisIA = async () => {
+    if (!devis) return;
+    setIaLoading(true);
+    try {
+      await fetchWithAuth(`/artisan/demandes/${id}/devis-ia`, { method: "POST" });
+      // Refresh to see generated devis
+      const d = await fetchWithAuth(`/artisans/me/devis/${id}`) as DevisDetail;
+      setDevis(d);
+      alert("Devis IA genere avec succes ! Retrouvez-le dans vos Devis IA.");
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Erreur lors de la generation");
+    } finally {
+      setIaLoading(false);
+    }
   };
 
   if (loading) return <div style={{ padding: 40, textAlign: "center", color: "var(--pierre,#9C958D)" }}>Chargement...</div>;
@@ -228,18 +266,23 @@ export default function DevisDetailPage({ params }: { params: Promise<{ id: stri
           <div style={{ ...C, marginTop: 16 }}>
             <h3 style={{ fontSize: 14, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 16 }}>Actions</h3>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              <a href={`tel:${devis.telephoneClient.replace(/\s/g, "")}`} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, border: "1.5px solid #E0DDD8", fontSize: 14, fontWeight: 600, color: "var(--bois,#3D2E1F)", textDecoration: "none" }}>
-                &#128222; Appeler le client
+              <button onClick={handleCreateDevis} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, background: "#C4531A", color: "#fff", fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer" }}>
+                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+                Cr&eacute;er un devis
+              </button>
+              {isBusiness && (
+                <button onClick={handleDevisIA} disabled={iaLoading} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, background: "linear-gradient(135deg, #C4531A, #E8A84C)", color: "#fff", fontSize: 14, fontWeight: 600, border: "none", cursor: iaLoading ? "wait" : "pointer", opacity: iaLoading ? 0.6 : 1 }}>
+                  {iaLoading ? "G\u00e9n\u00e9ration..." : "G\u00e9n\u00e9rer un devis IA"}
+                </button>
+              )}
+              <button onClick={() => { setReplyOpen(!replyOpen); setPdfOpen(false); setSent(false); }} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, border: "1.5px solid #C4531A", fontSize: 14, fontWeight: 600, color: "#C4531A", background: "none", cursor: "pointer" }}>
+                R&eacute;pondre par message
+              </button>
+              <a href={`tel:${devis.telephoneClient?.replace(/\s/g, "") || ""}`} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, border: "1.5px solid #E0DDD8", fontSize: 14, fontWeight: 600, color: "var(--bois,#3D2E1F)", textDecoration: "none" }}>
+                Appeler le client
               </a>
-              <button onClick={() => { setReplyOpen(!replyOpen); setPdfOpen(false); setSent(false); }} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, background: "#C4531A", color: "#fff", fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer" }}>
-                &#128172; R&eacute;pondre par message
-              </button>
-              <button onClick={() => { setPdfOpen(!pdfOpen); setReplyOpen(false); setSent(false); }} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, border: "1.5px solid #C4531A", fontSize: 14, fontWeight: 600, color: "#C4531A", background: "none", cursor: "pointer" }}>
-                &#128206; Envoyer un devis PDF
-              </button>
-              <button disabled style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, border: "1.5px solid #E0DDD8", fontSize: 14, fontWeight: 600, color: "#C5C0B9", background: "none", cursor: "not-allowed", opacity: 0.6 }} title="Facturation électronique bientôt disponible">
-                &#129534; Cr&eacute;er une facture
-                <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: "rgba(232,168,76,.12)", color: "#E8A84C" }}>Bient&ocirc;t</span>
+              <button onClick={() => { setPdfOpen(!pdfOpen); setReplyOpen(false); setSent(false); }} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, border: "1.5px solid #E0DDD8", fontSize: 14, fontWeight: 600, color: "var(--bois-mid,#5C4A3A)", background: "none", cursor: "pointer" }}>
+                Envoyer un devis PDF
               </button>
               {devis.statut !== "ARCHIVE" && (
                 <button onClick={handleArchive} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 44, borderRadius: 10, border: "1.5px solid #E0DDD8", fontSize: 14, fontWeight: 600, color: "var(--pierre,#9C958D)", background: "none", cursor: "pointer", marginTop: 8 }}>

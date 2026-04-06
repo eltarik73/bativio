@@ -30,9 +30,9 @@ function NouveauContent() {
   const { fetchWithAuth } = useAuth();
 
   const [docType, setDocType] = useState<"DEVIS" | "FACTURE">(typeParam === "facture" ? "FACTURE" : "DEVIS");
-  const [clientNom, setClientNom] = useState("");
-  const [clientEmail, setClientEmail] = useState("");
-  const [clientTel, setClientTel] = useState("");
+  const [clientNom, setClientNom] = useState(searchParams.get("clientNom") || "");
+  const [clientEmail, setClientEmail] = useState(searchParams.get("clientEmail") || "");
+  const [clientTel, setClientTel] = useState(searchParams.get("clientTelephone") || "");
   const [clientAdresse, setClientAdresse] = useState("");
   const [lignes, setLignes] = useState<Ligne[]>([newLigne()]);
   const [notes, setNotes] = useState("");

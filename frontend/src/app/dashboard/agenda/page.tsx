@@ -116,6 +116,8 @@ function PlanningContent() {
   const [rdvs, setRdvs] = useState<RdvData[]>([]);
   const [loading, setLoading] = useState(true);
   const [mobileDay, setMobileDay] = useState(() => new Date().getDay() === 0 ? 6 : new Date().getDay() - 1);
+  const [viewMode, setViewMode] = useState<"semaine" | "mois">("semaine");
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   // Modal state
   const [showModal, setShowModal] = useState(false);
@@ -169,8 +171,8 @@ function PlanningContent() {
 
   useEffect(() => { fetchData(monday); }, [monday, fetchData]);
 
-  const prevWeek = () => setMonday(m => addDays(m, -7));
-  const nextWeek = () => setMonday(m => addDays(m, 7));
+  const prevWeek = () => setMonday(m => viewMode === "mois" ? new Date(m.getFullYear(), m.getMonth() - 1, 1) : addDays(m, -7));
+  const nextWeek = () => setMonday(m => viewMode === "mois" ? new Date(m.getFullYear(), m.getMonth() + 1, 1) : addDays(m, 7));
   const goToday = () => { setMonday(getMonday(new Date())); setMobileDay(new Date().getDay() === 0 ? 6 : new Date().getDay() - 1); };
 
   /* ── Chantier CRUD ── */
@@ -407,30 +409,87 @@ function PlanningContent() {
         </div>
       )}
 
-      {/* Week nav */}
+      {/* View toggle + Nav */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
-        <button onClick={prevWeek} style={navBtn} aria-label="Semaine pr\u00e9c\u00e9dente">
-          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
-        <div style={{ textAlign: "center", flex: 1 }}>
-          <span style={{ fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, color: "var(--bois,#3D2E1F)" }}>{weekLabel(monday)}</span>
-          {fmtDate(monday) !== fmtDate(getMonday(new Date())) && (
-            <button onClick={goToday} style={{ display: "block", margin: "4px auto 0", fontSize: 12, fontWeight: 600, color: "#C4531A", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}>
-              Aujourd&apos;hui
+        <div style={{ display: "flex", gap: 2, background: "#F3F4F6", borderRadius: 8, padding: 2 }}>
+          {(["semaine", "mois"] as const).map(v => (
+            <button key={v} onClick={() => setViewMode(v)} style={{ padding: "6px 14px", borderRadius: 6, fontSize: 12, fontWeight: 600, border: "none", cursor: "pointer", background: viewMode === v ? "#fff" : "transparent", color: viewMode === v ? "#3D2E1F" : "#9CA3AF", boxShadow: viewMode === v ? "0 1px 3px rgba(0,0,0,.08)" : "none" }}>
+              {v === "semaine" ? "Semaine" : "Mois"}
             </button>
-          )}
+          ))}
         </div>
-        <button onClick={nextWeek} style={navBtn} aria-label="Semaine suivante">
-          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
-        </button>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flex: 1, justifyContent: "center" }}>
+          <button onClick={prevWeek} style={navBtn}><svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <div style={{ textAlign: "center", position: "relative" }}>
+            <button onClick={() => setShowDatePicker(p => !p)} style={{ fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, color: "var(--bois,#3D2E1F)", background: "none", border: "none", cursor: "pointer" }}>
+              {viewMode === "mois" ? `${MOIS[monday.getMonth()]} ${monday.getFullYear()}` : weekLabel(monday)}
+            </button>
+            {fmtDate(monday) !== fmtDate(getMonday(new Date())) && (
+              <button onClick={goToday} style={{ display: "block", margin: "2px auto 0", fontSize: 11, fontWeight: 600, color: "#C4531A", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}>Aujourd&apos;hui</button>
+            )}
+            {showDatePicker && (
+              <div style={{ position: "absolute", top: "100%", left: "50%", transform: "translateX(-50%)", marginTop: 8, zIndex: 100, background: "#fff", borderRadius: 12, border: "1px solid #E8D5C0", padding: 12, boxShadow: "0 8px 24px rgba(0,0,0,.1)" }}>
+                <input type="date" value={fmtDate(monday)} onChange={e => { const d = new Date(e.target.value); if (!isNaN(d.getTime())) { setMonday(getMonday(d)); setShowDatePicker(false); } }} style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #E8D5C0", fontSize: 14 }} />
+              </div>
+            )}
+          </div>
+          <button onClick={nextWeek} style={navBtn}><svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+        </div>
+
+        <div style={{ width: 80 }} />
       </div>
 
       {loading ? (
         <div style={{ textAlign: "center", padding: 60, color: "#9C958D", fontSize: 14 }}>Chargement...</div>
       ) : (
         <>
+          {/* ── MONTH VIEW ── */}
+          {viewMode === "mois" && (
+            <div style={CARD}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", borderBottom: "1px solid #EDEBE7" }}>
+                {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map(d => (
+                  <div key={d} style={{ padding: "8px 4px", textAlign: "center", fontSize: 11, fontWeight: 700, color: "#9B9590", textTransform: "uppercase" }}>{d}</div>
+                ))}
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)" }}>
+                {(() => {
+                  const firstOfMonth = new Date(monday.getFullYear(), monday.getMonth(), 1);
+                  const lastOfMonth = new Date(monday.getFullYear(), monday.getMonth() + 1, 0);
+                  const startDay = firstOfMonth.getDay() === 0 ? 6 : firstOfMonth.getDay() - 1;
+                  const cells: { date: Date; inMonth: boolean }[] = [];
+                  for (let i = -startDay; i <= lastOfMonth.getDate() + (6 - (lastOfMonth.getDay() === 0 ? 6 : lastOfMonth.getDay() - 1)); i++) {
+                    const d = new Date(firstOfMonth); d.setDate(d.getDate() + i);
+                    cells.push({ date: d, inMonth: d.getMonth() === monday.getMonth() });
+                  }
+                  return cells.slice(0, 42).map((cell, i) => {
+                    const ds = fmtDate(cell.date);
+                    const isToday = ds === todayStr;
+                    const dayChantiers = getChantiersForDay(ds);
+                    const dayRdvs = getRdvsForDay(ds);
+                    const hasEvents = dayChantiers.length > 0 || dayRdvs.length > 0;
+                    return (
+                      <div key={i} onClick={() => { setMonday(getMonday(cell.date)); setViewMode("semaine"); }} style={{ padding: "6px 4px", minHeight: 64, borderRight: (i + 1) % 7 !== 0 ? "1px solid #F3F4F6" : "none", borderBottom: "1px solid #F3F4F6", cursor: "pointer", background: isToday ? "rgba(196,83,26,.04)" : "transparent", opacity: cell.inMonth ? 1 : 0.3 }}>
+                        <div style={{ fontSize: 13, fontWeight: isToday ? 700 : 400, color: isToday ? "#C4531A" : "#3D2E1F", textAlign: "center", marginBottom: 4 }}>{cell.date.getDate()}</div>
+                        {dayChantiers.slice(0, 2).map(c => (
+                          <div key={c.id} style={{ fontSize: 9, fontWeight: 600, color: "#fff", background: c._invite ? "#9CA3AF" : c.couleur, borderRadius: 3, padding: "1px 4px", marginBottom: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.nom}</div>
+                        ))}
+                        {dayRdvs.slice(0, 1).map(r => (
+                          <div key={r.id} style={{ fontSize: 9, color: "#6B7280", padding: "1px 4px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{r.clientNom}</div>
+                        ))}
+                        {hasEvents && dayChantiers.length + dayRdvs.length > 3 && (
+                          <div style={{ fontSize: 8, color: "#9CA3AF", textAlign: "center" }}>+{dayChantiers.length + dayRdvs.length - 3}</div>
+                        )}
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
+            </div>
+          )}
+
           {/* ── DESKTOP: Week grid ── */}
-          <div className="max-md:hidden" style={CARD}>
+          {viewMode === "semaine" && <div className="max-md:hidden" style={CARD}>
             {/* Day headers */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", borderBottom: "1px solid #EDEBE7" }}>
               {days.map((d, i) => {
@@ -530,7 +589,7 @@ function PlanningContent() {
                 );
               })}
             </div>
-          </div>
+          </div>}
 
           {/* ── MOBILE: Day tabs + list ── */}
           <div className="md:hidden">

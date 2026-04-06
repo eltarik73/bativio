@@ -435,11 +435,11 @@ export default function FilConversation({
   // -----------------------------------------------------------------------
 
   const headerName = isArtisan
-    ? demande.nomClient
+    ? (demande.nomClient || "Client")
     : demande.artisan?.nomAffichage || "Artisan";
 
   const headerMetier = isArtisan ? undefined : demande.artisan?.metierNom;
-  const initials = getInitials(headerName);
+  const initials = getInitials(headerName || "?");
   const statut = demande.statut;
 
   // -----------------------------------------------------------------------
