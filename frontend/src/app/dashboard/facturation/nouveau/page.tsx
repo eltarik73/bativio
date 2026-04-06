@@ -31,7 +31,8 @@ function NouveauContent() {
 
   const demandeId = searchParams.get("demandeId");
   const descriptionParam = searchParams.get("description");
-  const [docType, setDocType] = useState<"DEVIS" | "FACTURE">(typeParam === "facture" ? "FACTURE" : "DEVIS");
+  const isAvoir = typeParam === "avoir";
+  const [docType, setDocType] = useState<"DEVIS" | "FACTURE">(typeParam === "facture" || typeParam === "avoir" ? "FACTURE" : "DEVIS");
   const [clientNom, setClientNom] = useState(searchParams.get("clientNom") || "");
   const [clientEmail, setClientEmail] = useState(searchParams.get("clientEmail") || "");
   const [clientTel, setClientTel] = useState(searchParams.get("clientTelephone") || "");
@@ -118,6 +119,7 @@ function NouveauContent() {
         clientId,
         date: new Date().toISOString().slice(0, 10),
         operationCategory: "services",
+        ...(isAvoir ? { type: "credit_note" } : {}),
         lines: validLignes.map((l) => ({
           description: l.designation,
           quantity: l.quantite,
@@ -168,7 +170,7 @@ function NouveauContent() {
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <Link href="/dashboard/facturation" style={{ color: "#9C958D", textDecoration: "none", fontSize: 14 }}>&larr; Retour</Link>
           <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#3D2E1F" }}>
-            {docType === "DEVIS" ? "Nouveau devis" : "Nouvelle facture"}
+            {isAvoir ? "Nouvel avoir" : docType === "DEVIS" ? "Nouveau devis" : "Nouvelle facture"}
           </h1>
         </div>
         {/* Type toggle */}

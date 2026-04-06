@@ -187,6 +187,25 @@ function FacturationContent() {
   const devisTotal = quotes.length;
   const tauxConversion = devisTotal > 0 ? Math.round((devisAcceptes / devisTotal) * 100) : 0;
 
+  // Export FEC via Invoquo
+  async function exportFEC() {
+    try {
+      const tokenRes = await fetchWithAuth("/facturation/refresh-token");
+      const { token } = tokenRes as { token: string };
+      const year = now.getFullYear();
+      const url = `${INVOQUO_URL}/api/v1/embed/export?format=fec&periodStart=${year}-01-01&periodEnd=${year}-12-31`;
+      const res = await fetch(url, { headers: { "x-embed-token": token } });
+      if (!res.ok) throw new Error("Erreur export FEC");
+      const blob = await res.blob();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `FEC_${year}.txt`;
+      a.click();
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Erreur export FEC");
+    }
+  }
+
   // Export CSV
   function exportCSV() {
     const rows = [["Type", "Numero", "Client", "Date", "Montant TTC", "Statut"].join(";")];
@@ -214,15 +233,26 @@ function FacturationContent() {
         <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#3D2E1F" }}>Facturation</h1>
         <div style={{ display: "flex", gap: 8 }}>
           {tab === "reporting" ? (
-            <button onClick={exportCSV} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, border: "1px solid #E8D5C0", background: "#fff", color: "#3D2E1F", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
-              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-              Export CSV
-            </button>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button onClick={exportCSV} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 16px", borderRadius: 10, border: "1px solid #E8D5C0", background: "#fff", color: "#3D2E1F", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                Export CSV
+              </button>
+              <button onClick={exportFEC} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 16px", borderRadius: 10, border: "1px solid #E8D5C0", background: "#fff", color: "#3D2E1F", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                Export FEC
+              </button>
+            </div>
           ) : (
-            <Link href={tab === "clients" ? embedIframeUrl : `/dashboard/facturation/nouveau?type=${tab === "factures" ? "facture" : "devis"}`} prefetch={false} {...(tab === "clients" ? { target: "_blank", rel: "noopener noreferrer" } : {})} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, background: "#C4531A", color: "#fff", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
-              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
-              {tab === "factures" ? "Nouvelle facture" : tab === "clients" ? "Nouveau client" : "Nouveau devis"}
-            </Link>
+            <div style={{ display: "flex", gap: 8 }}>
+              {tab === "factures" && (
+                <Link href="/dashboard/facturation/nouveau?type=avoir" prefetch={false} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 16px", borderRadius: 10, border: "1px solid #E8D5C0", background: "#fff", color: "#3D2E1F", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
+                  Avoir
+                </Link>
+              )}
+              <Link href={tab === "clients" ? embedIframeUrl : `/dashboard/facturation/nouveau?type=${tab === "factures" ? "facture" : "devis"}`} prefetch={false} {...(tab === "clients" ? { target: "_blank", rel: "noopener noreferrer" } : {})} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, background: "#C4531A", color: "#fff", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
+                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
+                {tab === "factures" ? "Nouvelle facture" : tab === "clients" ? "Nouveau client" : "Nouveau devis"}
+              </Link>
+            </div>
           )}
         </div>
       </div>
