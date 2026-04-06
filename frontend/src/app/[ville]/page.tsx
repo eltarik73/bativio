@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
     if (match) {
       const metierName = match.metier?.nom || match.metierSlugSeo || "";
       const villeName = match.ville || match.villeSlug || "";
-      const title = `${metierName} à ${villeName} — Devis gratuit | Bativio`;
+      const title = `${metierName} \u00e0 ${villeName} \u2014 Devis gratuit`;
       const description = `Trouvez les meilleurs ${metierName.toLowerCase()}s à ${villeName}. Comparez les artisans, demandez un devis gratuit.`;
       return { title, description, alternates: { canonical: `https://www.bativio.fr/${villeSlug}` }, openGraph: { title, description, url: `https://www.bativio.fr/${villeSlug}` } };
     }
