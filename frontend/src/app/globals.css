@@ -28,13 +28,13 @@
   --color-green: #22c55e;
   --font-display: "Fraunces", serif;
   --font-body: "Karla", sans-serif;
-  --font-calli: "Playfair Display", serif;
+  --font-calli: "Fraunces", serif;
 }
 
 :root{--terre:#C4531A;--terre-h:#D4733A;--terre-deep:#8B3A12;--anthracite:#1C1C1E;--or:#C9943A;--or-light:#FDF5E8;--creme:#FAF8F5;--blanc:#FFFFFF;--sable:#E8D5C0;--sable-light:#F2EAE0;--bois:#3D2E1F;--bois-mid:#5C4A3A;--argile:#D4956B;--mousse:#4A6741;--mousse-light:#E8F0E6;--pierre:#9C958D;--g50:#F7F5F2;--g100:#EDEBE7;--g200:#E0DDD8;--g300:#C5C0B9;--g400:#9B9590;--g500:#6B6560;--green:#22c55e}
 
 /* ═══ CALLIGRAPHIC ACCENT ═══ */
-.calli{font-family:var(--font-calli,'Playfair Display',serif);font-style:italic;font-weight:500;color:var(--terre);position:relative;display:inline-block}
+.calli{font-family:var(--font-calli,'Fraunces',serif);font-style:italic;font-weight:500;color:var(--terre);position:relative;display:inline-block}
 .calli::after{content:'';position:absolute;bottom:2px;left:0;right:0;height:6px;background:var(--terre);opacity:.12;border-radius:3px;z-index:-1}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
