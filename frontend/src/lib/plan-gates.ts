@@ -21,19 +21,19 @@ export function hasAccess(userPlan: string, requiredPlan: PlanId): boolean {
 
 export const PLAN_LIMITS = {
   gratuit: {
-    maxInvoicesPerMonth: 5, maxPhotos: 3, hasPA: false, hasSiteVitrine: false,
+    maxMetiers: 1, maxInvoicesPerMonth: 5, maxPhotos: 3, hasPA: false, hasSiteVitrine: false,
     hasCRM: false, hasIA: false, hasSEO: false, hasFEC: false, maxBadges: 2, smsPerMonth: 0,
   },
   starter: {
-    maxInvoicesPerMonth: Infinity, maxPhotos: 10, hasPA: true, hasSiteVitrine: false,
+    maxMetiers: 2, maxInvoicesPerMonth: Infinity, maxPhotos: 10, hasPA: true, hasSiteVitrine: false,
     hasCRM: false, hasIA: false, hasSEO: false, hasFEC: false, maxBadges: Infinity, smsPerMonth: 0,
   },
   pro: {
-    maxInvoicesPerMonth: Infinity, maxPhotos: Infinity, hasPA: true, hasSiteVitrine: true,
+    maxMetiers: 3, maxInvoicesPerMonth: Infinity, maxPhotos: Infinity, hasPA: true, hasSiteVitrine: true,
     hasCRM: true, hasIA: false, hasSEO: false, hasFEC: true, maxBadges: Infinity, smsPerMonth: 0,
   },
   business: {
-    maxInvoicesPerMonth: Infinity, maxPhotos: Infinity, hasPA: true, hasSiteVitrine: true,
+    maxMetiers: 5, maxInvoicesPerMonth: Infinity, maxPhotos: Infinity, hasPA: true, hasSiteVitrine: true,
     hasCRM: true, hasIA: true, hasSEO: true, hasFEC: true, maxBadges: Infinity, smsPerMonth: 50,
   },
 } as const;

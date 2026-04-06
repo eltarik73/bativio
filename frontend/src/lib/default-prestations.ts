@@ -317,3 +317,49 @@ export const defaultPrestations: Record<
     },
   ],
 };
+
+// Additional metiers added automatically
+Object.assign(defaultPrestations, {
+  chauffagiste: [
+    { designation: "Installation chaudiere gaz", unite: "u", prixUnitaire: 1200, categorie: "Chaudiere", inclutFourniture: false },
+    { designation: "Entretien annuel chaudiere", unite: "u", prixUnitaire: 120, categorie: "Entretien", inclutFourniture: true },
+    { designation: "Installation pompe a chaleur", unite: "u", prixUnitaire: 3500, categorie: "PAC", inclutFourniture: false },
+    { designation: "Pose radiateur", unite: "u", prixUnitaire: 250, categorie: "Radiateur", inclutFourniture: false },
+    { designation: "Pose plancher chauffant", unite: "m2", prixUnitaire: 65, categorie: "Plancher chauffant", inclutFourniture: true },
+    { designation: "Desembouage circuit chauffage", unite: "u", prixUnitaire: 350, categorie: "Entretien", inclutFourniture: true },
+    { designation: "Main d'oeuvre", unite: "h", prixUnitaire: 55, categorie: "Main d'oeuvre", inclutFourniture: false },
+  ],
+  menuisier: [
+    { designation: "Pose porte interieure", unite: "u", prixUnitaire: 250, categorie: "Portes", inclutFourniture: false },
+    { designation: "Pose fenetre PVC", unite: "u", prixUnitaire: 450, categorie: "Fenetres", inclutFourniture: false },
+    { designation: "Pose parquet flottant", unite: "m2", prixUnitaire: 30, categorie: "Parquet", inclutFourniture: false },
+    { designation: "Placard sur mesure", unite: "ml", prixUnitaire: 350, categorie: "Rangement", inclutFourniture: true },
+    { designation: "Pose cuisine equipee", unite: "ml", prixUnitaire: 200, categorie: "Cuisine", inclutFourniture: false },
+    { designation: "Main d'oeuvre", unite: "h", prixUnitaire: 45, categorie: "Main d'oeuvre", inclutFourniture: false },
+  ],
+  couvreur: [
+    { designation: "Refection toiture tuiles", unite: "m2", prixUnitaire: 80, categorie: "Toiture", inclutFourniture: true },
+    { designation: "Reparation fuite toiture", unite: "u", prixUnitaire: 350, categorie: "Depannage", inclutFourniture: true },
+    { designation: "Demoussage toiture", unite: "m2", prixUnitaire: 15, categorie: "Entretien", inclutFourniture: true },
+    { designation: "Pose gouttiere alu", unite: "ml", prixUnitaire: 45, categorie: "Gouttiere", inclutFourniture: true },
+    { designation: "Isolation combles", unite: "m2", prixUnitaire: 40, categorie: "Isolation", inclutFourniture: true },
+    { designation: "Pose velux", unite: "u", prixUnitaire: 800, categorie: "Fenetre de toit", inclutFourniture: false },
+    { designation: "Main d'oeuvre", unite: "h", prixUnitaire: 50, categorie: "Main d'oeuvre", inclutFourniture: false },
+  ],
+  serrurier: [
+    { designation: "Ouverture porte claquee", unite: "u", prixUnitaire: 90, categorie: "Depannage", inclutFourniture: false },
+    { designation: "Ouverture porte blindee", unite: "u", prixUnitaire: 180, categorie: "Depannage", inclutFourniture: false },
+    { designation: "Changement serrure 3 points", unite: "u", prixUnitaire: 280, categorie: "Serrure", inclutFourniture: true },
+    { designation: "Pose porte blindee", unite: "u", prixUnitaire: 1500, categorie: "Porte blindee", inclutFourniture: false },
+    { designation: "Remplacement cylindre", unite: "u", prixUnitaire: 120, categorie: "Serrure", inclutFourniture: true },
+    { designation: "Deplacement", unite: "u", prixUnitaire: 40, categorie: "Frais", inclutFourniture: false },
+  ],
+  cuisiniste: [
+    { designation: "Pose cuisine equipee complete", unite: "ml", prixUnitaire: 250, categorie: "Pose", inclutFourniture: false },
+    { designation: "Raccordement eau", unite: "u", prixUnitaire: 150, categorie: "Plomberie", inclutFourniture: true },
+    { designation: "Raccordement electrique", unite: "u", prixUnitaire: 120, categorie: "Electricite", inclutFourniture: true },
+    { designation: "Pose plan de travail", unite: "ml", prixUnitaire: 80, categorie: "Plan de travail", inclutFourniture: false },
+    { designation: "Pose credence", unite: "ml", prixUnitaire: 60, categorie: "Credence", inclutFourniture: false },
+    { designation: "Main d'oeuvre", unite: "h", prixUnitaire: 45, categorie: "Main d'oeuvre", inclutFourniture: false },
+  ],
+});
