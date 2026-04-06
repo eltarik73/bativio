@@ -177,17 +177,54 @@ function FacturationContent() {
   const totalPaye = invoices.filter(i => i.status === "paid").reduce((s, i) => s + Number(i.totalTTC), 0);
   const totalRetard = invoices.filter(i => i.status === "overdue").reduce((s, i) => s + Number(i.totalTTC), 0);
 
+  // Reporting data
+  const now = new Date();
+  const thisMonth = invoices.filter(i => { const d = new Date(i.date); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); });
+  const thisYear = invoices.filter(i => new Date(i.date).getFullYear() === now.getFullYear());
+  const caMois = thisMonth.filter(i => i.status === "paid").reduce((s, i) => s + Number(i.totalTTC), 0);
+  const caAnnee = thisYear.filter(i => i.status === "paid").reduce((s, i) => s + Number(i.totalTTC), 0);
+  const devisAcceptes = quotes.filter(q => q.status === "accepted").length;
+  const devisTotal = quotes.length;
+  const tauxConversion = devisTotal > 0 ? Math.round((devisAcceptes / devisTotal) * 100) : 0;
+
+  // Export CSV
+  function exportCSV() {
+    const rows = [["Type", "Numero", "Client", "Date", "Montant TTC", "Statut"].join(";")];
+    for (const inv of invoices) {
+      rows.push(["Facture", inv.invoiceNumber || "", clientName(inv.client), fmtDate(inv.date), String(inv.totalTTC), inv.status].join(";"));
+    }
+    for (const q of quotes) {
+      rows.push(["Devis", q.quoteNumber || "", clientName(q.client), fmtDate(q.date), String(q.totalTTC), q.status].join(";"));
+    }
+    const blob = new Blob(["\uFEFF" + rows.join("\n")], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `export-facturation-${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   const embedIframeUrl = embedToken ? `${INVOQUO_URL}/embed/${(user as unknown as { invoquoSiret?: string; siret?: string })?.invoquoSiret || (user as unknown as { siret?: string })?.siret || ""}/${tab === "factures" ? "invoices" : tab === "clients" ? "clients" : "quotes"}/new?token=${embedToken}&accent=C4531A` : "";
 
   return (
     <div>
       {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
         <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#3D2E1F" }}>Facturation</h1>
-        <Link href={tab === "clients" ? embedIframeUrl : `/dashboard/facturation/nouveau?type=${tab === "factures" ? "facture" : "devis"}`} prefetch={false} {...(tab === "clients" ? { target: "_blank", rel: "noopener noreferrer" } : {})} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, background: "#C4531A", color: "#fff", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
-          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
-          {tab === "factures" ? "Nouvelle facture" : tab === "clients" ? "Nouveau client" : "Nouveau devis"}
-        </Link>
+        <div style={{ display: "flex", gap: 8 }}>
+          {tab === "reporting" ? (
+            <button onClick={exportCSV} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, border: "1px solid #E8D5C0", background: "#fff", color: "#3D2E1F", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              Export CSV
+            </button>
+          ) : (
+            <Link href={tab === "clients" ? embedIframeUrl : `/dashboard/facturation/nouveau?type=${tab === "factures" ? "facture" : "devis"}`} prefetch={false} {...(tab === "clients" ? { target: "_blank", rel: "noopener noreferrer" } : {})} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, background: "#C4531A", color: "#fff", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
+              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
+              {tab === "factures" ? "Nouvelle facture" : tab === "clients" ? "Nouveau client" : "Nouveau devis"}
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Tabs */}
@@ -196,6 +233,7 @@ function FacturationContent() {
           { key: "devis", label: "Devis", count: quotes.length },
           { key: "factures", label: "Factures", count: invoices.length },
           { key: "clients", label: "Clients", count: clients.length },
+          { key: "reporting", label: "Reporting", count: null },
         ].map((t) => (
           <Link key={t.key} href={`/dashboard/facturation?tab=${t.key}`} prefetch={false}
             style={{
@@ -205,7 +243,7 @@ function FacturationContent() {
               marginBottom: -2, textDecoration: "none", transition: "all .15s",
             }}
           >
-            {t.label} <span style={{ fontSize: 12, opacity: 0.6 }}>({t.count})</span>
+            {t.label}{t.count !== null && <span style={{ fontSize: 12, opacity: 0.6 }}> ({t.count})</span>}
           </Link>
         ))}
       </div>
@@ -228,8 +266,74 @@ function FacturationContent() {
 
       {error && <div style={{ padding: 16, borderRadius: 10, background: "#fce8e7", color: "#D9453D", fontSize: 13, marginBottom: 16 }}>{error}</div>}
 
-      {/* Table or clients list */}
-      {tab === "clients" ? (
+      {/* Reporting */}
+      {tab === "reporting" ? (
+        <div>
+          {/* KPI cards */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: 12, marginBottom: 24 }}>
+            {[
+              { label: "CA ce mois", value: fmtMoney(caMois), color: "#16A34A", icon: "M12 1v22M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 010 7H6" },
+              { label: `CA ${now.getFullYear()}`, value: fmtMoney(caAnnee), color: "#2563EB", icon: "M12 1v22M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 010 7H6" },
+              { label: "Impay\u00e9es", value: fmtMoney(totalEnAttente + totalRetard), color: "#DC2626", icon: "M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" },
+              { label: "Taux conversion devis", value: `${tauxConversion}%`, color: "#C4531A", icon: "M22 12h-4l-3 9L9 3l-3 9H2" },
+            ].map(s => (
+              <div key={s.label} style={{ background: "#fff", borderRadius: 12, border: "1px solid #E8D5C0", padding: "20px 24px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                  <svg width="18" height="18" fill="none" stroke={s.color} strokeWidth="1.5" viewBox="0 0 24 24"><path d={s.icon} strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#9C958D", textTransform: "uppercase", letterSpacing: 0.3 }}>{s.label}</span>
+                </div>
+                <div style={{ fontFamily: "'Fraunces',serif", fontSize: 26, fontWeight: 700, color: "#1C1C1E" }}>{s.value}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Summary */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }} className="max-md:!grid-cols-1">
+            <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #E8D5C0", padding: 24 }}>
+              <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, color: "#3D2E1F", marginBottom: 16 }}>Factures</h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {[
+                  { label: "Total", count: invoices.length },
+                  { label: "Pay\u00e9es", count: invoices.filter(i => i.status === "paid").length, color: "#16A34A" },
+                  { label: "En attente", count: invoices.filter(i => ["pending", "sent"].includes(i.status)).length, color: "#2563EB" },
+                  { label: "En retard", count: invoices.filter(i => i.status === "overdue").length, color: "#DC2626" },
+                ].map(r => (
+                  <div key={r.label} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid #F3F4F6" }}>
+                    <span style={{ fontSize: 13, color: r.color || "#6B6560" }}>{r.label}</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: "#3D2E1F" }}>{r.count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #E8D5C0", padding: 24 }}>
+              <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, color: "#3D2E1F", marginBottom: 16 }}>Devis</h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {[
+                  { label: "Total", count: quotes.length },
+                  { label: "Accept\u00e9s", count: quotes.filter(q => q.status === "accepted").length, color: "#16A34A" },
+                  { label: "En attente", count: quotes.filter(q => ["pending", "sent"].includes(q.status)).length, color: "#2563EB" },
+                  { label: "Refus\u00e9s/Expir\u00e9s", count: quotes.filter(q => ["rejected", "expired"].includes(q.status)).length, color: "#DC2626" },
+                ].map(r => (
+                  <div key={r.label} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid #F3F4F6" }}>
+                    <span style={{ fontSize: 13, color: r.color || "#6B6560" }}>{r.label}</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: "#3D2E1F" }}>{r.count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Export section */}
+          <div style={{ marginTop: 24, background: "#fff", borderRadius: 14, border: "1px solid #E8D5C0", padding: 24 }}>
+            <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 700, color: "#3D2E1F", marginBottom: 8 }}>Export comptable</h3>
+            <p style={{ fontSize: 13, color: "#6B6560", marginBottom: 16 }}>T\u00e9l\u00e9chargez vos factures et devis au format CSV pour votre comptable.</p>
+            <button onClick={exportCSV} style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 24px", borderRadius: 10, border: "1px solid #E8D5C0", background: "#fff", color: "#3D2E1F", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              T\u00e9l\u00e9charger CSV ({invoices.length + quotes.length} documents)
+            </button>
+          </div>
+        </div>
+      ) : tab === "clients" ? (
         /* Clients list */
         clients.length === 0 ? (
           <EmptyState type="client" href={embedIframeUrl} />
