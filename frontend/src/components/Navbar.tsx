@@ -72,7 +72,10 @@ export default function Navbar() {
   return (
     <nav className="nav">
       {/* Logo */}
-      <Link href="/" className="nav-logo">Bativio</Link>
+      <Link href="/" className="nav-logo" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <img src="/icons/icon.svg" alt="" width={24} height={24} style={{ flexShrink: 0 }} />
+        Bativio
+      </Link>
 
       {/* Desktop right side */}
       <div className="nav-r" style={{ position: "relative" }}>

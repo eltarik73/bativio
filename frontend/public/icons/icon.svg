@@ -1,4 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="102" fill="#C4531A"/>
-  <text x="256" y="310" font-family="Georgia,serif" font-size="320" font-weight="bold" fill="#fff" text-anchor="middle">B</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <rect x="2" y="2" width="10" height="10" rx="3" fill="#E8A84C"/>
+  <rect x="15" y="2" width="10" height="10" rx="3" fill="#E8A84C" opacity="0.5"/>
+  <rect x="2" y="15" width="10" height="10" rx="3" fill="#C4531A" opacity="0.6"/>
+  <rect x="15" y="15" width="10" height="10" rx="3" fill="#C4531A" opacity="0.4"/>
+  <rect x="28" y="15" width="10" height="10" rx="3" fill="#C4531A" opacity="0.25"/>
+  <rect x="2" y="28" width="10" height="10" rx="3" fill="#C4531A"/>
+  <rect x="15" y="28" width="10" height="10" rx="3" fill="#C4531A" opacity="0.8"/>
+  <rect x="28" y="28" width="10" height="10" rx="3" fill="#C4531A" opacity="0.55"/>
+  <rect x="41" y="28" width="5" height="10" rx="2.5" fill="#C4531A" opacity="0.3"/>
 </svg>
