@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import ArtisanCard from "@/components/ArtisanCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -11,6 +12,7 @@ import type { ArtisanPublic, MetierData } from "@/lib/api";
 import { VILLES } from "@/lib/constants";
 import VilleAutocomplete from "@/components/VilleAutocomplete/VilleAutocomplete";
 import type { CommuneResult } from "@/components/VilleAutocomplete/VilleAutocomplete";
+import { fadeUp } from "@/lib/motion";
 
 const TESTIMONIALS = [
   { text: "J'ai trouvé un électricien de confiance en 5 minutes. Travaux impeccables.", name: "Sophie L.", role: "Particulier, Annecy", initials: "SL" },
@@ -121,16 +123,37 @@ export default function Home() {
     <>
       <Navbar />
 
-      {/* ─── HERO ─── */}
-      <section style={{ background: "var(--blanc)", padding: "72px 32px 56px", textAlign: "center" }}>
-        <div style={{ maxWidth: 720, margin: "0 auto" }}>
-          <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(30px,5vw,46px)", fontWeight: 700, color: "var(--bois)", lineHeight: 1.12, letterSpacing: -0.5, marginBottom: 16 }}>
-            Trouvez l&apos;artisan{" "}<span className="calli">id&eacute;al</span>{" "}pr&egrave;s de chez vous
-          </h1>
-          <p style={{ fontSize: 17, color: "var(--bois-mid)", marginBottom: 32, lineHeight: 1.6 }}>
-            Des artisans de confiance, v&eacute;rifi&eacute;s et not&eacute;s par leurs clients. Devis gratuit en 24h.
-          </p>
-          <div className="search-bar" style={{ background: "var(--g50)", border: "1px solid var(--sable)", maxWidth: 640 }}>
+      {/* ─── HERO CINEMATIC ─── */}
+      <section className="hero-cinematic hero-grain" style={{ padding: "80px 32px 72px", textAlign: "center", overflow: "hidden" }}>
+        <div style={{ maxWidth: 780, margin: "0 auto", position: "relative", zIndex: 1 }}>
+          <motion.div
+            {...fadeUp(0)}
+            className="liquid-glass"
+            style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 999, marginBottom: 22, fontSize: 12, fontWeight: 600, color: "var(--terre-deep)", letterSpacing: 0.3 }}
+          >
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--terre)" }} />
+            Artisans locaux v&eacute;rifi&eacute;s &mdash; Rh&ocirc;ne-Alpes
+          </motion.div>
+          <motion.h1
+            {...fadeUp(0.08)}
+            style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(34px,5.5vw,56px)", fontWeight: 600, color: "var(--bois)", lineHeight: 1.05, letterSpacing: -1, marginBottom: 18 }}
+          >
+            Trouvez l&apos;artisan{" "}
+            <span style={{ fontStyle: "italic", fontWeight: 400, color: "var(--terre)", fontFamily: "'Fraunces',serif" }}>id&eacute;al</span>
+            <br />
+            pr&egrave;s de chez vous.
+          </motion.h1>
+          <motion.p
+            {...fadeUp(0.16)}
+            style={{ fontSize: 17, color: "var(--bois-mid)", marginBottom: 34, lineHeight: 1.6, maxWidth: 560, margin: "0 auto 34px" }}
+          >
+            Des artisans de confiance, v&eacute;rifi&eacute;s et not&eacute;s par leurs clients. Devis gratuit en 24h, z&eacute;ro commission.
+          </motion.p>
+          <motion.div
+            {...fadeUp(0.24)}
+            className="liquid-glass search-bar"
+            style={{ maxWidth: 640, borderRadius: 16, padding: 8 }}
+          >
             <div style={{ flex: 1, maxWidth: 200, minWidth: 0 }}>
               <VilleAutocomplete
                 onSelect={handleVilleSelect}
@@ -144,13 +167,22 @@ export default function Home() {
               placeholder="Plombier, &eacute;lectricien, r&eacute;novation..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              aria-label="Recherche de m&eacute;tier ou service"
             />
-            <button className="search-btn">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              className="search-btn"
+              aria-label="Rechercher des artisans"
+            >
               <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
               Rechercher
-            </button>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginTop: 14, flexWrap: "wrap" }}>
+            </motion.button>
+          </motion.div>
+          <motion.div
+            {...fadeUp(0.32)}
+            style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginTop: 16, flexWrap: "wrap" }}
+          >
             <button onClick={handleLocate} disabled={locating} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, color: "var(--terre)", background: "none", border: "none", cursor: "pointer", fontWeight: 500, fontFamily: "'Karla',sans-serif" }}>
               <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" /><circle cx="12" cy="9" r="2.5" /></svg>
               {locating ? "Localisation..." : "Me localiser"}
@@ -161,10 +193,13 @@ export default function Home() {
                 Toutes les villes
               </button>
             )}
-          </div>
-          <p style={{ fontSize: 13, color: "var(--pierre)", marginTop: 10 }}>
+          </motion.div>
+          <motion.p
+            {...fadeUp(0.4)}
+            style={{ fontSize: 13, color: "var(--pierre)", marginTop: 12 }}
+          >
             Recherches populaires : <Link href="/chambery" style={{ color: "var(--argile)", fontWeight: 500 }}>r&eacute;novation salle de bain</Link>, <Link href="/chambery" style={{ color: "var(--argile)", fontWeight: 500 }}>plombier urgent</Link>, <Link href="/chambery" style={{ color: "var(--argile)", fontWeight: 500 }}>peinture int&eacute;rieure</Link>
-          </p>
+          </motion.p>
         </div>
       </section>
 
@@ -211,50 +246,68 @@ export default function Home() {
       </div>
 
       {/* ─── COMMENT ÇA MARCHE ─── */}
-      <section style={{ background: "var(--blanc)", padding: "72px 32px" }}>
-        <div style={{ maxWidth: 900, margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <div style={{ width: 40, height: 2, background: "var(--terre)", margin: "0 auto 16px", borderRadius: 1 }} />
-            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(24px,4vw,32px)", fontWeight: 700, color: "var(--bois)" }}>Comment &ccedil;a marche</h2>
-          </div>
+      <section style={{ background: "var(--blanc)", padding: "88px 32px" }}>
+        <div style={{ maxWidth: 960, margin: "0 auto" }}>
+          <motion.div {...fadeUp(0)} style={{ textAlign: "center", marginBottom: 56 }}>
+            <div style={{ fontSize: 12, letterSpacing: 3, textTransform: "uppercase", color: "var(--pierre)", marginBottom: 14 }}>Process</div>
+            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(28px,4.5vw,42px)", fontWeight: 600, color: "var(--bois)", letterSpacing: -0.5, lineHeight: 1.1 }}>
+              Trois &eacute;tapes,{" "}
+              <span style={{ fontStyle: "italic", fontWeight: 400, color: "var(--terre)" }}>z&eacute;ro friction</span>
+            </h2>
+          </motion.div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 28 }}>
-            {STEPS.map((s) => (
-              <div key={s.n} style={{ textAlign: "center" }}>
-                <div style={{ width: 52, height: 52, borderRadius: "50%", border: "2px solid var(--terre)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "var(--terre)", marginBottom: 16 }}>{s.n}</div>
-                <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 17, fontWeight: 700, color: "var(--bois)", marginBottom: 8 }}>{s.title}</h3>
+            {STEPS.map((s, i) => (
+              <motion.div key={s.n} {...fadeUp(i * 0.1)} style={{ textAlign: "center" }}>
+                <div style={{ width: 56, height: 56, borderRadius: "50%", border: "1.5px solid var(--terre)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 600, color: "var(--terre)", marginBottom: 18, background: "rgba(196,83,26,.04)" }}>{s.n}</div>
+                <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 600, color: "var(--bois)", marginBottom: 10 }}>{s.title}</h3>
                 <p style={{ fontSize: 14, color: "var(--bois-mid)", lineHeight: 1.6 }}>{s.desc}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
       {/* ─── TÉMOIGNAGES ─── */}
-      <section style={{ background: "var(--creme)", padding: "72px 32px" }}>
-        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: 48 }}>
-            <div style={{ width: 40, height: 2, background: "var(--terre)", margin: "0 auto 16px", borderRadius: 1 }} />
-            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(24px,4vw,32px)", fontWeight: 700, color: "var(--bois)" }}>
-              La confiance de nos clients
+      <section style={{ background: "var(--creme)", padding: "88px 32px", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: "-100px", right: "-80px", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(196,83,26,.06) 0%, transparent 70%)", pointerEvents: "none" }} />
+        <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative" }}>
+          <motion.div {...fadeUp(0)} style={{ textAlign: "center", marginBottom: 56 }}>
+            <div style={{ fontSize: 12, letterSpacing: 3, textTransform: "uppercase", color: "var(--pierre)", marginBottom: 14 }}>T&eacute;moignages</div>
+            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(28px,4.5vw,42px)", fontWeight: 600, color: "var(--bois)", letterSpacing: -0.5, lineHeight: 1.1 }}>
+              La confiance{" "}
+              <span style={{ fontStyle: "italic", fontWeight: 400, color: "var(--terre)" }}>partag&eacute;e</span>
+              <br />
+              de nos clients.
             </h2>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 20 }}>
-            {TESTIMONIALS.map((t) => (
-              <div key={t.name} style={{ background: "var(--blanc)", borderRadius: 14, border: "1px solid var(--sable)", padding: 28, display: "flex", flexDirection: "column" }}>
-                <div style={{ display: "flex", gap: 2, marginBottom: 14 }}>
+          </motion.div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24 }}>
+            {TESTIMONIALS.map((t, i) => (
+              <motion.div
+                key={t.name}
+                {...fadeUp(i * 0.1)}
+                className="liquid-glass"
+                style={{
+                  borderRadius: 20,
+                  padding: 32,
+                  display: "flex",
+                  flexDirection: "column",
+                  transform: i === 1 ? "translateY(-16px)" : undefined,
+                }}
+              >
+                <div style={{ display: "flex", gap: 2, marginBottom: 16 }}>
                   {[1,2,3,4,5].map((s) => (
                     <svg key={s} width="16" height="16" viewBox="0 0 20 20" fill="var(--or)"><path d="M10 1l2.39 4.84 5.34.78-3.87 3.77.91 5.33L10 13.27l-4.77 2.51.91-5.33L2.27 6.68l5.34-.78L10 1z" /></svg>
                   ))}
                 </div>
-                <p style={{ fontSize: 15, color: "var(--bois-mid)", lineHeight: 1.6, fontStyle: "italic", flex: 1 }}>&ldquo;{t.text}&rdquo;</p>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 16 }}>
-                  <div style={{ width: 38, height: 38, borderRadius: "50%", background: "linear-gradient(135deg, var(--terre), var(--argile))", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Fraunces',serif", fontSize: 13, fontWeight: 700, color: "#fff" }}>{t.initials}</div>
+                <p style={{ fontFamily: "'Fraunces',serif", fontSize: 17, color: "var(--bois)", lineHeight: 1.55, fontWeight: 400, flex: 1, letterSpacing: -0.2 }}>&ldquo;{t.text}&rdquo;</p>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 22, paddingTop: 18, borderTop: "1px solid rgba(61,46,31,.08)" }}>
+                  <div style={{ width: 40, height: 40, borderRadius: "50%", background: "linear-gradient(135deg, var(--terre), var(--argile))", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Fraunces',serif", fontSize: 14, fontWeight: 600, color: "#fff" }}>{t.initials}</div>
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: "var(--bois)" }}>{t.name}</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "var(--bois)" }}>{t.name}</div>
                     <div style={{ fontSize: 12, color: "var(--pierre)" }}>{t.role}</div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

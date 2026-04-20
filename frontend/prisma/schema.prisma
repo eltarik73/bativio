@@ -158,6 +158,8 @@ model Artisan {
   chantiers       Chantier[]
   clients         Client[]
   artisanMetiers  ArtisanMetier[]
+  demandesRecues  DemandeEnvoi[]
+  tarifsMetiers   TarifHoraireMetier[]
   tarifsHoraire   Float?              @map("tarifs_horaire")
   tarifsMarges    Json?               @map("tarifs_marges")
 
@@ -435,13 +437,20 @@ model Tarification {
   id                      String   @id @default(cuid())
   artisanId               String   @unique @map("artisan_id")
   tarifHoraire            Float    @map("tarif_horaire")
+  tarifUrgence            Float?   @map("tarif_urgence")
+  minimumFacture          Float?   @map("minimum_facture")
+  minimumHeures           Float?   @map("minimum_heures")
   fraisDeplacementType    String   @default("forfait") @map("frais_deplacement_type")
   fraisDeplacementMontant Float    @default(30) @map("frais_deplacement_montant")
+  prixKm                  Float?   @map("prix_km")
   margeFournitures        Float    @default(25) @map("marge_fournitures")
   tvaDefault              Float    @default(10) @map("tva_default")
   assuranceNumero         String?  @map("assurance_numero")
   assuranceNom            String?  @map("assurance_nom")
   fourniturePolicy        String   @default("artisan_fournit") @map("fourniture_policy")
+  indiceBtRef             String?  @map("indice_bt_ref")
+  zonesIntervention       Json?    @map("zones_intervention")
+  notesTarif              String?  @map("notes_tarif") @db.Text
   createdAt               DateTime @default(now()) @map("created_at")
   updatedAt               DateTime @updatedAt @map("updated_at")
 
@@ -454,16 +463,21 @@ model PrestationType {
   id               String   @id @default(cuid())
   artisanId        String   @map("artisan_id")
   designation      String
+  description      String?  @db.Text
   unite            String
   prixUnitaire     Float    @map("prix_unitaire")
   categorie        String?
+  metierSlug       String?  @map("metier_slug")
+  tvaApplicable    Float?   @map("tva_applicable")
   inclutFourniture Boolean  @default(true) @map("inclut_fourniture")
   isCustom         Boolean  @default(false) @map("is_custom")
   createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @default(now()) @updatedAt @map("updated_at")
 
   artisan          Artisan  @relation(fields: [artisanId], references: [id], onDelete: Cascade)
 
   @@index([artisanId])
+  @@index([metierSlug])
   @@map("prestation_types")
 }
 
@@ -505,6 +519,23 @@ model Devis {
   pdfUrl              String?     @map("pdf_url")
   viewToken           String?     @unique @map("view_token")
   devisRequestId      String?     @map("devis_request_id")
+
+  // Devis IA (V1 Bativio)
+  source              String      @default("MANUEL")
+  demandeProjetId     String?     @map("demande_projet_id")
+  demandeProjet       DemandeProjet? @relation(fields: [demandeProjetId], references: [id])
+  promptVersion       String?     @map("prompt_version")
+  modelUsed           String?     @map("model_used")
+  tokensIn            Int?        @map("tokens_in")
+  tokensOut           Int?        @map("tokens_out")
+  costEur             Decimal?    @db.Decimal(10, 4) @map("cost_eur")
+  mentionsJson        Json?       @map("mentions_json")
+
+  // Lien CRM + chantier (audit P0)
+  clientId            String?     @map("client_id")
+  client              Client?     @relation(fields: [clientId], references: [id])
+  chantiers           Chantier[]
+
   createdAt           DateTime    @default(now()) @map("created_at")
   updatedAt           DateTime    @updatedAt @map("updated_at")
 
@@ -512,6 +543,8 @@ model Devis {
 
   @@index([artisanId, statut])
   @@index([artisanId, createdAt])
+  @@index([demandeProjetId])
+  @@index([clientId])
   @@map("devis")
 }
 
@@ -659,6 +692,7 @@ model Chantier {
   ville           String?
   clientNom       String?         @map("client_nom")
   clientTelephone String?         @map("client_telephone")
+  clientId        String?         @map("client_id")
   couleur         String          @default("#C4531A")
   dateDebut       DateTime        @map("date_debut")
   dateFin         DateTime        @map("date_fin")
@@ -672,10 +706,14 @@ model Chantier {
   updatedAt       DateTime        @updatedAt @map("updated_at")
 
   artisan         Artisan         @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  client          Client?         @relation(fields: [clientId], references: [id])
+  devis           Devis?          @relation(fields: [devisId], references: [id])
   collaborateurs  ChantierCollaborateur[]
 
   @@index([artisanId, dateDebut])
   @@index([artisanId, statut])
+  @@index([clientId])
+  @@index([devisId])
   @@map("chantiers")
 }
 
@@ -715,9 +753,222 @@ model Client {
 
   artisan         Artisan  @relation(fields: [artisanId], references: [id], onDelete: Cascade)
   demandes        DemandeDevis[]
+  devis           Devis[]
+  chantiers       Chantier[]
 
   @@unique([artisanId, email])
   @@index([artisanId])
   @@index([artisanId, nom])
   @@map("clients")
+}
+
+// ═══════════════════════════════════════════════════════════
+// DEVIS IA — V1 Bativio
+// ═══════════════════════════════════════════════════════════
+
+enum DemandeProjetStatut {
+  NOUVELLE
+  EN_ATTENTE
+  ROUTEE
+  DEVIS_ENVOYE
+  CLOTUREE
+}
+
+enum ModeRoutage {
+  MANUEL
+  AUTO_TOUS
+  AUTO_CONCERNES
+  AUTO_PRO
+  AUTO_BUSINESS
+}
+
+enum KbDocType {
+  INDICE_BT
+  TARIF_MARCHE
+  MENTION_LEGALE
+  TVA_TAUX
+  DTU_NORME
+  EXEMPLE_DEVIS
+  PRIX_MATERIAU
+  GUIDE_QUANTITE
+  GUIDE_QUALIF
+}
+
+model DemandeProjet {
+  id              String   @id @default(cuid())
+
+  description     String   @db.Text
+  villeLabel      String?  @map("ville_label")
+  villeSlug       String?  @map("ville_slug")
+  lat             Float?
+  lon             Float?
+
+  metierDetecte   String?  @map("metier_detecte")
+  qualifJson      Json?    @map("qualif_json")
+  qualifScore     Int?     @map("qualif_score")
+  preDevisJson    Json?    @map("pre_devis_json")
+
+  contactNom      String?  @map("contact_nom")
+  contactEmail    String?  @map("contact_email")
+  contactTel      String?  @map("contact_tel")
+
+  photos          Json?
+
+  statut          DemandeProjetStatut @default(NOUVELLE)
+  source          String?
+
+  modeRoutage     ModeRoutage @default(MANUEL) @map("mode_routage")
+  routageBy       String?     @map("routage_by")
+  routageAt       DateTime?   @map("routage_at")
+
+  // Tracking contact client par webmaster
+  webmasterNotes        String?   @db.Text @map("webmaster_notes")
+  webmasterJoignableA   DateTime? @map("webmaster_joignable_a")
+  webmasterContactType  String?   @map("webmaster_contact_type")
+  webmasterContactResult String?  @map("webmaster_contact_result")
+
+  envois          DemandeEnvoi[]
+  devis           Devis[]
+  contacts        DemandeContact[]
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("demande_projet")
+  @@index([statut])
+  @@index([metierDetecte])
+  @@index([createdAt])
+}
+
+model DemandeContact {
+  id          String   @id @default(cuid())
+  demandeId   String   @map("demande_id")
+  demande     DemandeProjet @relation(fields: [demandeId], references: [id], onDelete: Cascade)
+  userId      String   @map("user_id")
+  type        String
+  canal       String
+  note        String?  @db.Text
+  result      String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("demande_contact")
+  @@index([demandeId])
+  @@index([userId])
+}
+
+model OtpVerification {
+  id          String   @id @default(cuid())
+  telephone   String
+  codeHash    String   @map("code_hash")
+  ip          String?
+  verifiedAt  DateTime? @map("verified_at")
+  expiresAt   DateTime @map("expires_at")
+  attempts    Int      @default(0)
+
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("otp_verification")
+  @@index([telephone])
+  @@index([expiresAt])
+}
+
+model DemandeEnvoi {
+  id          String   @id @default(cuid())
+  demandeId   String   @map("demande_id")
+  demande     DemandeProjet @relation(fields: [demandeId], references: [id], onDelete: Cascade)
+  artisanId   String   @map("artisan_id")
+  artisan     Artisan  @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+
+  sentAt      DateTime @default(now()) @map("sent_at")
+  seenAt      DateTime? @map("seen_at")
+  respondedAt DateTime? @map("responded_at")
+  rejectedAt  DateTime? @map("rejected_at")
+
+  emailId     String?  @map("email_id")
+
+  @@map("demande_envoi")
+  @@unique([demandeId, artisanId])
+  @@index([artisanId])
+}
+
+model KbDocument {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  type        KbDocType
+  title       String
+  content     String   @db.Text
+  metadata    Json?
+  source      String?
+  periodeRef  String?  @map("periode_ref")
+  validFrom   DateTime @default(now()) @map("valid_from")
+  validTo     DateTime? @map("valid_to")
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("kb_document")
+  @@index([type])
+  @@index([validFrom])
+}
+
+model RoutageSettings {
+  id                String   @id @default(cuid())
+  scope             String   @unique
+  modeDefault       ModeRoutage @default(MANUEL) @map("mode_default")
+  delaiManuelMin    Int?     @map("delai_manuel_min")
+  emailTemplate     String?  @db.Text @map("email_template")
+
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@map("routage_settings")
+}
+
+// Catalogue standardisé des prestations BTP (Rhône-Alpes 2026)
+// Utilisé pour matching IA + auto-complétion côté artisan
+model CataloguePrestation {
+  id              String   @id @default(cuid())
+  code            String   @unique
+  metierSlug      String   @map("metier_slug")
+  categorie       String?
+  designation     String
+  description     String?  @db.Text
+  unite           String
+  prixHtBas       Float    @map("prix_ht_bas")
+  prixHtMoyen     Float    @map("prix_ht_moyen")
+  prixHtHaut      Float    @map("prix_ht_haut")
+  motsCles        Json     @map("mots_cles")
+  dureeMoyenneH   Float?   @map("duree_moyenne_h")
+  tvaDefault      Float?   @map("tva_default")
+  region          String   @default("rhone-alpes")
+  annee           Int      @default(2026)
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("catalogue_prestation")
+  @@index([metierSlug])
+  @@index([code])
+}
+
+// Tarifs horaires multi-métiers par artisan (un artisan peut être plombier + électricien avec des tarifs différents)
+model TarifHoraireMetier {
+  id              String   @id @default(cuid())
+  artisanId       String   @map("artisan_id")
+  artisan         Artisan  @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  metierSlug      String   @map("metier_slug")
+  metierNom       String   @map("metier_nom")
+  tarifHoraire    Float    @map("tarif_horaire")
+  tarifUrgence    Float?   @map("tarif_urgence")
+  tarifWeekend    Float?   @map("tarif_weekend")
+  minimumFacture  Float?   @map("minimum_facture")
+  minimumHeures   Float?   @map("minimum_heures")
+  notes           String?  @db.Text
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("tarif_horaire_metier")
+  @@unique([artisanId, metierSlug])
+  @@index([artisanId])
 }
