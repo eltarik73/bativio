@@ -47,24 +47,34 @@ interface DevisAgentResult {
 
 const SYSTEM_PROMPT = `Tu es DevisIA, expert chiffrage BTP Bativio pour la Rhône-Alpes. Tu génères un devis 100% conforme et réaliste pour un artisan donné.
 
-RÈGLES ABSOLUES (ne jamais violer) :
-1. Priorité 1 : grille tarifaire de l'artisan fournie (tarif horaire, forfaits). Si un forfait match la prestation → utilise-le tel quel.
-2. Priorité 2 : moyennes marché Rhône-Alpes 2026 (RAG fourni). Flag ces lignes avec "fallback_marche": true.
-3. Applique TVA correcte selon type travaux (10% rénovation / 20% neuf / 5.5% économie énergie).
-4. Inclus une mention "hors fournitures finitions" si matériaux non cotés.
-5. Si une info manque pour chiffrer fiablement → status "need_clarif" avec liste de questions précises au lieu d'inventer.
+HIÉRARCHIE DES SOURCES DE PRIX (ordre obligatoire) :
+1. **FORFAITS ARTISAN** (prestationTypes) — si la prestation existe dans SES forfaits, utilise son prix tel quel, unité incluse. Source: "forfait".
+2. **TARIFS HORAIRES MULTI-MÉTIERS** — si l'artisan a un TarifHoraireMetier pour le métier détecté, utilise ce tarif (PAS le tarif global). Source: "grille_artisan".
+3. **TARIF HORAIRE GLOBAL** (Tarification.tarifHoraire) — fallback si pas de multi-métier. Source: "grille_artisan".
+4. **CATALOGUE STANDARDISÉ** (prestations BTP 2026) — si pas de forfait artisan, utilise la prestation du catalogue (prix moyen) + SES taux horaires pour la main-d'œuvre calculée. Source: "catalogue".
+5. **MOYENNES MARCHÉ RAG** — dernier recours si catalogue absent. Source: "fallback_marche".
 
-MENTIONS OBLIGATOIRES (coche chacune, "ok" ou "manquant") :
+RÈGLES ABSOLUES :
+- Tu matches systématiquement chaque poste du devis à un code catalogue si possible (ex: "PLB-009" pour pose chauffe-eau). Ajoute le code dans un champ "code" optionnel.
+- Applique TVA par prestation selon type (10% rénov / 20% neuf / 5.5% éco-énergie). La TVA du catalogue est indicative, tu peux l'adapter au contexte.
+- Si info manque pour chiffrer (ex: surface non précisée) → status "need_clarif" avec questions précises AU LIEU D'INVENTER.
+- Ajoute déplacement en ligne séparée (tarif artisan ou km × prix_km).
+- Inclus notes "hors finitions" si matériaux non cotés.
+- Tu n'inventes JAMAIS un prix qui n'est pas dans la grille, catalogue ou RAG.
+
+MENTIONS OBLIGATOIRES (check chacune, "ok" ou "manquant") :
 - identite_artisan, siret, assurance, identite_client, description_travaux, prix_ht, tva, prix_ttc, validite, paiement, mention_signature
 
 FORMAT JSON STRICT (aucun texte hors JSON) :
 {
   "status": "ok" | "need_clarif",
-  "clarifications": ["question 1", "question 2"],  // uniquement si status=need_clarif
+  "clarifications": ["question 1"],
   "numero": "BTV-2026-XXXX",
   "objet": "résumé projet 1 ligne",
+  "metierPrincipal": "plombier" | ...,
   "lignes": [
     {
+      "code": "PLB-009",
       "label": "Désignation courte",
       "description": "détail optionnel",
       "qte": number,
@@ -72,8 +82,9 @@ FORMAT JSON STRICT (aucun texte hors JSON) :
       "puHt": number,
       "totalHt": number,
       "tva": 5.5 | 10 | 20,
-      "source": "grille_artisan" | "forfait" | "fallback_marche" | "estimation_ia",
-      "fallback_marche": true  // si source != grille_artisan/forfait
+      "source": "forfait" | "grille_artisan" | "catalogue" | "fallback_marche",
+      "fallback_marche": true,
+      "metierLigne": "plombier"
     }
   ],
   "sousTotaux": {"mo": number, "mat": number, "deplacement": number},
@@ -82,21 +93,23 @@ FORMAT JSON STRICT (aucun texte hors JSON) :
   "totalTtc": number,
   "validiteJours": 30,
   "dureeEstimee": "2-3 jours",
-  "conditionsPaiement": "30% à la commande, 70% à la fin des travaux",
-  "notes": "remarques artisan ou fournitures",
-  "mentionsObligatoires": {"identite_artisan": "ok", "siret": "ok", ...}
+  "conditionsPaiement": "30% à la commande, 70% à la fin",
+  "notes": "remarques / fournitures",
+  "mentionsObligatoires": {"identite_artisan": "ok", ...}
 }`;
 
 export async function runDevisAgent({ artisanId, demandeId }: DevisAgentInput): Promise<DevisAgentResult> {
   const claude = getClaude();
 
-  // 1. Charge l'artisan + tarification + forfaits
+  // 1. Charge artisan + tarification + forfaits + tarifs multi-métiers
   const artisan = await prisma.artisan.findUnique({
     where: { id: artisanId },
     include: {
       tarification: true,
       prestationTypes: true,
       metier: true,
+      tarifsMetiers: true,
+      artisanMetiers: { include: { metier: true } },
     },
   });
   if (!artisan) throw new Error("Artisan introuvable");
@@ -105,26 +118,42 @@ export async function runDevisAgent({ artisanId, demandeId }: DevisAgentInput): 
   const demande = await prisma.demandeProjet.findUnique({ where: { id: demandeId } });
   if (!demande) throw new Error("Demande introuvable");
 
-  // 3. Charge KB marché + mentions + TVA
-  const [tarifMarche, mentions, tva, guidesQuantite] = await Promise.all([
+  // 3. Charge KB marché + mentions + TVA + catalogue prestations métier
+  const [tarifMarche, mentions, tva, guidesQuantite, catalogue] = await Promise.all([
     demande.metierDetecte
       ? prisma.kbDocument.findFirst({ where: { type: "TARIF_MARCHE", slug: { contains: demande.metierDetecte } } })
       : null,
     prisma.kbDocument.findFirst({ where: { type: "MENTION_LEGALE", slug: "mentions-obligatoires-devis-2026" } }),
     prisma.kbDocument.findFirst({ where: { type: "TVA_TAUX", slug: "tva-btp-2026" } }),
     prisma.kbDocument.findMany({ where: { type: "GUIDE_QUANTITE" }, take: 3 }),
+    demande.metierDetecte
+      ? prisma.cataloguePrestation.findMany({
+          where: { metierSlug: demande.metierDetecte },
+          orderBy: { code: "asc" },
+        })
+      : prisma.cataloguePrestation.findMany({ take: 50, orderBy: { code: "asc" } }),
   ]);
 
   // 4. Composer contexte artisan
   const forfaitsBlock = artisan.prestationTypes.length > 0
-    ? artisan.prestationTypes.map((p) => `  - "${p.designation}" = ${p.prixUnitaire}€ HT /${p.unite}${p.categorie ? ` [${p.categorie}]` : ""}`).join("\n")
+    ? artisan.prestationTypes.map((p) => `  - [${p.metierSlug || "tous"}] "${p.designation}" = ${p.prixUnitaire}€ HT /${p.unite}${p.categorie ? ` [${p.categorie}]` : ""}`).join("\n")
     : "  (aucun forfait pré-défini)";
 
+  const tarifsMetierBlock = artisan.tarifsMetiers.length > 0
+    ? artisan.tarifsMetiers.map((t) => `  - ${t.metierNom} (${t.metierSlug}) : ${t.tarifHoraire}€/h${t.tarifUrgence ? ` (urgence ${t.tarifUrgence}€)` : ""}${t.tarifWeekend ? ` (weekend ${t.tarifWeekend}€)` : ""}${t.minimumFacture ? ` min ${t.minimumFacture}€` : ""}${t.notes ? ` — ${t.notes}` : ""}`).join("\n")
+    : "  (pas de tarif spécifique par métier, utiliser tarif horaire global ci-dessous)";
+
+  const metiersBlock = artisan.artisanMetiers.length > 0
+    ? artisan.artisanMetiers.map((am) => am.metier?.nom).filter(Boolean).join(", ")
+    : (artisan.metier?.nom || "non renseigné");
+
   const artisanBlock = `## Artisan : ${artisan.nomAffichage}
-- Métier : ${artisan.metier?.nom || "non renseigné"}
+- Métiers exercés : ${metiersBlock}
 - Ville base : ${artisan.ville || "non renseignée"}
 - SIRET : ${artisan.siret}
-${artisan.tarification ? `- Tarif horaire : ${artisan.tarification.tarifHoraire}€ HT
+${artisan.tarification ? `
+### Tarif horaire GLOBAL (fallback)
+- Tarif horaire : ${artisan.tarification.tarifHoraire}€ HT
 - Tarif urgence : ${artisan.tarification.tarifUrgence ?? "non défini"}€ HT
 - Minimum facture : ${artisan.tarification.minimumFacture ?? "aucun"}€ HT
 - Minimum heures : ${artisan.tarification.minimumHeures ?? "aucun"}h
@@ -134,9 +163,12 @@ ${artisan.tarification ? `- Tarif horaire : ${artisan.tarification.tarifHoraire}
 - TVA par défaut : ${artisan.tarification.tvaDefault}%
 - Assurance : ${artisan.tarification.assuranceNom || "?"} n°${artisan.tarification.assuranceNumero || "?"}
 - Fourniture : ${artisan.tarification.fourniturePolicy}
-- Notes artisan : ${artisan.tarification.notesTarif || "aucune"}` : "- Pas de grille tarifaire renseignée, utiliser le fallback marché"}
+- Notes artisan : ${artisan.tarification.notesTarif || "aucune"}` : "- Pas de grille tarifaire renseignée, utiliser fallback catalogue/marché"}
 
-### Forfaits de cet artisan
+### Tarifs horaires PAR MÉTIER (priorité sur tarif global)
+${tarifsMetierBlock}
+
+### Forfaits prédéfinis de cet artisan (PRIORITÉ 1 pour matching)
 ${forfaitsBlock}`;
 
   // 5. Composer contexte demande
@@ -153,12 +185,22 @@ ${forfaitsBlock}`;
 ### Qualification IA
 ${qualifBlock}`;
 
-  // 6. Composer RAG
+  // 6. Composer catalogue standardisé (codes + prix marché par prestation)
+  const catalogueBlock = catalogue.length > 0
+    ? `### Catalogue prestations BTP 2026 Rhône-Alpes (${catalogue.length} entrées, utilise pour matching)\n` +
+      catalogue.map((c) => {
+        const kw = Array.isArray(c.motsCles) ? (c.motsCles as string[]).slice(0, 4).join(", ") : "";
+        return `- [${c.code}] ${c.designation} (${c.unite}) — ${c.prixHtBas}€ / ${c.prixHtMoyen}€ / ${c.prixHtHaut}€ HT${c.dureeMoyenneH ? ` · ~${c.dureeMoyenneH}h` : ""}${c.tvaDefault ? ` · TVA ${c.tvaDefault}%` : ""}${kw ? ` · [${kw}]` : ""}`;
+      }).join("\n")
+    : "";
+
+  // 7. Composer RAG
   const ragBlock = [
+    catalogueBlock,
     tarifMarche ? `### Tarifs marché ${demande.metierDetecte}\n${tarifMarche.content}` : "",
     ...guidesQuantite.map((g) => `### ${g.title}\n${g.content}`),
     tva ? `### TVA BTP\n${tva.content}` : "",
-    mentions ? `### Mentions obligatoires\n${mentions.content}` : "",
+    mentions ? `### Mentions obligatoires 2026\n${mentions.content}` : "",
   ].filter(Boolean).join("\n\n");
 
   const numero = `BTV-2026-${String(Date.now()).slice(-5)}`;

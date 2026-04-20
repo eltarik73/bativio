@@ -531,6 +531,11 @@ model Devis {
   costEur             Decimal?    @db.Decimal(10, 4) @map("cost_eur")
   mentionsJson        Json?       @map("mentions_json")
 
+  // Lien CRM + chantier (audit P0)
+  clientId            String?     @map("client_id")
+  client              Client?     @relation(fields: [clientId], references: [id])
+  chantiers           Chantier[]
+
   createdAt           DateTime    @default(now()) @map("created_at")
   updatedAt           DateTime    @updatedAt @map("updated_at")
 
@@ -539,6 +544,7 @@ model Devis {
   @@index([artisanId, statut])
   @@index([artisanId, createdAt])
   @@index([demandeProjetId])
+  @@index([clientId])
   @@map("devis")
 }
 
@@ -686,6 +692,7 @@ model Chantier {
   ville           String?
   clientNom       String?         @map("client_nom")
   clientTelephone String?         @map("client_telephone")
+  clientId        String?         @map("client_id")
   couleur         String          @default("#C4531A")
   dateDebut       DateTime        @map("date_debut")
   dateFin         DateTime        @map("date_fin")
@@ -699,10 +706,14 @@ model Chantier {
   updatedAt       DateTime        @updatedAt @map("updated_at")
 
   artisan         Artisan         @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  client          Client?         @relation(fields: [clientId], references: [id])
+  devis           Devis?          @relation(fields: [devisId], references: [id])
   collaborateurs  ChantierCollaborateur[]
 
   @@index([artisanId, dateDebut])
   @@index([artisanId, statut])
+  @@index([clientId])
+  @@index([devisId])
   @@map("chantiers")
 }
 
@@ -742,6 +753,8 @@ model Client {
 
   artisan         Artisan  @relation(fields: [artisanId], references: [id], onDelete: Cascade)
   demandes        DemandeDevis[]
+  devis           Devis[]
+  chantiers       Chantier[]
 
   @@unique([artisanId, email])
   @@index([artisanId])

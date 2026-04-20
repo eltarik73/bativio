@@ -53,6 +53,9 @@ export default function DemandePage() {
   const [preDevis, setPreDevis] = useState<PreDevis | null>(null);
   const [demandeId, setDemandeId] = useState<string | null>(null);
 
+  const [liveEstimation, setLiveEstimation] = useState<PreDevis | null>(null);
+  const [loadingEstimation, setLoadingEstimation] = useState(false);
+
   const chatRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -121,6 +124,32 @@ export default function DemandePage() {
     setTextInput("");
     const history = newMessages.map((m) => ({ role: m.role, content: m.content }));
     await callAgent(description, history, newCol);
+
+    // Estimation live en arrière-plan dès qu'on a métier + 2+ infos
+    if (metier && Object.keys(newCol).length >= 2) {
+      fetchLiveEstimation(metier, newCol);
+    }
+  };
+
+  const fetchLiveEstimation = async (metierSlug: string, data: Record<string, string>) => {
+    setLoadingEstimation(true);
+    try {
+      const res = await fetch("/api/v1/public/estimation-live", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          metier: metierSlug,
+          description,
+          qualifData: data,
+          ville: villeLabel || null,
+        }),
+      });
+      const j = await res.json();
+      if (j.success && !j.data.tooEarly && j.data.fourchetteHt) {
+        setLiveEstimation(j.data);
+      }
+    } catch { /* silent */ }
+    finally { setLoadingEstimation(false); }
   };
 
   const uploadPhoto = async (file: File) => {
@@ -324,6 +353,30 @@ export default function DemandePage() {
                   </div>
                 )}
               </div>
+
+              {/* Estimation live (apparaît dès que dispo) */}
+              {phase === "chat" && liveEstimation && liveEstimation.fourchetteHt && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, scale: .95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  style={{ background: "linear-gradient(135deg, rgba(196,83,26,.08), rgba(201,148,58,.05))", borderRadius: 14, padding: "12px 16px", marginBottom: 12, border: "1px solid rgba(196,83,26,.15)", display: "flex", alignItems: "center", gap: 12 }}
+                >
+                  <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--terre)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <svg width="16" height="16" fill="none" stroke="#fff" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" /></svg>
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 10, letterSpacing: 1.5, color: "var(--terre-deep)", fontWeight: 700, textTransform: "uppercase", marginBottom: 2 }}>
+                      Estimation en temps réel {loadingEstimation ? "(actualisation…)" : ""}
+                    </div>
+                    <div style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 600, color: "var(--bois)", letterSpacing: -.3 }}>
+                      {liveEstimation.fourchetteHt.min.toLocaleString("fr-FR")}–{liveEstimation.fourchetteHt.max.toLocaleString("fr-FR")} € HT
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 10, color: "var(--pierre)", fontStyle: "italic", maxWidth: 140, lineHeight: 1.3 }}>
+                    Estimation indicative, affinée à chaque réponse
+                  </div>
+                </motion.div>
+              )}
 
               {/* Messages */}
               <div ref={chatRef} style={{ background: "var(--blanc)", borderRadius: 20, padding: 20, minHeight: 340, maxHeight: 540, overflowY: "auto", border: "1px solid rgba(61,46,31,.06)", display: "flex", flexDirection: "column", gap: 14 }}>

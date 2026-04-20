@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { runPreDevisAgent } from "@/lib/agents/pre-devis-agent";
+import { sendEmail } from "@/lib/email";
 
 const bodySchema = z.object({
   description: z.string().min(5).max(3000),
@@ -77,6 +78,42 @@ export async function POST(request: NextRequest) {
     } catch (e) {
       console.error("Pré-devis échoué (non bloquant):", e);
     }
+
+    // Email confirmation client (non bloquant)
+    void sendEmail(
+      data.contactEmail,
+      "Votre demande Bativio a bien été reçue",
+      `<div style="font-family: -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 32px;">
+        <h2 style="color: #C4531A; font-family: Georgia, serif;">Merci ${data.contactNom} !</h2>
+        <p style="color: #3D2E1F; font-size: 15px; line-height: 1.6;">
+          Votre demande a bien été reçue. L'équipe Bativio l'examine et va contacter
+          les artisans les plus pertinents de ${data.villeLabel || "votre région"} sous 24h.
+        </p>
+        <div style="background: #FAF8F5; padding: 16px; border-radius: 10px; border-left: 4px solid #C4531A; margin: 20px 0;">
+          <div style="font-size: 11px; letter-spacing: 1px; color: #9C958D; text-transform: uppercase; margin-bottom: 6px;">Votre projet</div>
+          <div style="font-size: 14px; color: #3D2E1F; font-style: italic;">« ${data.description.slice(0, 200)}${data.description.length > 200 ? "…" : ""} »</div>
+        </div>
+        ${preDevis?.fourchetteHt ? `
+          <div style="background: linear-gradient(135deg, rgba(196,83,26,.06), rgba(201,148,58,.04)); padding: 16px; border-radius: 10px; margin: 20px 0;">
+            <div style="font-size: 11px; letter-spacing: 1.5px; color: #C4531A; text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">Estimation indicative</div>
+            <div style="font-size: 22px; color: #3D2E1F; font-weight: 600; font-family: Georgia, serif;">
+              ${preDevis.fourchetteHt.min.toLocaleString("fr-FR")}–${preDevis.fourchetteHt.max.toLocaleString("fr-FR")} € HT
+            </div>
+            <div style="font-size: 12px; color: #6B6560; margin-top: 4px;">${preDevis.disclaimer || ""}</div>
+          </div>
+        ` : ""}
+        <p style="color: #6B6560; font-size: 13px;">
+          <strong>Prochaines étapes :</strong><br>
+          1. Notre équipe vérifie votre demande<br>
+          2. Nous sélectionnons 3 à 5 artisans vérifiés<br>
+          3. Ils vous contactent directement par téléphone ou email
+        </p>
+        <p style="color: #9C958D; font-size: 12px; margin-top: 32px;">
+          Référence : <code style="background: #EDEBE7; padding: 2px 6px; border-radius: 4px;">${demande.id.slice(-10).toUpperCase()}</code><br>
+          L'équipe Bativio — contact@bativio.fr
+        </p>
+      </div>`,
+    ).catch((e) => console.error("Email client conf failed:", e));
 
     return apiSuccess({
       id: demande.id,

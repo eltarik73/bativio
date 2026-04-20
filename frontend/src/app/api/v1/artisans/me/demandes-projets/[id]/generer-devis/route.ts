@@ -49,15 +49,40 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
     const viewToken = crypto.randomBytes(16).toString("hex");
     const numero = r.numero ?? `BTV-2026-${String(Date.now()).slice(-5)}`;
 
-    // Créer le devis en DB
+    // Récupère infos client depuis la demande
+    const demandeFull = await prisma.demandeProjet.findUnique({
+      where: { id: demandeId },
+      select: { contactNom: true, contactEmail: true, contactTel: true, villeLabel: true },
+    });
+
+    // Upsert Client CRM auto (linking P0 audit)
+    let clientId: string | null = null;
+    if (demandeFull?.contactEmail && demandeFull.contactNom) {
+      const existing = await prisma.client.findUnique({
+        where: { artisanId_email: { artisanId: artisan.id, email: demandeFull.contactEmail } },
+      }).catch(() => null);
+      const client = existing || await prisma.client.create({
+        data: {
+          artisanId: artisan.id,
+          nom: demandeFull.contactNom,
+          email: demandeFull.contactEmail,
+          telephone: demandeFull.contactTel,
+          ville: demandeFull.villeLabel,
+        },
+      }).catch(() => null);
+      if (client) clientId = client.id;
+    }
+
+    // Créer le devis en DB (linké à demande + client)
     const devis = await prisma.devis.create({
       data: {
         artisanId: artisan.id,
         numero,
-        clientNom: (await prisma.demandeProjet.findUnique({ where: { id: demandeId }, select: { contactNom: true } }))?.contactNom ?? "Client",
-        clientEmail: (await prisma.demandeProjet.findUnique({ where: { id: demandeId }, select: { contactEmail: true } }))?.contactEmail ?? null,
-        clientTelephone: (await prisma.demandeProjet.findUnique({ where: { id: demandeId }, select: { contactTel: true } }))?.contactTel ?? null,
+        clientNom: demandeFull?.contactNom ?? "Client",
+        clientEmail: demandeFull?.contactEmail ?? null,
+        clientTelephone: demandeFull?.contactTel ?? null,
         clientAdresse: null,
+        ...(clientId ? { clientId } : {}),
         objet: r.objet ?? "Devis Bativio",
         niveauGamme: "standard",
         fournitureOption: "artisan_fournit",
