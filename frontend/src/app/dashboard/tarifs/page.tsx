@@ -30,6 +30,31 @@ interface Tarification {
   notesTarif: string | null;
 }
 
+interface TarifMetier {
+  id?: string;
+  metierSlug: string;
+  metierNom: string;
+  tarifHoraire: number;
+  tarifUrgence: number | null;
+  tarifWeekend: number | null;
+  minimumFacture: number | null;
+  minimumHeures: number | null;
+  notes: string | null;
+}
+
+const METIERS_OPTIONS = [
+  { slug: "plombier", nom: "Plombier" },
+  { slug: "electricien", nom: "Électricien" },
+  { slug: "peintre", nom: "Peintre" },
+  { slug: "carreleur", nom: "Carreleur" },
+  { slug: "macon", nom: "Maçon" },
+  { slug: "menuisier", nom: "Menuisier" },
+  { slug: "couvreur", nom: "Couvreur" },
+  { slug: "chauffagiste", nom: "Chauffagiste" },
+  { slug: "serrurier", nom: "Serrurier" },
+  { slug: "cuisiniste", nom: "Cuisiniste" },
+];
+
 const UNITES = ["u", "h", "m\u00b2", "ml", "m\u00b3", "forfait"];
 
 const DEFAULT_TARIF: Tarification = {
@@ -58,6 +83,11 @@ export default function TarifsPage() {
   const [savingTarif, setSavingTarif] = useState(false);
   const [tarifSaved, setTarifSaved] = useState(false);
 
+  const [tarifsMetiers, setTarifsMetiers] = useState<TarifMetier[]>([]);
+  const [showAddMetier, setShowAddMetier] = useState(false);
+  const [newMetier, setNewMetier] = useState<TarifMetier>({ metierSlug: "plombier", metierNom: "Plombier", tarifHoraire: 55, tarifUrgence: null, tarifWeekend: null, minimumFacture: null, minimumHeures: null, notes: null });
+  const [savingMetier, setSavingMetier] = useState(false);
+
   const [editId, setEditId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({ designation: "", prixUnitaire: 0, unite: "u", categorie: "" });
 
@@ -67,10 +97,12 @@ export default function TarifsPage() {
 
   const load = useCallback(async () => {
     try {
-      const [prestationsData, tarifData] = await Promise.all([
+      const [prestationsData, tarifData, tarifsMetiersData] = await Promise.all([
         fetchWithAuth("/artisans/me/prestations"),
         fetchWithAuth("/artisans/me/tarification").catch(() => null),
+        fetchWithAuth("/artisans/me/tarifs-metiers").catch(() => []),
       ]);
+      if (Array.isArray(tarifsMetiersData)) setTarifsMetiers(tarifsMetiersData as TarifMetier[]);
       const list = Array.isArray(prestationsData) ? prestationsData as Prestation[] : [];
       if (list.length === 0) {
         try {
@@ -101,6 +133,29 @@ export default function TarifsPage() {
       setTimeout(() => setTarifSaved(false), 2500);
     } catch { /* silent */ }
     finally { setSavingTarif(false); }
+  };
+
+  const saveMetier = async () => {
+    if (!newMetier.metierSlug || !newMetier.tarifHoraire) return;
+    setSavingMetier(true);
+    try {
+      await fetchWithAuth("/artisans/me/tarifs-metiers", {
+        method: "POST",
+        body: JSON.stringify(newMetier),
+      });
+      setShowAddMetier(false);
+      setNewMetier({ metierSlug: "plombier", metierNom: "Plombier", tarifHoraire: 55, tarifUrgence: null, tarifWeekend: null, minimumFacture: null, minimumHeures: null, notes: null });
+      await load();
+    } catch { /* silent */ }
+    finally { setSavingMetier(false); }
+  };
+
+  const deleteMetier = async (slug: string) => {
+    if (!confirm("Supprimer ce tarif métier ?")) return;
+    try {
+      await fetchWithAuth(`/artisans/me/tarifs-metiers/${slug}`, { method: "DELETE" });
+      await load();
+    } catch { /* silent */ }
   };
 
   const handleEdit = (p: Prestation) => {
@@ -330,6 +385,111 @@ export default function TarifsPage() {
           {savingTarif ? "Sauvegarde..." : tarifSaved ? "✓ Enregistré" : "Enregistrer la grille"}
         </button>
       </div>
+
+      {/* ═══ TARIFS HORAIRES PAR MÉTIER ═══ */}
+      <section style={{ background: "#fff", borderRadius: 16, border: "1px solid #E8D5C0", padding: 24, marginBottom: 24 }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 14, flexWrap: "wrap", gap: 10 }}>
+          <div>
+            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 600, color: "#3D2E1F" }}>
+              Tarifs par <span style={{ fontStyle: "italic", fontWeight: 400, color: "#C4531A" }}>métier</span>
+            </h2>
+            <p style={{ fontSize: 13, color: "#9C958D", marginTop: 2 }}>Si tu exerces plusieurs métiers, définis un tarif par métier (obligatoire pour Devis IA multi-corps).</p>
+          </div>
+          <button onClick={() => setShowAddMetier(true)} style={{ padding: "8px 14px", borderRadius: 10, background: "#C4531A", color: "#fff", fontSize: 12, fontWeight: 600, border: "none", cursor: "pointer" }}>
+            + Ajouter un métier
+          </button>
+        </div>
+
+        {tarifsMetiers.length === 0 ? (
+          <div style={{ padding: "20px 14px", background: "#FAF8F5", borderRadius: 10, textAlign: "center", border: "1px dashed #E8D5C0" }}>
+            <p style={{ fontSize: 13, color: "#6B6560", marginBottom: 8 }}>Aucun tarif par métier configuré.</p>
+            <p style={{ fontSize: 12, color: "#9C958D" }}>Le Devis IA utilisera le tarif horaire global ci-dessus.</p>
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {tarifsMetiers.map((m) => (
+              <div key={m.metierSlug} style={{ padding: 14, background: "#FAF8F5", borderRadius: 10, border: "1px solid #F2EAE0", display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+                <div style={{ minWidth: 110 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#3D2E1F" }}>{m.metierNom}</div>
+                  <div style={{ fontSize: 10, color: "#9C958D", textTransform: "uppercase", letterSpacing: .5 }}>{m.metierSlug}</div>
+                </div>
+                <div style={{ display: "flex", gap: 18, flex: 1, flexWrap: "wrap" }}>
+                  <div>
+                    <div style={{ fontSize: 10, color: "#9C958D", textTransform: "uppercase", fontWeight: 600 }}>Horaire</div>
+                    <div style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 600, color: "#C4531A" }}>{m.tarifHoraire}€</div>
+                  </div>
+                  {m.tarifUrgence && (
+                    <div>
+                      <div style={{ fontSize: 10, color: "#9C958D", textTransform: "uppercase", fontWeight: 600 }}>Urgence</div>
+                      <div style={{ fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 600, color: "#3D2E1F" }}>{m.tarifUrgence}€</div>
+                    </div>
+                  )}
+                  {m.tarifWeekend && (
+                    <div>
+                      <div style={{ fontSize: 10, color: "#9C958D", textTransform: "uppercase", fontWeight: 600 }}>Weekend</div>
+                      <div style={{ fontFamily: "'Fraunces',serif", fontSize: 16, fontWeight: 600, color: "#3D2E1F" }}>{m.tarifWeekend}€</div>
+                    </div>
+                  )}
+                  {m.minimumFacture && (
+                    <div>
+                      <div style={{ fontSize: 10, color: "#9C958D", textTransform: "uppercase", fontWeight: 600 }}>Min facture</div>
+                      <div style={{ fontSize: 13, color: "#3D2E1F", fontWeight: 500 }}>{m.minimumFacture}€</div>
+                    </div>
+                  )}
+                </div>
+                <button onClick={() => deleteMetier(m.metierSlug)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 14, color: "#DC2626", padding: 4 }} title="Supprimer">🗑️</button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {showAddMetier && (
+          <div style={{ marginTop: 14, padding: 18, background: "rgba(196,83,26,.04)", borderRadius: 12, border: "1px solid rgba(196,83,26,.15)" }}>
+            <h3 style={{ fontSize: 14, fontWeight: 600, color: "#3D2E1F", marginBottom: 12 }}>Nouveau tarif métier</h3>
+            <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr", gap: 8, marginBottom: 10 }} className="max-md:!grid-cols-2">
+              <div>
+                <label style={labelStyle}>Métier</label>
+                <select
+                  value={newMetier.metierSlug}
+                  onChange={(e) => {
+                    const m = METIERS_OPTIONS.find((o) => o.slug === e.target.value)!;
+                    setNewMetier((n) => ({ ...n, metierSlug: m.slug, metierNom: m.nom }));
+                  }}
+                  style={inputStyle}
+                >
+                  {METIERS_OPTIONS.filter((o) => !tarifsMetiers.find((t) => t.metierSlug === o.slug)).map((o) => (
+                    <option key={o.slug} value={o.slug}>{o.nom}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label style={labelStyle}>Horaire *</label>
+                <input type="number" step="0.5" value={newMetier.tarifHoraire} onChange={(e) => setNewMetier((n) => ({ ...n, tarifHoraire: parseFloat(e.target.value) || 0 }))} style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Urgence</label>
+                <input type="number" step="0.5" value={newMetier.tarifUrgence ?? ""} onChange={(e) => setNewMetier((n) => ({ ...n, tarifUrgence: e.target.value ? parseFloat(e.target.value) : null }))} placeholder="—" style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Weekend</label>
+                <input type="number" step="0.5" value={newMetier.tarifWeekend ?? ""} onChange={(e) => setNewMetier((n) => ({ ...n, tarifWeekend: e.target.value ? parseFloat(e.target.value) : null }))} placeholder="—" style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Min € HT</label>
+                <input type="number" step="10" value={newMetier.minimumFacture ?? ""} onChange={(e) => setNewMetier((n) => ({ ...n, minimumFacture: e.target.value ? parseFloat(e.target.value) : null }))} placeholder="—" style={inputStyle} />
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button onClick={saveMetier} disabled={savingMetier || !newMetier.tarifHoraire} style={{ padding: "8px 16px", borderRadius: 8, background: "#C4531A", color: "#fff", fontSize: 12, fontWeight: 600, border: "none", cursor: "pointer", opacity: savingMetier || !newMetier.tarifHoraire ? 0.5 : 1 }}>
+                {savingMetier ? "..." : "Ajouter"}
+              </button>
+              <button onClick={() => setShowAddMetier(false)} style={{ padding: "8px 16px", borderRadius: 8, background: "#F7F5F2", color: "#5C4A3A", fontSize: 12, fontWeight: 600, border: "none", cursor: "pointer" }}>
+                Annuler
+              </button>
+            </div>
+          </div>
+        )}
+      </section>
 
       {/* ═══ FORFAITS / PRESTATIONS ═══ */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>

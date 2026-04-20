@@ -20,6 +20,7 @@ interface Envoi {
     contactNom: string | null;
     contactEmail: string | null;
     contactTel: string | null;
+    photos: string[] | null;
     statut: string;
     createdAt: string;
     devis: { id: string; numero: string; statut: string; totalTTC: number }[];
@@ -163,6 +164,22 @@ export default function DemandesProjetsArtisanPage() {
                     <span style={{ fontWeight: 700, color: "#C4531A" }}>
                       {d.preDevisJson.fourchetteHt.min.toLocaleString("fr-FR")}–{d.preDevisJson.fourchetteHt.max.toLocaleString("fr-FR")} € HT
                     </span>
+                  </div>
+                )}
+
+                {d.photos && d.photos.length > 0 && (
+                  <div style={{ marginBottom: 12 }}>
+                    <div style={{ fontSize: 11, color: "#9C958D", fontWeight: 600, textTransform: "uppercase", letterSpacing: .5, marginBottom: 6 }}>
+                      📸 Photos du projet ({d.photos.length})
+                    </div>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      {d.photos.map((url, i) => (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <a key={i} href={url} target="_blank" rel="noopener noreferrer" style={{ width: 80, height: 80, borderRadius: 8, overflow: "hidden", border: "1px solid #E8D5C0", display: "block" }}>
+                          <img src={url} alt={`Photo ${i + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        </a>
+                      ))}
+                    </div>
                   </div>
                 )}
 

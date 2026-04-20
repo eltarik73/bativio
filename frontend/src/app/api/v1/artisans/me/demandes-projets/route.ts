@@ -30,6 +30,7 @@ export async function GET() {
             contactNom: true,
             contactEmail: true,
             contactTel: true,
+            photos: true,
             statut: true,
             createdAt: true,
             devis: {

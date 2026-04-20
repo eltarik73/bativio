@@ -25,7 +25,13 @@ interface PreDevis {
   disclaimer: string;
 }
 
-type Phase = "initial" | "chat" | "contact" | "sending" | "done";
+type Phase = "initial" | "chat" | "photos" | "contact" | "sending" | "done";
+
+interface UploadedPhoto {
+  url: string;
+  publicId: string;
+  name: string;
+}
 
 export default function DemandePage() {
   const [phase, setPhase] = useState<Phase>("initial");
@@ -41,6 +47,8 @@ export default function DemandePage() {
   const [textInput, setTextInput] = useState("");
 
   const [contact, setContact] = useState({ nom: "", email: "", tel: "" });
+  const [photos, setPhotos] = useState<UploadedPhoto[]>([]);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
   const [preDevis, setPreDevis] = useState<PreDevis | null>(null);
   const [demandeId, setDemandeId] = useState<string | null>(null);
@@ -82,8 +90,8 @@ export default function DemandePage() {
 
       if (data.metier && !metier) setMetier(data.metier);
 
-      if (data.step === "done" || data.next_action === "contact") {
-        setPhase("contact");
+      if (data.step === "done" || data.next_action === "contact" || data.next_action === "photos") {
+        setPhase("photos");
       } else if (data.question) {
         setMessages((m) => [
           ...m,
@@ -115,6 +123,53 @@ export default function DemandePage() {
     await callAgent(description, history, newCol);
   };
 
+  const uploadPhoto = async (file: File) => {
+    setUploadingPhoto(true);
+    try {
+      const sigRes = await fetch("/api/v1/upload/signature", { method: "POST" });
+      const sigJ = await sigRes.json();
+      if (!sigJ.success) throw new Error(sigJ.error);
+      const { signature, timestamp, cloudName, apiKey, folder } = sigJ.data;
+
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("api_key", apiKey);
+      fd.append("timestamp", String(timestamp));
+      fd.append("signature", signature);
+      fd.append("folder", folder);
+
+      const upRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: "POST",
+        body: fd,
+      });
+      const upJ = await upRes.json();
+      if (upJ.secure_url) {
+        setPhotos((p) => [...p, { url: upJ.secure_url, publicId: upJ.public_id, name: file.name }]);
+      }
+    } catch (e) {
+      console.error("Upload photo error:", e);
+      alert("Erreur upload photo. Réessayez.");
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
+
+  const handlePhotosSelected = async (files: FileList) => {
+    const remaining = 5 - photos.length;
+    for (let i = 0; i < Math.min(files.length, remaining); i++) {
+      const f = files[i];
+      if (f.size > 10 * 1024 * 1024) {
+        alert(`La photo ${f.name} est trop lourde (max 10 Mo).`);
+        continue;
+      }
+      await uploadPhoto(f);
+    }
+  };
+
+  const removePhoto = (publicId: string) => {
+    setPhotos((p) => p.filter((ph) => ph.publicId !== publicId));
+  };
+
   const sendDemande = async () => {
     if (!contact.nom || !contact.email || !contact.tel) return;
     setPhase("sending");
@@ -130,6 +185,7 @@ export default function DemandePage() {
           lon: villeCoords?.lon ?? null,
           metierDetecte: metier,
           qualifJson: collected,
+          photos: photos.map((p) => p.url),
           contactNom: contact.nom,
           contactEmail: contact.email,
           contactTel: contact.tel,
@@ -247,17 +303,17 @@ export default function DemandePage() {
             </motion.div>
           )}
 
-          {/* Phase CHAT */}
-          {(phase === "chat" || phase === "contact" || phase === "sending") && (
+          {/* Phase CHAT / PHOTOS / CONTACT */}
+          {(phase === "chat" || phase === "photos" || phase === "contact" || phase === "sending") && (
             <>
               {/* Progress bar */}
               <div style={{ marginBottom: 18, display: "flex", alignItems: "center", gap: 12 }}>
                 <div style={{ fontSize: 12, color: "var(--pierre)", flexShrink: 0 }}>
-                  {phase === "contact" ? "Presque fini" : `Question ${questionCount}/6`}
+                  {phase === "contact" ? "Étape 3/3 — Contact" : phase === "photos" ? "Étape 2/3 — Photos" : `Question ${questionCount}/6`}
                 </div>
                 <div style={{ flex: 1, height: 4, background: "rgba(61,46,31,.08)", borderRadius: 2, overflow: "hidden" }}>
                   <motion.div
-                    animate={{ width: phase === "contact" ? "85%" : `${Math.min(questionCount * 16, 70)}%` }}
+                    animate={{ width: phase === "contact" ? "92%" : phase === "photos" ? "75%" : `${Math.min(questionCount * 14, 60)}%` }}
                     style={{ height: "100%", background: "linear-gradient(90deg, var(--terre), var(--or))" }}
                     transition={{ duration: 0.5 }}
                   />
@@ -367,6 +423,96 @@ export default function DemandePage() {
                     </form>
                   )}
                 </div>
+              )}
+
+              {/* Phase PHOTOS (optionnel) */}
+              {phase === "photos" && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="liquid-glass"
+                  style={{ marginTop: 14, borderRadius: 20, padding: 22 }}
+                >
+                  <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 17, fontWeight: 600, color: "var(--bois)", marginBottom: 4 }}>
+                    Ajoutez des <span style={{ fontStyle: "italic", color: "var(--terre)" }}>photos</span> de votre projet
+                  </h3>
+                  <p style={{ fontSize: 13, color: "var(--bois-mid)", marginBottom: 16 }}>
+                    Les photos aident les artisans à chiffrer plus précisément. Facultatif, mais fortement recommandé (jusqu&apos;à 5).
+                  </p>
+
+                  {photos.length > 0 && (
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(110px, 1fr))", gap: 10, marginBottom: 14 }}>
+                      {photos.map((p) => (
+                        <div key={p.publicId} style={{ position: "relative", aspectRatio: "1", borderRadius: 10, overflow: "hidden", border: "1px solid rgba(61,46,31,.1)" }}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={p.url} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          <button
+                            onClick={() => removePhoto(p.publicId)}
+                            style={{ position: "absolute", top: 4, right: 4, width: 22, height: 22, borderRadius: "50%", background: "rgba(0,0,0,.6)", color: "#fff", border: "none", cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}
+                            aria-label="Retirer"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {photos.length < 5 && (
+                    <label
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: 6,
+                        padding: "24px 20px",
+                        borderRadius: 12,
+                        border: "2px dashed rgba(196,83,26,.3)",
+                        background: "rgba(196,83,26,.03)",
+                        cursor: uploadingPhoto ? "not-allowed" : "pointer",
+                        opacity: uploadingPhoto ? 0.6 : 1,
+                        transition: "all .2s",
+                        marginBottom: 14,
+                      }}
+                    >
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        disabled={uploadingPhoto}
+                        onChange={(e) => e.target.files && handlePhotosSelected(e.target.files)}
+                        style={{ display: "none" }}
+                      />
+                      <svg width="28" height="28" fill="none" stroke="var(--terre)" strokeWidth="1.5" viewBox="0 0 24 24">
+                        <path d="M12 4v16m8-8H4" />
+                      </svg>
+                      <span style={{ fontSize: 14, color: "var(--bois)", fontWeight: 500 }}>
+                        {uploadingPhoto ? "Envoi en cours…" : `Ajouter des photos ${photos.length > 0 ? `(${photos.length}/5)` : ""}`}
+                      </span>
+                      <span style={{ fontSize: 11, color: "var(--pierre)" }}>JPG, PNG, HEIC — max 10 Mo</span>
+                    </label>
+                  )}
+
+                  <div style={{ display: "flex", gap: 10, justifyContent: "space-between" }}>
+                    <button
+                      onClick={() => setPhase("contact")}
+                      style={{ padding: "12px 20px", borderRadius: 12, background: "transparent", color: "var(--bois-mid)", fontSize: 13, fontWeight: 500, border: "none", cursor: "pointer", fontFamily: "inherit" }}
+                    >
+                      Passer sans photo →
+                    </button>
+                    {photos.length > 0 && (
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => setPhase("contact")}
+                        style={{ padding: "12px 24px", borderRadius: 12, background: "var(--terre)", color: "#fff", fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 8, fontFamily: "inherit" }}
+                      >
+                        Continuer avec {photos.length} photo{photos.length > 1 ? "s" : ""}
+                        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
+                      </motion.button>
+                    )}
+                  </div>
+                </motion.div>
               )}
 
               {/* Phase CONTACT */}
