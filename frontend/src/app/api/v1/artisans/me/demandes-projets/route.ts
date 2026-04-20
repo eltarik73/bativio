@@ -8,10 +8,15 @@ export async function GET() {
 
     const artisan = await prisma.artisan.findUnique({
       where: { userId: session.userId },
-      select: { id: true },
+      select: { id: true, nomAffichage: true },
     });
 
-    if (!artisan) return apiError("Artisan introuvable", 404);
+    if (!artisan) {
+      console.warn(`[demandes-projets] Artisan introuvable pour user ${session.userId}`);
+      return apiError("Artisan introuvable", 404);
+    }
+
+    console.log(`[demandes-projets] Fetch pour artisan ${artisan.id} (${artisan.nomAffichage})`);
 
     const envois = await prisma.demandeEnvoi.findMany({
       where: { artisanId: artisan.id, rejectedAt: null },
@@ -42,6 +47,7 @@ export async function GET() {
       },
     });
 
+    console.log(`[demandes-projets] ${envois.length} envois pour artisan ${artisan.id}`);
     return apiSuccess({ envois });
   } catch (error: unknown) {
     const err = error as Error;

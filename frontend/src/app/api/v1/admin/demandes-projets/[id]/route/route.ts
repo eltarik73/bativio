@@ -79,6 +79,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       },
     });
 
+    console.log(`[routage] Demande ${id} routée à ${envois.length} artisans (mode=${parsed.data.mode}) | artisanIds=${JSON.stringify(targetIds)}`);
+
     // Envoi emails + notifications in-app aux artisans (non bloquant)
     void notifyArtisans(id, targetIds, demande.description, demande.villeLabel, demande.metierDetecte);
 
@@ -124,6 +126,7 @@ async function notifyArtisans(
         }).catch(() => null);
 
         if (a.user?.email) {
+          const directUrl = `${url}?open=${demandeId}`;
           const html = `
             <div style="font-family: -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 32px;">
               <h2 style="color: #C4531A; font-family: Georgia, serif;">Nouvelle demande de devis via Bativio</h2>
@@ -138,7 +141,7 @@ async function notifyArtisans(
               <p style="color: #6B6560; font-size: 13px;">
                 Connectez-vous à votre espace pro pour consulter la qualification complète et générer un devis IA en 1 clic.
               </p>
-              <a href="${url}" style="display: inline-block; background: #C4531A; color: #fff; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 600; margin-top: 12px;">Voir la demande</a>
+              <a href="${directUrl}" style="display: inline-block; background: #C4531A; color: #fff; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 600; margin-top: 12px;">Voir la demande</a>
               <p style="color: #9C958D; font-size: 12px; margin-top: 32px; border-top: 1px solid #EDEBE7; padding-top: 16px;">
                 Astuce : les premiers à répondre convertissent le plus.<br>
                 L'équipe Bativio.
