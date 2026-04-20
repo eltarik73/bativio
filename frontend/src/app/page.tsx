@@ -145,12 +145,61 @@ export default function Home() {
           </motion.h1>
           <motion.p
             {...fadeUp(0.16)}
-            style={{ fontSize: 17, color: "var(--bois-mid)", marginBottom: 34, lineHeight: 1.6, maxWidth: 560, margin: "0 auto 34px" }}
+            style={{ fontSize: 17, color: "var(--bois-mid)", marginBottom: 28, lineHeight: 1.6, maxWidth: 560, margin: "0 auto 28px" }}
           >
             Des artisans de confiance, v&eacute;rifi&eacute;s et not&eacute;s par leurs clients. Devis gratuit en 24h, z&eacute;ro commission.
           </motion.p>
+
+          {/* ─── 2 OPTIONS ─── */}
           <motion.div
-            {...fadeUp(0.24)}
+            {...fadeUp(0.2)}
+            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, maxWidth: 640, margin: "0 auto 20px" }}
+            className="max-md:!grid-cols-1"
+          >
+            <a
+              href="#annuaire"
+              onClick={(e) => { e.preventDefault(); document.getElementById("annuaire")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}
+              className="liquid-glass"
+              style={{ display: "flex", alignItems: "center", gap: 12, padding: "16px 18px", borderRadius: 14, textDecoration: "none", cursor: "pointer", transition: "all .2s" }}
+            >
+              <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(196,83,26,.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <svg width="20" height="20" fill="none" stroke="var(--terre)" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+              </div>
+              <div style={{ flex: 1, textAlign: "left" }}>
+                <div style={{ fontFamily: "'Fraunces',serif", fontSize: 15, fontWeight: 600, color: "var(--bois)" }}>Chercher un artisan</div>
+                <div style={{ fontSize: 12, color: "var(--bois-mid)", marginTop: 2 }}>Annuaire par m&eacute;tier et ville</div>
+              </div>
+              <svg width="16" height="16" fill="none" stroke="var(--terre)" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" /></svg>
+            </a>
+
+            <Link
+              href="/demande"
+              className="liquid-glass"
+              style={{ display: "flex", alignItems: "center", gap: 12, padding: "16px 18px", borderRadius: 14, textDecoration: "none", cursor: "pointer", transition: "all .2s", background: "linear-gradient(135deg, rgba(196,83,26,.08), rgba(201,148,58,.04))", border: "1px solid rgba(196,83,26,.15)" }}
+            >
+              <div style={{ width: 40, height: 40, borderRadius: 10, background: "linear-gradient(135deg, var(--terre), var(--or))", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <svg width="20" height="20" fill="none" stroke="#fff" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M9 11H5a2 2 0 00-2 2v6a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2H9a2 2 0 00-2 2v12" /><path d="m8 13 3 3 7-7" /></svg>
+              </div>
+              <div style={{ flex: 1, textAlign: "left" }}>
+                <div style={{ fontFamily: "'Fraunces',serif", fontSize: 15, fontWeight: 600, color: "var(--bois)" }}>
+                  D&eacute;crire mon projet{" "}
+                  <span style={{ fontSize: 10, background: "var(--terre)", color: "#fff", padding: "2px 6px", borderRadius: 5, verticalAlign: "middle", marginLeft: 4, letterSpacing: 0.5 }}>IA</span>
+                </div>
+                <div style={{ fontSize: 12, color: "var(--bois-mid)", marginTop: 2 }}>5 questions, devis estim&eacute; en 2 min</div>
+              </div>
+              <svg width="16" height="16" fill="none" stroke="var(--terre)" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" /></svg>
+            </Link>
+          </motion.div>
+
+          <motion.div
+            {...fadeUp(0.26)}
+            style={{ fontSize: 11, color: "var(--pierre)", marginBottom: 24, letterSpacing: 0.3, textTransform: "uppercase", fontWeight: 600 }}
+          >
+            ou
+          </motion.div>
+
+          <motion.div
+            {...fadeUp(0.3)}
             className="liquid-glass search-bar"
             style={{ maxWidth: 640, borderRadius: 16, padding: 8 }}
           >
@@ -216,7 +265,7 @@ export default function Home() {
       </section>
 
       {/* ─── FILTERS ─── */}
-      <div className="filters">
+      <div id="annuaire" className="filters" style={{ scrollMarginTop: 80 }}>
         <div className="filters-inner hide-scroll">
           <button className={`pill ${metierFilter === "all" ? "active" : ""}`} onClick={() => setMetierFilter("all")}>Tous</button>
           {allMetiers.map((m) => (
