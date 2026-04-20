@@ -1,6 +1,7 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import { getClaude, MODEL_SONNET, extractJson, computeCost } from "@/lib/claude";
 import { prisma } from "@/lib/prisma";
+import { getAllQualifGuides, getQualifGuideForMetier } from "./qualif-guides";
 
 export interface QualifQuestion {
   id: string;
@@ -105,6 +106,17 @@ export async function runQualifAgent({
 }: QualifInput): Promise<QualifResult> {
   const claude = getClaude();
 
+  // Détection métier préliminaire pour charger le bon guide
+  const guess = detectMetierFromText(initialDescription);
+  const guideBlock = guess
+    ? getQualifGuideForMetier(guess)
+    : getAllQualifGuides();
+
+  const systemWithGuides = `${SYSTEM_PROMPT}
+
+--- GUIDES MÉTIERS DÉTAILLÉS (obligatoires : vise ±10% précision devis) ---
+${guideBlock}`;
+
   const userContext = `Description initiale : "${initialDescription}"
 Ville : ${ville || "non renseignée"}
 Données déjà collectées : ${JSON.stringify(collected)}
@@ -117,7 +129,7 @@ Que fais-tu ensuite ? Réponds en JSON uniquement.`;
   const result = await claude.messages.create({
     model: MODEL_SONNET,
     max_tokens: 1000,
-    system: SYSTEM_PROMPT,
+    system: systemWithGuides,
     messages: [{ role: "user", content: userContext }],
   });
 
@@ -136,6 +148,39 @@ Que fais-tu ensuite ? Réponds en JSON uniquement.`;
   const cost = computeCost(MODEL_SONNET, tokensIn, tokensOut);
 
   return { response: parsed, cost, tokensIn, tokensOut, modelUsed: MODEL_SONNET, raw: text };
+}
+
+/**
+ * Détection métier rapide depuis texte (backup avant appel Claude).
+ * Liste de mots-clés distinctifs par métier.
+ */
+function detectMetierFromText(text: string): string | null {
+  const t = text.toLowerCase();
+  const keywords: Record<string, RegExp> = {
+    plombier: /\b(plomb|fuite|robinet|mitigeur|chauffe-eau|cumulus|wc|toilettes|douche italienne|baignoire|évacuation|siphon|dégorgement)\b/,
+    electricien: /\b(électri|prise|interrupteur|tableau|disjoncteur|linky|consuel|court-circuit|wallbox|irve|domotique|point lumineux)\b/,
+    peintre: /\b(peint|peindre|repeindre|peinture|papier peint|tapisserie|façade|crépi|enduit|lasure|laque)\b/,
+    carreleur: /\b(carrel|carreaux|faïence|chape|ragréage|grès cérame|mosaïque|plinthes|receveur|crédence|travertin)\b/,
+    macon: /\b(maço|parpaing|extension|dalle|béton|ipn|mur porteur|cloison|fondation|fissure|linteau|terrassement|gros œuvre)\b/,
+    menuisier: /\b(menuis|parquet|porte|fenêtre|baie vitrée|placard|dressing|escalier|bardage|lambris|volet|vitrage|bois massif)\b/,
+    couvreur: /\b(toiture|toit|tuile|ardoise|charpente|gouttière|zinguerie|velux|faîtage|solin|démoussage|sarking|bac acier)\b/,
+    chauffagiste: /\b(chauffage|chaudière|pac|pompe à chaleur|climatisation|clim|radiateur|plancher chauffant|poêle|pellets|granulés|fioul|ballon thermo)\b/,
+    serrurier: /\b(serrur|cylindre|barillet|verrou|porte blindée|a2p|cambriolage|effraction|clé perdue|claqué dehors|rideau métallique|coffre-fort)\b/,
+    cuisiniste: /\b(cuisini|cuisine équipée|îlot|plan de travail|crédence|quartz|granit|silestone|dekton|mobalpa|schmidt)\b/,
+  };
+  let best: string | null = null;
+  let bestScore = 0;
+  for (const [metier, re] of Object.entries(keywords)) {
+    const matches = t.match(re);
+    if (matches) {
+      const score = matches.length;
+      if (score > bestScore) {
+        bestScore = score;
+        best = metier;
+      }
+    }
+  }
+  return best;
 }
 
 /**
