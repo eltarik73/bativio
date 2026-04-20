@@ -2,8 +2,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import fs from "node:fs";
 import path from "node:path";
 
-export const MODEL_OPUS = "claude-opus-4-5";
-export const MODEL_SONNET = "claude-sonnet-4-5";
+export const MODEL_OPUS = "claude-opus-4-7";
+export const MODEL_SONNET = "claude-sonnet-4-6";
 export const MODEL_HAIKU = "claude-haiku-4-5";
 
 let _client: Anthropic | null = null;

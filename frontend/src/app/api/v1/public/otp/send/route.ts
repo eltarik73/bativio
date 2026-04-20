@@ -49,8 +49,9 @@ export async function POST(request: NextRequest) {
     });
 
     // TODO: envoyer vraiment le SMS via OVH (sms.ts a déjà la logique)
-    // Pour V1 on logge le code (dev-friendly)
-    console.log(`[OTP] ${telephone} → code: ${code}`);
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`[OTP dev] ${telephone} → ${code}`);
+    }
 
     return apiSuccess({
       sent: true,
