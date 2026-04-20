@@ -6,6 +6,7 @@ import { getArtisan } from "@/lib/api";
 import type { ArtisanPublic } from "@/lib/api";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { safeJsonLd } from "@/lib/html-escape";
 import VitrineClassique from "@/components/vitrines/VitrineClassique";
 import VitrinePortfolio from "@/components/vitrines/VitrinePortfolio";
 import VitrineModerne from "@/components/vitrines/VitrineModerne";
@@ -255,7 +256,7 @@ export default async function SlugPage({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
+            __html: safeJsonLd({
               "@context": "https://schema.org",
               "@type": "LocalBusiness",
               name: a.nomAffichage,
@@ -290,7 +291,7 @@ export default async function SlugPage({
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
+              __html: safeJsonLd({
                 "@context": "https://schema.org",
                 "@type": "FAQPage",
                 mainEntity: seoGen.faq.map(f => ({
@@ -381,7 +382,7 @@ export default async function SlugPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: safeJsonLd({
             "@context": "https://schema.org",
             "@type": "LocalBusiness",
             name: a.nomAffichage,

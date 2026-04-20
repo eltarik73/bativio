@@ -52,7 +52,9 @@ interface DevisPreview {
 }
 
 export default function DemandesProjetsArtisanPage() {
-  const { fetchWithAuth } = useAuth();
+  const { fetchWithAuth, user } = useAuth();
+  const userPlan = ((user as { plan?: string } | null)?.plan || "GRATUIT").toUpperCase();
+  const canGenerate = userPlan === "BUSINESS" || userPlan === "PRO_PLUS";
   const [envois, setEnvois] = useState<Envoi[]>([]);
   const [loading, setLoading] = useState(true);
   const [generatingId, setGeneratingId] = useState<string | null>(null);
@@ -183,15 +185,17 @@ export default function DemandesProjetsArtisanPage() {
                   </div>
                 )}
 
-                <div style={{ display: "flex", alignItems: "center", gap: 14, paddingTop: 10, borderTop: "1px solid #F2EAE0" }}>
-                  <div style={{ fontSize: 12, color: "#6B6560", flex: 1 }}>
-                    👤 {d.contactNom} · 📞 {d.contactTel} · ✉️ {d.contactEmail}
+                <div style={{ display: "flex", alignItems: "center", gap: 14, paddingTop: 10, borderTop: "1px solid #F2EAE0", flexWrap: "wrap" }}>
+                  <div style={{ fontSize: 13, color: "#3D2E1F", flex: 1, display: "flex", gap: 16, flexWrap: "wrap" }}>
+                    <span style={{ fontWeight: 600 }}>{d.contactNom}</span>
+                    {d.contactTel && <a href={`tel:${d.contactTel.replace(/[^\d+]/g, "")}`} style={{ color: "#C4531A", textDecoration: "none", fontWeight: 500 }}>{d.contactTel}</a>}
+                    {d.contactEmail && <a href={`mailto:${d.contactEmail}`} style={{ color: "#C4531A", textDecoration: "none", fontWeight: 500 }}>{d.contactEmail}</a>}
                   </div>
                   {hasDevis ? (
                     <div style={{ fontSize: 12, color: "#4A6741", fontWeight: 600 }}>
                       Devis {d.devis[0].numero} créé ({d.devis[0].totalTTC.toLocaleString("fr-FR")} € TTC)
                     </div>
-                  ) : (
+                  ) : canGenerate ? (
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.97 }}
@@ -213,8 +217,27 @@ export default function DemandesProjetsArtisanPage() {
                         boxShadow: "0 6px 20px rgba(196,83,26,.2)",
                       }}
                     >
-                      {generatingId === d.id ? "Génération IA..." : "✨ Générer le devis IA"}
+                      {generatingId === d.id ? "Génération IA…" : "Générer le devis IA"}
                     </motion.button>
+                  ) : (
+                    <a
+                      href="/dashboard/abonnement"
+                      style={{
+                        padding: "10px 18px",
+                        borderRadius: 10,
+                        background: "#FAF8F5",
+                        color: "#6B6560",
+                        fontSize: 13,
+                        fontWeight: 600,
+                        border: "1px dashed #E8D5C0",
+                        textDecoration: "none",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 8,
+                      }}
+                    >
+                      Devis IA réservé Business · upgrader
+                    </a>
                   )}
                 </div>
               </div>
@@ -280,7 +303,6 @@ export default function DemandesProjetsArtisanPage() {
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
                 <span style={{ padding: "4px 10px", borderRadius: 999, background: "#4A6741", color: "#fff", fontSize: 11, fontWeight: 600 }}>✓ Devis généré</span>
                 <span style={{ fontFamily: "monospace", fontSize: 12, color: "#9C958D" }}>{devisPreview.preview.numero}</span>
-                <span style={{ fontSize: 11, color: "#9C958D", marginLeft: "auto" }}>Coût IA : {devisPreview.cost.toFixed(3)}€</span>
               </div>
               <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 600, color: "#3D2E1F", marginBottom: 16 }}>
                 {devisPreview.preview.objet || "Devis"}
@@ -330,7 +352,7 @@ export default function DemandesProjetsArtisanPage() {
                 <button onClick={() => setDevisPreview(null)} style={{ flex: 1, padding: "12px 20px", borderRadius: 10, background: "#F7F5F2", color: "#5C4A3A", fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer" }}>
                   Fermer
                 </button>
-                <a href={`/dashboard/devis`} style={{ flex: 1, padding: "12px 20px", borderRadius: 10, background: "#C4531A", color: "#fff", fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer", textAlign: "center", textDecoration: "none" }}>
+                <a href={`/dashboard/devis-ia/${devisPreview.devisId}`} style={{ flex: 1, padding: "12px 20px", borderRadius: 10, background: "#C4531A", color: "#fff", fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer", textAlign: "center", textDecoration: "none" }}>
                   Modifier & envoyer
                 </a>
               </div>

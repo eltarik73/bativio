@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { MOCK_ARTISANS, MOCK_METIERS } from "@/lib/mock-data";
 import { getArtisans, getMetiers } from "@/lib/api";
+import { safeJsonLd } from "@/lib/html-escape";
 import type { ArtisanPublic, MetierData } from "@/lib/api";
 import { VILLES } from "@/lib/constants";
 import VilleAutocomplete from "@/components/VilleAutocomplete/VilleAutocomplete";
@@ -121,7 +122,10 @@ export default function Home() {
 
   return (
     <>
+      <a href="#contenu-principal" className="skip-link">Aller au contenu</a>
       <Navbar />
+
+      <main id="contenu-principal">
 
       {/* ─── HERO CINEMATIC ─── */}
       <section className="hero-cinematic hero-grain" style={{ padding: "80px 32px 72px", textAlign: "center", overflow: "hidden" }}>
@@ -279,8 +283,9 @@ export default function Home() {
       <div className="grid-wrap">
         <div style={{ textAlign: "center", marginBottom: 32 }}>
           <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "var(--bois)" }}>
-            Artisans &agrave; <span className="calli">Chamb&eacute;ry</span>
+            Artisans en <span className="calli">Rh&ocirc;ne-Alpes</span>
           </h2>
+          <p style={{ fontSize: 14, color: "var(--pierre)", marginTop: 6 }}>Chamb&eacute;ry &middot; Annecy &middot; Grenoble &middot; Lyon &middot; Valence</p>
         </div>
         <div className="grid">
           {filtered.length > 0 ? (
@@ -401,10 +406,12 @@ export default function Home() {
         </div>
       </section>
 
+      </main>
+
       <Footer />
 
       {/* JSON-LD WebSite + Organization */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd([
         { "@context": "https://schema.org", "@type": "WebSite", name: "Bativio", url: "https://www.bativio.fr", potentialAction: { "@type": "SearchAction", target: "https://www.bativio.fr/?search={search_term_string}", "query-input": "required name=search_term_string" } },
         { "@context": "https://schema.org", "@type": "Organization", name: "Bativio", url: "https://www.bativio.fr", logo: "https://www.bativio.fr/og-image.png", description: "La plateforme des artisans du bâtiment en Rhône-Alpes. Zéro commission.", areaServed: { "@type": "State", name: "Rhône-Alpes" } }
       ]) }} />

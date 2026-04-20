@@ -130,10 +130,18 @@ ${history.map((m) => `${m.role === "user" ? "CLIENT" : "ASSISTANT"}: ${m.content
 Que fais-tu ensuite ? Réponds en JSON uniquement.`;
 
   try {
+    // Prompt caching sur systemWithGuides (SYSTEM_PROMPT + guides métier = stable ~2-3KB)
+    // Anthropic minimum = 1024 tokens → vérifier, sinon skip cache
     const result = await claude.messages.create({
       model: MODEL_SONNET,
       max_tokens: 1000,
-      system: systemWithGuides,
+      system: [
+        {
+          type: "text",
+          text: systemWithGuides,
+          cache_control: { type: "ephemeral" },
+        },
+      ],
       messages: [{ role: "user", content: userContext }],
     });
 
@@ -149,6 +157,8 @@ Que fais-tu ensuite ? Réponds en JSON uniquement.`;
 
     const tokensIn = result.usage.input_tokens;
     const tokensOut = result.usage.output_tokens;
+    const cacheRead = result.usage.cache_read_input_tokens ?? 0;
+    const cacheCreation = result.usage.cache_creation_input_tokens ?? 0;
     const cost = computeCost(MODEL_SONNET, tokensIn, tokensOut);
 
     logTokenUsage({
@@ -156,6 +166,8 @@ Que fais-tu ensuite ? Réponds en JSON uniquement.`;
       model: MODEL_SONNET,
       tokensIn,
       tokensOut,
+      tokensCacheRead: cacheRead,
+      tokensCacheCreation: cacheCreation,
       demandeId,
       success: true,
       latencyMs: Date.now() - startTime,

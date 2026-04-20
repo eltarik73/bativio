@@ -64,6 +64,7 @@ export async function POST(request: NextRequest) {
           description: data.description,
           qualifData: collected,
           ville: data.villeLabel,
+          demandeId: demande.id,
         });
         preDevis = pre.response;
         qualifScore = 85;

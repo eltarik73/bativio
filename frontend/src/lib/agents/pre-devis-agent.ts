@@ -1,5 +1,5 @@
 import type Anthropic from "@anthropic-ai/sdk";
-import { getClaude, MODEL_SONNET, extractJson, computeCost } from "@/lib/claude";
+import { getClaude, MODEL_SONNET, extractJson, computeCost, logTokenUsage } from "@/lib/claude";
 import { prisma } from "@/lib/prisma";
 
 export interface PreDevis {
@@ -34,6 +34,7 @@ interface PreDevisInput {
   description: string;
   qualifData: Record<string, string>;
   ville?: string | null;
+  demandeId?: string | null;
 }
 
 interface PreDevisResult {
@@ -46,6 +47,7 @@ interface PreDevisResult {
 
 export async function runPreDevisAgent(input: PreDevisInput): Promise<PreDevisResult> {
   const claude = getClaude();
+  const startTime = Date.now();
 
   // Fetch RAG : moyennes marché pour ce métier
   const tarifDoc = await prisma.kbDocument.findFirst({
@@ -77,26 +79,50 @@ ${ragBlock || "(aucun tarif marché spécifique trouvé, utilise ta connaissance
 
 Génère la fourchette indicative en JSON.`;
 
-  const result = await claude.messages.create({
-    model: MODEL_SONNET,
-    max_tokens: 800,
-    system: SYSTEM_PROMPT,
-    messages: [{ role: "user", content: userContext }],
-  });
+  try {
+    const result = await claude.messages.create({
+      model: MODEL_SONNET,
+      max_tokens: 800,
+      system: SYSTEM_PROMPT,
+      messages: [{ role: "user", content: userContext }],
+    });
 
-  const text = result.content
-    .filter((b): b is Anthropic.Messages.TextBlock => b.type === "text")
-    .map((b) => b.text)
-    .join("\n");
+    const text = result.content
+      .filter((b): b is Anthropic.Messages.TextBlock => b.type === "text")
+      .map((b) => b.text)
+      .join("\n");
 
-  const parsed = extractJson<PreDevis>(text);
-  if (!parsed) {
-    throw new Error(`Agent pré-devis: réponse non-JSON. Raw: ${text.slice(0, 300)}`);
+    const parsed = extractJson<PreDevis>(text);
+    if (!parsed) {
+      throw new Error(`Agent pré-devis: réponse non-JSON. Raw: ${text.slice(0, 300)}`);
+    }
+
+    const tokensIn = result.usage.input_tokens;
+    const tokensOut = result.usage.output_tokens;
+    const cost = computeCost(MODEL_SONNET, tokensIn, tokensOut);
+
+    logTokenUsage({
+      agent: "pre-devis",
+      model: MODEL_SONNET,
+      tokensIn,
+      tokensOut,
+      demandeId: input.demandeId,
+      success: true,
+      latencyMs: Date.now() - startTime,
+    });
+
+    return { response: parsed, cost, tokensIn, tokensOut, raw: text };
+  } catch (error) {
+    logTokenUsage({
+      agent: "pre-devis",
+      model: MODEL_SONNET,
+      tokensIn: 0,
+      tokensOut: 0,
+      demandeId: input.demandeId,
+      success: false,
+      errorMessage: (error as Error).message,
+      latencyMs: Date.now() - startTime,
+    });
+    throw error;
   }
-
-  const tokensIn = result.usage.input_tokens;
-  const tokensOut = result.usage.output_tokens;
-  const cost = computeCost(MODEL_SONNET, tokensIn, tokensOut);
-
-  return { response: parsed, cost, tokensIn, tokensOut, raw: text };
 }

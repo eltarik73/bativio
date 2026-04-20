@@ -194,8 +194,8 @@ ${qualifBlock}`;
       }).join("\n")
     : "";
 
-  // 7. Composer RAG
-  const ragBlock = [
+  // 7. Séparer RAG stable (cacheable par métier) du RAG variable
+  const ragStableBlock = [
     catalogueBlock,
     tarifMarche ? `### Tarifs marché ${demande.metierDetecte}\n${tarifMarche.content}` : "",
     ...guidesQuantite.map((g) => `### ${g.title}\n${g.content}`),
@@ -205,12 +205,16 @@ ${qualifBlock}`;
 
   const numero = `BTV-2026-${String(Date.now()).slice(-5)}`;
 
+  // System = instructions + RAG stable (cacheable car stable par métier, ~3-5k tokens)
+  const systemWithRag = `${SYSTEM_PROMPT}
+
+--- KB RÉFÉRENCE (RAG stable par métier) ---
+${ragStableBlock}`;
+
+  // userContext = ce qui change à chaque appel (artisan, demande, numéro)
   const userContext = `${artisanBlock}
 
 ${demandeBlock}
-
---- KB RÉFÉRENCE (RAG) ---
-${ragBlock}
 
 --- INSTRUCTION ---
 Numéro de devis à utiliser : ${numero}
@@ -220,14 +224,15 @@ Génère le devis complet en JSON strict selon le format spécifié. Utilise en 
   const startTime = Date.now();
 
   try {
-    // Prompt caching sur SYSTEM_PROMPT (stable, grande taille) → gain 60-80%
+    // Prompt caching sur systemWithRag (>1024 tokens assuré car catalogue inclus)
+    // Gain attendu : 60-80% sur tokens input dès le 2e appel dans la fenêtre 5min
     const result = await claude.messages.create({
       model: MODEL_OPUS,
       max_tokens: 4000,
       system: [
         {
           type: "text",
-          text: SYSTEM_PROMPT,
+          text: systemWithRag,
           cache_control: { type: "ephemeral" },
         },
       ],
