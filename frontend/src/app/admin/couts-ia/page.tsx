@@ -53,10 +53,10 @@ export default function CoutsIaPage() {
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    authFetch<{ success: boolean; data: Data }>(`/api/v1/admin/couts-ia?days=${days}`)
+    authFetch<Data>(`/api/v1/admin/couts-ia?days=${days}`)
       .then((body) => {
         if (cancelled) return;
-        if (body.success) setData(body.data);
+        setData(body);
         setLoading(false);
       })
       .catch(() => !cancelled && setLoading(false));
