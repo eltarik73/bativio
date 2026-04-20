@@ -189,6 +189,9 @@ model Artisan {
   @@index([plan])
   @@index([actif, visible])
   @@index([villeSlug, metierSlugSeo])
+  @@index([ville, metierId, actif, visible])
+  @@index([villeSlug, metierSlugSeo, actif, visible])
+  @@index([deletedAt, actif])
   @@map("artisans")
 }
 
@@ -838,6 +841,9 @@ model DemandeProjet {
   @@index([statut])
   @@index([metierDetecte])
   @@index([createdAt])
+  @@index([statut, createdAt])
+  @@index([villeSlug, metierDetecte])
+  @@index([contactEmail])
 }
 
 model DemandeContact {

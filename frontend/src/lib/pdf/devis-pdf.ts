@@ -18,6 +18,7 @@ export interface DevisPdfInput {
     nomAffichage: string;
     raisonSociale?: string | null;
     siret: string;
+    tvaIntra?: string | null;
     adresse?: string | null;
     codePostal?: string | null;
     ville?: string | null;
@@ -25,23 +26,30 @@ export interface DevisPdfInput {
     email?: string | null;
     assuranceNom?: string | null;
     assuranceNumero?: string | null;
+    assuranceValiditeAnnee?: number | null;
     logo?: string | null;
+    franchiseTva?: boolean;
+    rmNumero?: string | null;
   };
   client: {
     nom: string;
     email?: string | null;
     telephone?: string | null;
     adresse?: string | null;
+    adresseChantier?: string | null;
   };
   objet: string;
   lignes: LigneDevis[];
   totalHt: number;
   totalTva: number;
   totalTtc: number;
+  dateDebutPrevue?: Date | null;
+  dateFinPrevue?: Date | null;
   dureeEstimee?: string | null;
   conditionsPaiement?: string | null;
   notes?: string | null;
   couleurAccent?: string;
+  horsEtablissement?: boolean;
 }
 
 const TERRE = rgb(196 / 255, 83 / 255, 26 / 255);
@@ -284,19 +292,70 @@ export async function generateDevisPdf(input: DevisPdfInput): Promise<Uint8Array
 
   y -= 120;
 
-  // ══════ MENTIONS LÉGALES FOOTER ══════
+  // ══════ MENTIONS LÉGALES FOOTER (16 mentions arrêté 24/01/2017) ══════
+  // Ajout page dédiée si espace insuffisant
+  if (y < 260) {
+    page = pdfDoc.addPage([595.28, 841.89]);
+    y = page.getSize().height - margin;
+  }
+
+  // Calcul TVA intra si non fournie
+  const tvaIntra = input.artisan.tvaIntra || `FR${input.artisan.siret.slice(0, 9)}`;
+  const debutStr = input.dateDebutPrevue ? input.dateDebutPrevue.toLocaleDateString("fr-FR") : null;
+  const finStr = input.dateFinPrevue ? input.dateFinPrevue.toLocaleDateString("fr-FR") : null;
+
   const footerY = 60;
-  page.drawLine({ start: { x: margin, y: footerY + 32 }, end: { x: width - margin, y: footerY + 32 }, thickness: 0.5, color: SABLE });
-  const mentions = [
+  page.drawLine({ start: { x: margin, y: footerY + 120 }, end: { x: width - margin, y: footerY + 120 }, thickness: 0.5, color: SABLE });
+
+  page.drawText("MENTIONS LÉGALES OBLIGATOIRES (arrêté du 24 janvier 2017)", {
+    x: margin, y: footerY + 110, size: 7, font: helvBold, color: GRIS,
+  });
+
+  const mentions: string[] = [
     `Devis ${input.numero} — établi le ${dateStr} — validité ${input.validiteJours} jours.`,
-    `Prix fermes et non révisables pendant la durée de validité. TVA selon taux en vigueur.`,
-    `En cas de retard de paiement : pénalités au taux légal majoré de 10 points + indemnité forfaitaire de 40 €.`,
-    `Document généré par Bativio — Plateforme d'artisans certifiés en Rhône-Alpes — bativio.fr`,
+    `Émetteur : ${input.artisan.raisonSociale || input.artisan.nomAffichage} — SIRET ${input.artisan.siret}${input.artisan.rmNumero ? ` — RM ${input.artisan.rmNumero}` : ""} — TVA intra ${tvaIntra}.`,
   ];
-  let mY = footerY + 22;
+
+  if (input.artisan.assuranceNom) {
+    mentions.push(`Assurance décennale : ${input.artisan.assuranceNom}${input.artisan.assuranceNumero ? ` n°${input.artisan.assuranceNumero}` : ""}${input.artisan.assuranceValiditeAnnee ? ` (valide ${input.artisan.assuranceValiditeAnnee})` : ""}.`);
+  }
+
+  if (debutStr && finStr) {
+    mentions.push(`Période d'exécution prévue : du ${debutStr} au ${finStr}.`);
+  } else if (input.dureeEstimee) {
+    mentions.push(`Durée estimée : ${input.dureeEstimee} (date précise à convenir après acceptation).`);
+  }
+
+  if (input.client.adresseChantier && input.client.adresseChantier !== input.client.adresse) {
+    mentions.push(`Adresse chantier : ${input.client.adresseChantier}.`);
+  }
+
+  if (input.artisan.franchiseTva) {
+    mentions.push(`TVA non applicable, art. 293 B du CGI (franchise en base TVA).`);
+  } else {
+    mentions.push(`TVA selon taux en vigueur (5,5% économie énergie / 10% rénovation / 20% neuf).`);
+  }
+
+  mentions.push(
+    `Prix fermes et non révisables pendant la durée de validité.`,
+    `Retard de paiement : pénalités au taux légal majoré de 10 points + indemnité forfaitaire 40 € (art. L441-10 C. com.).`,
+    `Médiateur de la consommation : CNPM Médiation Consommation — 27 avenue de la Libération, 42400 Saint-Chamond — cnpm-mediation-consommation.eu.`,
+  );
+
+  if (input.horsEtablissement) {
+    mentions.push(`Droit de rétractation : en cas de signature hors établissement, vous disposez d'un délai de 14 jours calendaires pour vous rétracter (art. L221-18 C. conso).`);
+  }
+
+  mentions.push(
+    `En cas de litige : tribunal compétent = lieu du domicile du client consommateur (art. R631-3 C. conso).`,
+    `Document généré par Bativio — Plateforme d'artisans vérifiés en Rhône-Alpes — bativio.fr`,
+  );
+
+  let mY = footerY + 100;
   for (const m of mentions) {
-    page.drawText(m, { x: margin, y: mY, size: 7, font: helv, color: GRIS });
-    mY -= 9;
+    page.drawText(m, { x: margin, y: mY, size: 6.5, font: helv, color: GRIS });
+    mY -= 8;
+    if (mY < footerY) break;
   }
 
   return await pdfDoc.save();
