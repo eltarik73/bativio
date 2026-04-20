@@ -36,13 +36,20 @@ export async function GET() {
 
 const tarificationSchema = z.object({
   tarifHoraire: z.number().min(20).max(200),
+  tarifUrgence: z.number().min(0).max(500).optional().nullable(),
+  minimumFacture: z.number().min(0).max(5000).optional().nullable(),
+  minimumHeures: z.number().min(0).max(24).optional().nullable(),
   fraisDeplacementType: z.enum(["forfait", "km"]),
-  fraisDeplacementMontant: z.number().min(0).max(100),
+  fraisDeplacementMontant: z.number().min(0).max(500),
+  prixKm: z.number().min(0).max(10).optional().nullable(),
   margeFournitures: z.number().min(0).max(100),
   tvaDefault: z.number().min(0).max(20),
-  assuranceNumero: z.string().optional(),
-  assuranceNom: z.string().optional(),
+  assuranceNumero: z.string().optional().nullable(),
+  assuranceNom: z.string().optional().nullable(),
   fourniturePolicy: z.enum(["artisan_fournit", "client_peut_fournir", "peu_importe"]).optional(),
+  indiceBtRef: z.string().optional().nullable(),
+  zonesIntervention: z.any().optional(),
+  notesTarif: z.string().max(2000).optional().nullable(),
 });
 
 export async function PUT(request: NextRequest) {

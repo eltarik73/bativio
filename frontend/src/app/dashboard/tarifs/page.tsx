@@ -12,41 +12,96 @@ interface Prestation {
   isCustom: boolean;
 }
 
+interface Tarification {
+  tarifHoraire: number;
+  tarifUrgence: number | null;
+  minimumFacture: number | null;
+  minimumHeures: number | null;
+  fraisDeplacementType: "forfait" | "km";
+  fraisDeplacementMontant: number;
+  prixKm: number | null;
+  margeFournitures: number;
+  tvaDefault: number;
+  assuranceNumero: string | null;
+  assuranceNom: string | null;
+  fourniturePolicy: "artisan_fournit" | "client_peut_fournir" | "peu_importe";
+  indiceBtRef: string | null;
+  zonesIntervention: string[] | null;
+  notesTarif: string | null;
+}
+
 const UNITES = ["u", "h", "m\u00b2", "ml", "m\u00b3", "forfait"];
+
+const DEFAULT_TARIF: Tarification = {
+  tarifHoraire: 55,
+  tarifUrgence: null,
+  minimumFacture: null,
+  minimumHeures: null,
+  fraisDeplacementType: "forfait",
+  fraisDeplacementMontant: 30,
+  prixKm: null,
+  margeFournitures: 25,
+  tvaDefault: 10,
+  assuranceNumero: null,
+  assuranceNom: null,
+  fourniturePolicy: "artisan_fournit",
+  indiceBtRef: "BT01",
+  zonesIntervention: null,
+  notesTarif: null,
+};
 
 export default function TarifsPage() {
   const { fetchWithAuth } = useAuth();
   const [prestations, setPrestations] = useState<Prestation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [tarif, setTarif] = useState<Tarification>(DEFAULT_TARIF);
+  const [savingTarif, setSavingTarif] = useState(false);
+  const [tarifSaved, setTarifSaved] = useState(false);
 
-  // Edit state
   const [editId, setEditId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({ designation: "", prixUnitaire: 0, unite: "u", categorie: "" });
 
-  // Add state
   const [showAdd, setShowAdd] = useState(false);
   const [addForm, setAddForm] = useState({ designation: "", prixUnitaire: 0, unite: "u", categorie: "" });
   const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
     try {
-      const data = await fetchWithAuth("/artisans/me/prestations");
-      const list = Array.isArray(data) ? data as Prestation[] : [];
+      const [prestationsData, tarifData] = await Promise.all([
+        fetchWithAuth("/artisans/me/prestations"),
+        fetchWithAuth("/artisans/me/tarification").catch(() => null),
+      ]);
+      const list = Array.isArray(prestationsData) ? prestationsData as Prestation[] : [];
       if (list.length === 0) {
-        // Auto-seed defaults
         try {
           await fetchWithAuth("/artisans/me/prestations/seed", { method: "POST" });
           const seeded = await fetchWithAuth("/artisans/me/prestations");
           setPrestations(Array.isArray(seeded) ? seeded as Prestation[] : []);
-          return;
-        } catch { /* seed failed, show empty */ }
+        } catch { setPrestations([]); }
+      } else {
+        setPrestations(list);
       }
-      setPrestations(list);
+      if (tarifData) {
+        setTarif({ ...DEFAULT_TARIF, ...(tarifData as Partial<Tarification>) });
+      }
     } catch { setPrestations([]); }
     finally { setLoading(false); }
   }, [fetchWithAuth]);
 
   useEffect(() => { load(); }, [load]);
+
+  const saveTarif = async () => {
+    setSavingTarif(true);
+    try {
+      await fetchWithAuth("/artisans/me/tarification", {
+        method: "PUT",
+        body: JSON.stringify(tarif),
+      });
+      setTarifSaved(true);
+      setTimeout(() => setTarifSaved(false), 2500);
+    } catch { /* silent */ }
+    finally { setSavingTarif(false); }
+  };
 
   const handleEdit = (p: Prestation) => {
     setEditId(p.id);
@@ -90,7 +145,6 @@ export default function TarifsPage() {
     } catch { /* silent */ }
   };
 
-  // Group by category
   const grouped: Record<string, Prestation[]> = {};
   for (const p of prestations) {
     const cat = p.categorie || "Autre";
@@ -99,42 +153,218 @@ export default function TarifsPage() {
   }
   const categories = Object.keys(grouped).sort();
 
-  const inputStyle: React.CSSProperties = { width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid #E8D5C0", fontSize: 14, fontFamily: "'Karla',sans-serif" };
+  const completion = (() => {
+    let score = 0;
+    if (tarif.tarifHoraire > 0) score += 25;
+    if (tarif.fraisDeplacementMontant > 0) score += 10;
+    if (tarif.assuranceNumero) score += 15;
+    if (tarif.tvaDefault > 0) score += 10;
+    if (tarif.minimumFacture) score += 10;
+    if (prestations.length >= 3) score += 20;
+    if (tarif.notesTarif) score += 10;
+    return Math.min(score, 100);
+  })();
+
+  const inputStyle: React.CSSProperties = { width: "100%", padding: "10px 12px", borderRadius: 10, border: "1px solid #E8D5C0", fontSize: 14, fontFamily: "'Karla',sans-serif", background: "#FAF8F5" };
+  const labelStyle: React.CSSProperties = { fontSize: 11, fontWeight: 600, color: "#5C4A3A", display: "block", marginBottom: 5, textTransform: "uppercase", letterSpacing: 0.5 };
+  const hintStyle: React.CSSProperties = { fontSize: 11, color: "#9C958D", marginTop: 4 };
 
   return (
-    <div style={{ maxWidth: 800, margin: "0 auto" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+    <div style={{ maxWidth: 900, margin: "0 auto", paddingBottom: 60 }}>
+      <div style={{ marginBottom: 28 }}>
+        <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 600, color: "#3D2E1F", letterSpacing: -0.5 }}>
+          Ma grille <span style={{ fontStyle: "italic", fontWeight: 400, color: "#C4531A" }}>tarifaire</span>
+        </h1>
+        <p style={{ fontSize: 14, color: "#6B6560", marginTop: 6, lineHeight: 1.5 }}>
+          Ces informations alimentent le Devis IA et garantissent des chiffrages à votre juste prix.
+        </p>
+        <div style={{ marginTop: 16, background: "#fff", borderRadius: 12, padding: "12px 16px", border: "1px solid #E8D5C0", display: "flex", alignItems: "center", gap: 14 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 12, color: "#6B6560", fontWeight: 600, marginBottom: 4 }}>
+              Complétude de ta grille : <span style={{ color: "#C4531A", fontWeight: 700 }}>{completion}%</span>
+            </div>
+            <div style={{ height: 6, background: "#F2EAE0", borderRadius: 3, overflow: "hidden" }}>
+              <div style={{ height: "100%", width: `${completion}%`, background: "linear-gradient(90deg, #C4531A, #C9943A)", transition: "width .4s" }} />
+            </div>
+          </div>
+          {completion < 100 && <div style={{ fontSize: 11, color: "#9C958D", fontStyle: "italic" }}>Plus elle est complète, plus le Devis IA est précis.</div>}
+        </div>
+      </div>
+
+      {/* ═══ GRILLE TARIFAIRE ═══ */}
+      <section style={{ background: "#fff", borderRadius: 16, border: "1px solid #E8D5C0", padding: 24, marginBottom: 24 }}>
+        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 600, color: "#3D2E1F", marginBottom: 4 }}>Tarifs de base</h2>
+        <p style={{ fontSize: 13, color: "#9C958D", marginBottom: 20 }}>Votre tarif horaire, minimums et règles générales.</p>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14, marginBottom: 14 }} className="max-md:!grid-cols-2">
+          <div>
+            <label style={labelStyle}>Tarif horaire HT *</label>
+            <div style={{ position: "relative" }}>
+              <input type="number" step="0.5" value={tarif.tarifHoraire} onChange={e => setTarif(t => ({ ...t, tarifHoraire: parseFloat(e.target.value) || 0 }))} style={inputStyle} />
+              <span style={{ position: "absolute", right: 12, top: 10, color: "#9C958D", fontSize: 13 }}>€/h</span>
+            </div>
+          </div>
+          <div>
+            <label style={labelStyle}>Tarif urgence (dépannage)</label>
+            <div style={{ position: "relative" }}>
+              <input type="number" step="0.5" value={tarif.tarifUrgence ?? ""} onChange={e => setTarif(t => ({ ...t, tarifUrgence: e.target.value ? parseFloat(e.target.value) : null }))} placeholder="Optionnel" style={inputStyle} />
+              <span style={{ position: "absolute", right: 12, top: 10, color: "#9C958D", fontSize: 13 }}>€/h</span>
+            </div>
+          </div>
+          <div>
+            <label style={labelStyle}>Minimum facture</label>
+            <div style={{ position: "relative" }}>
+              <input type="number" step="10" value={tarif.minimumFacture ?? ""} onChange={e => setTarif(t => ({ ...t, minimumFacture: e.target.value ? parseFloat(e.target.value) : null }))} placeholder="Optionnel" style={inputStyle} />
+              <span style={{ position: "absolute", right: 12, top: 10, color: "#9C958D", fontSize: 13 }}>€ HT</span>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }} className="max-md:!grid-cols-2">
+          <div>
+            <label style={labelStyle}>Minimum heures</label>
+            <div style={{ position: "relative" }}>
+              <input type="number" step="0.5" value={tarif.minimumHeures ?? ""} onChange={e => setTarif(t => ({ ...t, minimumHeures: e.target.value ? parseFloat(e.target.value) : null }))} placeholder="Ex : 2" style={inputStyle} />
+              <span style={{ position: "absolute", right: 12, top: 10, color: "#9C958D", fontSize: 13 }}>h</span>
+            </div>
+          </div>
+          <div>
+            <label style={labelStyle}>Marge fournitures</label>
+            <div style={{ position: "relative" }}>
+              <input type="number" step="1" value={tarif.margeFournitures} onChange={e => setTarif(t => ({ ...t, margeFournitures: parseFloat(e.target.value) || 0 }))} style={inputStyle} />
+              <span style={{ position: "absolute", right: 12, top: 10, color: "#9C958D", fontSize: 13 }}>%</span>
+            </div>
+          </div>
+          <div>
+            <label style={labelStyle}>TVA par défaut</label>
+            <select value={tarif.tvaDefault} onChange={e => setTarif(t => ({ ...t, tvaDefault: parseFloat(e.target.value) }))} style={inputStyle}>
+              <option value="5.5">5,5% (économie énergie)</option>
+              <option value="10">10% (rénovation)</option>
+              <option value="20">20% (neuf / standard)</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ DÉPLACEMENT ═══ */}
+      <section style={{ background: "#fff", borderRadius: 16, border: "1px solid #E8D5C0", padding: 24, marginBottom: 24 }}>
+        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 600, color: "#3D2E1F", marginBottom: 4 }}>Déplacement</h2>
+        <p style={{ fontSize: 13, color: "#9C958D", marginBottom: 20 }}>Frais facturés pour se rendre chez le client.</p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }} className="max-md:!grid-cols-1">
+          <div>
+            <label style={labelStyle}>Type</label>
+            <select value={tarif.fraisDeplacementType} onChange={e => setTarif(t => ({ ...t, fraisDeplacementType: e.target.value as "forfait" | "km" }))} style={inputStyle}>
+              <option value="forfait">Forfait fixe</option>
+              <option value="km">Au kilomètre</option>
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>{tarif.fraisDeplacementType === "forfait" ? "Montant forfait" : "Forfait de base"}</label>
+            <div style={{ position: "relative" }}>
+              <input type="number" step="1" value={tarif.fraisDeplacementMontant} onChange={e => setTarif(t => ({ ...t, fraisDeplacementMontant: parseFloat(e.target.value) || 0 }))} style={inputStyle} />
+              <span style={{ position: "absolute", right: 12, top: 10, color: "#9C958D", fontSize: 13 }}>€</span>
+            </div>
+          </div>
+          <div>
+            <label style={labelStyle}>Prix au km (au-delà zone)</label>
+            <div style={{ position: "relative" }}>
+              <input type="number" step="0.05" value={tarif.prixKm ?? ""} onChange={e => setTarif(t => ({ ...t, prixKm: e.target.value ? parseFloat(e.target.value) : null }))} placeholder="Optionnel" style={inputStyle} />
+              <span style={{ position: "absolute", right: 12, top: 10, color: "#9C958D", fontSize: 13 }}>€/km</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ ASSURANCE + INDICE ═══ */}
+      <section style={{ background: "#fff", borderRadius: 16, border: "1px solid #E8D5C0", padding: 24, marginBottom: 24 }}>
+        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 600, color: "#3D2E1F", marginBottom: 4 }}>Assurance & indice de révision</h2>
+        <p style={{ fontSize: 13, color: "#9C958D", marginBottom: 20 }}>Informations obligatoires pour la conformité devis (mentions légales 2026).</p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }} className="max-md:!grid-cols-1">
+          <div>
+            <label style={labelStyle}>Compagnie d&apos;assurance</label>
+            <input value={tarif.assuranceNom ?? ""} onChange={e => setTarif(t => ({ ...t, assuranceNom: e.target.value || null }))} placeholder="Ex : MAAF, Groupama..." style={inputStyle} />
+          </div>
+          <div>
+            <label style={labelStyle}>N° police décennale</label>
+            <input value={tarif.assuranceNumero ?? ""} onChange={e => setTarif(t => ({ ...t, assuranceNumero: e.target.value || null }))} placeholder="N° contrat" style={inputStyle} />
+          </div>
+          <div>
+            <label style={labelStyle}>Indice BT de référence</label>
+            <select value={tarif.indiceBtRef ?? "BT01"} onChange={e => setTarif(t => ({ ...t, indiceBtRef: e.target.value }))} style={inputStyle}>
+              <option value="BT01">BT01 (tous corps d&apos;état)</option>
+              <option value="BT03">BT03 (béton armé / maçonnerie)</option>
+              <option value="BT06">BT06 (plomberie sanitaire)</option>
+              <option value="BT13">BT13 (plâtrerie)</option>
+              <option value="BT46">BT46 (peinture)</option>
+            </select>
+            <p style={hintStyle}>Utilisé pour la révision des prix sur marchés longs.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ NOTES LIBRES ═══ */}
+      <section style={{ background: "#fff", borderRadius: 16, border: "1px solid #E8D5C0", padding: 24, marginBottom: 24 }}>
+        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 600, color: "#3D2E1F", marginBottom: 4 }}>Notes pour le Devis IA</h2>
+        <p style={{ fontSize: 13, color: "#9C958D", marginBottom: 16 }}>Spécificités, contraintes, garanties personnalisées. Visible uniquement par l&apos;IA.</p>
+        <textarea value={tarif.notesTarif ?? ""} onChange={e => setTarif(t => ({ ...t, notesTarif: e.target.value || null }))} rows={4} placeholder="Ex : Je ne fais pas de fourniture pour la chaudière, uniquement la pose. Garantie 2 ans sur la main d'œuvre. Paiement 30% à la commande, 70% à la fin du chantier." style={{ ...inputStyle, resize: "vertical", fontFamily: "inherit" }} />
+      </section>
+
+      {/* Save bar sticky */}
+      <div style={{ position: "sticky", bottom: 16, zIndex: 50, display: "flex", justifyContent: "flex-end", marginBottom: 32 }}>
+        <button onClick={saveTarif} disabled={savingTarif} style={{
+          padding: "14px 32px",
+          borderRadius: 12,
+          background: tarifSaved ? "#4A6741" : "#C4531A",
+          color: "#fff",
+          fontSize: 14,
+          fontWeight: 600,
+          border: "none",
+          cursor: savingTarif ? "not-allowed" : "pointer",
+          opacity: savingTarif ? 0.6 : 1,
+          boxShadow: "0 10px 30px rgba(196,83,26,.25)",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 8,
+          transition: "background .3s",
+        }}>
+          {savingTarif ? "Sauvegarde..." : tarifSaved ? "✓ Enregistré" : "Enregistrer la grille"}
+        </button>
+      </div>
+
+      {/* ═══ FORFAITS / PRESTATIONS ═══ */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
         <div>
-          <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#3D2E1F" }}>Mes tarifs</h1>
-          <p style={{ fontSize: 13, color: "#9C958D", marginTop: 4 }}>Configurez vos prix pour les devis et le Devis IA.</p>
+          <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 600, color: "#3D2E1F", letterSpacing: -0.3 }}>
+            Mes <span style={{ fontStyle: "italic", fontWeight: 400, color: "#C4531A" }}>forfaits</span>
+          </h2>
+          <p style={{ fontSize: 13, color: "#9C958D", marginTop: 4 }}>Prestations prédéfinies : le Devis IA les utilisera telles quelles.</p>
         </div>
         <button onClick={() => setShowAdd(true)} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, background: "#C4531A", color: "#fff", fontSize: 13, fontWeight: 600, border: "none", cursor: "pointer" }}>
           + Ajouter
         </button>
       </div>
 
-      {/* Add form */}
       {showAdd && (
         <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #E8D5C0", padding: 20, marginBottom: 16 }}>
           <h3 style={{ fontSize: 15, fontWeight: 700, color: "#3D2E1F", marginBottom: 12 }}>Nouvelle prestation</h3>
           <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: 10 }} className="max-md:!grid-cols-1">
             <div>
-              <label style={{ fontSize: 12, fontWeight: 600, color: "#5C4A3A", display: "block", marginBottom: 4 }}>{"D\u00e9signation *"}</label>
-              <input value={addForm.designation} onChange={e => setAddForm(f => ({ ...f, designation: e.target.value }))} placeholder={"Remplacement \u00e9cran"} style={inputStyle} />
+              <label style={labelStyle}>Désignation *</label>
+              <input value={addForm.designation} onChange={e => setAddForm(f => ({ ...f, designation: e.target.value }))} placeholder="Pose chauffe-eau 200L" style={inputStyle} />
             </div>
             <div>
-              <label style={{ fontSize: 12, fontWeight: 600, color: "#5C4A3A", display: "block", marginBottom: 4 }}>{"Prix HT *"}</label>
-              <input type="number" step="0.01" value={addForm.prixUnitaire || ""} onChange={e => setAddForm(f => ({ ...f, prixUnitaire: parseFloat(e.target.value) || 0 }))} placeholder="89" style={inputStyle} />
+              <label style={labelStyle}>Prix HT *</label>
+              <input type="number" step="0.01" value={addForm.prixUnitaire || ""} onChange={e => setAddForm(f => ({ ...f, prixUnitaire: parseFloat(e.target.value) || 0 }))} placeholder="650" style={inputStyle} />
             </div>
             <div>
-              <label style={{ fontSize: 12, fontWeight: 600, color: "#5C4A3A", display: "block", marginBottom: 4 }}>{"Unit\u00e9 *"}</label>
+              <label style={labelStyle}>Unité *</label>
               <select value={addForm.unite} onChange={e => setAddForm(f => ({ ...f, unite: e.target.value }))} style={inputStyle}>
                 {UNITES.map(u => <option key={u} value={u}>{u}</option>)}
               </select>
             </div>
             <div>
-              <label style={{ fontSize: 12, fontWeight: 600, color: "#5C4A3A", display: "block", marginBottom: 4 }}>{"Cat\u00e9gorie"}</label>
-              <input value={addForm.categorie} onChange={e => setAddForm(f => ({ ...f, categorie: e.target.value }))} placeholder={"R\u00e9paration"} style={inputStyle} />
+              <label style={labelStyle}>Catégorie</label>
+              <input value={addForm.categorie} onChange={e => setAddForm(f => ({ ...f, categorie: e.target.value }))} placeholder="Installation" style={inputStyle} />
             </div>
           </div>
           <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
@@ -165,12 +395,11 @@ export default function TarifsPage() {
               {grouped[cat].map(p => (
                 <div key={p.id} style={{ padding: "12px 20px", borderBottom: "1px solid #F3F4F6", display: "flex", alignItems: "center", gap: 12 }}>
                   {editId === p.id ? (
-                    /* Edit mode */
                     <div style={{ flex: 1, display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 8, alignItems: "center" }} className="max-md:!grid-cols-1">
                       <input value={editForm.designation} onChange={e => setEditForm(f => ({ ...f, designation: e.target.value }))} style={inputStyle} />
                       <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
                         <input type="number" step="0.01" value={editForm.prixUnitaire || ""} onChange={e => setEditForm(f => ({ ...f, prixUnitaire: parseFloat(e.target.value) || 0 }))} style={{ ...inputStyle, width: 80 }} />
-                        <span style={{ fontSize: 13, color: "#9C958D" }}>{"\u20ac"}</span>
+                        <span style={{ fontSize: 13, color: "#9C958D" }}>€</span>
                         <select value={editForm.unite} onChange={e => setEditForm(f => ({ ...f, unite: e.target.value }))} style={{ ...inputStyle, width: 70 }}>
                           {UNITES.map(u => <option key={u} value={u}>{u}</option>)}
                         </select>
@@ -181,13 +410,12 @@ export default function TarifsPage() {
                       </div>
                     </div>
                   ) : (
-                    /* View mode */
                     <>
                       <span style={{ flex: 1, fontSize: 14, color: "#3D2E1F" }}>{p.designation}</span>
-                      <span style={{ fontSize: 14, fontWeight: 700, color: "#C4531A", fontFamily: "monospace", minWidth: 70, textAlign: "right" }}>{p.prixUnitaire}{"\u20ac"}</span>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: "#C4531A", fontFamily: "monospace", minWidth: 70, textAlign: "right" }}>{p.prixUnitaire}€</span>
                       <span style={{ fontSize: 12, color: "#9C958D", minWidth: 40 }}>/{p.unite}</span>
-                      <button onClick={() => handleEdit(p)} style={{ fontSize: 14, background: "none", border: "none", cursor: "pointer", padding: "4px 8px", color: "#6B6560" }} title="Modifier">{"\u270f\ufe0f"}</button>
-                      <button onClick={() => handleDelete(p.id)} style={{ fontSize: 14, background: "none", border: "none", cursor: "pointer", padding: "4px 8px", color: "#DC2626" }} title="Supprimer">{"\ud83d\uddd1\ufe0f"}</button>
+                      <button onClick={() => handleEdit(p)} style={{ fontSize: 14, background: "none", border: "none", cursor: "pointer", padding: "4px 8px", color: "#6B6560" }} title="Modifier">✏️</button>
+                      <button onClick={() => handleDelete(p.id)} style={{ fontSize: 14, background: "none", border: "none", cursor: "pointer", padding: "4px 8px", color: "#DC2626" }} title="Supprimer">🗑️</button>
                     </>
                   )}
                 </div>
