@@ -1,5 +1,5 @@
 import type Anthropic from "@anthropic-ai/sdk";
-import { getClaude, MODEL_OPUS, extractJson, computeCost } from "@/lib/claude";
+import { getClaude, MODEL_OPUS, extractJson, computeCost, logTokenUsage } from "@/lib/claude";
 import { prisma } from "@/lib/prisma";
 
 export interface DevisLigne {
@@ -217,26 +217,65 @@ Numéro de devis à utiliser : ${numero}
 
 Génère le devis complet en JSON strict selon le format spécifié. Utilise en priorité la grille de l'artisan + ses forfaits. Pour tout ce qui n'est pas couvert, utilise les moyennes marché RAG et flag les lignes.`;
 
-  const result = await claude.messages.create({
-    model: MODEL_OPUS,
-    max_tokens: 4000,
-    system: SYSTEM_PROMPT,
-    messages: [{ role: "user", content: userContext }],
-  });
+  const startTime = Date.now();
 
-  const text = result.content
-    .filter((b): b is Anthropic.Messages.TextBlock => b.type === "text")
-    .map((b) => b.text)
-    .join("\n");
+  try {
+    // Prompt caching sur SYSTEM_PROMPT (stable, grande taille) → gain 60-80%
+    const result = await claude.messages.create({
+      model: MODEL_OPUS,
+      max_tokens: 4000,
+      system: [
+        {
+          type: "text",
+          text: SYSTEM_PROMPT,
+          cache_control: { type: "ephemeral" },
+        },
+      ],
+      messages: [{ role: "user", content: userContext }],
+    });
 
-  const parsed = extractJson<DevisIAOutput>(text);
-  if (!parsed) {
-    throw new Error(`Agent devis: réponse non-JSON. Raw: ${text.slice(0, 300)}`);
+    const text = result.content
+      .filter((b): b is Anthropic.Messages.TextBlock => b.type === "text")
+      .map((b) => b.text)
+      .join("\n");
+
+    const parsed = extractJson<DevisIAOutput>(text);
+    if (!parsed) {
+      throw new Error(`Agent devis: réponse non-JSON. Raw: ${text.slice(0, 300)}`);
+    }
+
+    const tokensIn = result.usage.input_tokens;
+    const tokensOut = result.usage.output_tokens;
+    const cacheRead = result.usage.cache_read_input_tokens ?? 0;
+    const cacheCreation = result.usage.cache_creation_input_tokens ?? 0;
+    const cost = computeCost(MODEL_OPUS, tokensIn, tokensOut);
+
+    logTokenUsage({
+      agent: "devis",
+      model: MODEL_OPUS,
+      tokensIn,
+      tokensOut,
+      tokensCacheRead: cacheRead,
+      tokensCacheCreation: cacheCreation,
+      artisanId,
+      demandeId,
+      success: true,
+      latencyMs: Date.now() - startTime,
+    });
+
+    return { response: parsed, cost, tokensIn, tokensOut, modelUsed: MODEL_OPUS, raw: text };
+  } catch (error) {
+    logTokenUsage({
+      agent: "devis",
+      model: MODEL_OPUS,
+      tokensIn: 0,
+      tokensOut: 0,
+      artisanId,
+      demandeId,
+      success: false,
+      errorMessage: (error as Error).message,
+      latencyMs: Date.now() - startTime,
+    });
+    throw error;
   }
-
-  const tokensIn = result.usage.input_tokens;
-  const tokensOut = result.usage.output_tokens;
-  const cost = computeCost(MODEL_OPUS, tokensIn, tokensOut);
-
-  return { response: parsed, cost, tokensIn, tokensOut, modelUsed: MODEL_OPUS, raw: text };
 }

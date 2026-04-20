@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { sendEmail } from "@/lib/email";
+import { escapeHtml } from "@/lib/html-escape";
 import { JourSemaine } from "@prisma/client";
 
 const DAY_INDEX_TO_JOUR: JourSemaine[] = [
@@ -140,15 +141,21 @@ export async function POST(
     });
     const formattedTime = `${dateDebut.getUTCHours().toString().padStart(2, "0")}:${dateDebut.getUTCMinutes().toString().padStart(2, "0")}`;
 
+    const safeClientNom = escapeHtml(body.clientNom);
+    const safeClientTelephone = escapeHtml(body.clientTelephone);
+    const safeClientEmail = body.clientEmail ? escapeHtml(body.clientEmail) : "";
+    const safeObjet = body.objet ? escapeHtml(body.objet) : "";
+    const safeArtisanNom = escapeHtml(artisan.nomAffichage);
+
     await sendEmail(
       artisan.user.email,
       `Nouveau RDV de ${body.clientNom}`,
       `<h2>Nouveau rendez-vous</h2>
-      <p><strong>Client :</strong> ${body.clientNom}</p>
-      <p><strong>Telephone :</strong> ${body.clientTelephone}</p>
-      ${body.clientEmail ? `<p><strong>Email :</strong> ${body.clientEmail}</p>` : ""}
+      <p><strong>Client :</strong> ${safeClientNom}</p>
+      <p><strong>Telephone :</strong> ${safeClientTelephone}</p>
+      ${safeClientEmail ? `<p><strong>Email :</strong> ${safeClientEmail}</p>` : ""}
       <p><strong>Date :</strong> ${formattedDate} a ${formattedTime}</p>
-      ${body.objet ? `<p><strong>Objet :</strong> ${body.objet}</p>` : ""}
+      ${safeObjet ? `<p><strong>Objet :</strong> ${safeObjet}</p>` : ""}
       <p>Connectez-vous a votre espace Bativio pour confirmer ou modifier ce rendez-vous.</p>`
     );
 
@@ -158,10 +165,10 @@ export async function POST(
         body.clientEmail,
         `Confirmation de votre demande de RDV - ${artisan.nomAffichage}`,
         `<h2>Votre demande de rendez-vous</h2>
-        <p>Bonjour ${body.clientNom},</p>
-        <p>Votre demande de rendez-vous avec <strong>${artisan.nomAffichage}</strong> a bien ete enregistree.</p>
+        <p>Bonjour ${safeClientNom},</p>
+        <p>Votre demande de rendez-vous avec <strong>${safeArtisanNom}</strong> a bien ete enregistree.</p>
         <p><strong>Date :</strong> ${formattedDate} a ${formattedTime}</p>
-        ${body.objet ? `<p><strong>Objet :</strong> ${body.objet}</p>` : ""}
+        ${safeObjet ? `<p><strong>Objet :</strong> ${safeObjet}</p>` : ""}
         <p>L'artisan reviendra vers vous pour confirmer le rendez-vous.</p>
         <p>A bientot,<br>L'equipe Bativio</p>`
       );

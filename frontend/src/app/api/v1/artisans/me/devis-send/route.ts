@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError, handleAuthError } from "@/lib/api-response";
 import { requireAuth } from "@/lib/auth-server";
 import { sendEmail } from "@/lib/email";
+import { escapeHtml } from "@/lib/html-escape";
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,11 +26,21 @@ export async function POST(request: NextRequest) {
     const viewUrl = `${siteUrl}/devis/${devis.viewToken || devis.id}`;
     const postes = devis.postes as Array<{ designation: string; quantite: number; prixUnitaire?: number; prixUnitaireHT?: number; totalHT: number; unite?: string }>;
 
-    // Build HTML email
+    // Build HTML email (escape user-controlled content)
+    const safeArtisanNom = escapeHtml(artisan.nomAffichage);
+    const safeArtisanVille = artisan.ville ? escapeHtml(artisan.ville) : "";
+    const safeArtisanTelephone = artisan.telephone ? escapeHtml(artisan.telephone) : "";
+    const safeArtisanAdresse = artisan.adresse ? escapeHtml(artisan.adresse) : "";
+    const safeArtisanSiret = escapeHtml(artisan.siret);
+    const safeClientNom = escapeHtml(devis.clientNom);
+    const safeNumero = escapeHtml(devis.numero);
+    const safeObjet = escapeHtml(devis.objet);
+    const safeNotes = devis.notes ? escapeHtml(devis.notes).replace(/\n/g, "<br>") : "";
+
     const lignesHtml = postes.map(p => `
       <tr>
-        <td style="padding:8px 12px;border-bottom:1px solid #F3F4F6;font-size:13px;color:#374151">${p.designation}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid #F3F4F6;font-size:13px;color:#374151;text-align:center">${p.quantite} ${p.unite || ""}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #F3F4F6;font-size:13px;color:#374151">${escapeHtml(p.designation)}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #F3F4F6;font-size:13px;color:#374151;text-align:center">${p.quantite} ${p.unite ? escapeHtml(p.unite) : ""}</td>
         <td style="padding:8px 12px;border-bottom:1px solid #F3F4F6;font-size:13px;color:#374151;text-align:right">${((p.prixUnitaire || p.prixUnitaireHT || 0) * p.quantite).toFixed(2)} \u20ac</td>
       </tr>
     `).join("");
@@ -37,16 +48,16 @@ export async function POST(request: NextRequest) {
     const html = `
     <div style="font-family:Karla,Arial,sans-serif;max-width:600px;margin:0 auto;background:#fff">
       <div style="padding:24px 32px;border-bottom:2px solid #C4531A">
-        <h1 style="font-family:Fraunces,Georgia,serif;font-size:22px;color:#1C1C1E;margin:0">Devis n\u00b0${devis.numero}</h1>
-        <p style="color:#6B7280;font-size:14px;margin:8px 0 0">${artisan.nomAffichage}${artisan.ville ? ` \u2014 ${artisan.ville}` : ""}</p>
+        <h1 style="font-family:Fraunces,Georgia,serif;font-size:22px;color:#1C1C1E;margin:0">Devis n\u00b0${safeNumero}</h1>
+        <p style="color:#6B7280;font-size:14px;margin:8px 0 0">${safeArtisanNom}${safeArtisanVille ? ` \u2014 ${safeArtisanVille}` : ""}</p>
       </div>
 
       <div style="padding:24px 32px">
         <p style="font-size:15px;color:#374151;line-height:1.6">
-          Bonjour <strong>${devis.clientNom}</strong>,
+          Bonjour <strong>${safeClientNom}</strong>,
         </p>
         <p style="font-size:15px;color:#374151;line-height:1.6">
-          Veuillez trouver ci-dessous le devis <strong>n\u00b0${devis.numero}</strong> pour : <em>${devis.objet}</em>.
+          Veuillez trouver ci-dessous le devis <strong>n\u00b0${safeNumero}</strong> pour : <em>${safeObjet}</em>.
         </p>
 
         <table style="width:100%;border-collapse:collapse;margin:24px 0;border:1px solid #E5E7EB;border-radius:8px;overflow:hidden">
@@ -77,7 +88,7 @@ export async function POST(request: NextRequest) {
           </div>
         </div>
 
-        ${devis.notes ? `<p style="font-size:13px;color:#6B7280;margin-top:16px;padding:12px;background:#FFFBEB;border-radius:6px;border:1px solid #FEF3C7"><strong>Notes :</strong> ${devis.notes}</p>` : ""}
+        ${safeNotes ? `<p style="font-size:13px;color:#6B7280;margin-top:16px;padding:12px;background:#FFFBEB;border-radius:6px;border:1px solid #FEF3C7"><strong>Notes :</strong> ${safeNotes}</p>` : ""}
 
         <div style="text-align:center;margin:32px 0 16px">
           <a href="${viewUrl}" style="display:inline-block;padding:14px 32px;background:#C4531A;color:#fff;border-radius:10px;font-size:15px;font-weight:600;text-decoration:none">
@@ -86,12 +97,12 @@ export async function POST(request: NextRequest) {
         </div>
 
         <p style="font-size:12px;color:#9CA3AF;text-align:center">
-          Ce devis est valable ${devis.validiteJours} jours. Pour toute question, contactez ${artisan.nomAffichage}${artisan.telephone ? ` au ${artisan.telephone}` : ""}.
+          Ce devis est valable ${devis.validiteJours} jours. Pour toute question, contactez ${safeArtisanNom}${safeArtisanTelephone ? ` au ${safeArtisanTelephone}` : ""}.
         </p>
       </div>
 
       <div style="padding:16px 32px;border-top:1px solid #F3F4F6;text-align:center">
-        <p style="font-size:11px;color:#D1D5DB;margin:0">${artisan.nomAffichage} \u2014 SIRET ${artisan.siret}${artisan.adresse ? ` \u2014 ${artisan.adresse}` : ""}${artisan.ville ? `, ${artisan.ville}` : ""}</p>
+        <p style="font-size:11px;color:#D1D5DB;margin:0">${safeArtisanNom} \u2014 SIRET ${safeArtisanSiret}${safeArtisanAdresse ? ` \u2014 ${safeArtisanAdresse}` : ""}${safeArtisanVille ? `, ${safeArtisanVille}` : ""}</p>
         <p style="font-size:11px;color:#D1D5DB;margin:4px 0 0">Envoy\u00e9 via Bativio</p>
       </div>
     </div>`;

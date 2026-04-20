@@ -1,5 +1,5 @@
 import type Anthropic from "@anthropic-ai/sdk";
-import { getClaude, MODEL_SONNET, extractJson, computeCost } from "@/lib/claude";
+import { getClaude, MODEL_SONNET, extractJson, computeCost, logTokenUsage } from "@/lib/claude";
 import { prisma } from "@/lib/prisma";
 import { getAllQualifGuides, getQualifGuideForMetier } from "./qualif-guides";
 
@@ -87,6 +87,7 @@ interface QualifInput {
   history: QualifMessage[];
   collected: Record<string, string>;
   ville?: string | null;
+  demandeId?: string | null;
 }
 
 interface QualifResult {
@@ -103,8 +104,10 @@ export async function runQualifAgent({
   history,
   collected,
   ville,
+  demandeId,
 }: QualifInput): Promise<QualifResult> {
   const claude = getClaude();
+  const startTime = Date.now();
 
   // Détection métier préliminaire pour charger le bon guide
   const guess = detectMetierFromText(initialDescription);
@@ -126,28 +129,52 @@ ${history.map((m) => `${m.role === "user" ? "CLIENT" : "ASSISTANT"}: ${m.content
 
 Que fais-tu ensuite ? Réponds en JSON uniquement.`;
 
-  const result = await claude.messages.create({
-    model: MODEL_SONNET,
-    max_tokens: 1000,
-    system: systemWithGuides,
-    messages: [{ role: "user", content: userContext }],
-  });
+  try {
+    const result = await claude.messages.create({
+      model: MODEL_SONNET,
+      max_tokens: 1000,
+      system: systemWithGuides,
+      messages: [{ role: "user", content: userContext }],
+    });
 
-  const text = result.content
-    .filter((b): b is Anthropic.Messages.TextBlock => b.type === "text")
-    .map((b) => b.text)
-    .join("\n");
+    const text = result.content
+      .filter((b): b is Anthropic.Messages.TextBlock => b.type === "text")
+      .map((b) => b.text)
+      .join("\n");
 
-  const parsed = extractJson<QualifResponse>(text);
-  if (!parsed) {
-    throw new Error(`Agent qualif: réponse non-JSON. Raw: ${text.slice(0, 300)}`);
+    const parsed = extractJson<QualifResponse>(text);
+    if (!parsed) {
+      throw new Error(`Agent qualif: réponse non-JSON. Raw: ${text.slice(0, 300)}`);
+    }
+
+    const tokensIn = result.usage.input_tokens;
+    const tokensOut = result.usage.output_tokens;
+    const cost = computeCost(MODEL_SONNET, tokensIn, tokensOut);
+
+    logTokenUsage({
+      agent: "qualif",
+      model: MODEL_SONNET,
+      tokensIn,
+      tokensOut,
+      demandeId,
+      success: true,
+      latencyMs: Date.now() - startTime,
+    });
+
+    return { response: parsed, cost, tokensIn, tokensOut, modelUsed: MODEL_SONNET, raw: text };
+  } catch (error) {
+    logTokenUsage({
+      agent: "qualif",
+      model: MODEL_SONNET,
+      tokensIn: 0,
+      tokensOut: 0,
+      demandeId,
+      success: false,
+      errorMessage: (error as Error).message,
+      latencyMs: Date.now() - startTime,
+    });
+    throw error;
   }
-
-  const tokensIn = result.usage.input_tokens;
-  const tokensOut = result.usage.output_tokens;
-  const cost = computeCost(MODEL_SONNET, tokensIn, tokensOut);
-
-  return { response: parsed, cost, tokensIn, tokensOut, modelUsed: MODEL_SONNET, raw: text };
 }
 
 /**

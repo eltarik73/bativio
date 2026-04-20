@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { sendEmail } from "@/lib/email";
+import { escapeHtml } from "@/lib/html-escape";
 
 const bodySchema = z.object({
   action: z.enum(["accept", "refuse"]),
@@ -50,18 +51,22 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         },
       }).catch(() => null);
 
-      // Email artisan
+      // Email artisan (escape user-controlled content)
       if (devis.artisan.user?.email) {
+        const safeClientNom = escapeHtml(devis.clientNom);
+        const safeNumero = escapeHtml(devis.numero);
+        const safeObjet = escapeHtml(devis.objet);
+        const safeSignatureNom = parsed.data.signatureNom ? escapeHtml(parsed.data.signatureNom) : "";
         const html = `
           <div style="font-family: -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 32px;">
-            <h2 style="color: #4A6741; font-family: Georgia, serif;">✓ Devis accepté !</h2>
+            <h2 style="color: #4A6741; font-family: Georgia, serif;">Devis accepté</h2>
             <p style="color: #3D2E1F; font-size: 15px; line-height: 1.6;">
-              <strong>${devis.clientNom}</strong> vient d'accepter votre devis <strong>${devis.numero}</strong>.
+              <strong>${safeClientNom}</strong> vient d'accepter votre devis <strong>${safeNumero}</strong>.
             </p>
             <div style="background: rgba(74,103,65,.08); padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #4A6741;">
-              <div style="font-size: 11px; letter-spacing: 1.5px; color: #4A6741; text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">${devis.objet}</div>
+              <div style="font-size: 11px; letter-spacing: 1.5px; color: #4A6741; text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">${safeObjet}</div>
               <div style="font-size: 26px; color: #3D2E1F; font-weight: 600; font-family: Georgia, serif;">${devis.totalTTC.toLocaleString("fr-FR")} € TTC</div>
-              ${parsed.data.signatureNom ? `<div style="font-size: 12px; color: #6B6560; margin-top: 8px;">Signé par : ${parsed.data.signatureNom}</div>` : ""}
+              ${safeSignatureNom ? `<div style="font-size: 12px; color: #6B6560; margin-top: 8px;">Signé par : ${safeSignatureNom}</div>` : ""}
             </div>
             <p style="color: #6B6560; font-size: 13px;">Prochaine étape : planifier le chantier avec le client.</p>
             <a href="https://bativio.fr/dashboard/devis" style="display: inline-block; background: #C4531A; color: #fff; padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 600;">Voir le devis</a>

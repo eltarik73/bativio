@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { requireAuth } from "@/lib/auth-server";
 import { sendEmail } from "@/lib/email";
+import { escapeHtml } from "@/lib/html-escape";
 
 export async function POST(
   _request: NextRequest,
@@ -55,12 +56,18 @@ export async function POST(
       .map(
         (p) =>
           `<tr>
-            <td style="padding:8px;border-bottom:1px solid #eee;">${p.designation}</td>
-            <td style="padding:8px;border-bottom:1px solid #eee;text-align:center;">${p.quantite} ${p.unite}</td>
+            <td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(p.designation)}</td>
+            <td style="padding:8px;border-bottom:1px solid #eee;text-align:center;">${p.quantite} ${escapeHtml(p.unite)}</td>
             <td style="padding:8px;border-bottom:1px solid #eee;text-align:right;">${p.totalHT.toFixed(2)} EUR</td>
           </tr>`
       )
       .join("");
+
+    const safeClientNom = escapeHtml(devis.clientNom);
+    const safeArtisanNom = escapeHtml(artisan.nomAffichage);
+    const safeObjet = escapeHtml(devis.objet);
+    const safeDureeEstimee = devis.dureeEstimee ? escapeHtml(devis.dureeEstimee) : "";
+    const safeNotes = devis.notes ? escapeHtml(devis.notes).replace(/\n/g, "<br>") : "";
 
     const emailHtml = `
       <div style="font-family:Karla,sans-serif;max-width:600px;margin:0 auto;color:#1C1C1E;">
@@ -68,10 +75,10 @@ export async function POST(
           <h1 style="color:#fff;margin:0;font-family:Fraunces,serif;">Bativio</h1>
         </div>
         <div style="padding:32px 24px;">
-          <p>Bonjour ${devis.clientNom},</p>
-          <p><strong>${artisan.nomAffichage}</strong> vous a envoye un devis.</p>
+          <p>Bonjour ${safeClientNom},</p>
+          <p><strong>${safeArtisanNom}</strong> vous a envoye un devis.</p>
 
-          <h2 style="color:#C4531A;font-family:Fraunces,serif;margin-top:24px;">${devis.objet}</h2>
+          <h2 style="color:#C4531A;font-family:Fraunces,serif;margin-top:24px;">${safeObjet}</h2>
 
           <table style="width:100%;border-collapse:collapse;margin:16px 0;">
             <thead>
@@ -92,8 +99,8 @@ export async function POST(
             <p style="margin:4px 0;font-size:18px;"><strong>Total TTC :</strong> ${devis.totalTTC.toFixed(2)} EUR</p>
           </div>
 
-          ${devis.dureeEstimee ? `<p><strong>Duree estimee :</strong> ${devis.dureeEstimee}</p>` : ""}
-          ${devis.notes ? `<p><strong>Notes :</strong> ${devis.notes}</p>` : ""}
+          ${safeDureeEstimee ? `<p><strong>Duree estimee :</strong> ${safeDureeEstimee}</p>` : ""}
+          ${safeNotes ? `<p><strong>Notes :</strong> ${safeNotes}</p>` : ""}
 
           <div style="text-align:center;margin:32px 0;">
             <a href="${viewLink}" style="background:#C4531A;color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;">

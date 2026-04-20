@@ -4,6 +4,7 @@ import { apiSuccess, apiError } from "@/lib/api-response";
 import { requireAuth } from "@/lib/auth-server";
 import { generateDevisPdf } from "@/lib/pdf/devis-pdf";
 import { sendEmail } from "@/lib/email";
+import { escapeHtml } from "@/lib/html-escape";
 
 interface LigneJson {
   label: string;
@@ -83,25 +84,31 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
       },
     });
 
-    // Email au client
+    // Email au client (escape user-controlled content pour prévenir XSS)
+    const safeClientNom = escapeHtml(devis.clientNom);
+    const safeArtisanNom = escapeHtml(artisan.nomAffichage);
+    const safeNumero = escapeHtml(devis.numero);
+    const safeObjet = escapeHtml(devis.objet);
+    const safeTelephone = escapeHtml(artisan.telephone);
+    const telephoneHref = encodeURIComponent(artisan.telephone).replace(/%20/g, "");
     const html = `
       <div style="font-family: -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 32px;">
         <h2 style="color: #C4531A; font-family: Georgia, serif;">Votre devis Bativio est prêt</h2>
         <p style="color: #3D2E1F; font-size: 15px; line-height: 1.6;">
-          Bonjour <strong>${devis.clientNom}</strong>,<br><br>
-          <strong>${artisan.nomAffichage}</strong> vient de vous envoyer le devis <strong>${devis.numero}</strong>.
+          Bonjour <strong>${safeClientNom}</strong>,<br><br>
+          <strong>${safeArtisanNom}</strong> vient de vous envoyer le devis <strong>${safeNumero}</strong>.
         </p>
         <div style="background: linear-gradient(135deg, rgba(196,83,26,.06), rgba(201,148,58,.04)); padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #C4531A;">
-          <div style="font-size: 11px; letter-spacing: 1.5px; color: #C4531A; text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">${devis.objet}</div>
+          <div style="font-size: 11px; letter-spacing: 1.5px; color: #C4531A; text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">${safeObjet}</div>
           <div style="font-size: 26px; color: #3D2E1F; font-weight: 600; font-family: Georgia, serif;">
             ${devis.totalTTC.toLocaleString("fr-FR")} € TTC
           </div>
           <div style="font-size: 12px; color: #9C958D; margin-top: 4px;">${devis.validiteJours} jours de validité</div>
         </div>
-        <a href="${pdfUrl}" style="display: inline-block; background: #C4531A; color: #fff; padding: 14px 28px; border-radius: 12px; text-decoration: none; font-weight: 600; margin-top: 12px;">📄 Télécharger le devis PDF</a>
+        <a href="${escapeHtml(pdfUrl)}" style="display: inline-block; background: #C4531A; color: #fff; padding: 14px 28px; border-radius: 12px; text-decoration: none; font-weight: 600; margin-top: 12px;">Télécharger le devis PDF</a>
         <p style="color: #6B6560; font-size: 13px; margin-top: 24px;">
           Pour accepter ce devis, retournez-le signé avec la mention "Bon pour accord".<br>
-          Pour toute question, contactez ${artisan.nomAffichage} au <a href="tel:${artisan.telephone}" style="color: #C4531A;">${artisan.telephone}</a>.
+          Pour toute question, contactez ${safeArtisanNom} au <a href="tel:${telephoneHref}" style="color: #C4531A;">${safeTelephone}</a>.
         </p>
         <p style="color: #9C958D; font-size: 12px; margin-top: 32px; border-top: 1px solid #EDEBE7; padding-top: 16px;">
           Bativio — contact@bativio.fr
