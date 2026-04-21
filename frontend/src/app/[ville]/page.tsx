@@ -14,8 +14,27 @@ import MetierVilleListing from "./MetierVilleListing";
 
 export const revalidate = 3600;
 
-export function generateStaticParams() {
-  return VILLES.map((v) => ({ ville: v.slug }));
+// SEO: lister TOUS les slugs valides + interdire les autres → vrai HTTP 404
+// Inclut villes principales + metier-ville composites depuis DB (artisans Business).
+export const dynamicParams = false; // CRITICAL: tout slug non listé = HTTP 404 propre
+
+export async function generateStaticParams() {
+  const params: { ville: string }[] = VILLES.map((v) => ({ ville: v.slug }));
+  try {
+    const composites = await prisma.artisan.findMany({
+      where: { actif: true, deletedAt: null, metierSlugSeo: { not: null }, villeSlug: { not: null } },
+      select: { metierSlugSeo: true, villeSlug: true },
+      distinct: ["metierSlugSeo", "villeSlug"],
+    });
+    for (const c of composites) {
+      if (c.metierSlugSeo && c.villeSlug) {
+        params.push({ ville: `${c.metierSlugSeo}-${c.villeSlug}` });
+      }
+    }
+  } catch {
+    /* fallback : juste les villes statiques */
+  }
+  return params;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ ville: string }> }): Promise<Metadata> {
