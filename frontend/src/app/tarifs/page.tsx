@@ -13,7 +13,7 @@ export default function TarifsPage() {
   return (
     <>
       <Navbar />
-      <main style={{ background: "#fff", minHeight: "100vh" }}>
+      <main style={{ background: "#fff", minHeight: "100dvh" }}>
         <PricingGrid />
       </main>
       <Footer />

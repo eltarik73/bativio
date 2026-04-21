@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Karla } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
+import CookieBanner from "@/components/CookieBanner";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -62,6 +63,7 @@ export default function RootLayout({
     <html lang="fr" className={`${fraunces.variable} ${karla.variable}`}>
       <body className="min-h-screen flex flex-col bg-creme text-anthracite font-body antialiased">
         <AuthProvider>{children}</AuthProvider>
+        <CookieBanner />
       </body>
     </html>
   );

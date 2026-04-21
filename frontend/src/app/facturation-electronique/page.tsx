@@ -181,7 +181,7 @@ export default function FacturationElectroniquePage() {
     <>
       <Navbar />
       <JsonLd />
-      <main style={{ background: "#FAF8F5", minHeight: "100vh" }}>
+      <main style={{ background: "#FAF8F5", minHeight: "100dvh" }}>
         {/* Hero */}
         <section
           style={{

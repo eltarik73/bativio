@@ -292,7 +292,7 @@ export default function Navbar() {
             borderBottom: "1px solid #EDEBE7",
             boxShadow: "0 8px 32px rgba(0,0,0,.1)",
             padding: "8px 16px 16px",
-            maxHeight: "calc(100vh - 56px)",
+            maxHeight: "calc(100dvh - 56px)",
             overflowY: "auto",
           }}>
             {/* Connected state: user info */}

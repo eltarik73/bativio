@@ -46,7 +46,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // inscription et connexion exclus (disallow dans robots.txt)
     { url: `${baseUrl}/facturation-electronique`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
     { url: `${baseUrl}/tarifs`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
+    { url: `${baseUrl}/prix`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
+    { url: `${baseUrl}/a-propos`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
+    { url: `${baseUrl}/mentions-legales`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
+    { url: `${baseUrl}/cgu`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
   ];
+
+  const prixMetierPages: MetadataRoute.Sitemap = METIERS_SLUGS.map((metier) => ({
+    url: `${baseUrl}/prix/${metier}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
 
   const villePages: MetadataRoute.Sitemap = VILLES.map((v) => ({
     url: `${baseUrl}/${v.slug}`,
@@ -127,5 +138,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Prisma may fail during build — skip silently
   }
 
-  return [...staticPages, ...villePages, ...villeMetierPages, ...artisanPages, ...travauxPages, ...businessCategoryPages, ...businessVitrinePages];
+  return [...staticPages, ...prixMetierPages, ...villePages, ...villeMetierPages, ...artisanPages, ...travauxPages, ...businessCategoryPages, ...businessVitrinePages];
 }

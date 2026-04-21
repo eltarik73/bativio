@@ -28,7 +28,8 @@ export default function Footer() {
           </div>
           <div className="footer-col">
             <div className="footer-col-title">Bativio</div>
-            <Link href="/rejoindre">&Agrave; propos</Link>
+            <Link href="/a-propos">&Agrave; propos</Link>
+            <Link href="/rejoindre">Rejoindre l&apos;\u00e9quipe</Link>
             <a href="mailto:contact@bativio.fr">Contact</a>
             <Link href="/mentions-legales">Mentions l&eacute;gales</Link>
             <Link href="/cgu">CGU</Link>

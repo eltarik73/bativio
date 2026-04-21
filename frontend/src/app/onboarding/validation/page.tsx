@@ -283,7 +283,7 @@ export default function ValidationPage() {
   // ─── Loading state ───
   if (authLoading || statusLoading) {
     return (
-      <div style={{ minHeight: "100vh", background: "var(--creme, #FAF8F5)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ minHeight: "100dvh", background: "var(--creme, #FAF8F5)", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <Spinner />
       </div>
     );
@@ -292,7 +292,7 @@ export default function ValidationPage() {
   // ─── Auto-accepted screen ───
   if (step === "auto_accepted") {
     return (
-      <div style={{ minHeight: "100vh", background: "var(--creme, #FAF8F5)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ minHeight: "100dvh", background: "var(--creme, #FAF8F5)", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ textAlign: "center", maxWidth: 420, padding: 32 }}>
           <div style={{ marginBottom: 24 }}><CheckCircle /></div>
           <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 28, fontWeight: 700, color: "var(--anthracite, #1C1C1E)", marginBottom: 12 }}>
@@ -327,7 +327,7 @@ export default function ValidationPage() {
   // ─── Pending review screen ───
   if (step === "pending_review") {
     return (
-      <div style={{ minHeight: "100vh", background: "var(--creme, #FAF8F5)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ minHeight: "100dvh", background: "var(--creme, #FAF8F5)", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ textAlign: "center", maxWidth: 420, padding: 32 }}>
           <div style={{ marginBottom: 24 }}><ClockCircle /></div>
           <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 28, fontWeight: 700, color: "var(--anthracite, #1C1C1E)", marginBottom: 12 }}>
@@ -347,7 +347,7 @@ export default function ValidationPage() {
   // ─── Loading (submitting) screen ───
   if (step === "loading") {
     return (
-      <div style={{ minHeight: "100vh", background: "var(--creme, #FAF8F5)", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 16 }}>
+      <div style={{ minHeight: "100dvh", background: "var(--creme, #FAF8F5)", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 16 }}>
         <Spinner />
         <p style={{ fontSize: 15, color: "var(--pierre, #9C958D)", fontWeight: 500 }}>Validation en cours...</p>
       </div>
@@ -373,7 +373,7 @@ export default function ValidationPage() {
 
   // ─── Form ───
   return (
-    <div style={{ minHeight: "100vh", background: "var(--creme, #FAF8F5)" }}>
+    <div style={{ minHeight: "100dvh", background: "var(--creme, #FAF8F5)" }}>
       {/* Progress bar */}
       <div style={{ position: "sticky", top: 0, zIndex: 50, background: "var(--blanc, #FFFFFF)", borderBottom: "1px solid var(--g100, #EDEBE7)" }}>
         <div style={{ height: 4, background: "var(--g200, #E0DDD8)", width: "100%" }}>

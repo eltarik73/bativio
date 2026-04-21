@@ -7,6 +7,7 @@ import type { ArtisanPublic } from "@/lib/api";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { safeJsonLd } from "@/lib/html-escape";
+import { getSchemaTypeForMetier } from "@/lib/schema-types";
 import VitrineClassique from "@/components/vitrines/VitrineClassique";
 import VitrinePortfolio from "@/components/vitrines/VitrinePortfolio";
 import VitrineModerne from "@/components/vitrines/VitrineModerne";
@@ -258,7 +259,7 @@ export default async function SlugPage({
           dangerouslySetInnerHTML={{
             __html: safeJsonLd({
               "@context": "https://schema.org",
-              "@type": "LocalBusiness",
+              "@type": getSchemaTypeForMetier(a.metierSlug),
               name: a.nomAffichage,
               description: seoGen?.metaDescription || a.description || "",
               telephone: a.telephone || "",
@@ -281,7 +282,24 @@ export default async function SlugPage({
                 a.nombreAvis > 0
                   ? { "@type": "AggregateRating", ratingValue: a.noteMoyenne, reviewCount: a.nombreAvis, bestRating: 5 }
                   : undefined,
-              priceRange: "$$",
+              priceRange: "EUR",
+              dateModified: new Date().toISOString(),
+            }),
+          }}
+        />
+
+        {/* BreadcrumbList JSON-LD */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: safeJsonLd({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Accueil", item: "https://www.bativio.fr/" },
+                { "@type": "ListItem", position: 2, name: a.ville || villeSlug, item: `https://www.bativio.fr/${villeSlug}` },
+                { "@type": "ListItem", position: 3, name: a.nomAffichage, item: `https://www.bativio.fr/${villeSlug}/${a.slug}` },
+              ],
             }),
           }}
         />
@@ -379,12 +397,28 @@ export default async function SlugPage({
       </main>
       <Footer />
 
+      {/* BreadcrumbList JSON-LD pour SERP navigation rich snippet */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: safeJsonLd({
             "@context": "https://schema.org",
-            "@type": "LocalBusiness",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Accueil", item: "https://www.bativio.fr/" },
+              { "@type": "ListItem", position: 2, name: a.ville || villeSlug, item: `https://www.bativio.fr/${villeSlug}` },
+              { "@type": "ListItem", position: 3, name: a.nomAffichage, item: `https://www.bativio.fr/${villeSlug}/${a.slug}` },
+            ],
+          }),
+        }}
+      />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: safeJsonLd({
+            "@context": "https://schema.org",
+            "@type": getSchemaTypeForMetier(a.metierSlug),
             name: a.nomAffichage,
             description: a.description || "",
             telephone: a.telephone || "",
@@ -420,7 +454,8 @@ export default async function SlugPage({
                     bestRating: 5,
                   }
                 : undefined,
-            priceRange: "$$",
+            priceRange: "EUR",
+            dateModified: new Date().toISOString(),
             ...((a.horaires ?? []).length > 0
               ? {
                   openingHoursSpecification: (a.horaires ?? [])

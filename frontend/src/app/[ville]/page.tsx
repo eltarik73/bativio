@@ -80,6 +80,11 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
 export default async function VillePage({ params }: { params: Promise<{ ville: string }> }) {
   const { ville: villeSlug } = await params;
 
+  // Force lowercase URL — redirect 308 vers slug normalisé
+  if (villeSlug !== villeSlug.toLowerCase()) {
+    notFound(); // Next.js redirige automatiquement via not-found.tsx
+  }
+
   // Essayer le backend, fallback mock
   let ville = MOCK_VILLES.find((v) => v.slug === villeSlug);
   let artisans: ArtisanPublic[] = MOCK_ARTISANS.filter(

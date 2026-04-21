@@ -4,7 +4,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 64px);
+  height: calc(100dvh - 64px);
   background: var(--creme, #FAF8F5);
   overflow: hidden;
 }
@@ -426,7 +426,7 @@
 /* Responsive: mobile */
 @media (max-width: 640px) {
   .container {
-    height: calc(100vh - 60px);
+    height: calc(100dvh - 60px);
   }
 
   .inputBar {

@@ -31,8 +31,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <ProtectedRoute requireAdmin>
-      <div style={{ display: "flex", minHeight: "100vh", background: "#FAF8F5" }}>
-        <aside style={{ width: 260, flexShrink: 0, background: "#1C1C1E", display: "flex", flexDirection: "column", height: "100vh", position: "sticky", top: 0, overflow: "hidden" }} className="hidden md:flex">
+      <div style={{ display: "flex", minHeight: "100dvh", background: "#FAF8F5" }}>
+        <aside style={{ width: 260, flexShrink: 0, background: "#1C1C1E", display: "flex", flexDirection: "column", height: "100dvh", position: "sticky", top: 0, overflow: "hidden" }} className="hidden md:flex">
           <Link href="/admin" style={{ textDecoration: "none", padding: "24px 16px 0 30px", marginBottom: 36, display: "flex", alignItems: "baseline", gap: 8, flexShrink: 0 }}>
             <span style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#fff", letterSpacing: -0.3 }}>Bativio</span>
             <span style={{ fontSize: 11, color: "rgba(255,255,255,.4)", fontWeight: 500 }}>Admin</span>
