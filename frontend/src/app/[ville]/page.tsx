@@ -21,6 +21,11 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ ville: string }> }): Promise<Metadata> {
   const { ville: villeSlug } = await params;
 
+  // SEO: lowercase enforce + 404 immédiat pour slugs invalides
+  if (villeSlug !== villeSlug.toLowerCase()) {
+    notFound();
+  }
+
   // Check if this is a metier-ville composite slug
   const knownVille = VILLES.find((v) => v.slug === villeSlug);
   if (!knownVille) {
@@ -47,6 +52,8 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
       const description = `Trouvez les meilleurs ${metierName.toLowerCase()}s à ${villeName}. Comparez les artisans, demandez un devis gratuit.`;
       return { title, description, alternates: { canonical: `https://www.bativio.fr/${villeSlug}` }, openGraph: { title, description, url: `https://www.bativio.fr/${villeSlug}` } };
     }
+    // Pas une ville connue ET pas un metier-ville → 404 immédiat
+    notFound();
   }
 
   let nom = villeSlug;
