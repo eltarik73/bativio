@@ -69,7 +69,7 @@ export default function AProposPage() {
           </div>
 
           {/* Equipe / Fondateur */}
-          <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, color: "var(--bois)", marginBottom: 18, fontWeight: 700 }}>L&apos;\u00e9quipe</h2>
+          <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, color: "var(--bois)", marginBottom: 18, fontWeight: 700 }}>L&apos;&eacute;quipe</h2>
           <div style={{ background: "#fff", border: "1px solid #EDEBE7", borderRadius: 14, padding: 24, display: "flex", gap: 20, alignItems: "flex-start", flexWrap: "wrap", marginBottom: 32 }}>
             <div style={{ width: 96, height: 96, borderRadius: "50%", background: "linear-gradient(135deg,#C4531A,#C9943A)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Fraunces',serif", fontSize: 32, fontWeight: 700, flexShrink: 0 }}>TB</div>
             <div style={{ flex: 1, minWidth: 200 }}>
@@ -100,7 +100,7 @@ export default function AProposPage() {
 
           <div style={{ background: "var(--bois)", color: "#fff", borderRadius: 14, padding: 28, textAlign: "center" }}>
             <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, marginBottom: 10, fontWeight: 600 }}>Une question, un partenariat&nbsp;?</h3>
-            <p style={{ fontSize: 14, color: "rgba(255,255,255,.7)", marginBottom: 18 }}>L&apos;\u00e9quipe r&eacute;pond sous 24h ouvr&eacute;es.</p>
+            <p style={{ fontSize: 14, color: "rgba(255,255,255,.7)", marginBottom: 18 }}>L&apos;&eacute;quipe r&eacute;pond sous 24h ouvr&eacute;es.</p>
             <Link href="mailto:contact@bativio.fr" style={{ display: "inline-block", background: "var(--terre)", color: "#fff", padding: "12px 26px", borderRadius: 10, textDecoration: "none", fontWeight: 600 }}>Nous contacter</Link>
           </div>
         </section>
