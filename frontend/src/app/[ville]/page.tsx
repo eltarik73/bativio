@@ -200,12 +200,13 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
         </section>
 
         {/* Filters + Grid (client) */}
-        <VilleClient artisans={artisans} villeSlug={villeSlug} metiers={metiers} />
+        <VilleClient artisans={artisans} villeSlug={villeSlug} metiers={metiers} villeNom={ville?.nom || villeSlug} />
 
         {/* SEO content */}
         {ville?.contenuSeo && (
-          <section className="px-7 py-12 max-md:px-4 border-t border-g100">
-            <div className="max-w-[800px] mx-auto prose prose-sm prose-headings:font-display prose-headings:text-anthracite prose-p:text-g500 prose-strong:text-anthracite prose-li:text-g500"
+          <section style={{ padding: "48px 24px", borderTop: "1px solid var(--sable,#E8D5C0)", background: "#fff" }}>
+            <div
+              className="bv-seo-content"
               dangerouslySetInnerHTML={{ __html: sanitizeAdminHtml(ville.contenuSeo) }}
             />
           </section>

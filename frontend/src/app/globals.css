@@ -167,6 +167,22 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .card:hover .card-cta{background:var(--anthracite,#1C1C1E)}
 .card-cta svg{stroke:currentColor;flex-shrink:0}
 
+/* ═══ SEO CONTENT (contenuSeo admin / dangerouslySetInnerHTML) ═══ */
+.bv-seo-content{max-width:800px;margin:0 auto;color:#5C4A3A;line-height:1.7;font-size:16px}
+.bv-seo-content h1,.bv-seo-content h2,.bv-seo-content h3,.bv-seo-content h4{font-family:'Fraunces',serif;color:var(--anthracite,#1C1C1E);line-height:1.25;font-weight:600}
+.bv-seo-content h2{font-size:28px;margin:36px 0 14px;letter-spacing:-.5px}
+.bv-seo-content h3{font-size:21px;margin:28px 0 10px}
+.bv-seo-content h4{font-size:17px;margin:22px 0 8px}
+.bv-seo-content p{margin:0 0 16px}
+.bv-seo-content ul,.bv-seo-content ol{margin:0 0 16px;padding-left:24px}
+.bv-seo-content li{margin:4px 0;line-height:1.6}
+.bv-seo-content strong{color:var(--anthracite,#1C1C1E);font-weight:600}
+.bv-seo-content a{color:var(--terre,#C4531A);text-decoration:underline;text-underline-offset:2px}
+.bv-seo-content a:hover{text-decoration:none}
+.bv-seo-content hr{border:none;border-top:1px solid var(--sable,#E8D5C0);margin:32px 0}
+.bv-seo-content>:first-child{margin-top:0}
+.bv-seo-content>:last-child{margin-bottom:0}
+
 /* ═══ TRUST SECTION ═══ */
 .trust-section{padding:40px 32px;background:var(--blanc);border-top:1px solid var(--g100);border-bottom:1px solid var(--g100)}
 .trust-inner{max-width:1100px;margin:0 auto;text-align:center}

@@ -64,6 +64,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/guides/trouver-bon-artisan`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
     { url: `${baseUrl}/guides/prix-renovation-salle-bain`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
     { url: `${baseUrl}/guides/maprimerenov-demarches`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
+    { url: `${baseUrl}/plan-du-site`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.4 },
   ];
 
   const prixMetierPages: MetadataRoute.Sitemap = METIERS_SLUGS.map((metier) => ({
