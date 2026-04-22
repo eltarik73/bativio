@@ -33,40 +33,30 @@ export const METIER_COLORS: Record<string, string> = {
   autre: "rgba(100,100,100,.9)",
 };
 
-export const METIER_PHOTOS: Record<string, string> = {
-  // GROS OEUVRE
-  macon: "https://images.unsplash.com/photo-1517581177682-a085bb7ffb15?w=400&h=400&fit=crop&crop=center",
-  couvreur: "https://images.unsplash.com/photo-1632759145351-1d592919f522?w=400&h=400&fit=crop&crop=center",
-  charpentier: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=400&fit=crop&crop=center",
-  terrassier: "https://images.unsplash.com/photo-1581094288338-2314dddb7ece?w=400&h=400&fit=crop&crop=center",
-  demolition: "https://images.unsplash.com/photo-1517581177682-a085bb7ffb15?w=400&h=400&fit=crop&crop=center",
-  // SECOND OEUVRE
-  plombier: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=400&fit=crop&crop=center",
-  electricien: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=400&h=400&fit=crop&crop=center",
-  peintre: "https://images.unsplash.com/photo-1562259929-b4e1fd3aef09?w=400&h=400&fit=crop&crop=center",
-  carreleur: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=400&h=400&fit=crop&crop=center",
-  menuisier: "https://images.unsplash.com/photo-1588854337236-6889d631faa8?w=400&h=400&fit=crop&crop=center",
-  chauffagiste: "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&h=400&fit=crop&crop=center",
-  platrier: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=400&fit=crop&crop=center",
-  solier: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=400&h=400&fit=crop&crop=center",
-  vitrier: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=400&fit=crop&crop=center",
-  isolation: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=400&fit=crop&crop=center",
-  // SPECIALITES
-  serrurier: "https://images.unsplash.com/photo-1588854337236-6889d631faa8?w=400&h=400&fit=crop&crop=center",
-  cuisiniste: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop&crop=center",
-  paysagiste: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=400&fit=crop&crop=center",
-  pisciniste: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=400&h=400&fit=crop&crop=center",
-  domoticien: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=400&h=400&fit=crop&crop=center",
-  alarme: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=400&h=400&fit=crop&crop=center",
-  ramoneur: "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&h=400&fit=crop&crop=center",
-  // EXTERIEUR
-  cloturiste: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=400&fit=crop&crop=center",
-  "paysagiste-ext": "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=400&fit=crop&crop=center",
-  assainissement: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=400&fit=crop&crop=center",
-  etancheite: "https://images.unsplash.com/photo-1632759145351-1d592919f522?w=400&h=400&fit=crop&crop=center",
-  // AUTRE
-  autre: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=400&fit=crop&crop=center",
-};
+// Génère un SVG data URI à partir de la couleur + icône du métier (fini les Unsplash génériques).
+// Gradient diagonal avec couleur métier + icône blanche centrale.
+function buildMetierPhotoSvg(slug: string): string {
+  const rgbaColor = METIER_COLORS[slug] || METIER_COLORS.autre;
+  // Convert rgba(...) → couleur opaque + variante plus sombre pour gradient
+  const m = rgbaColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  const [r, g, b] = m ? [parseInt(m[1]), parseInt(m[2]), parseInt(m[3])] : [60, 60, 60];
+  const c1 = `rgb(${r},${g},${b})`;
+  const c2 = `rgb(${Math.max(0, r - 40)},${Math.max(0, g - 40)},${Math.max(0, b - 40)})`;
+  const iconPaths = METIER_ICONS[slug] || METIER_ICONS.autre;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><rect width="400" height="400" fill="url(#g)"/><g transform="translate(120 120) scale(6.67)" fill="none" stroke="#ffffff" stroke-opacity="0.95" stroke-width="1.5">${iconPaths}</g></svg>`;
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+}
+
+// Proxy : lazy-build du data URI à la première lecture (pas de calcul si pas utilisé)
+const METIER_PHOTOS_CACHE: Record<string, string> = {};
+export const METIER_PHOTOS: Record<string, string> = new Proxy({} as Record<string, string>, {
+  get(_, key: string) {
+    if (!METIER_PHOTOS_CACHE[key]) {
+      METIER_PHOTOS_CACHE[key] = buildMetierPhotoSvg(key);
+    }
+    return METIER_PHOTOS_CACHE[key];
+  },
+});
 
 export const METIER_ICONS: Record<string, string> = {
   // GROS OEUVRE
