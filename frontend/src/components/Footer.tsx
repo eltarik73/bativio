@@ -19,6 +19,7 @@ export default function Footer() {
             <Link href="/grenoble">Artisans Grenoble</Link>
             <Link href="/lyon">Artisans Lyon</Link>
             <Link href="/valence">Artisans Valence</Link>
+            <Link href="/urgence" style={{ color: "#dc2626", fontWeight: 600 }}>Urgence 24/7</Link>
           </div>
           <div className="footer-col">
             <div className="footer-col-title">Pour les artisans</div>
@@ -27,6 +28,8 @@ export default function Footer() {
             <Link href="/facturation-electronique">Facturation &eacute;lectronique</Link>
             <Link href="/comparatif/pagesjaunes">vs PagesJaunes</Link>
             <Link href="/comparatif/habitatpresto">vs Habitatpresto</Link>
+            <Link href="/comparatif/obat">vs Obat</Link>
+            <Link href="/comparatif/tolteck">vs Tolteck</Link>
           </div>
           <div className="footer-col">
             <div className="footer-col-title">Bativio</div>
