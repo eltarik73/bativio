@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-function FullscreenState({ title, sub, cta }: { title: string; sub: string; cta?: { href: string; label: string } }) {
+function LoadingState({ title, sub }: { title: string; sub: string }) {
   return (
     <div
       style={{
@@ -37,15 +36,45 @@ function FullscreenState({ title, sub, cta }: { title: string; sub: string; cta?
           {sub}
         </p>
       </div>
-      {cta && (
-        <Link href={cta.href} style={{ marginTop: 8, padding: "10px 22px", background: "var(--terre,#C4531A)", color: "#fff", borderRadius: 99, fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
-          {cta.label}
-        </Link>
-      )}
     </div>
   );
 }
 
+function ActionState({ title, sub, cta }: { title: string; sub: string; cta: { href: string; label: string } }) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "60vh",
+        padding: "40px 24px",
+        textAlign: "center",
+        gap: 18,
+      }}
+    >
+      <div style={{ fontSize: 44 }}>🔒</div>
+      <div>
+        <p style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 600, color: "var(--anthracite,#1C1C1E)", marginBottom: 8 }}>
+          {title}
+        </p>
+        <p style={{ fontSize: 14, color: "var(--bois-mid,#5C4A3A)", maxWidth: 440, lineHeight: 1.55 }}>
+          {sub}
+        </p>
+      </div>
+      <Link href={cta.href} style={{ marginTop: 4, padding: "12px 28px", background: "var(--terre,#C4531A)", color: "#fff", borderRadius: 99, fontSize: 14, fontWeight: 600, textDecoration: "none" }}>
+        {cta.label}
+      </Link>
+    </div>
+  );
+}
+
+/**
+ * ProtectedRoute — plus de router.replace auto (cause des boucles quand middleware
+ * redirige /connexion → /dashboard). Affiche un état clair avec bouton à cliquer.
+ * Grace period 2.5s pour laisser fetchMe se terminer avant de déclarer "non auth".
+ */
 export default function ProtectedRoute({
   children,
   requireAdmin = false,
@@ -54,18 +83,17 @@ export default function ProtectedRoute({
   requireAdmin?: boolean;
 }) {
   const { isAuthenticated, isAdmin, loading } = useAuth();
-  const router = useRouter();
+  const [graceElapsed, setGraceElapsed] = useState(false);
 
   useEffect(() => {
-    if (!loading) {
-      if (!isAuthenticated) router.replace("/connexion");
-      else if (requireAdmin && !isAdmin) router.replace("/dashboard");
-    }
-  }, [loading, isAuthenticated, isAdmin, requireAdmin, router]);
+    const t = setTimeout(() => setGraceElapsed(true), 2500);
+    return () => clearTimeout(t);
+  }, []);
 
-  if (loading) {
+  // Pendant le chargement OU pendant la grace period → afficher loading
+  if (loading || (!isAuthenticated && !graceElapsed)) {
     return (
-      <FullscreenState
+      <LoadingState
         title="Chargement de votre espace…"
         sub="On vérifie votre session Bativio."
       />
@@ -74,9 +102,9 @@ export default function ProtectedRoute({
 
   if (!isAuthenticated) {
     return (
-      <FullscreenState
-        title="Session expirée"
-        sub="Votre session a expiré. Reconnectez-vous pour accéder à votre espace."
+      <ActionState
+        title="Connexion requise"
+        sub="Pour accéder à cette page, connectez-vous à votre espace artisan."
         cta={{ href: "/connexion", label: "Se connecter" }}
       />
     );
@@ -84,9 +112,9 @@ export default function ProtectedRoute({
 
   if (requireAdmin && !isAdmin) {
     return (
-      <FullscreenState
+      <ActionState
         title="Accès restreint"
-        sub="Cette page est réservée à l'équipe Bativio. Retour au tableau de bord."
+        sub="Cette section est réservée à l'équipe Bativio. Retour au tableau de bord."
         cta={{ href: "/dashboard", label: "Retour dashboard" }}
       />
     );
