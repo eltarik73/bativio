@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { getSession } from "@/lib/auth-server";
+import { getSession, clearAuthCookie } from "@/lib/auth-server";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { getEffectivePlan } from "@/lib/plan-gates";
 
@@ -24,11 +24,14 @@ export async function GET() {
     });
 
     if (!artisan) {
-      // User connecté mais pas d'artisan : soit ADMIN pur, soit compte non fini
-      // On retourne un profil minimal pour que le client sache que l'utilisateur EST
-      // authentifié (évite la boucle /connexion ↔ /dashboard causée par un 404).
+      // User connecté mais pas d'artisan : soit ADMIN pur, soit compte non fini, soit user supprimé (orphelin JWT)
       const user = await prisma.user.findUnique({ where: { id: session.userId }, select: { email: true, role: true } });
-      if (!user) return apiError("Utilisateur introuvable", 404);
+      if (!user) {
+        // JWT valide mais user supprimé : clear cookie + 401 pour éviter boucle /connexion ↔ /dashboard
+        await clearAuthCookie();
+        return apiError("Session invalide (utilisateur supprimé). Reconnectez-vous.", 401);
+      }
+      // User existe mais pas d'artisan : profil minimal (client peut rediriger vers /inscription)
       return apiSuccess({
         id: "",
         nomAffichage: user.email.split("@")[0],
@@ -41,7 +44,7 @@ export async function GET() {
         email: user.email,
         role: user.role,
         artisanStatus: "NO_ARTISAN",
-        artisanMissing: true, // flag pour que le dashboard redirige vers /inscription
+        artisanMissing: true,
       });
     }
 
