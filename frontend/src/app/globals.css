@@ -28,7 +28,7 @@
   --color-green: #22c55e;
   --font-display: "Fraunces", serif;
   --font-body: "Karla", sans-serif;
-  --font-calli: "Fraunces", serif;
+  --font-calli: var(--font-playfair), "Playfair Display", serif;
 }
 
 :root{--terre:#C4531A;--terre-h:#D4733A;--terre-deep:#8B3A12;--anthracite:#1C1C1E;--or:#C9943A;--or-light:#FDF5E8;--creme:#FAF8F5;--blanc:#FFFFFF;--sable:#E8D5C0;--sable-light:#F2EAE0;--bois:#3D2E1F;--bois-mid:#5C4A3A;--argile:#D4956B;--mousse:#4A6741;--mousse-light:#E8F0E6;--pierre:#9C958D;--g50:#F7F5F2;--g100:#EDEBE7;--g200:#E0DDD8;--g300:#C5C0B9;--g400:#9B9590;--g500:#6B6560;--green:#22c55e}
@@ -163,6 +163,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .card:hover .card-arr{background:var(--terre)}
 .card:hover .card-arr svg{stroke:var(--blanc)}
 .card-arr svg{width:15px;height:15px;stroke:var(--g400);stroke-width:2;fill:none}
+.card-cta{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:8px;background:var(--terre,#C4531A);color:#fff;font-size:12px;font-weight:600;flex-shrink:0;transition:background .2s;white-space:nowrap;line-height:1}
+.card:hover .card-cta{background:var(--anthracite,#1C1C1E)}
+.card-cta svg{stroke:currentColor;flex-shrink:0}
 
 /* ═══ TRUST SECTION ═══ */
 .trust-section{padding:40px 32px;background:var(--blanc);border-top:1px solid var(--g100);border-bottom:1px solid var(--g100)}

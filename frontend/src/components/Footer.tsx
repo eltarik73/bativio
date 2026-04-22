@@ -40,7 +40,7 @@ export default function Footer() {
             Artisans v&eacute;rifi&eacute;s &middot; Donn&eacute;es prot&eacute;g&eacute;es &middot; Z&eacute;ro commission
           </div>
           <div className="footer-copy">
-            &copy; 2026 Bativio &middot; Fabriqu&eacute; &agrave; Chamb&eacute;ry avec &#10084;&#65039;
+            &copy; 2026 Bativio &middot; Fabriqu&eacute; &agrave; Chamb&eacute;ry
           </div>
         </div>
       </div>

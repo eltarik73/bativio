@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import { safeJsonLd } from "@/lib/html-escape";
 
 export const metadata: Metadata = {
-  title: "Facturation électronique pour artisans — Bativio est prêt",
+  title: "Facturation électronique pour artisans — prête 09/2026",
   description:
     "Obligation sept. 2026 : recevez et émettez vos factures électroniques. Bativio est connecté à une plateforme agréée. Conforme, simple, intégré.",
   alternates: { canonical: "https://www.bativio.fr/facturation-electronique" },

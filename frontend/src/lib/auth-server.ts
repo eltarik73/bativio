@@ -2,8 +2,11 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import bcrypt from "bcryptjs";
 
-if (!process.env.JWT_SECRET && process.env.NODE_ENV === "production") {
-  throw new Error("JWT_SECRET obligatoire en production");
+if (!process.env.JWT_SECRET) {
+  if (process.env.NODE_ENV !== "development") {
+    throw new Error("JWT_SECRET obligatoire (fallback accepté uniquement en NODE_ENV=development)");
+  }
+  console.warn("⚠️ auth-server: JWT_SECRET absent — fallback dev utilisé");
 }
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "dev-secret-change-in-production");
 const COOKIE_NAME = "bativio-session";

@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Prix travaux 2026 Rhône-Alpes — Base tarifaire artisans | Bativio",
+  title: "Prix travaux 2026 Rhône-Alpes — Base tarifaire artisans",
   description: "Consultez les prix moyens des travaux par métier en Rhône-Alpes en 2026. Plus de 250 prestations : plomberie, électricité, peinture, carrelage, maçonnerie, menuiserie, couverture, chauffage, serrurerie. Prix HT bas/moyen/haut.",
   openGraph: {
     title: "Prix travaux 2026 Rhône-Alpes — Bativio",

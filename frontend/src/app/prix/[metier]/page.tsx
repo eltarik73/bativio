@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const info = METIERS_INFO[metier];
   if (!info) return { title: "Métier introuvable" };
   return {
-    title: `Prix ${info.nom} 2026 Rhône-Alpes — Tarifs travaux ${info.pluriel} | Bativio`,
+    title: `Prix ${info.nom} 2026 Rhône-Alpes — Tarifs travaux ${info.pluriel}`,
     description: `Découvrez les prix 2026 des travaux de ${info.nom.toLowerCase()} en Rhône-Alpes : ${info.description}. Fourchettes HT bas/moyen/haut par prestation.`,
   };
 }

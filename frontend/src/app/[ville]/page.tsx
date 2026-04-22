@@ -88,7 +88,9 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
     const mock = MOCK_VILLES.find((v) => v.slug === villeSlug);
     nom = mock?.nom || villeSlug;
   }
-  const title = seoTitle || `Artisans du bâtiment à ${nom}`;
+  // Layout template adds "| Bativio" → strip any pre-existing "| Bativio" / "— Bativio" to avoid duplication
+  const rawTitle = seoTitle || `Artisans du bâtiment à ${nom}`;
+  const title = rawTitle.replace(/\s*[|—\-–]\s*Bativio\s*$/i, "").trim();
   const description = seoDesc || `Trouvez les meilleurs artisans du bâtiment à ${nom}. Plombier, électricien, peintre, maçon. Devis gratuit, zéro commission.`;
   return {
     title,

@@ -13,6 +13,23 @@ const nextConfig: NextConfig = {
         { key: "X-Content-Type-Options", value: "nosniff" },
         { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
         { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(self)" },
+        {
+          key: "Content-Security-Policy",
+          value: [
+            "default-src 'self'",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://va.vercel-scripts.com",
+            "style-src 'self' 'unsafe-inline'",
+            "img-src 'self' data: blob: https://res.cloudinary.com https://images.unsplash.com https://placehold.co",
+            "font-src 'self' data:",
+            "connect-src 'self' https://api.stripe.com https://*.invoquo.vercel.app https://invoquo.vercel.app https://recherche-entreprises.api.gouv.fr https://vitals.vercel-insights.com",
+            "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://invoquo.vercel.app https://*.invoquo.vercel.app",
+            "object-src 'none'",
+            "base-uri 'self'",
+            "form-action 'self'",
+            "frame-ancestors 'none'",
+            "upgrade-insecure-requests",
+          ].join("; "),
+        },
       ],
     },
     {

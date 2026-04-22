@@ -24,6 +24,22 @@ export async function POST(request: NextRequest) {
     return new Response("Invalid signature", { status: 400 });
   }
 
+  // Idempotence : skip if already processed (Stripe retry safe)
+  try {
+    await prisma.stripeWebhookEvent.create({
+      data: { id: event.id, type: event.type },
+    });
+  } catch (err: unknown) {
+    // Unique violation → already processed, return 200 to acknowledge
+    const code = (err as { code?: string })?.code;
+    if (code === "P2002") {
+      console.log(`[STRIPE] Event ${event.id} already processed, skipping`);
+      return new Response("OK (duplicate)", { status: 200 });
+    }
+    console.error("[STRIPE] Idempotence check failed:", err);
+    // Continue anyway — better double-process than lose event
+  }
+
   try {
     switch (event.type) {
       case "checkout.session.completed": {

@@ -12,14 +12,17 @@ export async function GET(request: NextRequest) {
     const lat = searchParams.get("lat") ? parseFloat(searchParams.get("lat")!) : null;
     const lon = searchParams.get("lon") ? parseFloat(searchParams.get("lon")!) : null;
     const radius = searchParams.get("radius") ? parseFloat(searchParams.get("radius")!) : 30;
-    const page = parseInt(searchParams.get("page") || "0", 10);
-    const size = parseInt(searchParams.get("size") || "20", 10);
+    const page = Math.max(0, parseInt(searchParams.get("page") || "0", 10));
+    const rawSize = parseInt(searchParams.get("size") || "20", 10);
+    const size = Math.min(50, Math.max(1, isNaN(rawSize) ? 20 : rawSize));
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const where: any = {
       actif: true,
       visible: true,
       deletedAt: null,
+      profilCompletion: { gte: 70 },
+      NOT: { slug: { startsWith: "test-" } },
     };
 
     // Filter by ville — resolve slug to display name first
@@ -62,19 +65,34 @@ export async function GET(request: NextRequest) {
     const [artisans, totalElements] = await Promise.all([
       prisma.artisan.findMany({
         where,
-        include: {
-          metier: true,
+        select: {
+          id: true,
+          nomAffichage: true,
+          slug: true,
+          description: true,
+          ville: true,
+          codePostal: true,
+          noteMoyenne: true,
+          nombreAvis: true,
+          experienceAnnees: true,
+          plan: true,
+          planOverride: true,
+          planOverrideExpireAt: true,
+          latitude: true,
+          longitude: true,
+          zoneRayonKm: true,
+          metier: { select: { nom: true, slug: true, icone: true } },
           photos: {
+            select: { id: true, url: true, titre: true, type: true, ordre: true },
             take: 3,
             orderBy: { ordre: "asc" },
           },
-          badges: true,
-          artisanMetiers: {
-            include: { metier: { select: { id: true, nom: true, slug: true, icone: true } } },
-            orderBy: { principal: "desc" },
-          },
+          badges: { select: { id: true, nom: true, type: true, icone: true, couleur: true } },
         },
-        orderBy: { noteMoyenne: "desc" },
+        orderBy: [
+          { plan: "desc" },
+          { noteMoyenne: "desc" },
+        ],
         skip: page * size,
         take: size,
       }),
@@ -106,7 +124,7 @@ export async function GET(request: NextRequest) {
         .sort((a, b) => (a._distance ?? 999) - (b._distance ?? 999));
     }
 
-    // Sort by plan: Business first, then Pro, then Starter, then Gratuit
+    // Re-sort by effective plan (handles planOverride) then noteMoyenne
     const PLAN_HIERARCHY = ["gratuit", "starter", "pro", "business"];
     sortedArtisans.sort((a, b) => {
       const planA = PLAN_HIERARCHY.indexOf(getEffectivePlan(a));
@@ -115,6 +133,7 @@ export async function GET(request: NextRequest) {
       return (b.noteMoyenne || 0) - (a.noteMoyenne || 0);
     });
 
+    // Public payload — expose effective plan only, no planOverride/planOverrideExpireAt leak
     const content = sortedArtisans.map((a) => ({
       id: a.id,
       nomAffichage: a.nomAffichage,
@@ -125,9 +144,7 @@ export async function GET(request: NextRequest) {
       noteMoyenne: a.noteMoyenne,
       nombreAvis: a.nombreAvis,
       experienceAnnees: a.experienceAnnees,
-      plan: a.plan,
-      planOverride: a.planOverride ?? null,
-      planOverrideExpireAt: a.planOverrideExpireAt?.toISOString() ?? null,
+      plan: getEffectivePlan(a).toUpperCase(),
       distance: (a as unknown as { _distance?: number })._distance ?? null,
       metierNom: a.metier?.nom ?? null,
       metierSlug: a.metier?.slug ?? null,
