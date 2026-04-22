@@ -8,6 +8,7 @@ import { getVille, getMetiers } from "@/lib/api";
 import type { ArtisanPublic, MetierData } from "@/lib/api";
 import { VILLES } from "@/lib/constants";
 import VilleClient from "./VilleClient";
+import UrgenceFab from "@/components/UrgenceFab";
 import { safeJsonLd, sanitizeAdminHtml } from "@/lib/html-escape";
 import { prisma } from "@/lib/prisma";
 import MetierVilleListing from "./MetierVilleListing";
@@ -211,6 +212,7 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
         )}
       </main>
       <Footer />
+      <UrgenceFab />
 
       {/* JSON-LD ItemList */}
       <script
