@@ -1,17 +1,58 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import ArtisanCard from "@/components/ArtisanCard";
 import type { ArtisanPublic, MetierData } from "@/lib/api";
+
+function EmptyState({ villeNom, isFilter }: { villeNom: string; isFilter: boolean }) {
+  return (
+    <div style={{ maxWidth: 640, margin: "40px auto", padding: "48px 32px", background: "#fff", border: "1px solid var(--sable,#E8D5C0)", borderRadius: 20, textAlign: "center", boxShadow: "0 10px 30px rgba(28,28,30,.04)" }}>
+      <div style={{ fontSize: 48, marginBottom: 14 }}>🏗️</div>
+      <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 26, fontWeight: 600, color: "var(--anthracite,#1C1C1E)", marginBottom: 10, lineHeight: 1.15 }}>
+        {isFilter ? `Pas encore d'artisan dans cette catégorie` : `Bativio arrive à ${villeNom}`}
+      </h3>
+      <p style={{ fontSize: 15, lineHeight: 1.55, color: "var(--bois-mid,#5C4A3A)", marginBottom: 28, maxWidth: 440, margin: "0 auto 28px" }}>
+        {isFilter
+          ? "Essayez un autre métier ou revenez bientôt — de nouveaux artisans s'inscrivent chaque semaine."
+          : `Nous recrutons actuellement des artisans BTP à ${villeNom} et dans les environs. En attendant, utilisez notre assistant IA pour décrire votre projet — nous trouverons un artisan adapté dans votre zone.`}
+      </p>
+
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center", marginBottom: 36 }}>
+        <Link href="/demande" style={{ padding: "12px 24px", background: "var(--terre,#C4531A)", color: "#fff", borderRadius: 99, fontSize: 14, fontWeight: 600, textDecoration: "none" }}>
+          Décrire mon projet →
+        </Link>
+        <Link href="/" style={{ padding: "12px 24px", background: "transparent", color: "var(--terre,#C4531A)", borderRadius: 99, fontSize: 14, fontWeight: 600, textDecoration: "none", border: "1px solid var(--terre,#C4531A)" }}>
+          Voir autres villes
+        </Link>
+      </div>
+
+      <div style={{ padding: "24px 24px", background: "var(--creme,#FAF8F5)", borderRadius: 14, border: "1px solid var(--sable,#E8D5C0)" }}>
+        <p style={{ fontSize: 12, fontWeight: 700, color: "var(--terre,#C4531A)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
+          Vous êtes artisan à {villeNom} ?
+        </p>
+        <p style={{ fontSize: 14, color: "var(--bois-mid,#5C4A3A)", lineHeight: 1.5, marginBottom: 14 }}>
+          Inscrivez-vous gratuitement et devenez le premier artisan référencé ici. Sans engagement, sans carte bancaire.
+        </p>
+        <Link href="/inscription" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 22px", background: "var(--anthracite,#1C1C1E)", color: "#fff", borderRadius: 99, fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
+          Créer ma page artisan
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+        </Link>
+      </div>
+    </div>
+  );
+}
 
 export default function VilleClient({
   artisans,
   villeSlug,
   metiers,
+  villeNom,
 }: {
   artisans: ArtisanPublic[];
   villeSlug: string;
   metiers: MetierData[];
+  villeNom?: string;
 }) {
   const [metierFilter, setMetierFilter] = useState("all");
 
@@ -66,10 +107,7 @@ export default function VilleClient({
             ))}
           </div>
         ) : (
-          <div className="text-center py-14">
-            <h3 className="font-display text-lg mb-[6px]">Aucun artisan trouvé</h3>
-            <p className="text-[13px] text-g400">De nouveaux artisans s&apos;inscrivent chaque semaine.</p>
-          </div>
+          <EmptyState villeNom={villeNom || villeSlug} isFilter={metierFilter !== "all"} />
         )}
       </div>
     </>

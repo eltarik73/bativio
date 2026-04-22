@@ -200,7 +200,7 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
         </section>
 
         {/* Filters + Grid (client) */}
-        <VilleClient artisans={artisans} villeSlug={villeSlug} metiers={metiers} />
+        <VilleClient artisans={artisans} villeSlug={villeSlug} metiers={metiers} villeNom={ville?.nom || villeSlug} />
 
         {/* SEO content */}
         {ville?.contenuSeo && (
