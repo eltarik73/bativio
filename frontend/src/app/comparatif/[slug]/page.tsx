@@ -133,7 +133,7 @@ export const dynamicParams = false;
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const c = COMPARATIFS[slug];
-  if (!c) return { title: "Comparatif introuvable" };
+  if (!c) notFound(); // vrai HTTP 404 dès la metadata (anti soft-404 Google)
   return {
     title: `Bativio vs ${c.theirName} — Comparatif 2026 pour artisans BTP`,
     description: `${c.heroHook} Comparaison détaillée : prix, engagement, features, support.`,
