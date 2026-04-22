@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Décrire mon projet — Estimation IA gratuite | Bativio",
+  title: "Décrire mon projet — Estimation IA gratuite",
   description:
     "Décrivez votre projet de travaux en 2 minutes. L'IA Bativio estime le prix immédiatement et envoie votre demande aux meilleurs artisans Rhône-Alpes.",
   alternates: { canonical: "https://www.bativio.fr/demande" },

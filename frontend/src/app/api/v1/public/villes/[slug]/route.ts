@@ -22,6 +22,8 @@ export async function GET(
         actif: true,
         visible: true,
         deletedAt: null,
+        profilCompletion: { gte: 70 },
+        NOT: { slug: { startsWith: "test-" } },
       },
       include: {
         metier: true,
@@ -31,7 +33,7 @@ export async function GET(
         },
         badges: true,
       },
-      orderBy: { noteMoyenne: "desc" },
+      orderBy: [{ plan: "desc" }, { noteMoyenne: "desc" }],
     });
 
     const artisansData = artisans.map((a) => ({
