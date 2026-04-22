@@ -20,6 +20,7 @@ export default function Footer() {
             <Link href="/lyon">Artisans Lyon</Link>
             <Link href="/valence">Artisans Valence</Link>
             <Link href="/urgence" style={{ color: "#dc2626", fontWeight: 600 }}>Urgence 24/7</Link>
+            <Link href="/maprimerenov" style={{ color: "#4A6741", fontWeight: 600 }}>MaPrimeR&eacute;nov&apos;</Link>
           </div>
           <div className="footer-col">
             <div className="footer-col-title">Pour les artisans</div>

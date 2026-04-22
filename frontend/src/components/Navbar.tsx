@@ -388,6 +388,20 @@ export default function Navbar() {
             {!isAuthenticated && (
               <>
                 <Link
+                  href="/urgence"
+                  onClick={() => setMobileMenuOpen(false)}
+                  style={{
+                    display: "block",
+                    padding: "12px 4px",
+                    fontSize: 15,
+                    color: "#dc2626",
+                    textDecoration: "none",
+                    fontWeight: 600,
+                  }}
+                >
+                  Urgence 24/7
+                </Link>
+                <Link
                   href="/connexion"
                   onClick={() => setMobileMenuOpen(false)}
                   style={{
