@@ -38,7 +38,7 @@ export default function Footer() {
             <Link href="/a-propos">&Agrave; propos</Link>
             <Link href="/faq">FAQ</Link>
             <Link href="/rejoindre">Rejoindre l&apos;&eacute;quipe</Link>
-            <a href="mailto:contact@bativio.fr">Contact</a>
+            <Link href="/contact">Contact</Link>
             <Link href="/mentions-legales">Mentions l&eacute;gales</Link>
             <Link href="/cgu">CGU</Link>
           </div>
