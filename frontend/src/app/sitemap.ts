@@ -57,6 +57,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/comparatif/tolteck`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
     { url: `${baseUrl}/faq`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
     { url: `${baseUrl}/urgence`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.85 },
+    { url: `${baseUrl}/maprimerenov`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.85 },
   ];
 
   const prixMetierPages: MetadataRoute.Sitemap = METIERS_SLUGS.map((metier) => ({

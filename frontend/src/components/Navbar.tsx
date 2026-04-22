@@ -88,6 +88,7 @@ export default function Navbar() {
         {!loading && !isAuthenticated && (
           <>
             <Link href="/" className="nav-link">Annuaire</Link>
+            <Link href="/urgence" className="nav-link" style={{ color: "#dc2626", fontWeight: 600 }}>Urgence 24/7</Link>
             <Link href="/artisan" className="nav-link">Je suis artisan</Link>
             <Link href="/connexion" className="nav-link">Connexion</Link>
             <Link href="/connexion" className="nav-cta">Espace artisan</Link>
