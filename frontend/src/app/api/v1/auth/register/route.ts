@@ -5,17 +5,22 @@ import { hashPassword, setAuthCookie } from "@/lib/auth-server";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { isNafBtp } from "@/lib/naf-btp";
 
+// Regex anti-injection : pas de <, >, &#, javascript:, data:, etc.
+const SAFE_TEXT = /^[^<>]*$/;
+const safeText = (field: string) =>
+  z.string().regex(SAFE_TEXT, { message: `${field} contient des caractères interdits (<, >)` });
+
 const registerSchema = z.object({
   email: z.string().email("Email invalide"),
   password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères"),
-  nom: z.string().optional(),
-  nomAffichage: z.string().optional(),
+  nom: safeText("nom").optional(),
+  nomAffichage: safeText("nomAffichage").max(100, "Nom trop long (100 max)").optional(),
   siret: z.string().min(9, "SIRET/SIREN requis").regex(/^\d{9,14}$/, "SIRET invalide"),
-  telephone: z.string().optional(),
+  telephone: z.string().regex(/^[0-9\s+()-]*$/, "Téléphone invalide").max(20).optional(),
   metierId: z.string().optional(),
-  ville: z.string().optional(),
-  codeInsee: z.string().optional(),
-  codeNaf: z.string().optional(), // ex "43.22A", "51.10Z" — récupéré par frontend via INSEE
+  ville: safeText("ville").max(80).optional(),
+  codeInsee: z.string().regex(/^[0-9A-Z]*$/, "Code INSEE invalide").max(10).optional(),
+  codeNaf: z.string().regex(/^[0-9.A-Z]*$/, "Code NAF invalide").max(10).optional(),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
   zoneRayonKm: z.number().int().min(5).max(80).optional(),
