@@ -1011,3 +1011,16 @@ model StripeWebhookEvent {
   @@map("stripe_webhook_event")
   @@index([processedAt])
 }
+
+model NewsletterSubscriber {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  source       String?  // ex "footer", "urgence_page"
+  confirmed    Boolean  @default(false)
+  unsubscribedAt DateTime? @map("unsubscribed_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("newsletter_subscriber")
+  @@index([createdAt])
+  @@index([confirmed])
+}

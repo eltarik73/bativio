@@ -1,4 +1,5 @@
 import Link from "next/link";
+import NewsletterFooter from "@/components/NewsletterFooter";
 
 export default function Footer() {
   return (
@@ -11,6 +12,7 @@ export default function Footer() {
               La plateforme des artisans du b&acirc;timent en Rh&ocirc;ne-Alpes.
               Z&eacute;ro commission, z&eacute;ro frais cach&eacute;s.
             </p>
+            <NewsletterFooter />
           </div>
           <div className="footer-col">
             <div className="footer-col-title">Pour les particuliers</div>
