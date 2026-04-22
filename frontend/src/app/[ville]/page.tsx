@@ -120,15 +120,30 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
   );
   let metiers: MetierData[] = MOCK_METIERS;
 
+  // Prisma direct pour le contenuSeo (évite le bug "API down pendant build SSG")
+  let contenuSeoFromDb: string | null = null;
+  try {
+    const villeDb = await prisma.ville.findUnique({
+      where: { slug: villeSlug },
+      select: { contenuSeo: true },
+    });
+    contenuSeoFromDb = villeDb?.contenuSeo || null;
+  } catch { /* ignore */ }
+
   try {
     const [villeData, metiersData] = await Promise.all([getVille(villeSlug), getMetiers()]);
     if (villeData) {
-      ville = { id: "", nom: villeData.nom || ville?.nom || villeSlug, slug: villeSlug, codePostal: ville?.codePostal || "", departement: ville?.departement || "", contenuSeo: villeData.contenuSeo || ville?.contenuSeo || "", nombreArtisans: (villeData as { artisans?: ArtisanPublic[] }).artisans?.length || 0 };
+      ville = { id: "", nom: villeData.nom || ville?.nom || villeSlug, slug: villeSlug, codePostal: ville?.codePostal || "", departement: ville?.departement || "", contenuSeo: contenuSeoFromDb || villeData.contenuSeo || ville?.contenuSeo || "", nombreArtisans: (villeData as { artisans?: ArtisanPublic[] }).artisans?.length || 0 };
       const apiArtisans = (villeData as { artisans?: ArtisanPublic[] }).artisans;
       if (apiArtisans && apiArtisans.length > 0) artisans = apiArtisans;
     }
     if (metiersData && metiersData.length > 0) metiers = metiersData;
-  } catch { /* fallback mock */ }
+  } catch {
+    // Fallback : si API down, utiliser au moins le contenuSeo de la DB
+    if (contenuSeoFromDb && ville) {
+      ville = { ...ville, contenuSeo: contenuSeoFromDb };
+    }
+  }
 
   // If this slug is not a known city, check if it's a metier-ville composite slug
   const knownVille = VILLES.find((v) => v.slug === villeSlug);
