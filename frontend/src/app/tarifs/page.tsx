@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PricingGrid from "@/components/pricing/PricingGrid";
+import SocialProofStrip from "@/components/pricing/SocialProofStrip";
 
 export const metadata: Metadata = {
   title: "Tarifs — Abonnements artisans du bâtiment",
@@ -14,6 +15,7 @@ export default function TarifsPage() {
     <>
       <Navbar />
       <main style={{ background: "#fff", minHeight: "100dvh" }}>
+        <SocialProofStrip />
         <PricingGrid />
       </main>
       <Footer />
