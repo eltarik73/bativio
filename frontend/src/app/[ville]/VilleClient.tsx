@@ -64,39 +64,49 @@ export default function VilleClient({
         return ms === metierFilter;
       });
 
+  // N'afficher que les métiers réellement présents dans la liste d'artisans (évite la barre de 20+ métiers la plupart vides)
+  const availableMetierSlugs = new Set(
+    artisans
+      .map((a) => a.metierNom?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z]/g, ""))
+      .filter(Boolean)
+  );
+  const visibleMetiers = metiers.filter((m) => availableMetierSlugs.has(m.slug));
+
   return (
     <>
-      {/* Filters */}
-      <div className="px-7 py-3 bg-white border-b border-g100 sticky top-14 max-md:top-[52px] z-[90] max-md:px-4 max-md:py-[10px]">
-        <div className="max-w-[1200px] mx-auto flex items-center gap-[6px] overflow-x-auto hide-scroll">
-          <button
-            onClick={() => setMetierFilter("all")}
-            className={`px-[14px] py-[7px] rounded-[20px] text-xs font-medium border whitespace-nowrap transition-all duration-150 ${
-              metierFilter === "all"
-                ? "bg-anthracite text-white border-anthracite"
-                : "border-g200 text-g500 hover:border-g300 hover:text-anthracite bg-transparent"
-            }`}
-          >
-            Tous
-          </button>
-          {metiers.map((m) => (
+      {/* Filters — uniquement si au moins 1 artisan et au moins 2 métiers distincts */}
+      {artisans.length > 0 && visibleMetiers.length >= 2 && (
+        <div className="bg-white border-b border-g100 sticky top-14 max-md:top-[52px] z-[90]" style={{ padding: "10px 28px" }}>
+          <div className="max-w-[1200px] mx-auto flex items-center gap-[6px] flex-wrap" style={{ rowGap: 8 }}>
             <button
-              key={m.slug}
-              onClick={() => setMetierFilter(m.slug)}
+              onClick={() => setMetierFilter("all")}
               className={`px-[14px] py-[7px] rounded-[20px] text-xs font-medium border whitespace-nowrap transition-all duration-150 ${
-                metierFilter === m.slug
+                metierFilter === "all"
                   ? "bg-anthracite text-white border-anthracite"
                   : "border-g200 text-g500 hover:border-g300 hover:text-anthracite bg-transparent"
               }`}
             >
-              {m.nom}
+              Tous
             </button>
-          ))}
-          <span className="ml-auto text-xs text-g400 whitespace-nowrap font-medium">
-            {filtered.length} artisan{filtered.length > 1 ? "s" : ""}
-          </span>
+            {visibleMetiers.map((m) => (
+              <button
+                key={m.slug}
+                onClick={() => setMetierFilter(m.slug)}
+                className={`px-[14px] py-[7px] rounded-[20px] text-xs font-medium border whitespace-nowrap transition-all duration-150 ${
+                  metierFilter === m.slug
+                    ? "bg-anthracite text-white border-anthracite"
+                    : "border-g200 text-g500 hover:border-g300 hover:text-anthracite bg-transparent"
+                }`}
+              >
+                {m.nom}
+              </button>
+            ))}
+            <span className="ml-auto text-xs text-g400 whitespace-nowrap font-medium">
+              {filtered.length} artisan{filtered.length > 1 ? "s" : ""}
+            </span>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Grid */}
       <div className="px-7 pt-5 pb-14 max-w-[1264px] mx-auto max-md:px-4 max-md:pt-4 max-md:pb-10">
