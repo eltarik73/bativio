@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 60" fill="none">
+  <!-- Mix B: Barres progressives (5) + blocs (2) fusionnés + B majuscule serif -->
+  <g transform="translate(2, 7)">
+    <!-- Barre 1 (courte, or) -->
+    <rect x="0" y="0" width="10" height="10" rx="3" fill="#E8A84C"/>
+    <rect x="13" y="0" width="10" height="10" rx="3" fill="#E8A84C" opacity="0.5"/>
+    <!-- Barre 2 (moyenne) -->
+    <rect x="0" y="13" width="10" height="10" rx="3" fill="#C4531A" opacity="0.6"/>
+    <rect x="13" y="13" width="10" height="10" rx="3" fill="#C4531A" opacity="0.4"/>
+    <rect x="26" y="13" width="10" height="10" rx="3" fill="#C4531A" opacity="0.25"/>
+    <!-- Barre 3 (longue, pleine) -->
+    <rect x="0" y="26" width="10" height="10" rx="3" fill="#C4531A"/>
+    <rect x="13" y="26" width="10" height="10" rx="3" fill="#C4531A" opacity="0.8"/>
+    <rect x="26" y="26" width="10" height="10" rx="3" fill="#C4531A" opacity="0.55"/>
+    <rect x="39" y="26" width="10" height="10" rx="3" fill="#C4531A" opacity="0.3"/>
+  </g>
+
+  <!-- Text -->
+  <text x="62" y="34" font-family="Georgia, 'Times New Roman', serif" font-size="30" font-weight="700" letter-spacing="-0.3">
+    <tspan fill="#C4531A">B</tspan><tspan fill="#1C1C1E">ativio</tspan>
+  </text>
+  <text x="62" y="46" font-family="'Helvetica Neue', Arial, sans-serif" font-size="8" font-weight="600" letter-spacing="3" fill="#9C958D">PLATEFORME ARTISANS</text>
+</svg>

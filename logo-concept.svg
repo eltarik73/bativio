@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" fill="none">
+  <!-- Symbol: stylized house/roof with B -->
+  <g transform="translate(0, 4)">
+    <!-- Roof -->
+    <path d="M10 28L26 12L42 28" stroke="#C4531A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Walls -->
+    <rect x="14" y="28" width="24" height="20" rx="2" stroke="#C4531A" stroke-width="2.5" fill="none"/>
+    <!-- Door -->
+    <rect x="22" y="36" width="8" height="12" rx="1.5" fill="#C4531A"/>
+    <!-- Chimney -->
+    <rect x="34" y="16" width="4" height="10" rx="1" fill="#C4531A" opacity="0.7"/>
+  </g>
+
+  <!-- Text: Bativio -->
+  <text x="54" y="42" font-family="Georgia, 'Times New Roman', serif" font-size="32" font-weight="700" fill="#C4531A" letter-spacing="-0.5">Bativio</text>
+</svg>

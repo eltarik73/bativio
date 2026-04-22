@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { sendEmail } from "@/lib/email";
+import { escapeHtml } from "@/lib/html-escape";
 import { sendSmsWithQuota, smsTemplates } from "@/lib/sms";
 import { getEffectivePlan } from "@/lib/plan-gates";
 import { z } from "zod";
@@ -99,23 +100,28 @@ export async function POST(
       },
     });
 
-    // Send email to artisan
+    // Send email to artisan (escape user-controlled content)
+    const safeArtisanNom = escapeHtml(artisan.nomAffichage);
+    const safeNomClient = escapeHtml(nomClient);
+    const safeTelephoneClient = escapeHtml(telephoneClient);
+    const safeEmailClient = emailClient ? escapeHtml(emailClient) : "";
+    const safeDescription = escapeHtml(descriptionBesoin).replace(/\n/g, "<br>");
     await sendEmail(
       artisan.user.email,
       `Nouvelle demande de devis de ${nomClient}`,
       `
           <div style="font-family: Karla, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #C4531A;">Nouvelle demande de devis</h2>
-            <p>Bonjour <strong>${artisan.nomAffichage}</strong>,</p>
+            <p>Bonjour <strong>${safeArtisanNom}</strong>,</p>
             <p>Vous avez reçu une nouvelle demande de devis sur votre page Bativio.</p>
             <div style="background: #FAF8F5; padding: 16px; border-radius: 8px; margin: 16px 0;">
-              <p><strong>Client :</strong> ${nomClient}</p>
-              <p><strong>Téléphone :</strong> ${telephoneClient}</p>
-              ${emailClient ? `<p><strong>Email :</strong> ${emailClient}</p>` : ""}
+              <p><strong>Client :</strong> ${safeNomClient}</p>
+              <p><strong>Téléphone :</strong> ${safeTelephoneClient}</p>
+              ${safeEmailClient ? `<p><strong>Email :</strong> ${safeEmailClient}</p>` : ""}
               <p><strong>Besoin :</strong></p>
-              <p>${descriptionBesoin}</p>
+              <p>${safeDescription}</p>
             </div>
-            <p>Répondez rapidement pour maximiser vos chances de décrocher ce chantier !</p>
+            <p>Répondez rapidement pour maximiser vos chances de décrocher ce chantier.</p>
             <a href="${process.env.NEXT_PUBLIC_SITE_URL || "https://www.bativio.fr"}/dashboard/devis/${demandeDevis.id}"
                style="display: inline-block; background: #C4531A; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin-top: 8px;">
               Voir la demande

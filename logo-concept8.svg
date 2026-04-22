@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 60" fill="none">
+  <!-- Concept 8: Stacked blocks gradient — construction meets SaaS -->
+  <g transform="translate(2, 6)">
+    <!-- Bottom row: 3 blocks -->
+    <rect x="0" y="28" width="13" height="13" rx="3" fill="#C4531A"/>
+    <rect x="16" y="28" width="13" height="13" rx="3" fill="#C4531A" opacity="0.75"/>
+    <rect x="32" y="28" width="13" height="13" rx="3" fill="#C4531A" opacity="0.5"/>
+    <!-- Top row: 2 blocks (pyramid) -->
+    <rect x="8" y="12" width="13" height="13" rx="3" fill="#E8A84C"/>
+    <rect x="24" y="12" width="13" height="13" rx="3" fill="#E8A84C" opacity="0.6"/>
+    <!-- Apex: 1 block -->
+    <rect x="16" y="-2" width="13" height="11" rx="3" fill="#C4531A" opacity="0.3"/>
+  </g>
+
+  <!-- Text clean sans-serif -->
+  <text x="58" y="34" font-family="'Helvetica Neue', Arial, sans-serif" font-size="30" font-weight="800" letter-spacing="-0.3">
+    <tspan fill="#C4531A">bat</tspan><tspan fill="#1C1C1E">ivio</tspan>
+  </text>
+  <text x="58" y="46" font-family="'Helvetica Neue', Arial, sans-serif" font-size="8.5" font-weight="600" letter-spacing="3" fill="#9C958D">PLATEFORME ARTISANS</text>
+</svg>

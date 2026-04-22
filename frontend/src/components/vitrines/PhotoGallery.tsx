@@ -4,17 +4,28 @@ import { useState } from "react";
 import Image from "next/image";
 import type { PhotoData } from "@/lib/api";
 import type { PhotoLayoutType } from "@/lib/vitrine-config";
-import { METIER_PHOTOS } from "@/lib/metier-config";
-
-const PLACEHOLDERS = Object.values(METIER_PHOTOS).slice(0, 6);
-
 export default function PhotoGallery({ photos, layout, primary, metierNom, ville }: { photos: PhotoData[]; layout: PhotoLayoutType; primary: string; metierNom?: string; ville?: string }) {
   const [lightbox, setLightbox] = useState<number | null>(null);
   const items = photos.length > 0 ? photos : [];
-  const urls = items.length > 0 ? items.map((p) => p.url) : PLACEHOLDERS;
-  const titles = items.length > 0 ? items.map((p) => p.titre) : [];
+  const urls = items.map((p) => p.url);
+  const titles = items.map((p) => p.titre);
 
-  if (urls.length === 0) return null;
+  // Ne jamais afficher de photos stock Unsplash comme "réalisations"
+  // → si aucune photo uploadée, afficher un placeholder explicite
+  if (urls.length === 0) {
+    return (
+      <>
+        <div style={{ width: 44, height: 2, background: primary, marginBottom: 16 }} />
+        <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "#1C1C1E", marginBottom: 12 }}>R&eacute;alisations</h2>
+        <div style={{ padding: "32px 24px", border: "1px dashed #EDEBE7", borderRadius: 12, textAlign: "center", color: "#9C958D", fontSize: 14, background: "#FAF8F5" }}>
+          {metierNom || "L&rsquo;artisan"} n&rsquo;a pas encore ajout&eacute; de photos de ses r&eacute;alisations.
+          <div style={{ fontSize: 13, marginTop: 8, color: "#6B6560" }}>
+            Demandez-lui un devis : il pourra vous pr&eacute;senter son portfolio lors du contact.
+          </div>
+        </div>
+      </>
+    );
+  }
 
   const altFor = (i: number) => {
     if (titles[i]) return titles[i];

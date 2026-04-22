@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 60" fill="none">
+  <!-- Concept 6: Hexagonal B — tech meets craft -->
+  <g transform="translate(4, 4)">
+    <!-- Hexagon outline -->
+    <path d="M22 2L40 13V35L22 46L4 35V13Z" stroke="#C4531A" stroke-width="2.5" fill="#C4531A" fill-opacity="0.06"/>
+    <!-- Inner B shape abstracted as 2 connected arcs -->
+    <path d="M15 14h6a6 6 0 010 12h-6" stroke="#C4531A" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M15 26h8a6 6 0 010 12h-8" stroke="#C4531A" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <!-- Vertical line of B -->
+    <line x1="15" y1="14" x2="15" y2="38" stroke="#C4531A" stroke-width="3" stroke-linecap="round"/>
+    <!-- Tech dot -->
+    <circle cx="36" cy="10" r="3" fill="#E8A84C"/>
+  </g>
+
+  <!-- Text -->
+  <text x="54" y="40" font-family="'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="800" letter-spacing="0.5">
+    <tspan fill="#1C1C1E">BATI</tspan><tspan fill="#C4531A">VIO</tspan>
+  </text>
+</svg>

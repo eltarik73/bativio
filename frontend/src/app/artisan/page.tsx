@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 export const revalidate = 86400;
 
 export const metadata: Metadata = {
-  title: "Bativio pour les artisans — Le seul outil tout-en-un",
+  title: "Pour les artisans — Le seul outil tout-en-un",
   description: "Annuaire, facturation, site internet, CRM, IA. Zéro commission, abonnement fixe. Conforme réforme 2026.",
   alternates: { canonical: "https://www.bativio.fr/artisan" },
 };

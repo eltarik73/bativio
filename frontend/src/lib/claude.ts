@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import fs from "node:fs";
 import path from "node:path";
+import { prisma } from "@/lib/prisma";
 
 export const MODEL_OPUS = "claude-opus-4-7";
 export const MODEL_SONNET = "claude-sonnet-4-6";
@@ -60,4 +61,46 @@ export function extractJson<T = unknown>(text: string): T | null {
   } catch {
     return null;
   }
+}
+
+interface LogTokenUsageInput {
+  agent: string;
+  model: string;
+  tokensIn: number;
+  tokensOut: number;
+  tokensCacheRead?: number;
+  tokensCacheCreation?: number;
+  artisanId?: string | null;
+  demandeId?: string | null;
+  devisId?: string | null;
+  success?: boolean;
+  errorMessage?: string | null;
+  latencyMs?: number | null;
+}
+
+/**
+ * Log Claude API usage to DB (non-bloquant).
+ * Permet de monitorer coûts IA par agent, artisan, demande.
+ */
+export function logTokenUsage(input: LogTokenUsageInput): void {
+  const costEur = computeCost(input.model, input.tokensIn, input.tokensOut);
+  void prisma.tokenUsage.create({
+    data: {
+      agent: input.agent,
+      model: input.model,
+      tokensIn: input.tokensIn,
+      tokensOut: input.tokensOut,
+      tokensCacheRead: input.tokensCacheRead ?? null,
+      tokensCacheCreation: input.tokensCacheCreation ?? null,
+      costEur,
+      artisanId: input.artisanId ?? null,
+      demandeId: input.demandeId ?? null,
+      devisId: input.devisId ?? null,
+      success: input.success ?? true,
+      errorMessage: input.errorMessage ?? null,
+      latencyMs: input.latencyMs ?? null,
+    },
+  }).catch((e) => {
+    console.error("[logTokenUsage] DB error (non-bloquant):", e);
+  });
 }

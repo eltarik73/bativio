@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 60" fill="none">
+  <!-- Concept 5: Abstract B made of building layers -->
+  <g transform="translate(4, 6)">
+    <!-- Bottom bar -->
+    <rect x="0" y="34" width="36" height="8" rx="3" fill="#C4531A"/>
+    <!-- Middle bar -->
+    <rect x="0" y="22" width="28" height="8" rx="3" fill="#C4531A" opacity="0.7"/>
+    <!-- Top bar -->
+    <rect x="0" y="10" width="20" height="8" rx="3" fill="#E8A84C"/>
+    <!-- Dot accent -->
+    <circle cx="33" cy="14" r="4" fill="#E8A84C"/>
+  </g>
+
+  <!-- Text -->
+  <text x="52" y="42" font-family="Georgia, 'Times New Roman', serif" font-size="30" font-weight="700" letter-spacing="-0.5">
+    <tspan fill="#C4531A">bativio</tspan>
+  </text>
+</svg>

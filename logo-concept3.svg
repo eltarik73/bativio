@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 60" fill="none">
+  <!-- Concept 3: Shield/badge with checkmark -->
+  <g transform="translate(4, 4)">
+    <path d="M20 2C12 6 4 6 4 6v18c0 10 8 18 16 22 8-4 16-12 16-22V6s-8 0-16-4z" fill="#C4531A" opacity="0.1" stroke="#C4531A" stroke-width="2"/>
+    <path d="M13 24l5 5 9-11" stroke="#C4531A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+
+  <!-- Text -->
+  <text x="52" y="40" font-family="Georgia, 'Times New Roman', serif" font-size="30" font-weight="700" fill="#C4531A" letter-spacing="-0.3">Bativio</text>
+</svg>

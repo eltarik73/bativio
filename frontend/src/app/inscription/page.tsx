@@ -148,6 +148,7 @@ export default function InscriptionPage() {
         metierId: form.metierId || undefined,
         ville: form.ville || undefined,
         codeInsee: form.codeInsee || undefined,
+        codeNaf: form.codeNaf || undefined,
         latitude: form.latitude ? parseFloat(form.latitude) : undefined,
         longitude: form.longitude ? parseFloat(form.longitude) : undefined,
         zoneRayonKm: 25,

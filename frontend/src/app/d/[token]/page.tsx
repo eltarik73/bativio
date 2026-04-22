@@ -77,7 +77,7 @@ export default function DevisPublicPage({ params }: { params: Promise<{ token: s
   const expire = new Date() > validiteDate;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#FAF8F5" }}>
+    <div style={{ minHeight: "100dvh", background: "#FAF8F5" }}>
       <header style={{ background: "#fff", borderBottom: "1px solid #E8D5C0", padding: "20px 32px", display: "flex", alignItems: "center", gap: 16 }}>
         <div style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "#C4531A" }}>Bativio</div>
         <div style={{ flex: 1 }} />

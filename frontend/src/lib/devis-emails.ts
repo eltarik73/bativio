@@ -1,4 +1,5 @@
 import { sendEmail } from "@/lib/email";
+import { escapeHtml } from "@/lib/html-escape";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://www.bativio.fr";
@@ -48,13 +49,7 @@ function ctaButton(label: string, url: string): string {
 </table>`;
 }
 
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
+// escapeHtml is imported from @/lib/html-escape (shared helper for XSS prevention)
 
 function truncate(str: string, maxLen = 200): string {
   if (str.length <= maxLen) return str;

@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Rejoignez Bativio — Développez votre activité artisan",
+  title: "Rejoignez l'équipe — Développez votre activité artisan",
   description: "Créez votre page pro en 3 minutes. Recevez des demandes de devis qualifiées. Zéro commission, abonnement fixe.",
 };
 

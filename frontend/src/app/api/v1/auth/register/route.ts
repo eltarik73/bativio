@@ -3,17 +3,24 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, setAuthCookie } from "@/lib/auth-server";
 import { apiSuccess, apiError } from "@/lib/api-response";
+import { isNafBtp } from "@/lib/naf-btp";
+
+// Regex anti-injection : pas de <, >, &#, javascript:, data:, etc.
+const SAFE_TEXT = /^[^<>]*$/;
+const safeText = (field: string) =>
+  z.string().regex(SAFE_TEXT, { message: `${field} contient des caractères interdits (<, >)` });
 
 const registerSchema = z.object({
   email: z.string().email("Email invalide"),
   password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères"),
-  nom: z.string().optional(),
-  nomAffichage: z.string().optional(),
+  nom: safeText("nom").optional(),
+  nomAffichage: safeText("nomAffichage").max(100, "Nom trop long (100 max)").optional(),
   siret: z.string().min(9, "SIRET/SIREN requis").regex(/^\d{9,14}$/, "SIRET invalide"),
-  telephone: z.string().optional(),
+  telephone: z.string().regex(/^[0-9\s+()-]*$/, "Téléphone invalide").max(20).optional(),
   metierId: z.string().optional(),
-  ville: z.string().optional(),
-  codeInsee: z.string().optional(),
+  ville: safeText("ville").max(80).optional(),
+  codeInsee: z.string().regex(/^[0-9A-Z]*$/, "Code INSEE invalide").max(10).optional(),
+  codeNaf: z.string().regex(/^[0-9.A-Z]*$/, "Code NAF invalide").max(10).optional(),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
   zoneRayonKm: z.number().int().min(5).max(80).optional(),
@@ -64,6 +71,13 @@ export async function POST(request: NextRequest) {
     const latitude = typeof data.latitude === "number" ? data.latitude : undefined;
     const longitude = typeof data.longitude === "number" ? data.longitude : undefined;
     const codeInsee = typeof data.codeInsee === "string" ? data.codeInsee : undefined;
+    const codeNaf = typeof data.codeNaf === "string" ? data.codeNaf : undefined;
+
+    // Si un code NAF est fourni et qu'il n'est pas dans la whitelist BTP,
+    // l'artisan est marqué PENDING_NAF_REVIEW (invisible dans l'annuaire public
+    // tant qu'un admin n'a pas validé manuellement)
+    const nafBtpOk = codeNaf ? isNafBtp(codeNaf) : null; // null = inconnu
+    const initialStatus = nafBtpOk === false ? "PENDING_NAF_REVIEW" : "ONBOARDING";
 
     // Check for duplicates: email, siret, telephone
     const existingEmail = await prisma.user.findUnique({ where: { email } });
@@ -175,6 +189,8 @@ export async function POST(request: NextRequest) {
           slug,
           actif: false,
           profilCompletion: 30,
+          artisanStatus: initialStatus,
+          motifRefus: nafBtpOk === false ? `Code NAF "${codeNaf}" hors BTP — validation admin requise` : null,
         },
         include: {
           metier: true,

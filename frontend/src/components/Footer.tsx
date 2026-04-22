@@ -1,4 +1,5 @@
 import Link from "next/link";
+import NewsletterFooter from "@/components/NewsletterFooter";
 
 export default function Footer() {
   return (
@@ -11,6 +12,7 @@ export default function Footer() {
               La plateforme des artisans du b&acirc;timent en Rh&ocirc;ne-Alpes.
               Z&eacute;ro commission, z&eacute;ro frais cach&eacute;s.
             </p>
+            <NewsletterFooter />
           </div>
           <div className="footer-col">
             <div className="footer-col-title">Pour les particuliers</div>
@@ -19,17 +21,26 @@ export default function Footer() {
             <Link href="/grenoble">Artisans Grenoble</Link>
             <Link href="/lyon">Artisans Lyon</Link>
             <Link href="/valence">Artisans Valence</Link>
+            <Link href="/metiers">Tous les m&eacute;tiers</Link>
+            <Link href="/urgence" style={{ color: "#dc2626", fontWeight: 600 }}>Urgence 24/7</Link>
+            <Link href="/maprimerenov" style={{ color: "#4A6741", fontWeight: 600 }}>MaPrimeR&eacute;nov&apos;</Link>
           </div>
           <div className="footer-col">
             <div className="footer-col-title">Pour les artisans</div>
             <Link href="/inscription">Cr&eacute;er ma page</Link>
             <Link href="/tarifs">Tarifs</Link>
-            <Link href="/facturation-electronique">Facturation</Link>
+            <Link href="/facturation-electronique">Facturation &eacute;lectronique</Link>
+            <Link href="/comparatif/pagesjaunes">vs PagesJaunes</Link>
+            <Link href="/comparatif/habitatpresto">vs Habitatpresto</Link>
+            <Link href="/comparatif/obat">vs Obat</Link>
+            <Link href="/comparatif/tolteck">vs Tolteck</Link>
           </div>
           <div className="footer-col">
             <div className="footer-col-title">Bativio</div>
-            <Link href="/rejoindre">&Agrave; propos</Link>
-            <a href="mailto:contact@bativio.fr">Contact</a>
+            <Link href="/a-propos">&Agrave; propos</Link>
+            <Link href="/faq">FAQ</Link>
+            <Link href="/rejoindre">Rejoindre l&apos;&eacute;quipe</Link>
+            <Link href="/contact">Contact</Link>
             <Link href="/mentions-legales">Mentions l&eacute;gales</Link>
             <Link href="/cgu">CGU</Link>
           </div>
@@ -39,7 +50,7 @@ export default function Footer() {
             Artisans v&eacute;rifi&eacute;s &middot; Donn&eacute;es prot&eacute;g&eacute;es &middot; Z&eacute;ro commission
           </div>
           <div className="footer-copy">
-            &copy; 2026 Bativio &middot; Fabriqu&eacute; &agrave; Chamb&eacute;ry avec &#10084;&#65039;
+            &copy; 2026 Bativio &middot; Fabriqu&eacute; &agrave; Chamb&eacute;ry
           </div>
         </div>
       </div>

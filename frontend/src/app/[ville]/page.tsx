@@ -8,17 +8,42 @@ import { getVille, getMetiers } from "@/lib/api";
 import type { ArtisanPublic, MetierData } from "@/lib/api";
 import { VILLES } from "@/lib/constants";
 import VilleClient from "./VilleClient";
+import { safeJsonLd, sanitizeAdminHtml } from "@/lib/html-escape";
 import { prisma } from "@/lib/prisma";
 import MetierVilleListing from "./MetierVilleListing";
 
 export const revalidate = 3600;
 
-export function generateStaticParams() {
-  return VILLES.map((v) => ({ ville: v.slug }));
+// SEO: lister TOUS les slugs valides + interdire les autres → vrai HTTP 404
+// Inclut villes principales + metier-ville composites depuis DB (artisans Business).
+export const dynamicParams = false; // CRITICAL: tout slug non listé = HTTP 404 propre
+
+export async function generateStaticParams() {
+  const params: { ville: string }[] = VILLES.map((v) => ({ ville: v.slug }));
+  try {
+    const composites = await prisma.artisan.findMany({
+      where: { actif: true, deletedAt: null, metierSlugSeo: { not: null }, villeSlug: { not: null } },
+      select: { metierSlugSeo: true, villeSlug: true },
+      distinct: ["metierSlugSeo", "villeSlug"],
+    });
+    for (const c of composites) {
+      if (c.metierSlugSeo && c.villeSlug) {
+        params.push({ ville: `${c.metierSlugSeo}-${c.villeSlug}` });
+      }
+    }
+  } catch {
+    /* fallback : juste les villes statiques */
+  }
+  return params;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ ville: string }> }): Promise<Metadata> {
   const { ville: villeSlug } = await params;
+
+  // SEO: lowercase enforce + 404 immédiat pour slugs invalides
+  if (villeSlug !== villeSlug.toLowerCase()) {
+    notFound();
+  }
 
   // Check if this is a metier-ville composite slug
   const knownVille = VILLES.find((v) => v.slug === villeSlug);
@@ -46,6 +71,8 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
       const description = `Trouvez les meilleurs ${metierName.toLowerCase()}s à ${villeName}. Comparez les artisans, demandez un devis gratuit.`;
       return { title, description, alternates: { canonical: `https://www.bativio.fr/${villeSlug}` }, openGraph: { title, description, url: `https://www.bativio.fr/${villeSlug}` } };
     }
+    // Pas une ville connue ET pas un metier-ville → 404 immédiat
+    notFound();
   }
 
   let nom = villeSlug;
@@ -61,7 +88,9 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
     const mock = MOCK_VILLES.find((v) => v.slug === villeSlug);
     nom = mock?.nom || villeSlug;
   }
-  const title = seoTitle || `Artisans du bâtiment à ${nom}`;
+  // Layout template adds "| Bativio" → strip any pre-existing "| Bativio" / "— Bativio" to avoid duplication
+  const rawTitle = seoTitle || `Artisans du bâtiment à ${nom}`;
+  const title = rawTitle.replace(/\s*[|—\-–]\s*Bativio\s*$/i, "").trim();
   const description = seoDesc || `Trouvez les meilleurs artisans du bâtiment à ${nom}. Plombier, électricien, peintre, maçon. Devis gratuit, zéro commission.`;
   return {
     title,
@@ -79,6 +108,11 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
 export default async function VillePage({ params }: { params: Promise<{ ville: string }> }) {
   const { ville: villeSlug } = await params;
 
+  // Force lowercase URL — redirect 308 vers slug normalisé
+  if (villeSlug !== villeSlug.toLowerCase()) {
+    notFound(); // Next.js redirige automatiquement via not-found.tsx
+  }
+
   // Essayer le backend, fallback mock
   let ville = MOCK_VILLES.find((v) => v.slug === villeSlug);
   let artisans: ArtisanPublic[] = MOCK_ARTISANS.filter(
@@ -86,15 +120,30 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
   );
   let metiers: MetierData[] = MOCK_METIERS;
 
+  // Prisma direct pour le contenuSeo (évite le bug "API down pendant build SSG")
+  let contenuSeoFromDb: string | null = null;
+  try {
+    const villeDb = await prisma.ville.findUnique({
+      where: { slug: villeSlug },
+      select: { contenuSeo: true },
+    });
+    contenuSeoFromDb = villeDb?.contenuSeo || null;
+  } catch { /* ignore */ }
+
   try {
     const [villeData, metiersData] = await Promise.all([getVille(villeSlug), getMetiers()]);
     if (villeData) {
-      ville = { id: "", nom: villeData.nom || ville?.nom || villeSlug, slug: villeSlug, codePostal: ville?.codePostal || "", departement: ville?.departement || "", contenuSeo: villeData.contenuSeo || ville?.contenuSeo || "", nombreArtisans: (villeData as { artisans?: ArtisanPublic[] }).artisans?.length || 0 };
+      ville = { id: "", nom: villeData.nom || ville?.nom || villeSlug, slug: villeSlug, codePostal: ville?.codePostal || "", departement: ville?.departement || "", contenuSeo: contenuSeoFromDb || villeData.contenuSeo || ville?.contenuSeo || "", nombreArtisans: (villeData as { artisans?: ArtisanPublic[] }).artisans?.length || 0 };
       const apiArtisans = (villeData as { artisans?: ArtisanPublic[] }).artisans;
       if (apiArtisans && apiArtisans.length > 0) artisans = apiArtisans;
     }
     if (metiersData && metiersData.length > 0) metiers = metiersData;
-  } catch { /* fallback mock */ }
+  } catch {
+    // Fallback : si API down, utiliser au moins le contenuSeo de la DB
+    if (contenuSeoFromDb && ville) {
+      ville = { ...ville, contenuSeo: contenuSeoFromDb };
+    }
+  }
 
   // If this slug is not a known city, check if it's a metier-ville composite slug
   const knownVille = VILLES.find((v) => v.slug === villeSlug);
@@ -137,8 +186,8 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
           <div style={{ position: "absolute", top: -120, right: -80, width: 400, height: 400, borderRadius: "50%", background: "rgba(196,83,26,.06)" }} />
           <div style={{ position: "absolute", bottom: -100, left: -60, width: 340, height: 340, borderRadius: "50%", background: "rgba(201,148,58,.04)" }} />
           <div style={{ maxWidth: 680, margin: "0 auto", textAlign: "center", position: "relative", zIndex: 1 }}>
-            <nav style={{ fontSize: 13, color: "rgba(255,255,255,.4)", marginBottom: 16 }}>
-              <a href="/" style={{ color: "rgba(255,255,255,.4)" }}>Accueil</a> <span style={{ margin: "0 6px" }}>/</span> <span style={{ color: "rgba(255,255,255,.7)" }}>{ville?.nom || villeSlug}</span>
+            <nav style={{ fontSize: 13, color: "rgba(255,255,255,.75)", marginBottom: 16 }}>
+              <a href="/" style={{ color: "rgba(255,255,255,.75)" }}>Accueil</a> <span style={{ margin: "0 6px" }}>/</span> <span style={{ color: "rgba(255,255,255,.7)" }}>{ville?.nom || villeSlug}</span>
             </nav>
             <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(26px,4vw,38px)", fontWeight: 700, color: "#fff", lineHeight: 1.15, letterSpacing: -0.5, marginBottom: 8 }}>
               Artisans du b&acirc;timent &agrave; <span className="calli" style={{ color: "var(--argile, #D4956B)" }}>{ville?.nom || villeSlug}</span>
@@ -156,7 +205,7 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
         {ville?.contenuSeo && (
           <section className="px-7 py-12 max-md:px-4 border-t border-g100">
             <div className="max-w-[800px] mx-auto prose prose-sm prose-headings:font-display prose-headings:text-anthracite prose-p:text-g500 prose-strong:text-anthracite prose-li:text-g500"
-              dangerouslySetInnerHTML={{ __html: ville.contenuSeo }}
+              dangerouslySetInnerHTML={{ __html: sanitizeAdminHtml(ville.contenuSeo) }}
             />
           </section>
         )}
@@ -167,7 +216,7 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: safeJsonLd({
             "@context": "https://schema.org",
             "@type": "ItemList",
             name: `Artisans du batiment a ${ville?.nom || villeSlug}`,
@@ -187,7 +236,7 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: safeJsonLd({
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             itemListElement: [

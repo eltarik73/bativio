@@ -88,6 +88,8 @@ export default function Navbar() {
         {!loading && !isAuthenticated && (
           <>
             <Link href="/" className="nav-link">Annuaire</Link>
+            <Link href="/metiers" className="nav-link">Métiers</Link>
+            <Link href="/urgence" className="nav-link" style={{ color: "#dc2626", fontWeight: 600 }}>Urgence 24/7</Link>
             <Link href="/artisan" className="nav-link">Je suis artisan</Link>
             <Link href="/connexion" className="nav-link">Connexion</Link>
             <Link href="/connexion" className="nav-cta">Espace artisan</Link>
@@ -292,7 +294,7 @@ export default function Navbar() {
             borderBottom: "1px solid #EDEBE7",
             boxShadow: "0 8px 32px rgba(0,0,0,.1)",
             padding: "8px 16px 16px",
-            maxHeight: "calc(100vh - 56px)",
+            maxHeight: "calc(100dvh - 56px)",
             overflowY: "auto",
           }}>
             {/* Connected state: user info */}
@@ -386,6 +388,20 @@ export default function Navbar() {
             {/* Not connected state */}
             {!isAuthenticated && (
               <>
+                <Link
+                  href="/urgence"
+                  onClick={() => setMobileMenuOpen(false)}
+                  style={{
+                    display: "block",
+                    padding: "12px 4px",
+                    fontSize: 15,
+                    color: "#dc2626",
+                    textDecoration: "none",
+                    fontWeight: 600,
+                  }}
+                >
+                  Urgence 24/7
+                </Link>
                 <Link
                   href="/connexion"
                   onClick={() => setMobileMenuOpen(false)}

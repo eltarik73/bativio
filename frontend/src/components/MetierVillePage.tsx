@@ -2,6 +2,7 @@ import Link from "next/link";
 import ArtisanCard from "@/components/ArtisanCard";
 import { VILLES, METIERS } from "@/lib/constants";
 import type { ArtisanPublic } from "@/lib/api";
+import { safeJsonLd } from "@/lib/html-escape";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -823,19 +824,19 @@ export default function MetierVillePage({
       {/* ── JSON-LD structured data ───────────────────────────────── */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLdBreadcrumb) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdItemList) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLdItemList) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdService) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLdService) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaq) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLdFaq) }}
       />
     </>
   );

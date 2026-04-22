@@ -101,26 +101,17 @@ export default function ArtisanCard({ artisan, villeSlug }: { artisan: ArtisanPu
               </em>
             )}
           </div>
-          {tags.length > 0 && (
-            <div className="card-bot">
-              <div className="card-tags">
-                {tags.map((t) => (
-                  <span key={t} className="card-tag">{t}</span>
-                ))}
-              </div>
-              <div className="card-arr">
-                <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              </div>
+          <div className="card-bot">
+            <div className="card-tags">
+              {tags.map((t) => (
+                <span key={t} className="card-tag">{t}</span>
+              ))}
             </div>
-          )}
-          {tags.length === 0 && (
-            <div className="card-bot">
-              <div className="card-tags" />
-              <div className="card-arr">
-                <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              </div>
+            <div className="card-cta" aria-label={`Voir la fiche de ${artisan.nomAffichage} et demander un devis`}>
+              <span>Demander un devis</span>
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </div>
-          )}
+          </div>
         </div>
       </article>
     </Link>

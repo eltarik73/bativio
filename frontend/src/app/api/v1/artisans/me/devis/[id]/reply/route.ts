@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { requireAuth } from "@/lib/auth-server";
 import { sendEmail } from "@/lib/email";
+import { escapeHtml } from "@/lib/html-escape";
 import crypto from "crypto";
 
 const replySchema = z.object({
@@ -65,15 +66,17 @@ export async function POST(
       }),
     ]);
 
-    // Send email to client
+    // Send email to client (escape user-controlled content)
     if (devis.emailClient) {
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.bativio.fr";
+      const safeArtisanNom = escapeHtml(artisan.nomAffichage);
+      const safeMessage = escapeHtml(message).replace(/\n/g, "<br>");
       await sendEmail(
           devis.emailClient,
           `${artisan.nomAffichage} a répondu à votre demande de devis`,
           `
-            <h2>Réponse de ${artisan.nomAffichage}</h2>
-            <p>${message.replace(/\n/g, "<br>")}</p>
+            <h2>Réponse de ${safeArtisanNom}</h2>
+            <p>${safeMessage}</p>
             <hr>
             <p>
               <a href="${baseUrl}/devis/${devis.id}/response?token=${responseToken}&action=accept" style="display:inline-block;padding:12px 24px;background:#C4531A;color:#fff;text-decoration:none;border-radius:8px;margin-right:12px;">Accepter</a>

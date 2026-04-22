@@ -41,7 +41,7 @@ function MagicContent() {
   }, [token, router]);
 
   return (
-    <main style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", padding: 16, background: "var(--creme,#FAF8F5)" }}>
+    <main style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100dvh", padding: 16, background: "var(--creme,#FAF8F5)" }}>
       <div style={{ background: "var(--blanc,#fff)", borderRadius: 16, border: "1px solid var(--sable,#E8D5C0)", boxShadow: "0 4px 24px rgba(61,46,31,.04)", maxWidth: 440, width: "100%", padding: 40, textAlign: "center" }}>
         <div style={{ marginBottom: 24 }}>
           <Link href="/" style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "var(--terre,#C4531A)", textDecoration: "none" }}>Bativio</Link>
@@ -81,7 +81,7 @@ function MagicContent() {
 export default function MagicLinkPage() {
   return (
     <Suspense fallback={
-      <main style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: "var(--creme,#FAF8F5)" }}>
+      <main style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100dvh", background: "var(--creme,#FAF8F5)" }}>
         <div style={{ width: 40, height: 40, border: "3px solid #E8D5C0", borderTopColor: "#C4531A", borderRadius: "50%", animation: "spin .8s linear infinite" }} />
         <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       </main>

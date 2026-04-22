@@ -263,7 +263,7 @@ export default function DemandePage() {
             {...fadeUp(0.12)}
             style={{ fontSize: 15, color: "var(--bois-mid)", maxWidth: 520, margin: "0 auto", lineHeight: 1.55 }}
           >
-            L&apos;assistant vous posera 5-7 questions pour comprendre votre besoin. Vous recevrez une estimation et les artisans vous recontacteront sous 24h.
+            5 à 7 questions, estimation immédiate à l&apos;écran. Les artisans s&eacute;lectionn&eacute;s vous recontactent ensuite sous 24h.
           </motion.p>
         </div>
       </section>
@@ -318,7 +318,7 @@ export default function DemandePage() {
                     fontFamily: "inherit",
                   }}
                 >
-                  Démarrer la qualification
+                  Recevoir mon estimation
                   <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
                 </motion.button>
               </div>
@@ -632,7 +632,8 @@ export default function DemandePage() {
                     <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
                   </motion.button>
                   <p style={{ fontSize: 11, color: "var(--pierre)", textAlign: "center", marginTop: 12, lineHeight: 1.5 }}>
-                    En envoyant, vous acceptez que vos coordonnées soient partagées avec les artisans sélectionnés par Bativio. RGPD respecté.
+                    En envoyant, vous acceptez que vos coordonnées soient partagées avec les artisans sélectionnés par Bativio.{" "}
+                    <a href="/mentions-legales#confidentialite" style={{ color: "var(--terre)", textDecoration: "underline" }}>Politique de confidentialité</a>.
                   </p>
                 </motion.div>
               )}

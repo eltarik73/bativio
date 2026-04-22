@@ -6,6 +6,7 @@ import ArtisanBadges from "@/components/ArtisanBadges";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { BASE_URL } from "@/lib/constants";
+import { safeJsonLd } from "@/lib/html-escape";
 
 interface Props {
   metierSlug: string;
@@ -81,7 +82,7 @@ export default async function MetierVilleListing({ metierSlug, villeSlug, metier
   return (
     <>
       <Navbar />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
 
       <main>
         {/* Hero */}

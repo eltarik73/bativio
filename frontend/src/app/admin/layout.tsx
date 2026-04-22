@@ -15,6 +15,7 @@ const navItems = [
   { href: "/admin/abonnements", label: "Abonnements", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>' },
   { href: "/admin/validations", label: "Validations", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>' },
   { href: "/admin/statistiques", label: "Statistiques", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>' },
+  { href: "/admin/couts-ia", label: "Coûts IA", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>' },
   { href: "/admin/parametres", label: "Param\u00e8tres", icon: '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>' },
 ];
 
@@ -30,8 +31,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <ProtectedRoute requireAdmin>
-      <div style={{ display: "flex", minHeight: "100vh", background: "#FAF8F5" }}>
-        <aside style={{ width: 260, flexShrink: 0, background: "#1C1C1E", display: "flex", flexDirection: "column", height: "100vh", position: "sticky", top: 0, overflow: "hidden" }} className="hidden md:flex">
+      <div style={{ display: "flex", minHeight: "100dvh", background: "#FAF8F5" }}>
+        <aside style={{ width: 260, flexShrink: 0, background: "#1C1C1E", display: "flex", flexDirection: "column", height: "100dvh", position: "sticky", top: 0, overflow: "hidden" }} className="hidden md:flex">
           <Link href="/admin" style={{ textDecoration: "none", padding: "24px 16px 0 30px", marginBottom: 36, display: "flex", alignItems: "baseline", gap: 8, flexShrink: 0 }}>
             <span style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "#fff", letterSpacing: -0.3 }}>Bativio</span>
             <span style={{ fontSize: 11, color: "rgba(255,255,255,.4)", fontWeight: 500 }}>Admin</span>

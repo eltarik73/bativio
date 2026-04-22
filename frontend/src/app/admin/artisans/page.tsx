@@ -13,6 +13,9 @@ interface ArtisanAdmin {
   actif: boolean;
   visible: boolean;
   slug: string;
+  artisanStatus?: string;
+  motifRefus?: string | null;
+  siret?: string;
 }
 
 interface PageResponse {
@@ -36,6 +39,7 @@ export default function AdminArtisansPage() {
   const { fetchWithAuth } = useAuth();
   const [artisans, setArtisans] = useState<ArtisanAdmin[]>([]);
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("");
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -46,6 +50,7 @@ export default function AdminArtisansPage() {
     try {
       const params = new URLSearchParams({ page: String(page), size: "20" });
       if (search) params.set("search", search);
+      if (statusFilter) params.set("status", statusFilter);
       const data = await fetchWithAuth(`/admin/artisans?${params}`) as PageResponse;
       setArtisans(data.artisans || data.content || []);
       setTotalPages(data.pagination?.totalPages || data.totalPages || 0);
@@ -54,7 +59,7 @@ export default function AdminArtisansPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, search, fetchWithAuth]);
+  }, [page, search, statusFilter, fetchWithAuth]);
 
   useEffect(() => {
     fetchArtisans();
@@ -90,19 +95,32 @@ export default function AdminArtisansPage() {
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24, gap: 12, flexWrap: "wrap" }}>
         <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "var(--bois,#3D2E1F)" }}>Artisans</h1>
-        <form onSubmit={handleSearch}>
-          <input
-            type="text"
-            placeholder="Rechercher..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={{ height: 42, padding: "0 16px", borderRadius: 10, border: "1.5px solid #E0DDD8", fontSize: 14, fontFamily: "'Karla',sans-serif", color: "var(--bois,#3D2E1F)", outline: "none", transition: "border-color .2s", width: 220 }}
-            onFocus={(e) => { e.currentTarget.style.borderColor = "#C4531A"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(196,83,26,.08)"; }}
-            onBlur={(e) => { e.currentTarget.style.borderColor = "#E0DDD8"; e.currentTarget.style.boxShadow = "none"; }}
-          />
-        </form>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+          <select
+            value={statusFilter}
+            onChange={(e) => { setStatusFilter(e.target.value); setPage(0); }}
+            style={{ height: 42, padding: "0 14px", borderRadius: 10, border: "1.5px solid #E0DDD8", fontSize: 13, fontFamily: "'Karla',sans-serif", color: "var(--bois,#3D2E1F)", background: "#fff", outline: "none", cursor: "pointer" }}
+          >
+            <option value="">Tous les statuts</option>
+            <option value="PENDING_NAF_REVIEW">À valider (NAF hors BTP)</option>
+            <option value="ONBOARDING">Onboarding en cours</option>
+            <option value="ACTIVE">Actifs</option>
+            <option value="INACTIVE">Désactivés</option>
+          </select>
+          <form onSubmit={handleSearch}>
+            <input
+              type="text"
+              placeholder="Rechercher nom, ville, SIRET…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{ height: 42, padding: "0 16px", borderRadius: 10, border: "1.5px solid #E0DDD8", fontSize: 14, fontFamily: "'Karla',sans-serif", color: "var(--bois,#3D2E1F)", outline: "none", transition: "border-color .2s", width: 260 }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = "#C4531A"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(196,83,26,.08)"; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = "#E0DDD8"; e.currentTarget.style.boxShadow = "none"; }}
+            />
+          </form>
+        </div>
       </div>
 
       <div style={tableCard}>
@@ -155,6 +173,14 @@ export default function AdminArtisansPage() {
                         <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: 20, background: "rgba(34,197,94,.08)" }}>
                           <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#22c55e" }} />
                           <span style={{ fontSize: 12, color: "#15803d", fontWeight: 600 }}>Actif</span>
+                        </span>
+                      ) : a.artisanStatus === "PENDING_NAF_REVIEW" ? (
+                        <span
+                          title={a.motifRefus || "NAF hors BTP — validation admin requise"}
+                          style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: 20, background: "rgba(220,38,38,.08)", cursor: "help" }}
+                        >
+                          <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#dc2626" }} />
+                          <span style={{ fontSize: 12, color: "#b91c1c", fontWeight: 600 }}>NAF à valider</span>
                         </span>
                       ) : (
                         <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: 20, background: "rgba(245,158,11,.08)" }}>

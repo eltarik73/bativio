@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { MOCK_ARTISANS, MOCK_METIERS } from "@/lib/mock-data";
 import { getArtisans, getMetiers } from "@/lib/api";
+import { safeJsonLd } from "@/lib/html-escape";
 import type { ArtisanPublic, MetierData } from "@/lib/api";
 import { VILLES } from "@/lib/constants";
 import VilleAutocomplete from "@/components/VilleAutocomplete/VilleAutocomplete";
@@ -121,7 +122,10 @@ export default function Home() {
 
   return (
     <>
+      <a href="#contenu-principal" className="skip-link">Aller au contenu</a>
       <Navbar />
+
+      <main id="contenu-principal">
 
       {/* ─── HERO CINEMATIC ─── */}
       <section className="hero-cinematic hero-grain" style={{ padding: "80px 32px 72px", textAlign: "center", overflow: "hidden" }}>
@@ -134,15 +138,15 @@ export default function Home() {
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--terre)" }} />
             Artisans locaux v&eacute;rifi&eacute;s &mdash; Rh&ocirc;ne-Alpes
           </motion.div>
-          <motion.h1
-            {...fadeUp(0.08)}
+          {/* H1 sans framer-motion = LCP optimal (élément critique pour ranking 2026) */}
+          <h1
             style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(34px,5.5vw,56px)", fontWeight: 600, color: "var(--bois)", lineHeight: 1.05, letterSpacing: -1, marginBottom: 18 }}
           >
             Trouvez l&apos;artisan{" "}
             <span style={{ fontStyle: "italic", fontWeight: 400, color: "var(--terre)", fontFamily: "'Fraunces',serif" }}>id&eacute;al</span>
             <br />
             pr&egrave;s de chez vous.
-          </motion.h1>
+          </h1>
           <motion.p
             {...fadeUp(0.16)}
             style={{ fontSize: 17, color: "var(--bois-mid)", marginBottom: 28, lineHeight: 1.6, maxWidth: 560, margin: "0 auto 28px" }}
@@ -279,8 +283,9 @@ export default function Home() {
       <div className="grid-wrap">
         <div style={{ textAlign: "center", marginBottom: 32 }}>
           <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "var(--bois)" }}>
-            Artisans &agrave; <span className="calli">Chamb&eacute;ry</span>
+            Artisans en <span className="calli">Rh&ocirc;ne-Alpes</span>
           </h2>
+          <p style={{ fontSize: 14, color: "var(--pierre)", marginTop: 6 }}>Chamb&eacute;ry &middot; Annecy &middot; Grenoble &middot; Lyon &middot; Valence</p>
         </div>
         <div className="grid">
           {filtered.length > 0 ? (
@@ -401,13 +406,53 @@ export default function Home() {
         </div>
       </section>
 
+      </main>
+
       <Footer />
 
       {/* JSON-LD WebSite + Organization */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd([
         { "@context": "https://schema.org", "@type": "WebSite", name: "Bativio", url: "https://www.bativio.fr", potentialAction: { "@type": "SearchAction", target: "https://www.bativio.fr/?search={search_term_string}", "query-input": "required name=search_term_string" } },
-        { "@context": "https://schema.org", "@type": "Organization", name: "Bativio", url: "https://www.bativio.fr", logo: "https://www.bativio.fr/og-image.png", description: "La plateforme des artisans du bâtiment en Rhône-Alpes. Zéro commission.", areaServed: { "@type": "State", name: "Rhône-Alpes" } }
+        { "@context": "https://schema.org", "@type": "Organization", name: "Bativio", url: "https://www.bativio.fr", logo: "https://www.bativio.fr/og-image.png", description: "La plateforme des artisans du bâtiment en Rhône-Alpes. Zéro commission.", areaServed: { "@type": "State", name: "Rhône-Alpes" }, foundingDate: "2025", founder: { "@type": "Person", name: "Tarik Bouzeggou" }, sameAs: ["https://www.linkedin.com/company/bativio"] }
       ]) }} />
+
+      {/* FAQPage JSON-LD — trigger AI Overviews + featured snippets */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: "Bativio prend-il une commission sur les devis ?",
+            acceptedAnswer: { "@type": "Answer", text: "Non. Bativio ne prend aucune commission sur les travaux. Le prix indiqué dans le devis est celui que vous payez directement à l'artisan." },
+          },
+          {
+            "@type": "Question",
+            name: "Comment Bativio vérifie-t-il les artisans ?",
+            acceptedAnswer: { "@type": "Answer", text: "Chaque artisan inscrit fournit un SIRET vérifié auprès de l'INSEE, une attestation d'assurance décennale en cours de validité et ses qualifications (RGE, Qualibat, Qualifelec). L'équipe Bativio contrôle ces documents avant publication du profil." },
+          },
+          {
+            "@type": "Question",
+            name: "Combien de temps pour recevoir un devis ?",
+            acceptedAnswer: { "@type": "Answer", text: "Vous obtenez une estimation immédiate par notre IA en 2 minutes après avoir décrit votre projet. Les artisans sélectionnés vous recontactent ensuite avec un devis ferme sous 24 heures en moyenne." },
+          },
+          {
+            "@type": "Question",
+            name: "Dans quelles villes Bativio est-il disponible ?",
+            acceptedAnswer: { "@type": "Answer", text: "Bativio couvre la région Rhône-Alpes : Chambéry, Annecy, Grenoble, Lyon et Valence, ainsi que les communes alentours dans un rayon de 30 km autour de chaque ville." },
+          },
+          {
+            "@type": "Question",
+            name: "Quels métiers du bâtiment sont disponibles ?",
+            acceptedAnswer: { "@type": "Answer", text: "Plomberie, électricité, peinture, maçonnerie, carrelage, menuiserie, couverture, chauffage/climatisation, serrurerie et cuisinistes. Les 10 métiers du second œuvre et gros œuvre les plus demandés." },
+          },
+          {
+            "@type": "Question",
+            name: "Comment être certain que les avis sont vrais ?",
+            acceptedAnswer: { "@type": "Answer", text: "Les avis sont déposés uniquement par des clients ayant reçu un devis Bativio. Un email de demande d'avis est envoyé après réalisation du chantier confirmé par l'artisan." },
+          },
+        ],
+      }) }} />
     </>
   );
 }

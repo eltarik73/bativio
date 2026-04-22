@@ -6,6 +6,7 @@ import { MOCK_ARTISANS } from "@/lib/mock-data";
 import ArtisanCard from "@/components/ArtisanCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { safeJsonLd } from "@/lib/html-escape";
 
 export function generateStaticParams() {
   return TRAVAUX.map((t) => ({ slug: t.slug }));
@@ -116,7 +117,7 @@ export default async function TravauxPage({ params }: { params: Promise<{ slug: 
       </main>
       <Footer />
 
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd({
         "@context": "https://schema.org", "@type": "FAQPage",
         mainEntity: t.faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
       }) }} />

@@ -58,9 +58,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Init on mount
+  // Init on mount — skip /auth/me si visiteur anonyme (pas de cookie)
+  // Évite -1 requête réseau + -1 query Prisma par visiteur public
   useEffect(() => {
     let cancelled = false;
+    const hasSessionCookie = typeof document !== "undefined" &&
+      document.cookie.includes("bativio-session=");
+    if (!hasSessionCookie) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
     fetchMe().then((u) => {
       if (!cancelled) {
         setUser(u);

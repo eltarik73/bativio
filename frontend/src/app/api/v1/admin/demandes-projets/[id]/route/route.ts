@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { requireAdmin } from "@/lib/auth-server";
 import { sendEmail } from "@/lib/email";
+import { escapeHtml } from "@/lib/html-escape";
 
 const bodySchema = z.object({
   mode: z.enum(["MANUAL", "AUTO_CONCERNES", "AUTO_TOUS", "AUTO_PRO", "AUTO_BUSINESS"]),
@@ -127,16 +128,20 @@ async function notifyArtisans(
 
         if (a.user?.email) {
           const directUrl = `${url}?open=${demandeId}`;
+          const safeArtisanNom = escapeHtml(a.nomAffichage);
+          const safeMetier = metier ? escapeHtml(metier) : "Projet";
+          const safeVilleLabel = villeLabel ? escapeHtml(villeLabel) : "";
+          const safeProjetSummary = escapeHtml(projetSummary);
           const html = `
             <div style="font-family: -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 32px;">
               <h2 style="color: #C4531A; font-family: Georgia, serif;">Nouvelle demande de devis via Bativio</h2>
               <p style="color: #3D2E1F; font-size: 15px; line-height: 1.5;">
-                Bonjour <strong>${a.nomAffichage}</strong>,<br><br>
+                Bonjour <strong>${safeArtisanNom}</strong>,<br><br>
                 L'équipe Bativio a sélectionné votre profil pour cette nouvelle demande :
               </p>
               <div style="background: #FAF8F5; padding: 20px; border-radius: 10px; border-left: 4px solid #C4531A; margin: 20px 0;">
-                <div style="font-size: 12px; letter-spacing: 1px; color: #C4531A; text-transform: uppercase; font-weight: 600; margin-bottom: 6px;">${metier || "Projet"}${villeLabel ? ` — ${villeLabel}` : ""}</div>
-                <div style="font-size: 15px; color: #3D2E1F; font-style: italic;">« ${projetSummary}${description.length > 150 ? "…" : ""} »</div>
+                <div style="font-size: 12px; letter-spacing: 1px; color: #C4531A; text-transform: uppercase; font-weight: 600; margin-bottom: 6px;">${safeMetier}${safeVilleLabel ? ` — ${safeVilleLabel}` : ""}</div>
+                <div style="font-size: 15px; color: #3D2E1F; font-style: italic;">« ${safeProjetSummary}${description.length > 150 ? "…" : ""} »</div>
               </div>
               <p style="color: #6B6560; font-size: 13px;">
                 Connectez-vous à votre espace pro pour consulter la qualification complète et générer un devis IA en 1 clic.

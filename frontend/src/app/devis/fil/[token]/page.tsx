@@ -16,7 +16,7 @@ export default function DevisFilClientPage({
       style={{
         display: "flex",
         flexDirection: "column",
-        minHeight: "100vh",
+        minHeight: "100dvh",
         background: "var(--creme, #FAF8F5)",
       }}
     >
