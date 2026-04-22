@@ -92,12 +92,27 @@ async function fetchArtisan(slug: string): Promise<ArtisanPublic | null> {
 // Metadata: dispatch based on slug type
 // ---------------------------------------------------------------------------
 
+// Reserved top-level routes — ne doivent jamais matcher /[ville]/[slug]
+const RESERVED_TOP_LEVEL = new Set([
+  "comparatif", "admin", "dashboard", "api", "auth", "onboarding",
+  "mot-de-passe-oublie", "reinitialiser-mot-de-passe", "tarifs",
+  "rejoindre", "a-propos", "mentions-legales", "cgu", "inscription",
+  "connexion", "prix", "travaux", "facturation-electronique", "demande",
+  "artisan", "_next", "icons", "videos", "demo-c",
+]);
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ ville: string; slug: string }>;
 }): Promise<Metadata> {
   const { ville: villeParam, slug } = await params;
+
+  // Garde contre le fallback routing : /comparatif/X, /api/X etc. ne doivent
+  // pas matcher /[ville]/[slug] (renvoie 404 propre au lieu d'artisan-not-found)
+  if (RESERVED_TOP_LEVEL.has(villeParam.toLowerCase())) {
+    notFound();
+  }
 
   // ── Metier page metadata ──
   if (isMetierSlug(slug)) {
