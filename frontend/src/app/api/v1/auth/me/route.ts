@@ -24,7 +24,25 @@ export async function GET() {
     });
 
     if (!artisan) {
-      return apiError("Profil artisan introuvable", 404);
+      // User connecté mais pas d'artisan : soit ADMIN pur, soit compte non fini
+      // On retourne un profil minimal pour que le client sache que l'utilisateur EST
+      // authentifié (évite la boucle /connexion ↔ /dashboard causée par un 404).
+      const user = await prisma.user.findUnique({ where: { id: session.userId }, select: { email: true, role: true } });
+      if (!user) return apiError("Utilisateur introuvable", 404);
+      return apiSuccess({
+        id: "",
+        nomAffichage: user.email.split("@")[0],
+        slug: null,
+        metierNom: null,
+        ville: null,
+        plan: "GRATUIT",
+        profilCompletion: 0,
+        actif: false,
+        email: user.email,
+        role: user.role,
+        artisanStatus: "NO_ARTISAN",
+        artisanMissing: true, // flag pour que le dashboard redirige vers /inscription
+      });
     }
 
     if (artisan.deletedAt) {
