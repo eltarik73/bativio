@@ -24,11 +24,14 @@ export default function Footer() {
             <div className="footer-col-title">Pour les artisans</div>
             <Link href="/inscription">Cr&eacute;er ma page</Link>
             <Link href="/tarifs">Tarifs</Link>
-            <Link href="/facturation-electronique">Facturation</Link>
+            <Link href="/facturation-electronique">Facturation &eacute;lectronique</Link>
+            <Link href="/comparatif/pagesjaunes">vs PagesJaunes</Link>
+            <Link href="/comparatif/habitatpresto">vs Habitatpresto</Link>
           </div>
           <div className="footer-col">
             <div className="footer-col-title">Bativio</div>
             <Link href="/a-propos">&Agrave; propos</Link>
+            <Link href="/faq">FAQ</Link>
             <Link href="/rejoindre">Rejoindre l&apos;&eacute;quipe</Link>
             <a href="mailto:contact@bativio.fr">Contact</a>
             <Link href="/mentions-legales">Mentions l&eacute;gales</Link>
