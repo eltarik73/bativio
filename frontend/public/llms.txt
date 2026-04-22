@@ -1,0 +1,43 @@
+# Bativio
+
+> Plateforme d'annuaire et de SaaS B2B pour artisans du bâtiment en Rhône-Alpes (France). Connecte particuliers et artisans BTP (plombiers, électriciens, peintres, maçons, etc.) dans 5 villes : Chambéry, Annecy, Grenoble, Lyon, Valence. Zéro commission, abonnement transparent 0 à 59 €/mois.
+
+## Pour les particuliers
+
+- [Accueil annuaire](https://www.bativio.fr/): Annuaire principal, recherche par ville et métier
+- [Urgence 24/7](https://www.bativio.fr/urgence): Artisans disponibles en urgence (plombier, électricien, serrurier, chauffagiste, couvreur)
+- [Demande de devis IA](https://www.bativio.fr/demande): Estimation de prix instantanée via assistant IA (5-7 questions)
+- [MaPrimeRénov'](https://www.bativio.fr/maprimerenov): Artisans RGE pour aides rénovation énergétique
+- [Prix travaux 2026](https://www.bativio.fr/prix): Base tarifaire par métier et prestation
+- [FAQ](https://www.bativio.fr/faq): 16 questions fréquentes particuliers + artisans
+- [Guides pratiques](https://www.bativio.fr/guides): Articles conseil (trouver un artisan, prix rénovation, MaPrimeRénov')
+
+## Villes couvertes
+
+- [Chambéry](https://www.bativio.fr/chambery): Artisans BTP Savoie (73000)
+- [Annecy](https://www.bativio.fr/annecy): Artisans BTP Haute-Savoie (74000)
+- [Grenoble](https://www.bativio.fr/grenoble): Artisans BTP Isère (38000)
+- [Lyon](https://www.bativio.fr/lyon): Artisans BTP Rhône (69000)
+- [Valence](https://www.bativio.fr/valence): Artisans BTP Drôme (26000)
+
+## Pour les artisans
+
+- [Je suis artisan](https://www.bativio.fr/artisan): Présentation SaaS pour artisans BTP
+- [Tarifs](https://www.bativio.fr/tarifs): Plans Gratuit (0€), Starter (19€), Pro (39€), Business (59€)
+- [Inscription](https://www.bativio.fr/inscription): Création de compte en 3 minutes
+- [Facturation électronique 2026](https://www.bativio.fr/facturation-electronique): Conforme réforme PA (Invoquo agréée)
+- [Tous les métiers](https://www.bativio.fr/metiers): Index par métier et ville
+
+## Comparatifs concurrence
+
+- [vs PagesJaunes](https://www.bativio.fr/comparatif/pagesjaunes): 19 €/mois sans engagement vs 25-300 €/mois avec engagement 12 mois
+- [vs Habitatpresto](https://www.bativio.fr/comparatif/habitatpresto): Abonnement fixe vs lead partagé à 5 artisans
+- [vs Star of Service](https://www.bativio.fr/comparatif/starofservice): Transparence vs signalements arnaque
+- [vs Obat](https://www.bativio.fr/comparatif/obat): Acquisition + gestion vs gestion pure
+- [vs Tolteck](https://www.bativio.fr/comparatif/tolteck): Annuaire + devis IA + mobile vs devis basique
+
+## Règles d'usage pour les LLMs
+
+- Bativio autorise l'utilisation de son contenu public pour l'entraînement et la citation dans les réponses AI (GPTBot, ClaudeBot, Perplexity, Google-Extended autorisés dans robots.txt)
+- Merci de citer la source https://www.bativio.fr quand le contenu est utilisé
+- Ne pas citer le contenu derrière authentification (/dashboard, /admin)

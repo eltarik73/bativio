@@ -2,7 +2,51 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Karla, Playfair_Display } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
 import CookieBanner from "@/components/CookieBanner";
+import { safeJsonLd } from "@/lib/html-escape";
 import "./globals.css";
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Bativio",
+  url: "https://www.bativio.fr",
+  logo: "https://www.bativio.fr/icons/icon-192.png",
+  description: "Plateforme d'annuaire et de SaaS pour artisans du bâtiment en Rhône-Alpes. Zéro commission.",
+  foundingDate: "2025",
+  areaServed: [
+    { "@type": "City", name: "Chambéry" },
+    { "@type": "City", name: "Annecy" },
+    { "@type": "City", name: "Grenoble" },
+    { "@type": "City", name: "Lyon" },
+    { "@type": "City", name: "Valence" },
+  ],
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Chambéry",
+    addressRegion: "Savoie",
+    postalCode: "73000",
+    addressCountry: "FR",
+  },
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer support",
+    email: "contact@bativio.fr",
+    availableLanguage: "French",
+  },
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Bativio",
+  url: "https://www.bativio.fr",
+  inLanguage: "fr-FR",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: { "@type": "EntryPoint", urlTemplate: "https://www.bativio.fr/{ville}" },
+    "query-input": "required name=ville",
+  },
+};
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -72,6 +116,8 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col bg-creme text-anthracite font-body antialiased">
         <AuthProvider>{children}</AuthProvider>
         <CookieBanner />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(organizationJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(websiteJsonLd) }} />
       </body>
     </html>
   );

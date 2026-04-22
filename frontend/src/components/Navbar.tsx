@@ -89,6 +89,7 @@ export default function Navbar() {
           <>
             <Link href="/" className="nav-link">Annuaire</Link>
             <Link href="/metiers" className="nav-link">Métiers</Link>
+            <Link href="/guides" className="nav-link">Guides</Link>
             <Link href="/urgence" className="nav-link" style={{ color: "#dc2626", fontWeight: 600 }}>Urgence 24/7</Link>
             <Link href="/artisan" className="nav-link">Je suis artisan</Link>
             <Link href="/connexion" className="nav-link">Connexion</Link>
