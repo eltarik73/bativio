@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 60" fill="none">
+  <!-- Concept 7: Rounded square with roof line + digital grid -->
+  <g transform="translate(2, 4)">
+    <!-- Rounded square container -->
+    <rect x="2" y="2" width="44" height="44" rx="12" fill="#C4531A"/>
+    <!-- Roof line (white) -->
+    <path d="M12 26L24 14L36 26" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Grid dots (digital/tech feel) -->
+    <circle cx="16" cy="34" r="2.5" fill="#fff" opacity="0.9"/>
+    <circle cx="24" cy="34" r="2.5" fill="#fff" opacity="0.9"/>
+    <circle cx="32" cy="34" r="2.5" fill="#fff" opacity="0.9"/>
+    <circle cx="16" cy="26" r="1.5" fill="#E8A84C"/>
+    <circle cx="32" cy="26" r="1.5" fill="#E8A84C"/>
+  </g>
+
+  <!-- Text -->
+  <text x="58" y="38" font-family="'Helvetica Neue', Arial, sans-serif" font-size="26" font-weight="700" letter-spacing="1">
+    <tspan fill="#1C1C1E">bativio</tspan>
+  </text>
+  <!-- Tagline -->
+  <text x="58" y="50" font-family="'Helvetica Neue', Arial, sans-serif" font-size="9" font-weight="500" letter-spacing="2.5" fill="#9C958D">ARTISANS DU BÂTIMENT</text>
+</svg>

@@ -36,7 +36,12 @@ export async function PUT(
 
     const updatedArtisan = await prisma.artisan.update({
       where: { id },
-      data: { actif: statut === "ACTIVE" },
+      data: {
+        actif: statut === "ACTIVE",
+        artisanStatus: statut === "ACTIVE" ? "ACTIVE" : "INACTIVE",
+        // Clear NAF review flag if admin approves
+        motifRefus: statut === "ACTIVE" ? null : artisan.motifRefus,
+      },
       include: {
         user: { select: { email: true } },
         metier: true,

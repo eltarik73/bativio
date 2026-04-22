@@ -9,16 +9,19 @@ export async function GET(request: NextRequest) {
 
     const searchParams = request.nextUrl.searchParams;
     const search = searchParams.get("search") || "";
+    const status = searchParams.get("status") || ""; // e.g. "PENDING_NAF_REVIEW"
     const page = parseInt(searchParams.get("page") || "0", 10);
     const size = parseInt(searchParams.get("size") || "20", 10);
 
     const where = {
       deletedAt: null,
+      ...(status ? { artisanStatus: status } : {}),
       ...(search
         ? {
             OR: [
               { nomAffichage: { contains: search, mode: "insensitive" as const } },
               { ville: { contains: search, mode: "insensitive" as const } },
+              { siret: { contains: search } },
             ],
           }
         : {}),

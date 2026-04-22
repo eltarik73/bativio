@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 60" fill="none">
+  <!-- Concept 4: Abstract roof + connection dot -->
+  <g transform="translate(2, 8)">
+    <!-- Roof line -->
+    <path d="M4 30L22 10L40 30" stroke="#C4531A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <!-- Base line -->
+    <line x1="8" y1="30" x2="36" y2="30" stroke="#C4531A" stroke-width="3" stroke-linecap="round"/>
+    <!-- Connection dot (or/gold) -->
+    <circle cx="22" cy="24" r="4.5" fill="#E8A84C"/>
+  </g>
+
+  <!-- Text -->
+  <text x="52" y="40" font-family="Georgia, 'Times New Roman', serif" font-size="30" font-weight="700" fill="#1C1C1E" letter-spacing="-0.3">
+    <tspan fill="#C4531A">Bat</tspan><tspan fill="#1C1C1E">ivio</tspan>
+  </text>
+</svg>

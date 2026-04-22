@@ -22,7 +22,7 @@ export async function GET(
         actif: true,
         visible: true,
         deletedAt: null,
-        profilCompletion: { gte: 70 },
+        profilCompletion: { gte: 50 },
         NOT: { slug: { startsWith: "test-" } },
       },
       include: {

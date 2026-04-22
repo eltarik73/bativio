@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, setAuthCookie } from "@/lib/auth-server";
 import { apiSuccess, apiError } from "@/lib/api-response";
+import { isNafBtp } from "@/lib/naf-btp";
 
 const registerSchema = z.object({
   email: z.string().email("Email invalide"),
@@ -14,6 +15,7 @@ const registerSchema = z.object({
   metierId: z.string().optional(),
   ville: z.string().optional(),
   codeInsee: z.string().optional(),
+  codeNaf: z.string().optional(), // ex "43.22A", "51.10Z" — récupéré par frontend via INSEE
   latitude: z.number().optional(),
   longitude: z.number().optional(),
   zoneRayonKm: z.number().int().min(5).max(80).optional(),
@@ -64,6 +66,13 @@ export async function POST(request: NextRequest) {
     const latitude = typeof data.latitude === "number" ? data.latitude : undefined;
     const longitude = typeof data.longitude === "number" ? data.longitude : undefined;
     const codeInsee = typeof data.codeInsee === "string" ? data.codeInsee : undefined;
+    const codeNaf = typeof data.codeNaf === "string" ? data.codeNaf : undefined;
+
+    // Si un code NAF est fourni et qu'il n'est pas dans la whitelist BTP,
+    // l'artisan est marqué PENDING_NAF_REVIEW (invisible dans l'annuaire public
+    // tant qu'un admin n'a pas validé manuellement)
+    const nafBtpOk = codeNaf ? isNafBtp(codeNaf) : null; // null = inconnu
+    const initialStatus = nafBtpOk === false ? "PENDING_NAF_REVIEW" : "ONBOARDING";
 
     // Check for duplicates: email, siret, telephone
     const existingEmail = await prisma.user.findUnique({ where: { email } });
@@ -175,6 +184,8 @@ export async function POST(request: NextRequest) {
           slug,
           actif: false,
           profilCompletion: 30,
+          artisanStatus: initialStatus,
+          motifRefus: nafBtpOk === false ? `Code NAF "${codeNaf}" hors BTP — validation admin requise` : null,
         },
         include: {
           metier: true,

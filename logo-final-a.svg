@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 60" fill="none">
+  <!-- Mix A: Blocs pyramide (8) + maison subtile (1) + B majuscule -->
+  <g transform="translate(2, 5)">
+    <!-- 3 blocs base -->
+    <rect x="0" y="30" width="12" height="12" rx="2.5" fill="#C4531A"/>
+    <rect x="15" y="30" width="12" height="12" rx="2.5" fill="#C4531A" opacity="0.7"/>
+    <rect x="30" y="30" width="12" height="12" rx="2.5" fill="#C4531A" opacity="0.45"/>
+    <!-- 2 blocs milieu -->
+    <rect x="7.5" y="16" width="12" height="12" rx="2.5" fill="#E8A84C"/>
+    <rect x="22.5" y="16" width="12" height="12" rx="2.5" fill="#E8A84C" opacity="0.55"/>
+    <!-- Toit/apex -->
+    <path d="M15 6L21 0L27 6" stroke="#C4531A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Text -->
+  <text x="56" y="35" font-family="Georgia, 'Times New Roman', serif" font-size="30" font-weight="700" letter-spacing="-0.3">
+    <tspan fill="#C4531A">B</tspan><tspan fill="#1C1C1E">ativio</tspan>
+  </text>
+  <text x="56" y="47" font-family="'Helvetica Neue', Arial, sans-serif" font-size="8" font-weight="600" letter-spacing="3" fill="#9C958D">PLATEFORME ARTISANS</text>
+</svg>

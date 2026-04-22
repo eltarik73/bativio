@@ -1,7 +1,7 @@
 {
-  "pid": 33641,
-  "port": 30547,
-  "token": "af62aaa6-560e-4bb9-b528-778463836b69",
-  "startedAt": "2026-03-30T15:58:51.791Z",
+  "pid": 50869,
+  "port": 15580,
+  "token": "ba83874d-93fb-4a4b-a91b-1bf18fca6c63",
+  "startedAt": "2026-04-04T06:30:45.945Z",
   "serverPath": "/Users/macbook/Desktop/bativio/.claude/skills/gstack/browse/src/server.ts"
 }
