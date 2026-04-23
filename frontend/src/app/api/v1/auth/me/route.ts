@@ -1,5 +1,6 @@
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getSession, clearAuthCookie } from "@/lib/auth-server";
+import { getSession } from "@/lib/auth-server";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { getEffectivePlan } from "@/lib/plan-gates";
 
@@ -27,9 +28,20 @@ export async function GET() {
       // User connecté mais pas d'artisan : soit ADMIN pur, soit compte non fini, soit user supprimé (orphelin JWT)
       const user = await prisma.user.findUnique({ where: { id: session.userId }, select: { email: true, role: true } });
       if (!user) {
-        // JWT valide mais user supprimé : clear cookie + 401 pour éviter boucle /connexion ↔ /dashboard
-        await clearAuthCookie();
-        return apiError("Session invalide (utilisateur supprimé). Reconnectez-vous.", 401);
+        // JWT valide mais user supprimé : clear cookie via Set-Cookie (GET handler ne peut pas utiliser cookies().delete())
+        const response = NextResponse.json(
+          { success: false, error: "Session invalide (utilisateur supprimé). Reconnectez-vous.", timestamp: new Date().toISOString() },
+          { status: 401 }
+        );
+        response.cookies.set("bativio-session", "", {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          path: "/",
+          maxAge: 0,
+          expires: new Date(0),
+        });
+        return response;
       }
       // User existe mais pas d'artisan : profil minimal (client peut rediriger vers /inscription)
       return apiSuccess({
