@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 
@@ -40,7 +39,30 @@ function LoadingState({ title, sub }: { title: string; sub: string }) {
   );
 }
 
-function ActionState({ title, sub, cta }: { title: string; sub: string; cta: { href: string; label: string } }) {
+function ActionState({
+  title,
+  sub,
+  cta,
+  requireLogout,
+}: {
+  title: string;
+  sub: string;
+  cta: { href: string; label: string };
+  requireLogout?: boolean;
+}) {
+  const handleClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!requireLogout) return; // Link classique
+    e.preventDefault();
+    // Force logout serveur (clear cookie) puis hard navigation
+    try {
+      await fetch("/api/v1/auth/logout", { method: "POST", credentials: "include" }).catch(() => {});
+    } catch {
+      // ignore
+    }
+    // Hard nav pour bypasser le cache Next.js client-side routing + RSC prefetch
+    window.location.href = cta.href;
+  };
+
   return (
     <div
       style={{
@@ -63,9 +85,14 @@ function ActionState({ title, sub, cta }: { title: string; sub: string; cta: { h
           {sub}
         </p>
       </div>
-      <Link href={cta.href} style={{ marginTop: 4, padding: "12px 28px", background: "var(--terre,#C4531A)", color: "#fff", borderRadius: 99, fontSize: 14, fontWeight: 600, textDecoration: "none" }}>
+      {/* <a> classique (pas <Link>) pour éviter le prefetch RSC qui peut causer une boucle */}
+      <a
+        href={cta.href}
+        onClick={handleClick}
+        style={{ marginTop: 4, padding: "12px 28px", background: "var(--terre,#C4531A)", color: "#fff", borderRadius: 99, fontSize: 14, fontWeight: 600, textDecoration: "none" }}
+      >
         {cta.label}
-      </Link>
+      </a>
     </div>
   );
 }
@@ -106,6 +133,7 @@ export default function ProtectedRoute({
         title="Connexion requise"
         sub="Pour accéder à cette page, connectez-vous à votre espace artisan."
         cta={{ href: "/connexion", label: "Se connecter" }}
+        requireLogout // force clear cookie + hard nav (fix boucle middleware)
       />
     );
   }
