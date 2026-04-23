@@ -132,8 +132,8 @@ export default function ProtectedRoute({
       <ActionState
         title="Connexion requise"
         sub="Pour accéder à cette page, connectez-vous à votre espace artisan."
-        cta={{ href: "/connexion", label: "Se connecter" }}
-        requireLogout // force clear cookie + hard nav (fix boucle middleware)
+        // Route serveur qui clear le cookie (Set-Cookie) puis redirect 303 → bypass cache + Safari
+        cta={{ href: "/api/v1/auth/logout?next=/connexion", label: "Se connecter" }}
       />
     );
   }
