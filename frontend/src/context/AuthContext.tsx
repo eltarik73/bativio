@@ -58,13 +58,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Init on mount — skip /auth/me si visiteur anonyme (pas de cookie)
-  // Évite -1 requête réseau + -1 query Prisma par visiteur public
+  // Init on mount — skip /auth/me si visiteur anonyme (signal cookie compagnon)
+  // Le JWT lui-même reste HttpOnly (sécurité). Le cookie "bativio-logged" non-HttpOnly
+  // est posé en parallèle au login uniquement comme signal client.
+  // → Évite -1 requête /auth/me par visiteur public, sans casser l'auth post-login.
   useEffect(() => {
     let cancelled = false;
-    const hasSessionCookie = typeof document !== "undefined" &&
-      document.cookie.includes("bativio-session=");
-    if (!hasSessionCookie) {
+    const hasLoggedCookie = typeof document !== "undefined" &&
+      document.cookie.split(";").some((c) => c.trim().startsWith("bativio-logged="));
+    if (!hasLoggedCookie) {
       setUser(null);
       setLoading(false);
       return;

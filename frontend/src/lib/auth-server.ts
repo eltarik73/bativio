@@ -28,8 +28,19 @@ export async function verifyToken(token: string) {
 export async function setAuthCookie(userId: string, role: string) {
   const token = await createToken(userId, role);
   const cookieStore = await cookies();
+  // 1) Cookie session JWT (HttpOnly, secret server-side)
   cookieStore.set(COOKIE_NAME, token, {
     httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7,
+  });
+  // 2) Cookie compagnon NON-HttpOnly = signal client uniquement (pas sécurité)
+  // Permet AuthContext de savoir s'il faut fetch /auth/me sans casser HttpOnly du JWT.
+  // Aucune info sensible : juste "1" pour dire "logged in".
+  cookieStore.set("bativio-logged", "1", {
+    httpOnly: false,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
@@ -87,6 +98,7 @@ export async function requireFeature(feature: import("@/lib/plans").FeatureKey) 
 export async function clearAuthCookie() {
   const cookieStore = await cookies();
   cookieStore.delete(COOKIE_NAME);
+  cookieStore.delete("bativio-logged"); // signal client compagnon
 }
 
 export async function hashPassword(password: string) {
