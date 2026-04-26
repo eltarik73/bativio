@@ -352,18 +352,19 @@ export default function Home() {
               de nos clients.
             </h2>
           </motion.div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 24 }}>
+          {/* Mobile: 1 colonne stack lisible. Desktop: 3 colonnes avec offset middle */}
+          <div className="testimonials-grid">
             {TESTIMONIALS.map((t, i) => (
               <motion.div
                 key={t.name}
                 {...fadeUp(i * 0.1)}
-                className="liquid-glass"
+                className={`liquid-glass testimonial-card ${i === 1 ? "is-middle" : ""}`}
                 style={{
                   borderRadius: 20,
-                  padding: 32,
+                  padding: 28,
                   display: "flex",
                   flexDirection: "column",
-                  transform: i === 1 ? "translateY(-16px)" : undefined,
+                  minWidth: 0,
                 }}
               >
                 <div style={{ display: "flex", gap: 2, marginBottom: 16 }}>
@@ -371,17 +372,32 @@ export default function Home() {
                     <svg key={s} width="16" height="16" viewBox="0 0 20 20" fill="var(--or)"><path d="M10 1l2.39 4.84 5.34.78-3.87 3.77.91 5.33L10 13.27l-4.77 2.51.91-5.33L2.27 6.68l5.34-.78L10 1z" /></svg>
                   ))}
                 </div>
-                <p style={{ fontFamily: "'Fraunces',serif", fontSize: 17, color: "var(--bois)", lineHeight: 1.55, fontWeight: 400, flex: 1, letterSpacing: -0.2 }}>&ldquo;{t.text}&rdquo;</p>
+                <p style={{ fontFamily: "'Fraunces',serif", fontSize: 17, color: "var(--bois)", lineHeight: 1.55, fontWeight: 400, flex: 1, letterSpacing: -0.2, wordBreak: "normal", overflowWrap: "break-word" }}>&ldquo;{t.text}&rdquo;</p>
                 <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 22, paddingTop: 18, borderTop: "1px solid rgba(61,46,31,.08)" }}>
-                  <div style={{ width: 40, height: 40, borderRadius: "50%", background: "linear-gradient(135deg, var(--terre), var(--argile))", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Fraunces',serif", fontSize: 14, fontWeight: 600, color: "#fff" }}>{t.initials}</div>
-                  <div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: "var(--bois)" }}>{t.name}</div>
-                    <div style={{ fontSize: 12, color: "var(--pierre)" }}>{t.role}</div>
+                  <div style={{ width: 40, height: 40, borderRadius: "50%", background: "linear-gradient(135deg, var(--terre), var(--argile))", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Fraunces',serif", fontSize: 14, fontWeight: 600, color: "#fff", flexShrink: 0 }}>{t.initials}</div>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "var(--bois)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.name}</div>
+                    <div style={{ fontSize: 12, color: "var(--pierre)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.role}</div>
                   </div>
                 </div>
               </motion.div>
             ))}
           </div>
+          <style>{`
+            .testimonials-grid {
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              gap: 24px;
+            }
+            .testimonial-card.is-middle { transform: translateY(-16px); }
+            @media (max-width: 768px) {
+              .testimonials-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+              }
+              .testimonial-card.is-middle { transform: none; }
+            }
+          `}</style>
         </div>
       </section>
 
