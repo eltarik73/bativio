@@ -143,10 +143,11 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .card-photo::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 20%,rgba(255,255,255,.35) 100%)}
 .card-badge{position:absolute;top:12px;left:12px;z-index:1;display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;color:#fff}
 .card-badge svg{width:14px;height:14px}
-.card-rating{position:absolute;bottom:12px;left:12px;z-index:1;display:flex;align-items:center;gap:5px;font-family:'Fraunces',serif;font-size:22px;font-weight:800;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.6)}
-.card-rating svg{width:16px;height:16px;fill:var(--or)}
-.card-rating small{font-family:'Karla',sans-serif;font-size:12px;font-weight:500;opacity:.7}
-.card-nouveau{position:absolute;bottom:12px;left:12px;z-index:1;font-size:11px;font-weight:600;padding:4px 12px;border-radius:6px;background:rgba(232,168,76,.15);color:#E8A84C;letter-spacing:.3px}
+/* Note + nb avis : badge frosted lisible sur toute photo (clair ou sombre) */
+.card-rating{position:absolute;bottom:10px;left:10px;z-index:2;display:inline-flex;align-items:center;gap:5px;font-family:'Fraunces',serif;font-size:15px;font-weight:700;color:#1C1C1E;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:5px 10px;border-radius:999px;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+.card-rating svg{width:13px;height:13px;fill:var(--or)}
+.card-rating small{font-family:'Karla',sans-serif;font-size:11px;font-weight:500;color:var(--g500)}
+.card-nouveau{position:absolute;bottom:10px;left:10px;z-index:2;font-size:11px;font-weight:600;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.95);color:var(--terre);letter-spacing:.3px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 2px 10px rgba(0,0,0,.18)}
 .card-main{flex:1;padding:18px 20px;display:flex;flex-direction:column;justify-content:center;min-width:0}
 .card-r1{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
 .card-name{font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:#1C1C1E;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

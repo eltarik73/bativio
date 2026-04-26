@@ -175,11 +175,12 @@ export default function Home() {
             <input
               name="q"
               type="text"
-              placeholder="Décrivez votre projet, ou tapez 'plombier lyon'..."
+              placeholder="Votre projet ou un métier..."
               aria-label="Décrivez votre projet ou cherchez un artisan"
+              className="hero-search-input"
               style={{
                 flex: 1, minWidth: 0,
-                padding: "13px 18px",
+                padding: "13px 14px",
                 background: "transparent",
                 border: "none",
                 outline: "none",
@@ -190,8 +191,9 @@ export default function Home() {
             />
             <button
               type="submit"
+              className="hero-search-btn"
               style={{
-                padding: "12px 22px",
+                padding: "12px 18px",
                 borderRadius: 999,
                 background: "var(--terre)",
                 color: "#fff",

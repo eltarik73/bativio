@@ -425,6 +425,10 @@ export default function Navbar() {
         @media (max-width: 768px) {
           .nav-hamburger { display: flex !important; }
           .nav-user-name { display: none !important; }
+          /* Hide all desktop nav links/CTAs on mobile (only hamburger reste) */
+          .nav .nav-r .nav-link,
+          .nav .nav-r .nav-cta { display: none !important; }
+          .nav { padding: 0 16px !important; }
         }
       `}</style>
     </nav>
