@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 
 function MagicContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
+  const { refreshAuth } = useAuth();
   const token = searchParams.get("token");
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [errorMsg, setErrorMsg] = useState("");
@@ -25,20 +26,26 @@ function MagicContent() {
       body: JSON.stringify({ token }),
     })
       .then((res) => res.json())
-      .then((data) => {
+      .then(async (data) => {
         if (!data.success) {
           setStatus("error");
           setErrorMsg(data.error || "Ce lien est invalide ou a expiré.");
-        } else {
-          setStatus("success");
-          setTimeout(() => router.push(data.data?.redirect || "/dashboard"), 1500);
+          return;
         }
+        // CRITICAL: refresh AuthContext AVANT le redirect, sinon ProtectedRoute
+        // verra user=null et redirigera vers /connexion (page blanche / boucle).
+        await refreshAuth();
+        setStatus("success");
+        // Hard navigation = full reload qui re-init AuthProvider proprement.
+        // router.push (soft) garde le state stale dans certains cas.
+        const target = data.data?.redirect || "/dashboard";
+        setTimeout(() => { window.location.href = target; }, 800);
       })
       .catch(() => {
         setStatus("error");
         setErrorMsg("Une erreur est survenue.");
       });
-  }, [token, router]);
+  }, [token, refreshAuth]);
 
   return (
     <main style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100dvh", padding: 16, background: "var(--creme,#FAF8F5)" }}>

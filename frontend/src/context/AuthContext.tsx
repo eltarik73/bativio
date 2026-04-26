@@ -34,6 +34,8 @@ interface AuthContextType {
   logout: () => void;
   updateUser: (user: User) => void;
   fetchWithAuth: (path: string, options?: RequestInit) => Promise<unknown>;
+  /** Force re-fetch /auth/me — à appeler après magic-link verify ou tout login externe au context. */
+  refreshAuth: () => Promise<User | null>;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -79,6 +81,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     return () => { cancelled = true; };
   }, [fetchMe]);
+
+  /**
+   * Force re-fetch /auth/me et met à jour user state.
+   * À appeler après magic-link verify ou tout login externe au context.
+   */
+  const refreshAuth = useCallback(async (): Promise<User | null> => {
+    setLoading(true);
+    const u = await fetchMe();
+    setUser(u);
+    setLoading(false);
+    return u;
+  }, [fetchMe]);
+
+  // Re-check auth quand l'onglet redevient visible (cas : ouvert magic link dans nouvel onglet)
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === "visible") {
+        const hasLoggedCookie = document.cookie.split(";").some((c) => c.trim().startsWith("bativio-logged="));
+        // Si on a le cookie mais pas de user, ou plus de cookie mais user actif → re-check
+        if (hasLoggedCookie && !user) {
+          fetchMe().then(setUser);
+        } else if (!hasLoggedCookie && user) {
+          setUser(null);
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, [user, fetchMe]);
 
   // Login
   const login = useCallback(async (email: string, password: string): Promise<User> => {
@@ -187,7 +218,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, isAuthenticated, isAdmin, login, logout, updateUser, fetchWithAuth }}
+      value={{ user, loading, isAuthenticated, isAdmin, login, logout, updateUser, fetchWithAuth, refreshAuth }}
     >
       {children}
     </AuthContext.Provider>
