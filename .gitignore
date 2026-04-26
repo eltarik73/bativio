@@ -36,3 +36,21 @@ npm-debug.log*
 
 # Claude Code
 .claude/
+
+# Test artifacts (screenshots, recordings)
+test-*.png
+test-*.jpg
+test-*.webm
+test-*.mp4
+.playwright-mcp/
+playwright-report/
+test-results/
+
+# Local design/research artifacts
+bativio-*.png
+*-tweet.png
+*-tweet.jpg
+
+# Backup files
+*.bak
+*~

@@ -119,7 +119,9 @@ export default function DemandesProjetsArtisanPage() {
         <div style={{ textAlign: "center", padding: 60, color: "#9C958D" }}>Chargement...</div>
       ) : envois.length === 0 ? (
         <div style={{ textAlign: "center", padding: "60px 24px", background: "#fff", borderRadius: 14, border: "1px solid #E8D5C0" }}>
-          <div style={{ fontSize: 40, marginBottom: 12 }}>📬</div>
+          <div aria-hidden="true" style={{ width: 56, height: 56, margin: "0 auto 16px", borderRadius: 12, background: "rgba(196,83,26,.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg width="28" height="28" fill="none" stroke="#C4531A" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          </div>
           <p style={{ fontSize: 16, fontWeight: 600, color: "#3D2E1F", marginBottom: 6 }}>Aucune demande pour l&apos;instant</p>
           <p style={{ fontSize: 13, color: "#9C958D", maxWidth: 400, margin: "0 auto" }}>
             Les demandes clients qualifiées par l&apos;IA et routées par l&apos;équipe Bativio apparaîtront ici. Remplis ta grille tarifaire pour être prêt.
@@ -136,7 +138,7 @@ export default function DemandesProjetsArtisanPage() {
                   {d.metierDetecte && (
                     <span style={{ padding: "4px 10px", borderRadius: 999, background: "rgba(196,83,26,.08)", color: "#C4531A", fontSize: 11, fontWeight: 600, textTransform: "capitalize" }}>{d.metierDetecte}</span>
                   )}
-                  {d.villeLabel && <span style={{ fontSize: 12, color: "#9C958D" }}>📍 {d.villeLabel}</span>}
+                  {d.villeLabel && <span style={{ fontSize: 12, color: "#9C958D" }}>{d.villeLabel}</span>}
                   {d.qualifScore && d.qualifScore >= 80 && <span style={{ fontSize: 11, color: "#4A6741", fontWeight: 600 }}>● Bien qualifié</span>}
                   {e.respondedAt && <span style={{ fontSize: 11, color: "#4A6741", fontWeight: 600 }}>✓ Devis envoyé</span>}
                   <span style={{ fontSize: 11, color: "#9C958D", marginLeft: "auto" }}>Reçue {formatDate(e.sentAt)}</span>
@@ -344,7 +346,7 @@ export default function DemandesProjetsArtisanPage() {
 
               {devisPreview.preview.notes && (
                 <div style={{ fontSize: 12, color: "#6B6560", marginBottom: 16, padding: 10, background: "#FAF8F5", borderRadius: 8, borderLeft: "3px solid #C9943A" }}>
-                  💬 {devisPreview.preview.notes}
+                  <span style={{ fontWeight: 600, color: "#3D2E1F" }}>Notes&nbsp;: </span>{devisPreview.preview.notes}
                 </div>
               )}
 

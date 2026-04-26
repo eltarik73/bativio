@@ -8,6 +8,79 @@ if (!process.env.JWT_SECRET && process.env.NODE_ENV === "production") {
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "dev-secret-change-in-production");
 const COOKIE_NAME = "bativio-session";
 
+// Whitelist des routes top-level reconnues (statiques + dossiers réservés).
+// Tout slug single-segment qui n'est PAS dans cette liste, ni une ville Bativio,
+// ni un format métier-ville composite (ex: "plombier-lyon"), retourne HTTP 404.
+//
+// Critique SEO 2026 : empêche le soft-404 (Google détecte mais déprécie l'autorité)
+// et bloque le duplicate content cross-slug.
+const RESERVED_TOP_PATHS = new Set([
+  "", // home
+  "a-propos",
+  "annuaire",
+  "artisan",
+  "auth", // /auth/magic
+  "cgu",
+  "connexion",
+  "d", // /d/[token] — partage devis privé
+  "dashboard",
+  "demande",
+  "demo",
+  "demo-a",
+  "demo-b",
+  "demo-c",
+  "demo-light",
+  "devis",
+  "facturation-electronique",
+  "favicon.ico",
+  "icons",
+  "inscription",
+  "magic-link",
+  "manifest.json",
+  "mentions-legales",
+  "mot-de-passe-oublie",
+  "onboarding",
+  "prix",
+  "rejoindre",
+  "reinitialiser-mot-de-passe",
+  "robots.txt",
+  "sitemap.xml",
+  "tarifs",
+  "travaux",
+  "videos",
+  "_next",
+]);
+
+// Villes Bativio (synchro avec lib/constants.ts VILLES + aliases SEO).
+// Hardcoded ici car middleware Edge Runtime ne peut pas importer Prisma/big modules.
+const KNOWN_VILLES = new Set([
+  "chambery",
+  "annecy",
+  "grenoble",
+  "lyon",
+  "valence",
+]);
+
+const VALID_METIER_PREFIXES = [
+  "plombier", "electricien", "peintre", "macon", "carreleur",
+  "menuisier", "couvreur", "chauffagiste", "serrurier", "cuisiniste",
+  "reparation-mobile",
+];
+
+/**
+ * True si le slug single-segment correspond à un format métier-ville reconnu
+ * (ex: "plombier-lyon", "reparation-mobile-chambery").
+ */
+function isMetierVilleSlug(slug: string): boolean {
+  for (const metier of VALID_METIER_PREFIXES) {
+    if (slug.startsWith(metier + "-")) {
+      const ville = slug.slice(metier.length + 1);
+      if (KNOWN_VILLES.has(ville)) return true;
+    }
+  }
+  return false;
+}
+
 async function verify(token: string) {
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
@@ -32,6 +105,29 @@ export async function middleware(req: NextRequest) {
     const url = req.nextUrl.clone();
     url.pathname = pathname.toLowerCase();
     return NextResponse.redirect(url, 308);
+  }
+
+  // SEO 404: bloque les slugs single-segment non whitelistés.
+  // /lyon, /a-propos, /tarifs, /chambery → OK (whitelisted)
+  // /cgv, /contact, /random → 404 propre (HTTP 404 + page not-found)
+  // Pas de match pour multi-segment (/lyon/test-plombier-lyon, etc.) — géré par les routes elles-mêmes.
+  // Pas de match pour fichiers (.css, .png, ...) — déjà filtrés.
+  if (!pathname.startsWith("/api/") && !pathname.startsWith("/_next/")) {
+    const segments = pathname.replace(/^\/+|\/+$/g, "").split("/");
+    if (segments.length === 1 && segments[0] !== "") {
+      const slug = segments[0];
+      const isFile = /\.[a-z0-9]{2,5}$/i.test(slug);
+      const isReserved = RESERVED_TOP_PATHS.has(slug);
+      const isVille = KNOWN_VILLES.has(slug);
+      const isMetierVille = isMetierVilleSlug(slug);
+      if (!isFile && !isReserved && !isVille && !isMetierVille) {
+        // Re-route vers la page 404 native Next pour HTTP 404 propre.
+        // On utilise rewrite vers /not-found pour que Next sache que c'est un 404.
+        const url = req.nextUrl.clone();
+        url.pathname = `/_not-found-${slug}`; // forcera le route handler 404
+        return NextResponse.rewrite(url, { status: 404 });
+      }
+    }
   }
 
   // Dashboard routes — require auth

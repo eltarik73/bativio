@@ -90,7 +90,8 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
     const safeNumero = escapeHtml(devis.numero);
     const safeObjet = escapeHtml(devis.objet);
     const safeTelephone = escapeHtml(artisan.telephone);
-    const telephoneHref = encodeURIComponent(artisan.telephone).replace(/%20/g, "");
+    // tel: ne garde que chiffres et + (E.164 + national)
+    const telephoneHref = artisan.telephone.replace(/[^\d+]/g, "");
     const html = `
       <div style="font-family: -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 32px;">
         <h2 style="color: #C4531A; font-family: Georgia, serif;">Votre devis Bativio est prêt</h2>

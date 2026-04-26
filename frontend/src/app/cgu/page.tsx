@@ -2,7 +2,12 @@ import { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-export const metadata: Metadata = { title: "Conditions g\u00e9n\u00e9rales d'utilisation" };
+export const metadata: Metadata = {
+  title: "Conditions g\u00e9n\u00e9rales d'utilisation \u2014 Bativio",
+  description: "CGU de la plateforme Bativio : artisans inscrits, particuliers utilisateurs, mise en relation, responsabilit\u00e9s, tarification.",
+  alternates: { canonical: "https://www.bativio.fr/cgu" },
+  robots: { index: true, follow: true },
+};
 
 export default function CGUPage() {
   return (

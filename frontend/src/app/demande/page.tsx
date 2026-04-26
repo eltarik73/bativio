@@ -252,13 +252,13 @@ export default function DemandePage() {
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--terre)" }} />
             Bativio — Assistant IA
           </motion.div>
-          <motion.h1
-            {...fadeUp(0.06)}
+          {/* H1 sans framer-motion = LCP optimal */}
+          <h1
             style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(28px,4vw,40px)", fontWeight: 600, color: "var(--bois)", lineHeight: 1.1, letterSpacing: -1, marginBottom: 10 }}
           >
             Décrivez votre projet,{" "}
             <span style={{ fontStyle: "italic", fontWeight: 400, color: "var(--terre)" }}>on s&apos;occupe du reste</span>.
-          </motion.h1>
+          </h1>
           <motion.p
             {...fadeUp(0.12)}
             style={{ fontSize: 15, color: "var(--bois-mid)", maxWidth: 520, margin: "0 auto", lineHeight: 1.55 }}
