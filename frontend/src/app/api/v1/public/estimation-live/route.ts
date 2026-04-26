@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { runPreDevisAgent } from "@/lib/agents/pre-devis-agent";
+import { rateLimitAi, getClientIp } from "@/lib/rate-limit";
 
 const bodySchema = z.object({
   metier: z.string().min(2),
@@ -12,6 +13,13 @@ const bodySchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // SÉCU: rate-limit IA (30 req/IP/h) — empêche abuse compte Anthropic
+    const ip = getClientIp(request);
+    const limit = await rateLimitAi(ip);
+    if (!limit.success) {
+      return apiError(`Trop de requêtes. Réessayez après ${new Date(limit.reset).toLocaleTimeString("fr-FR")}.`, 429);
+    }
+
     const body = await request.json();
     const parsed = bodySchema.safeParse(body);
     if (!parsed.success) return apiError("Invalide", 400);

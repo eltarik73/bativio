@@ -6,6 +6,7 @@ import { requireAuth } from "@/lib/auth-server";
 import { hasFeature } from "@/lib/plans";
 import type { PlanType } from "@/lib/plans";
 import { getEffectivePlan } from "@/lib/plan-gates";
+import { generateNextDevisNumero } from "@/lib/devis-numero";
 import crypto from "crypto";
 
 const devisIASchema = z.object({
@@ -209,15 +210,9 @@ Reponds uniquement avec le JSON.`;
     const montantTVA = Math.round(totalHT * (tauxTVA / 100) * 100) / 100;
     const totalTTC = Math.round((totalHT + montantTVA) * 100) / 100;
 
-    // Generate devis numero: {year}-{count+1 padded 4}
-    const year = new Date().getFullYear();
-    const devisCount = await prisma.devis.count({
-      where: {
-        artisanId: artisan.id,
-        numero: { startsWith: `${year}-` },
-      },
-    });
-    const numero = `${year}-${String(devisCount + 1).padStart(4, "0")}`;
+    // Numérotation séquentielle ATOMIQUE (transaction Serializable + advisory lock)
+    // Conforme Article 242 nonies A CGI — pas de doublon possible même en concurrent
+    const numero = await generateNextDevisNumero(artisan.id);
 
     // Create devis in DB
     const devis = await prisma.devis.create({

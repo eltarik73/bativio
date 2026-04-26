@@ -10,6 +10,7 @@ import PhotoGallery from "@/components/vitrines/PhotoGallery";
 import type { PhotoLayoutType } from "@/lib/vitrine-config";
 import ChatDevis from "@/components/ChatDevis/ChatDevis";
 import ArtisanBadges from "@/components/ArtisanBadges";
+import StickyMobileCTA from "@/components/vitrines/StickyMobileCTA";
 
 const JOURS = ["", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 
@@ -237,6 +238,7 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
           Demande envoy&eacute;e !
         </div>
       )}
+      <StickyMobileCTA targetId="devis" telephone={a.telephone} color={primary} />
     </>
   );
 }

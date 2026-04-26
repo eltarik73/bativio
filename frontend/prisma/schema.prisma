@@ -160,6 +160,7 @@ model Artisan {
   artisanMetiers  ArtisanMetier[]
   demandesRecues  DemandeEnvoi[]
   tarifsMetiers   TarifHoraireMetier[]
+  avis            Avis[]
   tarifsHoraire   Float?              @map("tarifs_horaire")
   tarifsMarges    Json?               @map("tarifs_marges")
 
@@ -538,6 +539,7 @@ model Devis {
   clientId            String?     @map("client_id")
   client              Client?     @relation(fields: [clientId], references: [id])
   chantiers           Chantier[]
+  avis                Avis?
 
   createdAt           DateTime    @default(now()) @map("created_at")
   updatedAt           DateTime    @updatedAt @map("updated_at")
@@ -1000,5 +1002,59 @@ model TokenUsage {
   @@index([agent, createdAt])
   @@index([artisanId])
   @@index([demandeId])
+  @@index([createdAt])
+}
+
+/**
+ * Newsletter subscribers (depuis main — table existante en prod à préserver).
+ */
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String?
+  confirmed Boolean  @default(false)
+  unsubscribed Boolean @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("newsletter_subscriber")
+  @@index([email])
+}
+
+/**
+ * Avis client vérifié — déposé après acceptation devis + chantier flag terminé.
+ * 1 avis = 1 devis (vérification automatique). Pattern Trustpilot/Google Reviews.
+ *
+ * Modération admin via `publiqueAt` (NULL = pas encore publié).
+ * Réponse artisan optionnelle pour valoriser engagement.
+ */
+model Avis {
+  id              String    @id @default(cuid())
+  artisanId       String    @map("artisan_id")
+  artisan         Artisan   @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  devisId         String    @unique @map("devis_id") // 1 avis par devis = vérifié
+  devis           Devis     @relation(fields: [devisId], references: [id], onDelete: Cascade)
+
+  note            Int       // 1 à 5
+  commentaire     String?   @db.Text
+  reponseArtisan  String?   @db.Text @map("reponse_artisan")
+
+  // Identité du client (saisie au moment de l'avis, dénormalisé pour affichage)
+  clientNomAffiche String   @map("client_nom_affiche") // ex: "Sophie M."
+  clientVille      String?  @map("client_ville")
+
+  // Modération admin
+  publiqueAt      DateTime? @map("publique_at")
+  flaggedAt       DateTime? @map("flagged_at") // signalé pour modération
+  flaggedReason   String?   @map("flagged_reason")
+
+  source          String    @default("EMAIL_AUTO") // EMAIL_AUTO, MANUEL_ADMIN, IMPORT
+  ipHash          String?   @map("ip_hash") // hash SHA-256 IP (anti-fraude, RGPD-safe)
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@map("avis")
+  @@index([artisanId, publiqueAt])
+  @@index([artisanId, note])
   @@index([createdAt])
 }

@@ -1,6 +1,8 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import { getClaude, MODEL_OPUS, extractJson, computeCost, logTokenUsage } from "@/lib/claude";
 import { prisma } from "@/lib/prisma";
+import { generateNextDevisNumero } from "@/lib/devis-numero";
+import { validateDevisIA } from "@/lib/agents/devis-validator";
 
 export interface DevisLigne {
   label: string;
@@ -203,7 +205,8 @@ ${qualifBlock}`;
     mentions ? `### Mentions obligatoires 2026\n${mentions.content}` : "",
   ].filter(Boolean).join("\n\n");
 
-  const numero = `BTV-2026-${String(Date.now()).slice(-5)}`;
+  // Numérotation séquentielle ATOMIQUE (advisory lock PostgreSQL)
+  const numero = await generateNextDevisNumero(artisan.id, "BTV-");
 
   // System = instructions + RAG stable (cacheable car stable par métier, ~3-5k tokens)
   const systemWithRag = `${SYSTEM_PROMPT}
@@ -247,6 +250,18 @@ Génère le devis complet en JSON strict selon le format spécifié. Utilise en 
     const parsed = extractJson<DevisIAOutput>(text);
     if (!parsed) {
       throw new Error(`Agent devis: réponse non-JSON. Raw: ${text.slice(0, 300)}`);
+    }
+
+    // SÉCU: validation post-IA — empêche envoi devis halluciné (50K€ erreur, etc.)
+    const validation = validateDevisIA(parsed, catalogue);
+    if (!validation.valid) {
+      // Erreurs critiques → throw, l'API caller va flag pour review humaine
+      const errMsg = `Devis IA invalide (validation post-génération): ${validation.errors.join(" | ")}`;
+      console.error("[devis-agent]", errMsg, "warnings:", validation.warnings);
+      throw new Error(errMsg);
+    }
+    if (validation.warnings.length > 0) {
+      console.warn("[devis-agent] warnings non-bloquantes:", validation.warnings);
     }
 
     const tokensIn = result.usage.input_tokens;

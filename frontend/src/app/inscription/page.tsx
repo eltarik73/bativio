@@ -392,7 +392,7 @@ export default function InscriptionPage() {
                           <span style={{ width: 8, height: 8, borderRadius: "50%", background: cat.color, display: "inline-block" }} />
                           {cat.label}
                         </div>
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }} className="max-[640px]:!grid-cols-2">
                           {items.map((m) => (
                             <div
                               key={m.slug}

@@ -5,6 +5,7 @@ import { requireAuth } from "@/lib/auth-server";
 import { generateDevisPdf } from "@/lib/pdf/devis-pdf";
 import { sendEmail } from "@/lib/email";
 import { escapeHtml } from "@/lib/html-escape";
+import { computeTvaIntra } from "@/lib/tva-intra";
 
 interface LigneJson {
   label: string;
@@ -41,7 +42,7 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
         nomAffichage: artisan.nomAffichage,
         raisonSociale: artisan.raisonSociale,
         siret: artisan.siret,
-        tvaIntra: `FR${artisan.siret.replace(/\s/g, "").slice(0, 11)}`,
+        tvaIntra: computeTvaIntra(artisan.siret),
         adresse: artisan.adresse,
         codePostal: artisan.codePostal,
         ville: artisan.ville,

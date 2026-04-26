@@ -108,7 +108,10 @@ export default function DevisPublicPage({ params }: { params: Promise<{ token: s
         )}
         {expire && !done && (
           <div style={{ background: "rgba(201,148,58,.12)", color: "#C9943A", padding: "14px 18px", borderRadius: 12, marginBottom: 20, fontSize: 13, fontWeight: 500 }}>
-            ⚠️ Ce devis est expiré depuis le {validiteDate.toLocaleDateString("fr-FR")}. Contactez l&apos;artisan pour un nouveau devis.
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+              Ce devis est expiré depuis le {validiteDate.toLocaleDateString("fr-FR")}. Contactez l&apos;artisan pour un nouveau devis.
+            </span>
           </div>
         )}
 
@@ -136,7 +139,12 @@ export default function DevisPublicPage({ params }: { params: Promise<{ token: s
               <div style={{ fontSize: 10, letterSpacing: 1.5, color: "#9C958D", textTransform: "uppercase", fontWeight: 600, marginBottom: 8 }}>Émis par</div>
               <div style={{ fontSize: 15, fontWeight: 600, color: "#3D2E1F" }}>{devis.artisan.nomAffichage}</div>
               {devis.artisan.ville && <div style={{ fontSize: 13, color: "#6B6560" }}>{devis.artisan.ville}</div>}
-              {devis.artisan.telephone && <a href={`tel:${devis.artisan.telephone}`} style={{ fontSize: 13, color: "#C4531A" }}>📞 {devis.artisan.telephone}</a>}
+              {devis.artisan.telephone && (
+                <a href={`tel:${devis.artisan.telephone.replace(/[^\d+]/g, "")}`} style={{ fontSize: 13, color: "#C4531A", display: "inline-flex", alignItems: "center", gap: 6, textDecoration: "none" }}>
+                  <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+                  {devis.artisan.telephone}
+                </a>
+              )}
             </div>
             <div>
               <div style={{ fontSize: 10, letterSpacing: 1.5, color: "#9C958D", textTransform: "uppercase", fontWeight: 600, marginBottom: 8 }}>À l&apos;attention de</div>
@@ -206,11 +214,13 @@ export default function DevisPublicPage({ params }: { params: Promise<{ token: s
                 onClick={() => setShowSign(true)}
                 style={{ padding: "14px 28px", borderRadius: 12, background: "#4A6741", color: "#fff", fontSize: 15, fontWeight: 600, border: "none", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 8, boxShadow: "0 10px 30px rgba(74,103,65,.22)" }}
               >
-                ✓ Accepter ce devis
+                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                Accepter ce devis
               </motion.button>
               {devis.pdfUrl && (
                 <a href={devis.pdfUrl} target="_blank" rel="noopener noreferrer" style={{ padding: "14px 24px", borderRadius: 12, background: "#FAF8F5", color: "#3D2E1F", fontSize: 14, fontWeight: 500, border: "1px solid #E8D5C0", display: "inline-flex", alignItems: "center", gap: 8 }}>
-                  📄 Télécharger le PDF
+                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                  Télécharger le PDF
                 </a>
               )}
               <button onClick={() => setShowRefuse(true)} style={{ padding: "14px 24px", borderRadius: 12, background: "transparent", color: "#9C958D", fontSize: 14, fontWeight: 500, border: "none", cursor: "pointer" }}>

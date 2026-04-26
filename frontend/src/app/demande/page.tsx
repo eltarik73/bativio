@@ -58,6 +58,47 @@ export default function DemandePage() {
 
   const chatRef = useRef<HTMLDivElement>(null);
 
+  // Restore chat from sessionStorage on mount (UX: F5 ne perd plus le chat)
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem("bativio-demande-chat");
+      if (saved) {
+        const s = JSON.parse(saved);
+        if (s.description) setDescription(s.description);
+        if (s.villeLabel) setVilleLabel(s.villeLabel);
+        if (s.villeSlug) setVilleSlug(s.villeSlug);
+        if (s.villeCoords) setVilleCoords(s.villeCoords);
+        if (Array.isArray(s.messages)) setMessages(s.messages);
+        if (s.collected) setCollected(s.collected);
+        if (s.metier) setMetier(s.metier);
+        if (s.preDevis) setPreDevis(s.preDevis);
+        if (s.phase && s.phase !== "done") setPhase(s.phase);
+      }
+    } catch {
+      /* corrupted state, ignore */
+    }
+  }, []);
+
+  // Persist chat state on changes (skip "initial" et "done" pour éviter pollution)
+  useEffect(() => {
+    if (phase === "initial" || phase === "done") return;
+    try {
+      sessionStorage.setItem("bativio-demande-chat", JSON.stringify({
+        description, villeLabel, villeSlug, villeCoords,
+        messages, collected, metier, preDevis, phase,
+      }));
+    } catch {
+      /* sessionStorage full or blocked, ignore */
+    }
+  }, [phase, description, villeLabel, villeSlug, villeCoords, messages, collected, metier, preDevis]);
+
+  // Clear sessionStorage when "done" reached (success → no need to restore)
+  useEffect(() => {
+    if (phase === "done") {
+      try { sessionStorage.removeItem("bativio-demande-chat"); } catch { /* ignore */ }
+    }
+  }, [phase]);
+
   useEffect(() => {
     chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, phase]);

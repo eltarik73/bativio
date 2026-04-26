@@ -10,6 +10,7 @@ import PhotoGallery from "@/components/vitrines/PhotoGallery";
 import type { PhotoLayoutType } from "@/lib/vitrine-config";
 import ChatDevis from "@/components/ChatDevis/ChatDevis";
 import ArtisanBadges from "@/components/ArtisanBadges";
+import StickyMobileCTA from "@/components/vitrines/StickyMobileCTA";
 
 export default function VitrinePortfolio({ a, photo, primary, accent, villeSlug }: { a: ArtisanPublic; photo: string; primary: string; accent: string; villeSlug: string }) {
   const [devisOpen, setDevisOpen] = useState(false);
@@ -147,6 +148,7 @@ export default function VitrinePortfolio({ a, photo, primary, accent, villeSlug 
           Demande envoy&eacute;e !
         </div>
       )}
+      <StickyMobileCTA targetId="devis" telephone={a.telephone} color={primary} />
     </>
   );
 }

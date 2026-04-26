@@ -1,4 +1,5 @@
 import { PDFDocument, StandardFonts, rgb, PDFPage, PDFFont } from "pdf-lib";
+import { computeTvaIntra } from "@/lib/tva-intra";
 
 interface LigneDevis {
   label: string;
@@ -63,6 +64,8 @@ export async function generateDevisPdf(input: DevisPdfInput): Promise<Uint8Array
   const helv = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const helvBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
   const helvItalic = await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
+  // Serif pour titres (DEVIS, totaux, numéro) — feeling Fraunces sans embed lourd
+  const serifBold = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
 
   let page = pdfDoc.addPage([595.28, 841.89]); // A4
   const { width, height } = page.getSize();
@@ -86,11 +89,12 @@ export async function generateDevisPdf(input: DevisPdfInput): Promise<Uint8Array
     color: TERRE,
   });
 
+  // Titre DEVIS en serif (cohérence visuelle avec Fraunces du web)
   page.drawText("DEVIS", {
     x: margin,
     y: height - 50,
-    size: 28,
-    font: helvBold,
+    size: 32,
+    font: serifBold,
     color: BOIS,
   });
 
@@ -239,8 +243,8 @@ export async function generateDevisPdf(input: DevisPdfInput): Promise<Uint8Array
   y -= 14;
   page.drawLine({ start: { x: totalX, y: y + 3 }, end: { x: totalX + totalW, y: y + 3 }, thickness: 1, color: TERRE });
   y -= 10;
-  page.drawText("TOTAL TTC", { x: totalX, y, size: 12, font: helvBold, color: BOIS });
-  page.drawText(`${input.totalTtc.toLocaleString("fr-FR")} €`, { x: totalX + totalW - 80, y, size: 14, font: helvBold, color: TERRE });
+  page.drawText("TOTAL TTC", { x: totalX, y, size: 12, font: serifBold, color: BOIS });
+  page.drawText(`${input.totalTtc.toLocaleString("fr-FR")} €`, { x: totalX + totalW - 80, y, size: 16, font: serifBold, color: TERRE });
 
   y -= 40;
 
@@ -299,8 +303,8 @@ export async function generateDevisPdf(input: DevisPdfInput): Promise<Uint8Array
     y = page.getSize().height - margin;
   }
 
-  // Calcul TVA intra si non fournie
-  const tvaIntra = input.artisan.tvaIntra || `FR${input.artisan.siret.slice(0, 9)}`;
+  // Calcul TVA intra si non fournie (formule officielle FR : clé mod 97 + SIREN)
+  const tvaIntra = input.artisan.tvaIntra || computeTvaIntra(input.artisan.siret);
   const debutStr = input.dateDebutPrevue ? input.dateDebutPrevue.toLocaleDateString("fr-FR") : null;
   const finStr = input.dateFinPrevue ? input.dateFinPrevue.toLocaleDateString("fr-FR") : null;
 

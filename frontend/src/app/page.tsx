@@ -154,53 +154,69 @@ export default function Home() {
             Des artisans de confiance, v&eacute;rifi&eacute;s et not&eacute;s par leurs clients. Devis gratuit en 24h, z&eacute;ro commission.
           </motion.p>
 
-          {/* ─── 2 OPTIONS ─── */}
-          <motion.div
+          {/* ─── CTA UNIFIÉ : 1 input → smart routing (pattern Doctolib) ─── */}
+          <motion.form
             {...fadeUp(0.2)}
-            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, maxWidth: 640, margin: "0 auto 20px" }}
-            className="max-md:!grid-cols-1"
+            className="liquid-glass"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const form = e.currentTarget;
+              const input = form.elements.namedItem("q") as HTMLInputElement;
+              const v = (input?.value || "").trim();
+              if (v.length >= 12) {
+                // Looks like a project description → /demande avec preset
+                window.location.href = `/demande?d=${encodeURIComponent(v)}`;
+              } else {
+                document.getElementById("annuaire")?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }
+            }}
+            style={{ maxWidth: 640, margin: "0 auto 24px", display: "flex", alignItems: "center", gap: 8, padding: 6, borderRadius: 999 }}
           >
-            <a
-              href="#annuaire"
-              onClick={(e) => { e.preventDefault(); document.getElementById("annuaire")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}
-              className="liquid-glass"
-              style={{ display: "flex", alignItems: "center", gap: 12, padding: "16px 18px", borderRadius: 14, textDecoration: "none", cursor: "pointer", transition: "all .2s" }}
+            <input
+              name="q"
+              type="text"
+              placeholder="Décrivez votre projet, ou tapez 'plombier lyon'..."
+              aria-label="Décrivez votre projet ou cherchez un artisan"
+              style={{
+                flex: 1, minWidth: 0,
+                padding: "13px 18px",
+                background: "transparent",
+                border: "none",
+                outline: "none",
+                fontSize: 15,
+                color: "var(--bois)",
+                fontFamily: "inherit",
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                padding: "12px 22px",
+                borderRadius: 999,
+                background: "var(--terre)",
+                color: "#fff",
+                border: "none",
+                cursor: "pointer",
+                fontWeight: 600,
+                fontSize: 14,
+                whiteSpace: "nowrap",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                minHeight: 44,
+              }}
             >
-              <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(196,83,26,.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <svg width="20" height="20" fill="none" stroke="var(--terre)" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
-              </div>
-              <div style={{ flex: 1, textAlign: "left" }}>
-                <div style={{ fontFamily: "'Fraunces',serif", fontSize: 15, fontWeight: 600, color: "var(--bois)" }}>Chercher un artisan</div>
-                <div style={{ fontSize: 12, color: "var(--bois-mid)", marginTop: 2 }}>Annuaire par m&eacute;tier et ville</div>
-              </div>
-              <svg width="16" height="16" fill="none" stroke="var(--terre)" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" /></svg>
-            </a>
+              Trouver
+              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
+            </button>
+          </motion.form>
 
-            <Link
-              href="/demande"
-              className="liquid-glass"
-              style={{ display: "flex", alignItems: "center", gap: 12, padding: "16px 18px", borderRadius: 14, textDecoration: "none", cursor: "pointer", transition: "all .2s", background: "linear-gradient(135deg, rgba(196,83,26,.08), rgba(201,148,58,.04))", border: "1px solid rgba(196,83,26,.15)" }}
-            >
-              <div style={{ width: 40, height: 40, borderRadius: 10, background: "linear-gradient(135deg, var(--terre), var(--or))", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <svg width="20" height="20" fill="none" stroke="#fff" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M9 11H5a2 2 0 00-2 2v6a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2H9a2 2 0 00-2 2v12" /><path d="m8 13 3 3 7-7" /></svg>
-              </div>
-              <div style={{ flex: 1, textAlign: "left" }}>
-                <div style={{ fontFamily: "'Fraunces',serif", fontSize: 15, fontWeight: 600, color: "var(--bois)" }}>
-                  D&eacute;crire mon projet{" "}
-                  <span style={{ fontSize: 10, background: "var(--terre)", color: "#fff", padding: "2px 6px", borderRadius: 5, verticalAlign: "middle", marginLeft: 4, letterSpacing: 0.5 }}>IA</span>
-                </div>
-                <div style={{ fontSize: 12, color: "var(--bois-mid)", marginTop: 2 }}>5 questions, devis estim&eacute; en 2 min</div>
-              </div>
-              <svg width="16" height="16" fill="none" stroke="var(--terre)" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" /></svg>
-            </Link>
-          </motion.div>
-
-          <motion.div
+          <motion.p
             {...fadeUp(0.26)}
-            style={{ fontSize: 11, color: "var(--pierre)", marginBottom: 24, letterSpacing: 0.3, textTransform: "uppercase", fontWeight: 600 }}
+            style={{ fontSize: 12, color: "var(--bois-mid)", marginBottom: 24, lineHeight: 1.5 }}
           >
-            ou
-          </motion.div>
+            Tapez quelques mots sur votre projet (estimation IA en 2 min) — ou un métier + ville pour parcourir l'annuaire.
+          </motion.p>
 
           <motion.div
             {...fadeUp(0.3)}

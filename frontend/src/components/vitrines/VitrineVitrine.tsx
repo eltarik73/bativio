@@ -11,6 +11,7 @@ import type { PhotoLayoutType } from "@/lib/vitrine-config";
 import { METIER_PHOTOS } from "@/lib/metier-config";
 import ChatDevis from "@/components/ChatDevis/ChatDevis";
 import ArtisanBadges from "@/components/ArtisanBadges";
+import StickyMobileCTA from "@/components/vitrines/StickyMobileCTA";
 
 const JOURS = ["", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 const PLACEHOLDERS = Object.values(METIER_PHOTOS).slice(0, 4);
@@ -184,6 +185,7 @@ export default function VitrineVitrine({ a, photo, primary, accent, villeSlug }:
           Demande envoy&eacute;e !
         </div>
       )}
+      <StickyMobileCTA targetId="devis" telephone={a.telephone} color={primary} />
     </>
   );
 }
