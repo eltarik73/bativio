@@ -1,0 +1,85 @@
+{
+  "audience_clients_finaux": {
+    "head": [
+      "plombier chambéry",
+      "électricien chambéry",
+      "artisan chambéry",
+      "peintre chambéry",
+      "maçon chambéry",
+      "chauffagiste chambéry",
+      "couvreur chambéry",
+      "menuisier chambéry",
+      "carreleur chambéry",
+      "réparation téléphone chambéry"
+    ],
+    "moyenne_traine": [
+      "devis plombier chambéry",
+      "plombier urgence chambéry",
+      "plombier RGE chambéry",
+      "meilleur électricien chambéry",
+      "artisan certifié chambéry",
+      "trouver artisan savoie",
+      "annuaire artisan chambéry"
+    ],
+    "longue_traine": [
+      "fuite eau chambéry",
+      "chauffe-eau cassé chambéry",
+      "tableau électrique aux normes chambéry",
+      "installation borne IRVE chambéry",
+      "rénovation salle de bain chambéry prix",
+      "plombier dimanche chambéry",
+      "électricien curial chambéry"
+    ]
+  },
+  "audience_artisans": {
+    "head": [
+      "facturation électronique 2026",
+      "plateforme agréée",
+      "liste plateforme agréée",
+      "liste PDP",
+      "facture électronique obligatoire",
+      "réforme facturation électronique"
+    ],
+    "moyenne_traine": [
+      "choisir plateforme agréée",
+      "comparatif plateforme agréée",
+      "plateforme agréée artisan",
+      "PA artisan BTP",
+      "facturation électronique TPE",
+      "facturation électronique micro-entreprise",
+      "mentions obligatoires facture électronique 2026",
+      "Factur-X artisan",
+      "e-reporting obligation"
+    ],
+    "longue_traine": [
+      "facture électronique artisan plombier",
+      "logiciel facturation BTP 2026",
+      "devis électronique obligatoire artisan",
+      "plateforme agréée auto-entrepreneur bâtiment",
+      "sanction non-respect facturation électronique 2026",
+      "différence PA et solution compatible",
+      "qu'est-ce qu'un opérateur de dématérialisation"
+    ],
+    "brand": [
+      "Bativio",
+      "Bativio facturation",
+      "Invoquo",
+      "Klik&Go"
+    ]
+  },
+  "concurrents_a_monitorer": [
+    "pagesjaunes.fr",
+    "travaux.com",
+    "bilik.fr",
+    "obat.fr",
+    "lesbonsartisans.fr",
+    "buuyers.com",
+    "prodestravaux.com",
+    "pennylane.com",
+    "dougs.fr",
+    "docaposte.com",
+    "azopio.com",
+    "ebp.com",
+    "legifiscal.fr"
+  ]
+}

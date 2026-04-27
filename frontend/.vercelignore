@@ -1,2 +1,6 @@
 .next
 node_modules
+seo-audit/reports
+seo-audit/technical
+seo-audit/content
+seo-audit/onpage
