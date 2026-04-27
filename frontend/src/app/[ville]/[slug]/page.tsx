@@ -104,25 +104,35 @@ export async function generateMetadata({
     const vNom = villeNom(villeParam);
     const mNom = metierNom(slug);
     const title = `${mNom} \u00e0 ${vNom} \u2014 Artisans v\u00e9rifi\u00e9s`;
-    const description = `Trouvez un ${mNom.toLowerCase()} qualifi\u00e9 \u00e0 ${vNom}. Artisans v\u00e9rifi\u00e9s, devis gratuit en 2 minutes. Z\u00e9ro commission.`;
+    // Description ~150 chars : metier + ville + benefices + CTA (140-165 est l'optimal SEO)
+    const description = `${mNom}s \u00e0 ${vNom} : profils v\u00e9rifi\u00e9s (SIRET, assurance), avis clients et plusieurs devis gratuits sous 24h. Z\u00e9ro commission, sans engagement.`;
 
     return {
       title,
       description,
+      keywords: `${mNom.toLowerCase()} ${vNom}, devis ${mNom.toLowerCase()} ${vNom}, trouver ${mNom.toLowerCase()} ${vNom}, artisan ${vNom}, ${mNom.toLowerCase()} pas cher ${vNom}, urgence ${mNom.toLowerCase()} ${vNom}`,
       alternates: {
         canonical: `https://www.bativio.fr/${villeParam}/${slug}`,
       },
       openGraph: {
-        title,
+        title: `${mNom} \u00e0 ${vNom} | Bativio`,
         description,
         url: `https://www.bativio.fr/${villeParam}/${slug}`,
+        type: "website",
+        locale: "fr_FR",
         images: [
           {
             url: "https://www.bativio.fr/og-image.png",
             width: 1200,
             height: 630,
+            alt: `${mNom} \u00e0 ${vNom} | Bativio`,
           },
         ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${mNom} ${vNom} | Devis gratuit en 24h`,
+        description,
       },
     };
   }

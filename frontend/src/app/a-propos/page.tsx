@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import { safeJsonLd } from "@/lib/html-escape";
 
 export const metadata: Metadata = {
-  title: "À propos de Bativio — La plateforme artisans Rhône-Alpes",
+  title: "À propos — La plateforme des artisans Rhône-Alpes",
   description:
     "Bativio connecte les particuliers de Rhône-Alpes avec des artisans du bâtiment vérifiés. Histoire, équipe, valeurs : zéro commission, transparence, qualité.",
   alternates: { canonical: "https://www.bativio.fr/a-propos" },

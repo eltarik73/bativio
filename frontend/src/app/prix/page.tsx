@@ -5,11 +5,16 @@ import Footer from "@/components/Footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Prix travaux 2026 Rhône-Alpes — Base tarifaire artisans | Bativio",
-  description: "Consultez les prix moyens des travaux par métier en Rhône-Alpes en 2026. Plus de 250 prestations : plomberie, électricité, peinture, carrelage, maçonnerie, menuiserie, couverture, chauffage, serrurerie. Prix HT bas/moyen/haut.",
+  title: "Prix travaux 2026 — Base tarifaire artisans Rhône-Alpes",
+  description: "Prix 2026 par métier en Rhône-Alpes : 250 prestations chiffrées (plomberie, électricité, peinture, carrelage, maçonnerie, menuiserie). Prix HT bas/moyen/haut.",
+  alternates: { canonical: "https://www.bativio.fr/prix" },
   openGraph: {
     title: "Prix travaux 2026 Rhône-Alpes — Bativio",
     description: "Base tarifaire 2026 : 250 prestations chiffrées par artisans vérifiés.",
+    images: [{ url: "https://www.bativio.fr/og-image.png", width: 1200, height: 630, alt: "Prix travaux 2026 Bativio" }],
+    url: "https://www.bativio.fr/prix",
+    type: "website",
+    locale: "fr_FR",
   },
 };
 

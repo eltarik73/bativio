@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Rejoignez Bativio — Développez votre activité artisan",
-  description: "Créez votre page pro en 3 minutes. Recevez des demandes de devis qualifiées. Zéro commission, abonnement fixe.",
+  description: "Artisan du bâtiment en Rhône-Alpes ? Créez votre page pro Bativio en 3 minutes. Demandes de devis qualifiées chaque semaine, zéro commission, abonnement fixe.",
 };
 
 const PLANS = [

@@ -315,13 +315,16 @@ async function auditPage(url: string, allInternalUrls: Set<string>): Promise<Tec
   result.hreflang = extractAll(html, /<link\s+rel=["']alternate["']\s+hreflang=["']([^"']+)["']/gi);
 
   // Images
+  // Note WCAG : alt="" est volontaire pour images decoratives (logo a cote du nom, etc.)
+  // On flag UNIQUEMENT alt totalement absent (= vraie erreur)
   const imgRegex = /<img\b([^>]*)>/gi;
   let imgMatch: RegExpExecArray | null;
   while ((imgMatch = imgRegex.exec(html)) !== null) {
     const attrs = imgMatch[1];
     result.images.total++;
     const altMatch = /\balt=["']([^"']*)["']/i.exec(attrs);
-    if (!altMatch || altMatch[1].trim().length === 0) result.images.missingAlt++;
+    if (!altMatch) result.images.missingAlt++; // attribut alt absent = vrai bug
+    // alt="" reste OK (image decorative volontaire WCAG)
     if (!/\bwidth=/i.test(attrs) || !/\bheight=/i.test(attrs)) result.images.missingDimensions++;
     if (/\.webp\b/i.test(attrs) || /\bsrc=["'][^"']*\.webp/i.test(attrs)) result.images.webp++;
   }
