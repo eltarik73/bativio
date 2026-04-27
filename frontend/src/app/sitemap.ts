@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
-import { VILLES } from "@/lib/constants";
+import { VILLES, VILLES_SECONDAIRES, METIERS_TOP_SEO, ALL_VILLES } from "@/lib/constants";
+import { DEPARTEMENTS_COUVERTS } from "@/lib/seo/cities-graph";
 import { MOCK_ARTISANS } from "@/lib/mock-data";
 import { TRAVAUX } from "@/lib/travaux-data";
 import { prisma } from "@/lib/prisma";
@@ -94,6 +95,51 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
+  // Pages travaux x ville (12 travaux x 5 villes hub = 60 pages)
+  const travauxVillePages: MetadataRoute.Sitemap = TRAVAUX.flatMap((t) =>
+    VILLES.map((v) => ({
+      url: `${baseUrl}/travaux/${t.slug}/${v.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    }))
+  );
+
+  // Pages locales METIER_TOP_SEO x VILLE_SECONDAIRE
+  // Ex: /electricien-aix-les-bains, /plombier-saint-jean-de-maurienne, etc.
+  // 4 metiers prio x 35 villes secondaires = 140 pages long-tail SEO local
+  const localMetierVillePages: MetadataRoute.Sitemap = METIERS_TOP_SEO.flatMap((metier) =>
+    VILLES_SECONDAIRES.map((v) => ({
+      url: `${baseUrl}/${metier}-${v.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.6, // un peu en dessous des hubs (0.8) et metier-ville hub (0.7)
+    }))
+  );
+
+  // ============================ HUBS GEO SEO ============================
+  // /artisans-{ville} : 5 hub + 35 secondaires = 40 pages
+  // /artisans-{departement} : 5 departements
+  // /artisans-rhone-alpes : 1 page region
+  const hubVillePages: MetadataRoute.Sitemap = ALL_VILLES.map((v) => ({
+    url: `${baseUrl}/artisans-${v.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: "codePostal" in v && v.parentSlug === v.slug ? 0.7 : 0.5,
+  }));
+  const hubDepartementPages: MetadataRoute.Sitemap = DEPARTEMENTS_COUVERTS.map((d) => ({
+    url: `${baseUrl}/artisans-${d.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
+  const hubRegionPage: MetadataRoute.Sitemap = [{
+    url: `${baseUrl}/artisans-rhone-alpes`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
+  }];
+
   const villeMetierPages: MetadataRoute.Sitemap = VILLES_SLUGS.flatMap((ville) =>
     METIERS_SLUGS.map((metier) => ({
       url: `${baseUrl}/${ville}/${metier}`,
@@ -138,5 +184,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Prisma may fail during build — skip silently
   }
 
-  return [...staticPages, ...prixMetierPages, ...villePages, ...villeMetierPages, ...artisanPages, ...travauxPages, ...businessCategoryPages, ...businessVitrinePages];
+  return [
+    ...staticPages,
+    ...prixMetierPages,
+    ...villePages,
+    ...villeMetierPages,
+    ...artisanPages,
+    ...travauxPages,
+    ...travauxVillePages,
+    ...localMetierVillePages,
+    ...hubVillePages,
+    ...hubDepartementPages,
+    ...hubRegionPage,
+    ...businessCategoryPages,
+    ...businessVitrinePages,
+  ];
 }

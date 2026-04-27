@@ -17,6 +17,7 @@ const COOKIE_NAME = "bativio-session";
 const RESERVED_TOP_PATHS = new Set([
   "", // home
   "a-propos",
+  "admin", // /admin (back-office) + /admin/*
   "annuaire",
   "artisan",
   "auth", // /auth/magic
@@ -51,14 +52,32 @@ const RESERVED_TOP_PATHS = new Set([
   "_next",
 ]);
 
-// Villes Bativio (synchro avec lib/constants.ts VILLES + aliases SEO).
+// Villes Bativio (synchro avec lib/constants.ts VILLES + VILLES_SECONDAIRES).
 // Hardcoded ici car middleware Edge Runtime ne peut pas importer Prisma/big modules.
-const KNOWN_VILLES = new Set([
-  "chambery",
-  "annecy",
-  "grenoble",
-  "lyon",
-  "valence",
+// HUB_VILLES (5) : pages /[ville] avec annuaire complet (autorite SEO max)
+// ALL_VILLES_SLUGS (35) : utilisees pour valider /[metier]-[ville] (long tail SEO)
+
+// HUB only : ces villes ont leur propre page /[ville] (annuaire). Le slug single = whitelist.
+const KNOWN_VILLES = new Set(["chambery", "annecy", "grenoble", "lyon", "valence"]);
+
+// HUB + secondaires : utilisees uniquement pour valider les slugs /[metier]-[ville]
+// (ex: /electricien-aix-les-bains, /plombier-saint-jean-de-maurienne).
+// /aix-les-bains tout seul reste un 404 propre car aucune page d'annuaire n'existe.
+const ALL_VILLES_SLUGS = new Set([
+  "chambery", "annecy", "grenoble", "lyon", "valence",
+  // Savoie
+  "aix-les-bains", "albertville", "saint-jean-de-maurienne", "challes-les-eaux",
+  "bourg-saint-maurice", "la-motte-servolex", "cognin",
+  "pont-de-beauvoisin", "la-bridoire", "yenne", "les-echelles", "novalaise",
+  // Haute-Savoie
+  "annemasse", "thonon-les-bains", "cluses", "sallanches",
+  "evian-les-bains", "rumilly", "la-roche-sur-foron",
+  // Isere
+  "echirolles", "saint-martin-d-heres", "voiron", "bourgoin-jallieu", "vienne", "meylan",
+  // Rhone
+  "villeurbanne", "venissieux", "caluire-et-cuire", "bron", "saint-priest", "vaulx-en-velin",
+  // Drome
+  "romans-sur-isere", "montelimar", "bourg-les-valence", "pierrelatte",
 ]);
 
 const VALID_METIER_PREFIXES = [
@@ -69,16 +88,33 @@ const VALID_METIER_PREFIXES = [
 
 /**
  * True si le slug single-segment correspond à un format métier-ville reconnu
- * (ex: "plombier-lyon", "reparation-mobile-chambery").
+ * (ex: "plombier-lyon", "electricien-aix-les-bains", "plombier-saint-jean-de-maurienne").
+ *
+ * Optimisation : on iter sur les prefixes metier (court) plutot que sur les villes
+ * pour gerer les villes a slug compose (saint-jean-de-maurienne, etc.).
  */
 function isMetierVilleSlug(slug: string): boolean {
   for (const metier of VALID_METIER_PREFIXES) {
     if (slug.startsWith(metier + "-")) {
       const ville = slug.slice(metier.length + 1);
-      if (KNOWN_VILLES.has(ville)) return true;
+      if (ALL_VILLES_SLUGS.has(ville)) return true;
     }
   }
   return false;
+}
+
+// Hubs SEO geographiques : /artisans-{ville|departement|region}.
+// Ex: /artisans-chambery, /artisans-savoie, /artisans-rhone-alpes
+const ARTISANS_HUB_VALID_SUFFIXES = new Set([
+  ...ALL_VILLES_SLUGS,
+  "savoie", "haute-savoie", "isere", "rhone", "drome", // departements couverts
+  "rhone-alpes", // region
+]);
+
+function isArtisansHubSlug(slug: string): boolean {
+  if (!slug.startsWith("artisans-")) return false;
+  const suffix = slug.slice("artisans-".length);
+  return ARTISANS_HUB_VALID_SUFFIXES.has(suffix);
 }
 
 async function verify(token: string) {
@@ -120,7 +156,8 @@ export async function proxy(req: NextRequest) {
       const isReserved = RESERVED_TOP_PATHS.has(slug);
       const isVille = KNOWN_VILLES.has(slug);
       const isMetierVille = isMetierVilleSlug(slug);
-      if (!isFile && !isReserved && !isVille && !isMetierVille) {
+      const isArtisansHub = isArtisansHubSlug(slug);
+      if (!isFile && !isReserved && !isVille && !isMetierVille && !isArtisansHub) {
         // Re-route vers la page 404 native Next pour HTTP 404 propre.
         // On utilise rewrite vers /not-found pour que Next sache que c'est un 404.
         const url = req.nextUrl.clone();
