@@ -140,6 +140,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }];
 
+  // Cluster /pro/ — landing B2B + 4 piliers SEO (audience artisans)
+  const proPages: MetadataRoute.Sitemap = [
+    "/pro",
+    "/pro/facturation-electronique-2026",
+    "/pro/plateforme-agreee-artisan",
+    "/pro/facture-electronique-btp",
+    "/pro/mentions-obligatoires-2026",
+  ].map((p) => ({
+    url: `${baseUrl}${p}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.9, // pages strategiques B2B
+  }));
+
   const villeMetierPages: MetadataRoute.Sitemap = VILLES_SLUGS.flatMap((ville) =>
     METIERS_SLUGS.map((metier) => ({
       url: `${baseUrl}/${ville}/${metier}`,
@@ -196,6 +210,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...hubVillePages,
     ...hubDepartementPages,
     ...hubRegionPage,
+    ...proPages,
     ...businessCategoryPages,
     ...businessVitrinePages,
   ];

@@ -24,6 +24,8 @@ export default function Footer() {
             <div className="footer-col-title">Pour les artisans</div>
             <Link href="/inscription">Cr&eacute;er ma page</Link>
             <Link href="/tarifs">Tarifs</Link>
+            <Link href="/pro">Bativio Pro</Link>
+            <Link href="/pro/facturation-electronique-2026">R&eacute;forme 2026</Link>
             <Link href="/facturation-electronique">Facturation</Link>
           </div>
           <div className="footer-col">

@@ -42,6 +42,7 @@ const RESERVED_TOP_PATHS = new Set([
   "mot-de-passe-oublie",
   "onboarding",
   "prix",
+  "pro", // /pro (cluster B2B SEO) + /pro/*
   "rejoindre",
   "reinitialiser-mot-de-passe",
   "robots.txt",
