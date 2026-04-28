@@ -100,8 +100,15 @@ export default function AdminValidationsPage() {
     setLoading(true);
     try {
       const data = await fetchWithAuth("/admin/validations") as ListResponse;
-      setArtisans(data.validations || data.artisans || data.content || []);
-    } catch {
+      // Defensive : data peut etre null si fetchWithAuth a unwrap un payload vide
+      const list = data?.validations || data?.artisans || data?.content || [];
+      setArtisans(list);
+    } catch (e) {
+      // Avant : catch silencieux -> bug invisible. Maintenant on log + toast
+      // pour que l'admin voit le vrai probleme (DB down, timeout, etc.)
+      const detail = e instanceof Error ? e.message : "Erreur inconnue";
+      console.error("[validations] fetch list error:", e);
+      setToast({ message: "Erreur chargement liste : " + detail, type: "error" });
       setArtisans([]);
     } finally {
       setLoading(false);

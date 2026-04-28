@@ -18,8 +18,20 @@ import { requireAdmin } from "@/lib/auth-server";
  * (les plus prets a valider remontent en haut)
  */
 export async function GET() {
+  // Auth d'abord (hors try/catch principal pour mapping clean des codes)
   try {
     await requireAdmin();
+  } catch (e) {
+    const err = e as Error;
+    if (err.message === "UNAUTHORIZED") return apiError("Non autorise", 401);
+    if (err.message === "FORBIDDEN") return apiError("Acces interdit", 403);
+    console.error("[admin/validations] auth error:", err);
+    return apiError(`Auth error : ${err.message || "inconnue"}`, 500);
+  }
+
+  // Query DB en try/catch separe pour logging precis
+  try {
+    console.log("[admin/validations] GET start - query Prisma");
 
     const artisans = await prisma.artisan.findMany({
       where: {
@@ -31,19 +43,27 @@ export async function GET() {
         metier: { select: { nom: true, slug: true } },
       },
       orderBy: [
-        // PENDING_REVIEW d'abord (scoring fait, pret a valider)
-        { artisanStatus: "asc" }, // ONBOARDING < PENDING_NAF_REVIEW < PENDING_REVIEW alphabetiquement
-        { scoringDate: "asc" }, // les + anciens en premier dans chaque statut
+        // PENDING_REVIEW d'abord (scoring fait, pret a valider).
+        // Tri alphabetique : ONBOARDING < PENDING_NAF_REVIEW < PENDING_REVIEW.
+        { artisanStatus: "asc" },
+        // scoringDate nullable : les ONBOARDING n'ont pas encore score, on les met en dernier
+        // dans chaque groupe via nulls: "last" (sinon Postgres met null en premier en ASC).
+        { scoringDate: { sort: "asc", nulls: "last" } },
         { createdAt: "asc" },
       ],
     });
 
+    console.log(`[admin/validations] GET ok - ${artisans.length} artisans found`);
     return apiSuccess({ artisans });
   } catch (error: unknown) {
     const err = error as Error;
-    if (err.message === "UNAUTHORIZED") return apiError("Non autorise", 401);
-    if (err.message === "FORBIDDEN") return apiError("Acces interdit", 403);
-    console.error("[admin/validations] list error:", err);
-    return apiError("Erreur interne du serveur", 500);
+    // Log detaille pour debug Vercel
+    console.error("[admin/validations] DB error:", {
+      name: err.name,
+      message: err.message,
+      stack: (err.stack || "").substring(0, 500),
+    });
+    // Renvoie le vrai message d'erreur (pas "Erreur interne du serveur" generique)
+    return apiError(`DB error : ${err.message || "inconnue"}`, 500);
   }
 }
