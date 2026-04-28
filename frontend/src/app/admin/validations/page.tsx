@@ -115,12 +115,18 @@ export default function AdminValidationsPage() {
   const handleApprove = async (id: string) => {
     setActionLoading(id);
     try {
-      await fetchWithAuth(`/admin/validations/${id}/approve`, { method: "POST" });
-      setToast({ message: "Artisan valid\u00e9", type: "success" });
+      const res = await fetchWithAuth(`/admin/validations/${id}/approve`, { method: "POST" }) as { alreadyActive?: boolean; message?: string };
+      const msg = res?.alreadyActive
+        ? "Artisan d\u00e9j\u00e0 actif (rafra\u00eechissement de la liste)"
+        : (res?.message || "Artisan valid\u00e9");
+      setToast({ message: msg, type: "success" });
       setExpandedId(null);
       await fetchValidations();
-    } catch {
-      setToast({ message: "Erreur lors de la validation", type: "error" });
+    } catch (e) {
+      // Affiche le vrai message d'erreur backend (ex: "Cet artisan a ete refuse precedemment")
+      const detail = e instanceof Error ? e.message : "Erreur inconnue";
+      console.error("[validations] approve error:", e);
+      setToast({ message: "Erreur : " + detail, type: "error" });
     } finally {
       setActionLoading(null);
     }
@@ -139,8 +145,10 @@ export default function AdminValidationsPage() {
       setShowRejectFor(null);
       setRejectMotif("");
       await fetchValidations();
-    } catch {
-      setToast({ message: "Erreur lors du refus", type: "error" });
+    } catch (e) {
+      const detail = e instanceof Error ? e.message : "Erreur inconnue";
+      console.error("[validations] reject error:", e);
+      setToast({ message: "Erreur : " + detail, type: "error" });
     } finally {
       setActionLoading(null);
     }
