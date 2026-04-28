@@ -90,16 +90,25 @@ export default async function HubRegionPage() {
               D&eacute;partements couverts
             </h2>
             <p style={{ fontSize: 14, color: "#6B6560", marginBottom: 24 }}>
-              5 d&eacute;partements de Rh&ocirc;ne-Alpes avec annuaire actif.
+              5 d&eacute;partements de Rh&ocirc;ne-Alpes avec annuaire actif et villes principales list&eacute;es ci-dessous.
             </p>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
               {DEPARTEMENTS_COUVERTS.map((d) => {
                 const nb = deptCounts[d.slug] || 0;
+                // 3 villes principales par departement (chef-lieu + 2 secondaires les plus peuplees)
+                const villesDuDept = ALL_VILLES
+                  .filter((v) => "codePostal" in v && (v.parentSlug === d.chefLieuSlug || v.slug === d.chefLieuSlug))
+                  .slice(0, 4);
                 return (
                   <Link key={d.slug} href={`/artisans-${d.slug}`} style={{ display: "block", padding: 20, background: "#fff", border: "1px solid #C4531A", borderRadius: 12, textDecoration: "none", color: "#1C1C1E" }}>
                     <div style={{ fontSize: 13, color: "#C4531A", fontWeight: 600, marginBottom: 6 }}>{d.code}</div>
                     <div style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, marginBottom: 4 }}>{d.name}</div>
                     <div style={{ fontSize: 13, color: "#6B6560", marginBottom: 8 }}>Chef-lieu : {d.chefLieu}</div>
+                    {villesDuDept.length > 1 && (
+                      <div style={{ fontSize: 12, color: "#9C958D", marginBottom: 8 }}>
+                        {villesDuDept.map((v) => v.nom).join(" · ")}
+                      </div>
+                    )}
                     <div style={{ fontSize: 13, color: "#6B6560" }}>
                       {nb} artisan{nb !== 1 ? "s" : ""} v&eacute;rifi&eacute;{nb !== 1 ? "s" : ""}
                     </div>

@@ -40,7 +40,9 @@ export default function NotFound() {
               { href: "/annecy", label: "Artisans Annecy" },
               { href: "/grenoble", label: "Artisans Grenoble" },
               { href: "/valence", label: "Artisans Valence" },
-              { href: "/tarifs", label: "Tarifs artisans" },
+              { href: "/artisans-rhone-alpes", label: "Annuaire région" },
+              { href: "/pro", label: "Bativio Pro (artisans)" },
+              { href: "/tarifs", label: "Tarifs" },
               { href: "/a-propos", label: "À propos" },
             ].map((l) => (
               <Link key={l.href} href={l.href} style={{ fontSize: 13, color: "var(--terre, #C4531A)", padding: "6px 12px", border: "1px solid rgba(196,83,26,.2)", borderRadius: 99, textDecoration: "none" }}>
