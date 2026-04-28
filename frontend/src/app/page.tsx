@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import ArtisanCard from "@/components/ArtisanCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -13,7 +12,9 @@ import type { ArtisanPublic, MetierData } from "@/lib/api";
 import { VILLES } from "@/lib/constants";
 import VilleAutocomplete from "@/components/VilleAutocomplete/VilleAutocomplete";
 import type { CommuneResult } from "@/components/VilleAutocomplete/VilleAutocomplete";
-import { fadeUp } from "@/lib/motion";
+
+// Note: les animations utilisent la classe CSS .bv-reveal + var --bv-delay (cf globals.css).
+// Plus de framer-motion -> 0 JS d'animation au mount, gain ~50 Kio gz sur le bundle landing.
 
 const TESTIMONIALS = [
   { text: "J'ai trouvé un électricien de confiance en 5 minutes. Travaux impeccables.", name: "Sophie L.", role: "Particulier, Annecy", initials: "SL" },
@@ -130,14 +131,13 @@ export default function Home() {
       {/* ─── HERO CINEMATIC ─── */}
       <section className="hero-cinematic hero-grain" style={{ padding: "80px 32px 72px", textAlign: "center", overflow: "hidden" }}>
         <div style={{ maxWidth: 780, margin: "0 auto", position: "relative", zIndex: 1 }}>
-          <motion.div
-            {...fadeUp(0)}
-            className="liquid-glass"
-            style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 999, marginBottom: 22, fontSize: 12, fontWeight: 600, color: "var(--terre-deep)", letterSpacing: 0.3 }}
+          <div
+            className="liquid-glass bv-reveal"
+            style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 14px", borderRadius: 999, marginBottom: 22, fontSize: 12, fontWeight: 600, color: "var(--terre-deep)", letterSpacing: 0.3, "--bv-delay": "0s" } as React.CSSProperties}
           >
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--terre)" }} />
             Artisans locaux v&eacute;rifi&eacute;s &mdash; Rh&ocirc;ne-Alpes
-          </motion.div>
+          </div>
           {/* H1 sans framer-motion = LCP optimal (élément critique pour ranking 2026) */}
           <h1
             style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(34px,5.5vw,56px)", fontWeight: 600, color: "var(--bois)", lineHeight: 1.05, letterSpacing: -1, marginBottom: 18 }}
@@ -147,17 +147,16 @@ export default function Home() {
             <br />
             pr&egrave;s de chez vous.
           </h1>
-          <motion.p
-            {...fadeUp(0.16)}
-            style={{ fontSize: 17, color: "var(--bois-mid)", marginBottom: 28, lineHeight: 1.6, maxWidth: 560, margin: "0 auto 28px" }}
+          <p
+            className="bv-reveal"
+            style={{ fontSize: 17, color: "var(--bois-mid)", marginBottom: 28, lineHeight: 1.6, maxWidth: 560, margin: "0 auto 28px", "--bv-delay": "0.16s" } as React.CSSProperties}
           >
             Des artisans de confiance, v&eacute;rifi&eacute;s et not&eacute;s par leurs clients. Devis gratuit en 24h, z&eacute;ro commission.
-          </motion.p>
+          </p>
 
           {/* ─── CTA UNIFIÉ : 1 input → smart routing (pattern Doctolib) ─── */}
-          <motion.form
-            {...fadeUp(0.2)}
-            className="liquid-glass"
+          <form
+            className="liquid-glass bv-reveal"
             onSubmit={(e) => {
               e.preventDefault();
               const form = e.currentTarget;
@@ -170,7 +169,7 @@ export default function Home() {
                 document.getElementById("annuaire")?.scrollIntoView({ behavior: "smooth", block: "start" });
               }
             }}
-            style={{ maxWidth: 640, margin: "0 auto 24px", display: "flex", alignItems: "center", gap: 8, padding: 6, borderRadius: 999 }}
+            style={{ maxWidth: 640, margin: "0 auto 24px", display: "flex", alignItems: "center", gap: 8, padding: 6, borderRadius: 999, "--bv-delay": "0.2s" } as React.CSSProperties}
           >
             <input
               name="q"
@@ -211,19 +210,18 @@ export default function Home() {
               Trouver
               <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
             </button>
-          </motion.form>
+          </form>
 
-          <motion.p
-            {...fadeUp(0.26)}
-            style={{ fontSize: 12, color: "var(--bois-mid)", marginBottom: 24, lineHeight: 1.5 }}
+          <p
+            className="bv-reveal"
+            style={{ fontSize: 12, color: "var(--bois-mid)", marginBottom: 24, lineHeight: 1.5, "--bv-delay": "0.26s" } as React.CSSProperties}
           >
             Tapez quelques mots sur votre projet (estimation IA en 2 min) — ou un métier + ville pour parcourir l'annuaire.
-          </motion.p>
+          </p>
 
-          <motion.div
-            {...fadeUp(0.3)}
-            className="liquid-glass search-bar"
-            style={{ maxWidth: 640, borderRadius: 16, padding: 8 }}
+          <div
+            className="liquid-glass search-bar bv-reveal"
+            style={{ maxWidth: 640, borderRadius: 16, padding: 8, "--bv-delay": "0.3s" } as React.CSSProperties}
           >
             <div style={{ flex: 1, maxWidth: 200, minWidth: 0 }}>
               <VilleAutocomplete
@@ -240,19 +238,18 @@ export default function Home() {
               onChange={(e) => setSearch(e.target.value)}
               aria-label="Recherche de m&eacute;tier ou service"
             />
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}
+            <button
+              type="button"
               className="search-btn"
               aria-label="Rechercher des artisans"
             >
               <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
               Rechercher
-            </motion.button>
-          </motion.div>
-          <motion.div
-            {...fadeUp(0.32)}
-            style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginTop: 16, flexWrap: "wrap" }}
+            </button>
+          </div>
+          <div
+            className="bv-reveal"
+            style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginTop: 16, flexWrap: "wrap", "--bv-delay": "0.32s" } as React.CSSProperties}
           >
             <button onClick={handleLocate} disabled={locating} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, color: "var(--terre)", background: "none", border: "none", cursor: "pointer", fontWeight: 500, fontFamily: "'Karla',sans-serif" }}>
               <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" /><circle cx="12" cy="9" r="2.5" /></svg>
@@ -264,13 +261,13 @@ export default function Home() {
                 Toutes les villes
               </button>
             )}
-          </motion.div>
-          <motion.p
-            {...fadeUp(0.4)}
-            style={{ fontSize: 13, color: "var(--pierre)", marginTop: 12 }}
+          </div>
+          <p
+            className="bv-reveal"
+            style={{ fontSize: 13, color: "var(--pierre)", marginTop: 12, "--bv-delay": "0.4s" } as React.CSSProperties}
           >
             Recherches populaires : <Link href="/chambery" style={{ color: "var(--argile)", fontWeight: 500 }}>r&eacute;novation salle de bain</Link>, <Link href="/chambery" style={{ color: "var(--argile)", fontWeight: 500 }}>plombier urgent</Link>, <Link href="/chambery" style={{ color: "var(--argile)", fontWeight: 500 }}>peinture int&eacute;rieure</Link>
-          </motion.p>
+          </p>
         </div>
       </section>
 
@@ -320,20 +317,20 @@ export default function Home() {
       {/* ─── COMMENT ÇA MARCHE ─── */}
       <section style={{ background: "var(--blanc)", padding: "88px 32px" }}>
         <div style={{ maxWidth: 960, margin: "0 auto" }}>
-          <motion.div {...fadeUp(0)} style={{ textAlign: "center", marginBottom: 56 }}>
+          <div className="bv-reveal" style={{ textAlign: "center", marginBottom: 56 }}>
             <div style={{ fontSize: 12, letterSpacing: 3, textTransform: "uppercase", color: "var(--pierre)", marginBottom: 14 }}>Process</div>
             <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(28px,4.5vw,42px)", fontWeight: 600, color: "var(--bois)", letterSpacing: -0.5, lineHeight: 1.1 }}>
               Trois &eacute;tapes,{" "}
               <span style={{ fontStyle: "italic", fontWeight: 400, color: "var(--terre)" }}>z&eacute;ro friction</span>
             </h2>
-          </motion.div>
+          </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 28 }}>
             {STEPS.map((s, i) => (
-              <motion.div key={s.n} {...fadeUp(i * 0.1)} style={{ textAlign: "center" }}>
+              <div key={s.n} className="bv-reveal" style={{ textAlign: "center", "--bv-delay": `${i * 0.1}s` } as React.CSSProperties}>
                 <div style={{ width: 56, height: 56, borderRadius: "50%", border: "1.5px solid var(--terre)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 600, color: "var(--terre)", marginBottom: 18, background: "rgba(196,83,26,.04)" }}>{s.n}</div>
                 <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 600, color: "var(--bois)", marginBottom: 10 }}>{s.title}</h3>
                 <p style={{ fontSize: 14, color: "var(--bois-mid)", lineHeight: 1.6 }}>{s.desc}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -343,7 +340,7 @@ export default function Home() {
       <section style={{ background: "var(--creme)", padding: "88px 32px", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", top: "-100px", right: "-80px", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(196,83,26,.06) 0%, transparent 70%)", pointerEvents: "none" }} />
         <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative" }}>
-          <motion.div {...fadeUp(0)} style={{ textAlign: "center", marginBottom: 56 }}>
+          <div className="bv-reveal" style={{ textAlign: "center", marginBottom: 56 }}>
             <div style={{ fontSize: 12, letterSpacing: 3, textTransform: "uppercase", color: "var(--pierre)", marginBottom: 14 }}>T&eacute;moignages</div>
             <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(28px,4.5vw,42px)", fontWeight: 600, color: "var(--bois)", letterSpacing: -0.5, lineHeight: 1.1 }}>
               La confiance{" "}
@@ -351,21 +348,21 @@ export default function Home() {
               <br />
               de nos clients.
             </h2>
-          </motion.div>
+          </div>
           {/* Mobile: 1 colonne stack lisible. Desktop: 3 colonnes avec offset middle */}
           <div className="testimonials-grid">
             {TESTIMONIALS.map((t, i) => (
-              <motion.div
+              <div
                 key={t.name}
-                {...fadeUp(i * 0.1)}
-                className={`liquid-glass testimonial-card ${i === 1 ? "is-middle" : ""}`}
+                className={`liquid-glass testimonial-card bv-reveal ${i === 1 ? "is-middle" : ""}`}
                 style={{
                   borderRadius: 20,
                   padding: 28,
                   display: "flex",
                   flexDirection: "column",
                   minWidth: 0,
-                }}
+                  "--bv-delay": `${i * 0.1}s`,
+                } as React.CSSProperties}
               >
                 <div style={{ display: "flex", gap: 2, marginBottom: 16 }}>
                   {[1,2,3,4,5].map((s) => (
@@ -380,7 +377,7 @@ export default function Home() {
                     <div style={{ fontSize: 12, color: "var(--pierre)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.role}</div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
           <style>{`
