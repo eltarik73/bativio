@@ -33,7 +33,7 @@ export async function GET() {
   try {
     console.log("[admin/validations] GET start - query Prisma");
 
-    const artisans = await prisma.artisan.findMany({
+    const rows = await prisma.artisan.findMany({
       where: {
         artisanStatus: { in: ["ONBOARDING", "PENDING_REVIEW", "PENDING_NAF_REVIEW"] },
         deletedAt: null,
@@ -51,6 +51,38 @@ export async function GET() {
         { scoringDate: { sort: "asc", nulls: "last" } },
         { createdAt: "asc" },
       ],
+    });
+
+    // IMPORTANT : on aplatit la reponse pour eviter d'envoyer des objets nested
+    // ({ metier: { nom, slug }, user: { email }, scoringAnswers: Json) au client.
+    // Si le client render directement {artisan.metier} sur un objet -> React crash :
+    // "Objects are not valid as a React child" -> error.tsx s'affiche.
+    // Donc on retourne uniquement des champs scalaires + answers en array deserialise.
+    const artisans = rows.map((a) => {
+      // scoringData (Json?) peut etre stocke en string JSON ou en JSON natif Prisma
+      let answers: unknown = a.scoringData;
+      if (typeof answers === "string") {
+        try { answers = JSON.parse(answers); } catch { answers = null; }
+      }
+      return {
+        id: a.id,
+        nomAffichage: a.nomAffichage,
+        ville: a.ville,
+        slug: a.slug,
+        artisanStatus: a.artisanStatus,
+        // metier : on extrait juste le nom (string), pas l'objet
+        metierNom: a.metier?.nom || null,
+        metierSlug: a.metier?.slug || null,
+        // email user
+        email: a.user?.email || null,
+        // scoring : score + percent + answers deserialises
+        score: a.scoringScore ?? null,
+        scorePercent: a.scoringPercent ?? null,
+        scoringDate: a.scoringDate ? a.scoringDate.toISOString() : null,
+        answers,
+        // dates
+        createdAt: a.createdAt.toISOString(),
+      };
     });
 
     console.log(`[admin/validations] GET ok - ${artisans.length} artisans found`);
