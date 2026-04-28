@@ -94,7 +94,9 @@ export async function POST(request: NextRequest) {
     const safeVilleLabel = data.villeLabel ? escapeHtml(data.villeLabel) : "";
     const safeDescription = escapeHtml(data.description.slice(0, 200));
     const safeDisclaimer = preDevis?.disclaimer ? escapeHtml(preDevis.disclaimer) : "";
-    void sendEmail(
+    // AWAIT obligatoire (Vercel kill la fonction serverless avant que
+    // le fetch Brevo ne se termine). sendEmail ne throw jamais (fail-safe).
+    await sendEmail(
       data.contactEmail,
       "Votre demande Bativio a bien été reçue",
       `<div style="font-family: -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 32px;">

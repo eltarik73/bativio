@@ -88,8 +88,10 @@ export async function POST(
       console.warn("[admin/approve] indexnow trigger failed:", (e as Error).message);
     }
 
-    // Send welcome email (fire & forget, log si erreur)
-    sendEmail(
+    // Send welcome email — AWAIT obligatoire (sinon Vercel kill la fonction
+    // serverless avant que le fetch Brevo ne se termine). sendEmail ne throw
+    // jamais (fail-safe), donc await + catch garde la robustesse.
+    await sendEmail(
       updatedArtisan.user.email,
       "Bienvenue sur Bativio ! Votre compte est activé",
       `

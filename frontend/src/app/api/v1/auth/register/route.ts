@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, setAuthCookie } from "@/lib/auth-server";
 import { apiSuccess, apiError } from "@/lib/api-response";
+import { sendEmail } from "@/lib/email";
 
 const registerSchema = z.object({
   email: z.string().email("Email invalide"),
@@ -194,6 +195,38 @@ export async function POST(request: NextRequest) {
 
     // Set auth cookie
     await setAuthCookie(result.user.id, result.user.role);
+
+    // Send welcome email — AWAIT obligatoire car Vercel kill la fonction serverless
+    // des que la Response est retournee (fire-and-forget = fetch interrompu).
+    // sendEmail ne throw jamais (fail-safe), donc await + catch garde la robustesse.
+    await sendEmail(
+      email,
+      "Bienvenue sur Bativio — votre inscription est en cours de validation",
+      `
+        <div style="font-family:'Karla',Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#3D2E1F;">
+          <h1 style="font-family:'Fraunces',serif;font-size:24px;color:#C4531A;margin-bottom:16px;">Bonjour ${nom} 👋</h1>
+          <p style="font-size:15px;line-height:1.6;">Merci pour votre inscription sur <strong>Bativio</strong>, la plateforme des artisans du bâtiment en Rhône-Alpes.</p>
+          <p style="font-size:15px;line-height:1.6;">Notre équipe va vérifier votre profil sous <strong>24 à 48 heures</strong> ouvrées. Vous recevrez un email dès que votre fiche sera publiée dans l'annuaire.</p>
+          <div style="background:#FAF8F5;border-left:3px solid #C4531A;padding:16px;margin:20px 0;border-radius:4px;">
+            <strong style="color:#C4531A;">Prochaines étapes :</strong>
+            <ol style="margin:8px 0 0 20px;padding:0;font-size:14px;line-height:1.6;">
+              <li>Connectez-vous à votre espace pour compléter votre profil</li>
+              <li>Ajoutez vos photos de chantiers et vos qualifications</li>
+              <li>Notre équipe valide votre fiche</li>
+              <li>Vous commencez à recevoir des demandes de devis</li>
+            </ol>
+          </div>
+          <a href="${process.env.NEXT_PUBLIC_APP_URL || "https://www.bativio.fr"}/dashboard"
+             style="display:inline-block;padding:14px 28px;background:#C4531A;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;font-size:14px;margin-top:8px;">
+            Accéder à mon espace
+          </a>
+          <p style="font-size:13px;color:#9C958D;margin-top:32px;line-height:1.5;">
+            Une question ? Répondez simplement à cet email, nous vous répondons sous 24h.<br>
+            <strong>L'équipe Bativio</strong>
+          </p>
+        </div>
+      `
+    ).catch((e) => console.error("[register] welcome email failed:", e));
 
     return apiSuccess(
       {

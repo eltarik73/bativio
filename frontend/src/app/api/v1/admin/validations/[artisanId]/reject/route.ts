@@ -58,8 +58,9 @@ export async function POST(
       },
     });
 
-    // Send rejection email (fire & forget)
-    sendEmail(
+    // Send rejection email — AWAIT obligatoire (Vercel kill la fonction
+    // serverless avant que le fetch Brevo ne se termine).
+    await sendEmail(
       updatedArtisan.user.email,
       "Bativio — Votre inscription necessite des informations complementaires",
       `
@@ -72,7 +73,7 @@ export async function POST(
         <p><a href="${process.env.NEXT_PUBLIC_APP_URL || "https://www.bativio.fr"}/dashboard" style="display:inline-block;padding:12px 24px;background:#C4531A;color:#fff;text-decoration:none;border-radius:8px;">Completer mon profil</a></p>
         <p>L'equipe Bativio</p>
       `
-    ).catch(() => {});
+    ).catch((e) => console.warn(`[admin/reject] email echec pour ${updatedArtisan.user.email}:`, (e as Error).message));
 
     return apiSuccess({ success: true, artisan: updatedArtisan });
   } catch (error: unknown) {

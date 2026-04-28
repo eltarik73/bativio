@@ -75,7 +75,9 @@ export async function POST(request: NextRequest) {
     const adminEmail = settings?.adminEmail || "contact@bativio.com";
 
     const resultLabel = isAutoAccepted ? "AUTO-ACCEPTE" : "EN ATTENTE DE VALIDATION";
-    sendEmail(
+    // AWAIT obligatoire (Vercel kill la fonction serverless avant que
+    // le fetch Brevo ne se termine).
+    await sendEmail(
       adminEmail,
       `[Bativio] Scoring artisan : ${artisan.nomAffichage} — ${resultLabel}`,
       `
@@ -90,7 +92,7 @@ export async function POST(request: NextRequest) {
             : ""
         }
       `
-    ).catch(() => {});
+    ).catch((e) => console.warn(`[scoring] email admin echec:`, (e as Error).message));
 
     return apiSuccess({
       result: isAutoAccepted ? "auto_accepted" : "pending_review",
