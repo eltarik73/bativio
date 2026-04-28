@@ -140,18 +140,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }];
 
-  // Cluster /pro/ — landing B2B + 4 piliers SEO (audience artisans)
+  // Cluster /pro/ — landing B2B + 4 piliers + 1 glossaire + 1 comparatif + 4 satellites
   const proPages: MetadataRoute.Sitemap = [
-    "/pro",
-    "/pro/facturation-electronique-2026",
-    "/pro/plateforme-agreee-artisan",
-    "/pro/facture-electronique-btp",
-    "/pro/mentions-obligatoires-2026",
-  ].map((p) => ({
+    { p: "/pro", priority: 0.9 },
+    { p: "/pro/facturation-electronique-2026", priority: 0.9 },
+    { p: "/pro/plateforme-agreee-artisan", priority: 0.9 },
+    { p: "/pro/facture-electronique-btp", priority: 0.9 },
+    { p: "/pro/mentions-obligatoires-2026", priority: 0.9 },
+    // ETAPE-SEO-05 : comparatif + glossaire + 4 satellites
+    { p: "/pro/comparatif-pa", priority: 0.8 },
+    { p: "/pro/glossaire", priority: 0.8 },
+    { p: "/pro/sanctions-facturation-electronique", priority: 0.7 },
+    { p: "/pro/factur-x-artisan", priority: 0.7 },
+    { p: "/pro/devis-electronique-artisan", priority: 0.7 },
+    { p: "/pro/auto-entrepreneur-batiment-2026", priority: 0.7 },
+  ].map(({ p, priority }) => ({
     url: `${baseUrl}${p}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
-    priority: 0.9, // pages strategiques B2B
+    priority,
   }));
 
   const villeMetierPages: MetadataRoute.Sitemap = VILLES_SLUGS.flatMap((ville) =>

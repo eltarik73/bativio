@@ -19,6 +19,7 @@ const NAV_PRO = [
   { href: "/pro", label: "Vue d'ensemble" },
   { href: "/pro/facturation-electronique-2026", label: "Réforme 2026" },
   { href: "/pro/plateforme-agreee-artisan", label: "Plateforme agréée" },
+  { href: "/pro/comparatif-pa", label: "Comparatif PA" },
   { href: "/pro/facture-electronique-btp", label: "Spécificités BTP" },
   { href: "/pro/mentions-obligatoires-2026", label: "Mentions obligatoires" },
   { href: "/pro/glossaire", label: "Glossaire" },
