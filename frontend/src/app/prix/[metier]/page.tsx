@@ -26,9 +26,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { metier } = await params;
   const info = METIERS_INFO[metier];
   if (!info) return { title: "Métier introuvable" };
+  // Title sans "| Bativio" manuel — le template root layout l'ajoute via template: "%s | Bativio".
+  // Canonical OBLIGATOIRE sur generateMetadata dynamique sinon Next.js retombe sur metadataBase
+  // (= la home), Google deduplique et ignore la page prix.
+  const titleCore = `Prix ${info.nom} 2026 — Tarifs travaux ${info.pluriel} Rhône-Alpes`;
   return {
-    title: `Prix ${info.nom} 2026 Rhône-Alpes — Tarifs travaux ${info.pluriel}`,
-    description: `Découvrez les prix 2026 des travaux de ${info.nom.toLowerCase()} en Rhône-Alpes : ${info.description}. Fourchettes HT bas/moyen/haut par prestation.`,
+    title: titleCore,
+    description: `Prix moyens 2026 des travaux de ${info.nom.toLowerCase()} en Rhône-Alpes : ${info.description}. Fourchettes HT bas/moyen/haut par prestation.`,
+    alternates: { canonical: `/prix/${metier}` },
+    openGraph: {
+      title: `${titleCore} | Bativio`,
+      description: `Prix 2026 des travaux de ${info.nom.toLowerCase()} en Rhône-Alpes — fourchettes par prestation.`,
+      url: `https://www.bativio.fr/prix/${metier}`,
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${titleCore} | Bativio`,
+      description: `Prix 2026 des travaux de ${info.nom.toLowerCase()} en Rhône-Alpes.`,
+    },
   };
 }
 
