@@ -6,10 +6,22 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Prix travaux 2026 Rhône-Alpes — Base tarifaire artisans",
-  description: "Consultez les prix moyens des travaux par métier en Rhône-Alpes en 2026. Plus de 250 prestations : plomberie, électricité, peinture, carrelage, maçonnerie, menuiserie, couverture, chauffage, serrurerie. Prix HT bas/moyen/haut.",
+  // Description ramenee a 155 chars (etait 244) pour passer dans la fenetre Google SERP
+  // (au-dela de ~160 chars, Google tronque avec "..." et perd l'ancre semantique).
+  description: "Prix moyens 2026 des travaux par metier en Rhone-Alpes : plomberie, electricite, peinture, macon, carrelage, menuiserie, couverture, chauffage. HT.",
+  // Canonical OBLIGATOIRE — sans cela, Next.js retombe sur metadataBase = la home,
+  // Google deduplique et la page est ignoree (meme bug que /prix/[metier]).
+  alternates: { canonical: "/prix" },
   openGraph: {
-    title: "Prix travaux 2026 Rhône-Alpes — Bativio",
-    description: "Base tarifaire 2026 : 250 prestations chiffrées par artisans vérifiés.",
+    title: "Prix travaux 2026 Rhône-Alpes | Bativio",
+    description: "Base tarifaire 2026 : 250+ prestations chiffrees par artisans verifies.",
+    url: "https://www.bativio.fr/prix",
+    type: "article",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Prix travaux 2026 Rhône-Alpes | Bativio",
+    description: "Base tarifaire 2026 : 250+ prestations chiffrees.",
   },
 };
 
