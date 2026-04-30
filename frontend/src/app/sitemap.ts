@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { VILLES } from "@/lib/constants";
+import { VILLES, VILLES_SECONDAIRES, METIERS_TOP_SEO } from "@/lib/constants";
 import { MOCK_ARTISANS } from "@/lib/mock-data";
 import { TRAVAUX } from "@/lib/travaux-data";
 import { prisma } from "@/lib/prisma";
@@ -153,5 +153,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Prisma may fail during build — skip silently
   }
 
-  return [...staticPages, ...prixMetierPages, ...villePages, ...villeMetierPages, ...artisanPages, ...travauxPages, ...businessCategoryPages, ...businessVitrinePages];
+  // Pages long-tail SEO : /[metier]-[ville-secondaire]
+  // 4 metiers TOP_SEO (plombier, electricien, peintre, macon) x 35 villes secondaires = 140 pages.
+  // Cible : etre indexe sur "electricien la bridoire", "plombier saint priest", etc.
+  const metierVilleSecondairePages: MetadataRoute.Sitemap = METIERS_TOP_SEO.flatMap((metier) =>
+    VILLES_SECONDAIRES.map((v) => ({
+      url: `${baseUrl}/${metier}-${v.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    }))
+  );
+
+  return [
+    ...staticPages,
+    ...prixMetierPages,
+    ...villePages,
+    ...villeMetierPages,
+    ...metierVilleSecondairePages,
+    ...artisanPages,
+    ...travauxPages,
+    ...businessCategoryPages,
+    ...businessVitrinePages,
+  ];
 }

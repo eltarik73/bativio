@@ -6,12 +6,13 @@ import Footer from "@/components/Footer";
 import { MOCK_VILLES, MOCK_ARTISANS, MOCK_METIERS } from "@/lib/mock-data";
 import { getVille, getMetiers } from "@/lib/api";
 import type { ArtisanPublic, MetierData } from "@/lib/api";
-import { VILLES } from "@/lib/constants";
+import { VILLES, VILLES_SECONDAIRES, METIERS_TOP_SEO } from "@/lib/constants";
 import VilleClient from "./VilleClient";
 import UrgenceFab from "@/components/UrgenceFab";
 import { safeJsonLd, sanitizeAdminHtml } from "@/lib/html-escape";
 import { prisma } from "@/lib/prisma";
 import MetierVilleListing from "./MetierVilleListing";
+import MetierVilleSecondairePage, { parseMetierVilleSecondaireSlug } from "./MetierVilleSecondairePage";
 
 export const revalidate = 3600;
 
@@ -21,15 +22,29 @@ export const dynamicParams = false; // CRITICAL: tout slug non listé = HTTP 404
 
 export async function generateStaticParams() {
   const params: { ville: string }[] = VILLES.map((v) => ({ ville: v.slug }));
+
+  // Pages long-tail SEO : 4 metiers TOP_SEO x 35 villes secondaires = 140 pages.
+  // Cible "electricien la bridoire", "plombier saint priest", etc.
+  for (const metierSlug of METIERS_TOP_SEO) {
+    for (const v of VILLES_SECONDAIRES) {
+      params.push({ ville: `${metierSlug}-${v.slug}` });
+    }
+  }
+
   try {
     const composites = await prisma.artisan.findMany({
       where: { actif: true, deletedAt: null, metierSlugSeo: { not: null }, villeSlug: { not: null } },
       select: { metierSlugSeo: true, villeSlug: true },
       distinct: ["metierSlugSeo", "villeSlug"],
     });
+    const seen = new Set(params.map((p) => p.ville));
     for (const c of composites) {
       if (c.metierSlugSeo && c.villeSlug) {
-        params.push({ ville: `${c.metierSlugSeo}-${c.villeSlug}` });
+        const slug = `${c.metierSlugSeo}-${c.villeSlug}`;
+        if (!seen.has(slug)) {
+          params.push({ ville: slug });
+          seen.add(slug);
+        }
       }
     }
   } catch {
@@ -44,6 +59,33 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
   // SEO: lowercase enforce + 404 immédiat pour slugs invalides
   if (villeSlug !== villeSlug.toLowerCase()) {
     notFound();
+  }
+
+  // Check if this is a /[metier-top-SEO]-[ville-secondaire] slug (long-tail SEO).
+  // Ex: /electricien-la-bridoire, /plombier-saint-jean-de-maurienne (140 pages).
+  const parsedMVS = parseMetierVilleSecondaireSlug(villeSlug);
+  if (parsedMVS) {
+    const { metier, ville } = parsedMVS;
+    const titleCore = `${metier.nom} a ${ville.nom} (${ville.codePostal})`;
+    const description = `Trouvez un ${metier.nom.toLowerCase()} fiable a ${ville.nom} (${ville.codePostal}). Profils verifies, avis clients reels, devis gratuit en 24h. Zero commission.`;
+    return {
+      title: titleCore,
+      description,
+      alternates: { canonical: `/${villeSlug}` },
+      openGraph: {
+        title: `${titleCore} | Bativio`,
+        description,
+        url: `https://www.bativio.fr/${villeSlug}`,
+        type: "website",
+        locale: "fr_FR",
+        images: [{ url: "https://www.bativio.fr/og-image.png", width: 1200, height: 630 }],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${titleCore} | Bativio`,
+        description,
+      },
+    };
   }
 
   // Check if this is a metier-ville composite slug
@@ -112,6 +154,14 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
   // Force lowercase URL — redirect 308 vers slug normalisé
   if (villeSlug !== villeSlug.toLowerCase()) {
     notFound(); // Next.js redirige automatiquement via not-found.tsx
+  }
+
+  // Si le slug est /[metier-top-seo]-[ville-secondaire] -> page dediee long-tail SEO.
+  // Ex: /electricien-la-bridoire, /plombier-saint-jean-de-maurienne.
+  // Doit etre AVANT les autres lookups pour matcher en priorite.
+  const parsedMVS = parseMetierVilleSecondaireSlug(villeSlug);
+  if (parsedMVS) {
+    return <MetierVilleSecondairePage parsed={parsedMVS} fullSlug={villeSlug} />;
   }
 
   // Essayer le backend, fallback mock
