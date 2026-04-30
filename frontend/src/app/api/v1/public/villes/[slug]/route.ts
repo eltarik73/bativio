@@ -22,7 +22,13 @@ export async function GET(
         actif: true,
         visible: true,
         deletedAt: null,
-        profilCompletion: { gte: 50 },
+        // Un artisan ACTIVE (valide manuellement par admin) apparait meme si
+        // son profilCompletion < 50, sinon NOVASAN et autres validations
+        // disparaissent silencieusement du listing public.
+        OR: [
+          { artisanStatus: "ACTIVE" },
+          { profilCompletion: { gte: 50 } },
+        ],
         NOT: { slug: { startsWith: "test-" } },
       },
       include: {

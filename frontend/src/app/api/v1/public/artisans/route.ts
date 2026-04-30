@@ -21,7 +21,15 @@ export async function GET(request: NextRequest) {
       actif: true,
       visible: true,
       deletedAt: null,
-      profilCompletion: { gte: 50 },
+      // Un artisan apparait dans le listing public s'il est :
+      // 1) deja valide manuellement par l'admin (artisanStatus = ACTIVE), OU
+      // 2) auto-eligible avec un profil complete a au moins 50%
+      // -> evite l'effet de bord ou un artisan VALIDE manuellement disparait du
+      //    listing parce que son profilCompletion < 50 (cas NOVASAN ENERGIE).
+      OR: [
+        { artisanStatus: "ACTIVE" },
+        { profilCompletion: { gte: 50 } },
+      ],
       NOT: { slug: { startsWith: "test-" } },
     };
 
