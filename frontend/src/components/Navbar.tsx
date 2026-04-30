@@ -442,6 +442,13 @@ export default function Navbar() {
         @media (max-width: 768px) {
           .nav-hamburger { display: flex !important; }
           .nav-user-name { display: none !important; }
+          /* Mobile : cacher tous les liens desktop, ne garder que le hamburger.
+             Sinon les liens (Annuaire / Metiers / Guides / Urgence / Je suis artisan / CTA)
+             debordent l'ecran et chevauchent le logo Bativio. */
+          .nav .nav-r .nav-link,
+          .nav .nav-r .nav-cta { display: none !important; }
+          /* Padding plus serre sur mobile pour gagner de la place */
+          .nav { padding: 0 16px !important; }
         }
       `}</style>
     </nav>
