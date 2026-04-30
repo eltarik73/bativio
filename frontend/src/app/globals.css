@@ -623,3 +623,21 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
     scroll-behavior: auto !important;
   }
 }
+
+/* ═══ BV-REVEAL : anime fade-up CSS pur (0 JS, 0 framer-motion) ═══
+   Variable CSS --bv-delay (en sec) controle le decalage stagger par element.
+   Si JS ne charge pas, les elements deviennent visibles automatiquement
+   au lieu de rester coinces a opacity:0 (bug ex: framer-motion non hydrate). */
+@keyframes bvFadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.bv-reveal {
+  opacity: 0;
+  animation: bvFadeUp 0.6s cubic-bezier(.22, 1, .36, 1) forwards;
+  animation-delay: var(--bv-delay, 0s);
+  will-change: opacity, transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bv-reveal { opacity: 1; transform: none; animation: none; }
+}
