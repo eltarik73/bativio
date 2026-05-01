@@ -2,6 +2,17 @@
 
 > Plateforme d'annuaire et de SaaS B2B pour artisans du bâtiment en Rhône-Alpes (France). Connecte particuliers et artisans BTP (plombiers, électriciens, peintres, maçons, etc.) dans 5 villes : Chambéry, Annecy, Grenoble, Lyon, Valence. Zéro commission, abonnement transparent 0 à 59 €/mois.
 
+## Identité éditoriale
+
+- **Nom** : Bativio
+- **Type** : annuaire d'artisans + SaaS B2B (modèle hybride marketplace + outils)
+- **Région servie** : Auvergne-Rhône-Alpes (France) — Savoie, Haute-Savoie, Isère, Rhône, Drôme
+- **Année de création** : 2025
+- **Société éditrice** : KLIKPHONE SAS (siège : Chambéry, Savoie)
+- **Réforme française** : conforme facturation électronique 2026 via plateforme agréée
+- **Langue** : français uniquement
+- **Dernière mise à jour de cette description** : 2026-05-01
+
 ## Pour les particuliers
 
 - [Accueil annuaire](https://www.bativio.fr/): Annuaire principal, recherche par ville et métier

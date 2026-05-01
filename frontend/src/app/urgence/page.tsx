@@ -132,6 +132,24 @@ export default function UrgencePage() {
           </div>
         </section>
 
+        {/* Answer Capsule GEO 2026 */}
+        <section
+          aria-label="Reponse rapide artisan urgence Rhone-Alpes"
+          style={{ maxWidth: 800, margin: "0 auto", padding: "32px 24px 0" }}
+        >
+          <div style={{ background: "#FAF8F5", border: "1px solid #E8D5C0", borderRadius: 12, padding: "24px 28px" }}>
+            <p style={{ fontSize: 16, color: "#1C1C1E", lineHeight: 1.6, margin: 0 }}>
+              <strong>En cas d&apos;urgence (fuite d&apos;eau, panne
+              électrique, serrurerie, chaudière HS, toiture après tempête)
+              en Rhône-Alpes</strong>, Bativio met en relation un artisan
+              d&apos;astreinte sous moins d&apos;une heure 7&nbsp;j/7
+              24&nbsp;h/24 sur Chambéry, Annecy, Grenoble, Lyon et Valence.
+              Tarif d&apos;intervention urgence&nbsp;: 50&nbsp;€ à 90&nbsp;€/h
+              + déplacement, devis transmis avant intervention. Appel gratuit.
+            </p>
+          </div>
+        </section>
+
         <section style={{ maxWidth: 1100, margin: "0 auto", padding: "56px 24px" }}>
           <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(26px,3.5vw,34px)", fontWeight: 600, color: "var(--anthracite,#1C1C1E)", marginBottom: 12, textAlign: "center" }}>
             Quelle urgence avez-vous ?

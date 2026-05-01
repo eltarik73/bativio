@@ -5,6 +5,7 @@ import { requireAuth } from "@/lib/auth-server";
 import { z } from "zod";
 import { sendArtisanReplyToClient } from "@/lib/devis-emails";
 import { getLeadLimit } from "@/lib/lead-limits";
+import { getEffectivePlan } from "@/lib/plan-gates";
 
 // GET — poll for new messages (artisan side)
 export async function GET(
@@ -70,7 +71,7 @@ export async function POST(
       },
     });
     const rank = rankBefore + 1;
-    const leadLimit = getLeadLimit(artisan.plan);
+    const leadLimit = getLeadLimit(getEffectivePlan(artisan));
     if (leadLimit !== null && rank > leadLimit) {
       return apiError(
         "Passez à un plan payant pour répondre à cette demande.",

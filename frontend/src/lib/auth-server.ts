@@ -3,12 +3,12 @@ import { cookies } from "next/headers";
 import bcrypt from "bcryptjs";
 
 if (!process.env.JWT_SECRET) {
-  if (process.env.NODE_ENV !== "development") {
-    throw new Error("JWT_SECRET obligatoire (fallback accepté uniquement en NODE_ENV=development)");
-  }
-  console.warn("⚠️ auth-server: JWT_SECRET absent — fallback dev utilisé");
+  // Hard fail in every environment — no hardcoded fallback. Dev devs must
+  // set JWT_SECRET in .env.local. Anything else risks a production deploy
+  // that signs cookies with a publicly-known secret.
+  throw new Error("JWT_SECRET is required (set it in .env.local for dev, in your hosting platform for prod)");
 }
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "dev-secret-change-in-production");
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 const COOKIE_NAME = "bativio-session";
 
 export async function createToken(userId: string, role: string) {

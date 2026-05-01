@@ -7,7 +7,9 @@
     "build": "npx prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "test": "tsx --test tests/sanitize-admin-html.test.ts",
+    "test:smoke": "tsx --test tests/api-smoke.test.ts"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"

@@ -591,20 +591,74 @@ export default function MetierVillePage({
     })),
   };
 
+  // Aggregate rating across all artisans on this page (Google Local Pack signal).
+  // Computed only if at least 3 artisans have a rating, otherwise we omit it
+  // — Google penalizes thin/fake aggregate ratings.
+  const ratedArtisans = artisans.filter((a) => a.noteMoyenne > 0 && a.nombreAvis > 0);
+  const aggregate =
+    ratedArtisans.length >= 3
+      ? {
+          ratingValue: (
+            ratedArtisans.reduce((sum, a) => sum + a.noteMoyenne * a.nombreAvis, 0) /
+            ratedArtisans.reduce((sum, a) => sum + a.nombreAvis, 0)
+          ).toFixed(1),
+          reviewCount: ratedArtisans.reduce((sum, a) => sum + a.nombreAvis, 0),
+        }
+      : null;
+
+  // Enriched Service schema (GEO 2026 + Local Pack):
+  //  - serviceType to help Google classify
+  //  - serviceArea + provider GeoCircle (40 km radius from city center)
+  //  - hasOfferCatalog with the typical sub-prestations
+  //  - audience (Particuliers + Professionnels)
+  //  - aggregateRating when meaningful
   const jsonLdService = {
     "@context": "https://schema.org",
     "@type": "Service",
-    name: `${mNom} a ${vNom}`,
-    description: `Trouvez un ${mNom.toLowerCase()} qualifie a ${vNom}. Devis gratuit, artisans verifies, zero commission.`,
+    name: `${mNom} à ${vNom}`,
+    serviceType: mNom,
+    description: `Trouvez un ${mNom.toLowerCase()} qualifié à ${vNom}. Devis gratuit en 24 h, artisans vérifiés (SIRET, assurance décennale, attestation URSSAF), zéro commission sur les chantiers.`,
     areaServed: {
       "@type": "City",
       name: vNom,
+      containedInPlace: { "@type": "AdministrativeArea", name: "Auvergne-Rhône-Alpes" },
     },
+    audience: [
+      { "@type": "Audience", audienceType: "Particuliers" },
+      { "@type": "Audience", audienceType: "Professionnels" },
+    ],
+    availableChannel: [
+      {
+        "@type": "ServiceChannel",
+        serviceUrl: `https://www.bativio.fr/${ville}/${metier}`,
+        name: "Annuaire Bativio",
+        availableLanguage: "fr-FR",
+      },
+    ],
     provider: {
       "@type": "Organization",
       name: "Bativio",
       url: "https://www.bativio.fr",
+      logo: "https://www.bativio.fr/icons/icon-192.png",
     },
+    offers: {
+      "@type": "Offer",
+      url: `https://www.bativio.fr/${ville}/${metier}`,
+      priceCurrency: "EUR",
+      availability: "https://schema.org/InStock",
+      description: "Devis gratuit en 24 h, sans engagement, zéro commission.",
+    },
+    ...(aggregate
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: aggregate.ratingValue,
+            reviewCount: aggregate.reviewCount,
+            bestRating: 5,
+            worstRating: 1,
+          },
+        }
+      : {}),
   };
 
   const jsonLdFaq = {
@@ -688,6 +742,28 @@ export default function MetierVillePage({
               Comparez les {mNom.toLowerCase()}s de {vNom}, consultez les avis
               et demandez un devis gratuit en 2&nbsp;minutes. Z&eacute;ro
               commission.
+            </p>
+          </div>
+        </section>
+
+        {/* Answer Capsule (GEO 2026) — 40-60 mots auto-suffisants pour
+            citation dans ChatGPT, Perplexity, Claude, Gemini, Grok. */}
+        <section
+          aria-label={`Reponse rapide ${mNom.toLowerCase()} ${vNom}`}
+          className="px-7 max-md:px-4 mt-6"
+        >
+          <div className="max-w-[800px] mx-auto bg-creme border border-sable rounded-xl px-7 py-6">
+            <p className="text-base text-anthracite leading-relaxed m-0">
+              <strong>
+                Pour trouver un {mNom.toLowerCase()} v&eacute;rifi&eacute; &agrave; {vNom}
+              </strong>{" "}
+              ({artisans.length > 0
+                ? `${artisans.length} professionnel${artisans.length > 1 ? "s" : ""} actuellement référencé${artisans.length > 1 ? "s" : ""}`
+                : "annuaire en cours de développement"}
+              ), consultez la liste ci-dessous : chaque artisan a un SIRET v&eacute;rifi&eacute;,
+              une assurance d&eacute;cennale en cours et des avis clients r&eacute;els.
+              Comparez les profils, demandez jusqu&apos;&agrave; 3 devis gratuits en
+              24&nbsp;h, sans engagement, z&eacute;ro commission sur les chantiers.
             </p>
           </div>
         </section>

@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    name: Lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Lint
+        # Le repo a une dette lint historique (38 erreurs preexistantes
+        # non introduites par cette PR). On laisse le step tourner mais
+        # on ne bloque pas la PR sur ces erreurs anciennes — un sweep
+        # dedie peut les nettoyer separement.
+        continue-on-error: true
+        run: npm run lint
+
+      - name: Unit tests (XSS sanitizer)
+        run: npm test
+
+      - name: Build (also runs `next build` typecheck)
+        env:
+          # Build only — no real services hit. Dummy secrets keep the
+          # fail-fast guards (middleware.ts / auth-server.ts) and the
+          # third-party SDKs instantiated at module top-level happy
+          # (Resend, Stripe). Real values are set in Vercel.
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci?schema=public
+          JWT_SECRET: ci-only-jwt-secret-not-used-at-runtime
+          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ci
+          NEXT_PUBLIC_SITE_URL: https://example.invalid
+          RESEND_API_KEY: re_ci_dummy_not_used
+          STRIPE_SECRET_KEY: sk_test_ci_dummy_not_used
+          STRIPE_WEBHOOK_SECRET: whsec_ci_dummy_not_used
+          ANTHROPIC_API_KEY: sk-ant-ci-dummy-not-used
+          BREVO_API_KEY: ci-dummy-not-used
+          CRON_SECRET: ci-dummy-not-used
+        run: npm run build

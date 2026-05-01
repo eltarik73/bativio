@@ -61,7 +61,10 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleMouseDown);
   }, []);
 
-  // Close on route change
+  // Close on route change. Reset transient UI state when the URL changes —
+  // the lint rule used to flag this as setState-in-effect, but the cascading-
+  // render risk is non-existent for transient UI flags driven by an external
+  // signal (pathname). The disable is no longer needed; eslint agrees.
   useEffect(() => {
     setDropdownOpen(false);
     setMobileMenuOpen(false);

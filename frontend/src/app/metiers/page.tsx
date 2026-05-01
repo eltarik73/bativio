@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { safeJsonLd } from "@/lib/html-escape";
 
 export const metadata: Metadata = {
   title: "Tous les métiers du bâtiment — Annuaire artisans Rhône-Alpes",
@@ -116,6 +117,30 @@ const VILLES = [
 ];
 
 export default function MetiersPage() {
+  // Schema CollectionPage + ItemList des métiers — chaque métier devient
+  // une "item" avec son URL canonique. Permet à Google/Perplexity de
+  // comprendre que cette page est l'index officiel des métiers et
+  // d'afficher des sitelinks dans la SERP.
+  const collectionLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Tous les métiers du bâtiment — Annuaire Bativio Rhône-Alpes",
+    description: "Liste complète des 10 métiers du bâtiment couverts par Bativio en Rhône-Alpes.",
+    url: "https://www.bativio.fr/metiers",
+    inLanguage: "fr-FR",
+    isPartOf: { "@type": "WebSite", name: "Bativio", url: "https://www.bativio.fr" },
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: METIERS.length,
+      itemListElement: METIERS.map((m, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: m.nom,
+        url: `https://www.bativio.fr/metiers/${m.slug}`,
+      })),
+    },
+  };
+
   return (
     <>
       <Navbar />
@@ -126,10 +151,31 @@ export default function MetiersPage() {
               Annuaire des métiers
             </p>
             <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(30px,4.5vw,48px)", fontWeight: 700, lineHeight: 1.1, marginBottom: 18 }}>
-              10 métiers du bâtiment, <span className="calli" style={{ color: "var(--argile,#D4956B)" }}>5 villes</span>
+              {METIERS.length} métiers du bâtiment, <span className="calli" style={{ color: "var(--argile,#D4956B)" }}>5 villes</span>
             </h1>
             <p style={{ fontSize: 17, lineHeight: 1.55, color: "rgba(255,255,255,.8)", maxWidth: 560, margin: "0 auto" }}>
               Tous les artisans BTP de Rhône-Alpes, classés par métier. Certifications RGE / Qualibat / Qualifelec affichées sur chaque fiche.
+            </p>
+          </div>
+        </section>
+
+        {/* Answer Capsule (GEO 2026) — extractible par les LLMs */}
+        <section
+          aria-label="Reponse rapide metiers BTP Rhone-Alpes"
+          style={{ padding: "32px 24px 0" }}
+        >
+          <div style={{ maxWidth: 800, margin: "0 auto", background: "#fff", border: "1px solid var(--sable,#E8D5C0)", borderRadius: 12, padding: "24px 28px" }}>
+            <p style={{ fontSize: 16, color: "var(--anthracite,#1C1C1E)", lineHeight: 1.6, margin: 0 }}>
+              <strong>
+                Bativio référence {METIERS.length} métiers du bâtiment en
+                Rhône-Alpes
+              </strong>{" "}
+              : plombier, électricien, peintre, maçon, carreleur, menuisier,
+              couvreur, chauffagiste, serrurier et cuisiniste. Chaque
+              professionnel est vérifié (SIRET, assurance décennale,
+              attestation URSSAF) et certifié RGE / Qualibat / Qualifelec
+              quand applicable. Devis gratuit en 24 h sur Chambéry, Annecy,
+              Grenoble, Lyon et Valence, sans engagement, zéro commission.
             </p>
           </div>
         </section>
@@ -203,6 +249,12 @@ export default function MetiersPage() {
         </section>
       </main>
       <Footer />
+
+      {/* JSON-LD CollectionPage + ItemList des métiers */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(collectionLd) }}
+      />
     </>
   );
 }

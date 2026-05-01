@@ -5,6 +5,7 @@ import { z } from "zod";
 import crypto from "crypto";
 import { sendNewDemandeToArtisan, sendDemandeConfirmationToClient, sendDemandeMasqueeToArtisan } from "@/lib/devis-emails";
 import { getLeadLimit } from "@/lib/lead-limits";
+import { getEffectivePlan } from "@/lib/plan-gates";
 
 const demandeSchema = z.object({
   artisanId: z.string().min(1, "L'identifiant artisan est requis"),
@@ -91,7 +92,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Determine if this lead is within the free-plan limit
-    const leadLimit = getLeadLimit(artisan.plan);
+    const leadLimit = getLeadLimit(getEffectivePlan(artisan));
     const withinLimit =
       leadLimit === null || artisan.leadsCompletsUtilises < leadLimit;
 

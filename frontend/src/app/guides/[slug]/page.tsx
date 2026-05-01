@@ -102,16 +102,58 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
   const g = GUIDES[slug];
   if (!g) notFound();
 
+  // Article schema enrichi pour E-E-A-T 2026 :
+  //  - author Person nomme (signal d'autorite vs Organization)
+  //  - mainEntityOfPage canonique
+  //  - image OG (Google a besoin d'une image dans Article schema)
+  //  - inLanguage et keywords pour les LLM (Perplexity / Gemini)
   const articleLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: g.title,
     description: g.description,
+    image: "https://www.bativio.fr/og-image.png",
     datePublished: "2026-04-01",
     dateModified: g.updatedAt,
-    author: { "@type": "Organization", name: "Bativio" },
-    publisher: { "@type": "Organization", name: "Bativio", logo: { "@type": "ImageObject", url: "https://www.bativio.fr/icons/icon-192.png" } },
+    author: {
+      "@type": "Person",
+      name: "Tarik Boudefar",
+      jobTitle: "Fondateur de Bativio",
+      url: "https://www.bativio.fr/a-propos",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Bativio",
+      logo: { "@type": "ImageObject", url: "https://www.bativio.fr/icons/icon-192.png" },
+    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": `https://www.bativio.fr/guides/${slug}` },
+    inLanguage: "fr-FR",
+    keywords: [g.title.toLowerCase(), "Rhône-Alpes", "artisan bâtiment", "guide 2026"].join(", "),
   };
+
+  // HowTo schema — quand le guide est une démarche numérotée. Permet
+  // d'apparaître dans les "rich results" Google avec étapes visibles
+  // ("Comment faire X — étape 1, 2, 3 …") et favorise massivement les
+  // citations dans AI Overviews / ChatGPT Search / Perplexity.
+  const isHowTo = g.sections.length >= 3 && /^\d+\.\s/.test(g.sections[0].h);
+  const howToLd = isHowTo
+    ? {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        name: g.title,
+        description: g.description,
+        image: "https://www.bativio.fr/og-image.png",
+        inLanguage: "fr-FR",
+        totalTime: `PT${g.sections.length * 5}M`, // estimation 5 min / step
+        step: g.sections.map((s, i) => ({
+          "@type": "HowToStep",
+          position: i + 1,
+          name: s.h.replace(/^\d+\.\s*/, ""),
+          text: s.p,
+          url: `https://www.bativio.fr/guides/${slug}#step-${i + 1}`,
+        })),
+      }
+    : null;
 
   return (
     <>
@@ -126,9 +168,20 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
           <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(28px,4vw,42px)", fontWeight: 700, lineHeight: 1.15, color: "var(--anthracite,#1C1C1E)", marginBottom: 18 }}>
             {g.title}
           </h1>
-          <p style={{ fontSize: 12, color: "var(--pierre,#9C958D)", marginBottom: 32 }}>
-            Mis à jour le {new Date(g.updatedAt).toLocaleDateString("fr-FR", { year: "numeric", month: "long", day: "numeric" })} · Lecture ~{Math.ceil(g.sections.reduce((acc, s) => acc + s.p.length, 0) / 1000)} min
-          </p>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 32, paddingBottom: 18, borderBottom: "1px solid var(--sable,#E8D5C0)" }}>
+            <div aria-hidden="true" style={{ width: 38, height: 38, borderRadius: "50%", background: "var(--terre,#C4531A)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14 }}>
+              TB
+            </div>
+            <div style={{ fontSize: 13, color: "var(--bois-mid,#5C4A3A)", lineHeight: 1.4 }}>
+              <p style={{ margin: 0, fontWeight: 600, color: "var(--anthracite,#1C1C1E)" }}>
+                <Link href="/a-propos" style={{ color: "inherit", textDecoration: "none" }}>Tarik Boudefar</Link> &middot; Fondateur de Bativio
+              </p>
+              <p style={{ margin: 0, fontSize: 12, color: "var(--pierre,#9C958D)" }}>
+                Mis à jour le <time dateTime={g.updatedAt}>{new Date(g.updatedAt).toLocaleDateString("fr-FR", { year: "numeric", month: "long", day: "numeric" })}</time>
+                {" · "}Lecture ~{Math.ceil(g.sections.reduce((acc, s) => acc + s.p.length, 0) / 1000)} min
+              </p>
+            </div>
+          </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
             {g.sections.map((s, i) => (
@@ -177,6 +230,9 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
       <Footer />
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(articleLd) }} />
+      {howToLd && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(howToLd) }} />
+      )}
     </>
   );
 }

@@ -1,17 +1,27 @@
 import { prisma } from "@/lib/prisma";
 
-// Cache avec TTL de 5 minutes
-const cache = new Map<string, { value: any; expiresAt: number }>();
+// Config values are heterogeneous (string | number | boolean | parsed JSON
+// object/array | null) so we type them as `unknown` and let callers narrow
+// with a Zod schema or a type predicate. Avoids `any` while keeping the
+// cache flexible.
+export type ConfigValue = unknown;
+
+const cache = new Map<string, { value: ConfigValue; expiresAt: number }>();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 /**
  * Recupere une config par cle, parse la valeur selon le type.
+ *
+ * Typage : on retourne `unknown` par défaut, mais le caller peut passer
+ * un type générique (`getConfig<string[]>("sms.plans")`). Le caller
+ * reste responsable de la cohérence — la valeur stockée en DB n'est pas
+ * vérifiée à la lecture (à terme : passer par un Zod schema par clé).
  */
-export async function getConfig(cle: string): Promise<any> {
+export async function getConfig<T = ConfigValue>(cle: string): Promise<T | null> {
   const now = Date.now();
   const cached = cache.get(cle);
   if (cached && cached.expiresAt > now) {
-    return cached.value;
+    return cached.value as T | null;
   }
 
   const config = await prisma.siteConfig.findUnique({ where: { cle } });
@@ -20,7 +30,7 @@ export async function getConfig(cle: string): Promise<any> {
     return null;
   }
 
-  let parsed: any;
+  let parsed: ConfigValue;
   switch (config.type) {
     case "boolean":
       parsed = config.valeur === "true";
@@ -36,7 +46,7 @@ export async function getConfig(cle: string): Promise<any> {
   }
 
   cache.set(cle, { value: parsed, expiresAt: now + CACHE_TTL });
-  return parsed;
+  return parsed as T | null;
 }
 
 /**

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { safeJsonLd } from "@/lib/html-escape";
 
 export const metadata: Metadata = {
   title: "Contact — Bativio équipe Chambéry",
@@ -12,6 +13,68 @@ export const metadata: Metadata = {
     title: "Contact Bativio",
     description: "Équipe Chambéry · Support artisans + particuliers.",
     url: "https://www.bativio.fr/contact",
+  },
+};
+
+// Schema ContactPage avec ContactPoint multiples (téléphone, email,
+// support technique, presse, RGPD). Permet à Google d'afficher les
+// coordonnées dans le knowledge panel.
+const contactJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  name: "Contact Bativio",
+  description: "Coordonnées de l'équipe Bativio basée à Chambéry — support artisans, particuliers, presse, RGPD.",
+  url: "https://www.bativio.fr/contact",
+  inLanguage: "fr-FR",
+  isPartOf: { "@type": "WebSite", name: "Bativio", url: "https://www.bativio.fr" },
+  mainEntity: {
+    "@type": "Organization",
+    name: "Bativio",
+    url: "https://www.bativio.fr",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Chambéry",
+      addressRegion: "Savoie",
+      postalCode: "73000",
+      addressCountry: "FR",
+    },
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        telephone: "+33-4-79-00-00-00",
+        contactType: "customer service",
+        areaServed: "FR",
+        availableLanguage: "fr-FR",
+        email: "contact@bativio.fr",
+        hoursAvailable: {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          opens: "09:00",
+          closes: "18:00",
+        },
+      },
+      {
+        "@type": "ContactPoint",
+        contactType: "technical support",
+        email: "contact@bativio.fr",
+        areaServed: "FR",
+        availableLanguage: "fr-FR",
+      },
+      {
+        "@type": "ContactPoint",
+        contactType: "press",
+        email: "contact@bativio.fr",
+        areaServed: "FR",
+        availableLanguage: "fr-FR",
+      },
+      {
+        "@type": "ContactPoint",
+        contactType: "data protection officer",
+        email: "contact@bativio.fr",
+        areaServed: "FR",
+        availableLanguage: "fr-FR",
+      },
+    ],
   },
 };
 
@@ -145,6 +208,11 @@ export default function ContactPage() {
         </section>
       </main>
       <Footer />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(contactJsonLd) }}
+      />
     </>
   );
 }

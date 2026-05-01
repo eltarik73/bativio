@@ -99,7 +99,6 @@ export default function Home() {
     getMetiers()
       .then((m) => { if (m && m.length > 0) setAllMetiers(m); })
       .catch(() => {});
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filtered = allArtisans.filter((a) => {
@@ -413,7 +412,7 @@ export default function Home() {
       {/* JSON-LD WebSite + Organization */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd([
         { "@context": "https://schema.org", "@type": "WebSite", name: "Bativio", url: "https://www.bativio.fr", potentialAction: { "@type": "SearchAction", target: "https://www.bativio.fr/?search={search_term_string}", "query-input": "required name=search_term_string" } },
-        { "@context": "https://schema.org", "@type": "Organization", name: "Bativio", url: "https://www.bativio.fr", logo: "https://www.bativio.fr/og-image.png", description: "La plateforme des artisans du bâtiment en Rhône-Alpes. Zéro commission.", areaServed: { "@type": "State", name: "Rhône-Alpes" }, foundingDate: "2025", founder: { "@type": "Person", name: "Tarik Bouzeggou" }, sameAs: ["https://www.linkedin.com/company/bativio"] }
+        { "@context": "https://schema.org", "@type": "Organization", name: "Bativio", url: "https://www.bativio.fr", logo: "https://www.bativio.fr/og-image.png", description: "La plateforme des artisans du bâtiment en Rhône-Alpes. Zéro commission.", areaServed: { "@type": "State", name: "Rhône-Alpes" }, foundingDate: "2025", founder: { "@type": "Person", name: "Tarik Boudefar" }, sameAs: ["https://www.linkedin.com/company/bativio"] }
       ]) }} />
 
       {/* FAQPage JSON-LD — trigger AI Overviews + featured snippets */}
