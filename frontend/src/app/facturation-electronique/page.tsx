@@ -596,7 +596,7 @@ export default function FacturationElectroniquePage() {
               }}
             >
               Inscrivez-vous gratuitement et activez la facturation électronique en un clic.
-              Bativio s'occupe du reste.
+              Bativio s&apos;occupe du reste.
             </p>
             <Link
               href="/inscription"

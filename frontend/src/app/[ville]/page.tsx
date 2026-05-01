@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import ArtisanCard from "@/components/ArtisanCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { MOCK_VILLES, MOCK_ARTISANS, MOCK_METIERS } from "@/lib/mock-data";
