@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { createHash } from "crypto";
 import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { requireAuth } from "@/lib/auth-server";
@@ -77,12 +78,38 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Upload to Cloudinary
+    // Content-addressed hash : 16 hex chars = 64 bits = collision-safe at this scale.
+    // Embedded in the Cloudinary public_id so we can detect duplicate uploads
+    // for the same artisan via a DB lookup before re-uploading.
+    const fileHash = createHash("md5").update(buffer).digest("hex").slice(0, 16);
+
+    // Reject if this artisan already uploaded the exact same image.
+    const duplicate = await prisma.photo.findFirst({
+      where: {
+        artisanId: artisan.id,
+        cloudinaryPublicId: { contains: `/${fileHash}` },
+      },
+      select: { id: true },
+    });
+    if (duplicate) {
+      return apiError(
+        "Cette photo existe déjà dans votre galerie. Choisissez une image différente.",
+        409
+      );
+    }
+
+    // Upload to Cloudinary with a deterministic public_id (folder + hash).
+    // overwrite:false keeps the existing asset if the same content was already
+    // uploaded for this artisan — defensive for race conditions.
     const uploadResult = await new Promise<{ secure_url: string; public_id: string }>(
       (resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
           {
             folder: `bativio/artisans/${artisan.id}`,
+            public_id: fileHash,
+            overwrite: false,
+            unique_filename: false,
+            use_filename: false,
             resource_type: "image",
             transformation: [
               { quality: "auto", fetch_format: "auto" },

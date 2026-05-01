@@ -7,6 +7,7 @@ import DevisForm3Steps from "@/components/DevisForm3Steps";
 import type { SeoGenerated } from "@/lib/vitrine-config";
 import { getVitrineConfig } from "@/lib/vitrine-config";
 import { getDefaultContent } from "@/lib/vitrine-defaults";
+import { buildGallery, getImageId, dedupePhotos } from "@/lib/photos";
 
 const JOURS = ["", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 
@@ -34,8 +35,30 @@ export default function VitrineBusiness({ a, photo, primary, villeSlug, vitrineC
   const hasRealServices = a.services && a.services.length > 0;
   const services = hasRealServices ? a.services! : defaults.services.map((s, i) => ({ id: String(i), titre: s.titre, description: s.description, prixIndicatif: s.prix || "", ordre: i }));
   const hasRealPhotos = a.photos && a.photos.length > 1;
-  const galleryPhotos = hasRealPhotos ? a.photos!.map(p => p.url) : defaults.galleryPhotos;
   const heroImg = a.photos && a.photos.length > 0 ? a.photos[0].url : defaults.heroPhotos[0] || photo;
+  // Build gallery without the hero — works for real-uploaded photos AND
+  // fallback Unsplash defaults (some defaults overlap hero ↔ gallery).
+  const galleryRaw = hasRealPhotos ? a.photos!.map((p) => p.url) : defaults.galleryPhotos;
+  const galleryPhotos = buildGallery(galleryRaw, heroImg);
+  // "About" section image must differ from hero AND from every visible gallery
+  // photo (otherwise the same image appears multiple times stacked vertically).
+  // Fallback chain : pre-vetted candidates → metier hero photo → final fallback
+  // accepts the hero (better than repeating a gallery item below itself).
+  const usedAboveAbout = new Set(
+    [heroImg, ...galleryPhotos].filter(Boolean).map((u) => getImageId(u as string))
+  );
+  const aboutCandidates = dedupePhotos([
+    ...defaults.heroPhotos,
+    ...defaults.galleryPhotos,
+    // generic site/architecture fallbacks (different identities, photographic
+    // — preferred to the metier SVG data URI for the "About" section).
+    "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1581094288338-2314dddb7ece?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&h=600&fit=crop",
+    photo,
+  ]);
+  const aboutImg =
+    aboutCandidates.find((u) => !usedAboveAbout.has(getImageId(u))) || heroImg;
   const whyChoose = defaults.whyChoose;
 
   const orderedSections = config.ordre.filter(id => sec[id] !== false);
@@ -163,7 +186,7 @@ export default function VitrineBusiness({ a, photo, primary, villeSlug, vitrineC
             )}
           </div>
           <div style={{ borderRadius: 16, overflow: "hidden", position: "relative", aspectRatio: "4/3" }}>
-            <Image src={defaults.heroPhotos[defaults.heroPhotos.length > 1 ? 1 : 0] || photo} alt={`${a.nomAffichage} - ${a.metierNom}`} fill style={{ objectFit: "cover" }} />
+            <Image src={aboutImg} alt={`${a.nomAffichage} - ${a.metierNom}`} fill style={{ objectFit: "cover" }} />
           </div>
         </div>
       </section>
