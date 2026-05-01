@@ -20,6 +20,7 @@ import MetierVillePageComponent, {
   villeNom,
   metierNom,
 } from "@/components/MetierVillePage";
+import { getAllPublishableZones } from "@/lib/zones";
 import { notFound } from "next/navigation";
 
 export const revalidate = 3600;
@@ -58,11 +59,23 @@ export function generateStaticParams() {
     ).forEach((a) => p.push({ ville: v.slug, slug: a.slug }));
   }
 
-  // Metier pages: 5 villes x 28 metiers = 140 pages
+  // Metier pages: 5 villes principales x 28 metiers = 140 pages
   const villeSlugs = ["chambery", "annecy", "grenoble", "lyon", "valence"];
   for (const ville of villeSlugs) {
     for (const metier of METIER_SLUGS) {
       p.push({ ville, slug: metier });
+    }
+  }
+
+  // SEO zones (sprint en cours) x 8 metiers prioritaires.
+  // Tier 1 = Lyon arrondissements + grosses banlieues + Aix-les-Bains, etc.
+  const ZONE_METIERS = [
+    "plombier", "electricien", "peintre", "macon",
+    "carreleur", "menuisier", "couvreur", "chauffagiste",
+  ];
+  for (const z of getAllPublishableZones()) {
+    for (const m of ZONE_METIERS) {
+      p.push({ ville: z.slug, slug: m });
     }
   }
 

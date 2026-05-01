@@ -10,18 +10,25 @@ import { VILLES } from "@/lib/constants";
 import VilleClient from "./VilleClient";
 import UrgenceFab from "@/components/UrgenceFab";
 import VilleSeoSection from "@/components/VilleSeoSection";
+import ZoneHubContent from "@/components/ZoneHubContent";
 import { safeJsonLd, sanitizeAdminHtml } from "@/lib/html-escape";
 import { prisma } from "@/lib/prisma";
 import MetierVilleListing from "./MetierVilleListing";
+import { getAllPublishableZones, findPublishableZone } from "@/lib/zones";
 
 export const revalidate = 3600;
 
 // SEO: lister TOUS les slugs valides + interdire les autres → vrai HTTP 404
-// Inclut villes principales + metier-ville composites depuis DB (artisans Business).
+// Inclut villes principales + zones publiables (sprint en cours) + metier-ville composites DB.
 export const dynamicParams = false; // CRITICAL: tout slug non listé = HTTP 404 propre
 
 export async function generateStaticParams() {
   const params: { ville: string }[] = VILLES.map((v) => ({ ville: v.slug }));
+  // Zones publiables (tier <= CURRENT_PUBLISH_TIER) : Lyon arrondissements,
+  // grosses banlieues (Villeurbanne, Vénissieux, Bron…), Aix-les-Bains, etc.
+  for (const z of getAllPublishableZones()) {
+    params.push({ ville: z.slug });
+  }
   try {
     const composites = await prisma.artisan.findMany({
       where: { actif: true, deletedAt: null, metierSlugSeo: { not: null }, villeSlug: { not: null } },
@@ -47,8 +54,24 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
     notFound();
   }
 
-  // Check if this is a metier-ville composite slug
+  // Check if this is a known city or a published SEO zone
   const knownVille = VILLES.find((v) => v.slug === villeSlug);
+  const zone = !knownVille ? findPublishableZone(villeSlug) : undefined;
+  if (zone) {
+    const title = `Artisans du bâtiment à ${zone.name} (${zone.cp}) — Devis gratuit`;
+    const description = `Trouvez un artisan qualifié à ${zone.name}, ${zone.departement}. Plombier, électricien, peintre, maçon. ${zone.pop.toLocaleString("fr-FR")} habitants. Devis gratuit, zéro commission.`;
+    return {
+      title,
+      description,
+      alternates: { canonical: `https://www.bativio.fr/${zone.slug}` },
+      openGraph: {
+        title,
+        description,
+        url: `https://www.bativio.fr/${zone.slug}`,
+        images: [{ url: "https://www.bativio.fr/og-image.png", width: 1200, height: 630 }],
+      },
+    };
+  }
   if (!knownVille) {
     // Try metier-ville lookup
     const match = await prisma.artisan.findFirst({
@@ -119,6 +142,16 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
   // Force lowercase URL — redirect 308 vers slug normalisé
   if (villeSlug !== villeSlug.toLowerCase()) {
     notFound(); // Next.js redirige automatiquement via not-found.tsx
+  }
+
+  // Zone SEO publiée (Lyon arrondissements, Villeurbanne, Aix-les-Bains, etc.)
+  // Dispatch direct vers ZoneHubContent — pas besoin de fetch artisan/ville DB.
+  const knownVilleEarly = VILLES.find((v) => v.slug === villeSlug);
+  if (!knownVilleEarly) {
+    const z = findPublishableZone(villeSlug);
+    if (z) {
+      return <ZoneHubContent zone={z} />;
+    }
   }
 
   // Essayer le backend, fallback mock

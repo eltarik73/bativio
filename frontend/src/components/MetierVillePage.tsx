@@ -1,6 +1,7 @@
 import Link from "next/link";
 import ArtisanCard from "@/components/ArtisanCard";
 import { VILLES, METIERS } from "@/lib/constants";
+import { findPublishableZone } from "@/lib/zones";
 import type { ArtisanPublic } from "@/lib/api";
 import { safeJsonLd } from "@/lib/html-escape";
 
@@ -14,7 +15,11 @@ function capitalize(s: string): string {
 
 export function villeNom(slug: string): string {
   const v = VILLES.find((v) => v.slug === slug);
-  return v?.nom ?? capitalize(slug);
+  if (v) return v.nom;
+  // Fallback : zones SEO (Aix-les-Bains, Villeurbanne, Lyon 3e, etc.)
+  const z = findPublishableZone(slug);
+  if (z) return z.name;
+  return capitalize(slug);
 }
 
 export function metierNom(slug: string): string {

@@ -4,6 +4,7 @@ import { MOCK_ARTISANS } from "@/lib/mock-data";
 import { TRAVAUX } from "@/lib/travaux-data";
 import { prisma } from "@/lib/prisma";
 import { getEffectivePlan } from "@/lib/plan-gates";
+import { getAllPublishableZones } from "@/lib/zones";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.bativio.fr";
 const API_URL = `${SITE_URL}/api/v1`;
@@ -132,9 +133,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   );
 
+  // SEO zones (sprint en cours) — Lyon arrondissements + grosses banlieues + agglo
+  // Tier 1 (~25 zones) : Lyon 1er-9e, Villeurbanne, Vénissieux, Bron, Caluire,
+  // Saint-Priest, Vaulx-en-Velin, Annecy-le-Vieux, Cran-Gevrier, Seynod, etc.
+  const zones = getAllPublishableZones();
+  const zoneHubPages: MetadataRoute.Sitemap = zones.map((z) => ({
+    url: `${baseUrl}/${z.slug}`,
+    lastModified: VILLES_LAST_UPDATE,
+    changeFrequency: "weekly" as const,
+    priority: z.tier === 1 ? 0.75 : 0.65,
+  }));
+
+  const zoneMetierPages: MetadataRoute.Sitemap = zones.flatMap((z) =>
+    METIERS_SLUGS.map((metier) => ({
+      url: `${baseUrl}/${z.slug}/${metier}`,
+      lastModified: VILLES_LAST_UPDATE,
+      changeFrequency: "weekly" as const,
+      priority: z.tier === 1 ? 0.7 : 0.6,
+    }))
+  );
+
   // --- Business vitrine pages (metier-ville composite URLs) ---
-  let businessCategoryPages: MetadataRoute.Sitemap = [];
-  let businessVitrinePages: MetadataRoute.Sitemap = [];
+  const businessCategoryPages: MetadataRoute.Sitemap = [];
+  const businessVitrinePages: MetadataRoute.Sitemap = [];
   try {
     const businessArtisans = await prisma.artisan.findMany({
       where: { actif: true, visible: true, deletedAt: null, metierSlugSeo: { not: null }, villeSlug: { not: null } },
@@ -169,5 +190,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Prisma may fail during build — skip silently
   }
 
-  return [...staticPages, ...prixMetierPages, ...villePages, ...villeMetierPages, ...artisanPages, ...travauxPages, ...businessCategoryPages, ...businessVitrinePages];
+  return [
+    ...staticPages,
+    ...prixMetierPages,
+    ...villePages,
+    ...villeMetierPages,
+    ...zoneHubPages,
+    ...zoneMetierPages,
+    ...artisanPages,
+    ...travauxPages,
+    ...businessCategoryPages,
+    ...businessVitrinePages,
+  ];
 }
