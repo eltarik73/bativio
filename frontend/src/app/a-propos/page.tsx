@@ -73,7 +73,7 @@ export default function AProposPage() {
           <div style={{ background: "#fff", border: "1px solid #EDEBE7", borderRadius: 14, padding: 24, display: "flex", gap: 20, alignItems: "flex-start", flexWrap: "wrap", marginBottom: 32 }}>
             <div style={{ width: 96, height: 96, borderRadius: "50%", background: "linear-gradient(135deg,#C4531A,#C9943A)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Fraunces',serif", fontSize: 32, fontWeight: 700, flexShrink: 0 }}>TB</div>
             <div style={{ flex: 1, minWidth: 200 }}>
-              <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 20, color: "var(--bois)", marginBottom: 4, fontWeight: 600 }}>Tarik Bouzeggou</h3>
+              <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 20, color: "var(--bois)", marginBottom: 4, fontWeight: 600 }}>Tarik Boudefar</h3>
               <p style={{ fontSize: 14, color: "var(--terre)", marginBottom: 10, fontWeight: 600 }}>Fondateur &amp; CEO</p>
               <p style={{ fontSize: 14, color: "var(--bois-mid)", lineHeight: 1.6, marginBottom: 12 }}>
                 Entrepreneur tech bas&eacute; &agrave; Chamb&eacute;ry. Apr&egrave;s plusieurs SaaS B2B, Tarik fonde Bativio en 2025 pour casser l&apos;opacit&eacute; du march&eacute; des travaux en Rh&ocirc;ne-Alpes. Sa conviction&nbsp;: l&apos;artisan local m&eacute;rite mieux que les leads payants &agrave; 50&euro;.
@@ -127,7 +127,7 @@ export default function AProposPage() {
               foundingDate: "2025",
               founder: {
                 "@type": "Person",
-                name: "Tarik Bouzeggou",
+                name: "Tarik Boudefar",
                 jobTitle: "Fondateur & CEO",
                 email: "contact@bativio.fr",
               },

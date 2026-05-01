@@ -131,6 +131,30 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
     keywords: [g.title.toLowerCase(), "Rhône-Alpes", "artisan bâtiment", "guide 2026"].join(", "),
   };
 
+  // HowTo schema — quand le guide est une démarche numérotée. Permet
+  // d'apparaître dans les "rich results" Google avec étapes visibles
+  // ("Comment faire X — étape 1, 2, 3 …") et favorise massivement les
+  // citations dans AI Overviews / ChatGPT Search / Perplexity.
+  const isHowTo = g.sections.length >= 3 && /^\d+\.\s/.test(g.sections[0].h);
+  const howToLd = isHowTo
+    ? {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        name: g.title,
+        description: g.description,
+        image: "https://www.bativio.fr/og-image.png",
+        inLanguage: "fr-FR",
+        totalTime: `PT${g.sections.length * 5}M`, // estimation 5 min / step
+        step: g.sections.map((s, i) => ({
+          "@type": "HowToStep",
+          position: i + 1,
+          name: s.h.replace(/^\d+\.\s*/, ""),
+          text: s.p,
+          url: `https://www.bativio.fr/guides/${slug}#step-${i + 1}`,
+        })),
+      }
+    : null;
+
   return (
     <>
       <Navbar />
@@ -206,6 +230,9 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
       <Footer />
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(articleLd) }} />
+      {howToLd && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(howToLd) }} />
+      )}
     </>
   );
 }
