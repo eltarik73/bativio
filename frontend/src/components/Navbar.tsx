@@ -61,7 +61,12 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleMouseDown);
   }, []);
 
-  // Close on route change
+  // Close on route change. Next 16's eslint warns about setState-in-effect
+  // because effects ideally sync external state — but here we're explicitly
+  // resetting transient UI state when the URL changes, which is the textbook
+  // use case. Using a `key` reset would re-mount the whole nav (lose focus,
+  // measure, animations), worse UX. Annotating instead.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     setDropdownOpen(false);
     setMobileMenuOpen(false);

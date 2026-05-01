@@ -89,9 +89,9 @@ export default async function MetierVilleListing({ metierSlug, villeSlug, metier
         <section style={{ background: "#3D2E1F", padding: "48px 32px 40px", position: "relative", overflow: "hidden" }}>
           <div style={{ maxWidth: 680, margin: "0 auto", textAlign: "center", position: "relative", zIndex: 1 }}>
             <nav style={{ fontSize: 13, color: "rgba(255,255,255,.4)", marginBottom: 16 }}>
-              <a href="/" style={{ color: "rgba(255,255,255,.4)", textDecoration: "none" }}>Accueil</a>
+              <Link href="/" style={{ color: "rgba(255,255,255,.4)", textDecoration: "none" }}>Accueil</Link>
               <span style={{ margin: "0 6px" }}>/</span>
-              <a href={`/${villeSlug}`} style={{ color: "rgba(255,255,255,.4)", textDecoration: "none" }}>{villeDisplay}</a>
+              <Link href={`/${villeSlug}`} style={{ color: "rgba(255,255,255,.4)", textDecoration: "none" }}>{villeDisplay}</Link>
               <span style={{ margin: "0 6px" }}>/</span>
               <span style={{ color: "rgba(255,255,255,.7)" }}>{metierDisplay}</span>
             </nav>

@@ -42,9 +42,21 @@ export function useAuth() {
   return useContext(AuthContext);
 }
 
+// Lazy initial state: read the session cookie synchronously on mount so
+// anonymous visitors render immediately with `loading=false` and we skip
+// the /auth/me round-trip + Prisma query for them. This also satisfies
+// react-hooks/set-state-in-effect (Next 16) by avoiding a setState call
+// inside the effect body when there's no cookie.
+function readHasSessionCookie(): boolean {
+  if (typeof document === "undefined") return false;
+  return document.cookie.includes("bativio-session=");
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Only "loading" while we actually plan to fetch /auth/me — i.e. only
+  // when a session cookie is present.
+  const [loading, setLoading] = useState<boolean>(() => readHasSessionCookie());
 
   // Fetch current user from session cookie
   const fetchMe = useCallback(async (): Promise<User | null> => {
@@ -58,17 +70,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Init on mount — skip /auth/me si visiteur anonyme (pas de cookie)
-  // Évite -1 requête réseau + -1 query Prisma par visiteur public
+  // Init on mount — only fetch when we actually have a session cookie.
   useEffect(() => {
+    if (!loading) return; // anonymous visitor, nothing to do
     let cancelled = false;
-    const hasSessionCookie = typeof document !== "undefined" &&
-      document.cookie.includes("bativio-session=");
-    if (!hasSessionCookie) {
-      setUser(null);
-      setLoading(false);
-      return;
-    }
     fetchMe().then((u) => {
       if (!cancelled) {
         setUser(u);
@@ -76,6 +81,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
     return () => { cancelled = true; };
+    // `loading` is read once at mount (it's the lazy-init value); ignoring
+    // it from deps is intentional — re-running on every loading flip would
+    // re-trigger /auth/me after a logout.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchMe]);
 
   // Login

@@ -318,8 +318,8 @@ export default function InscriptionPage() {
                     </div>
                     <p style={{ fontSize: 14, color: "var(--bois-mid,#5C4A3A)", lineHeight: 1.5, marginBottom: 14 }}>{doublonInfo.message}</p>
                     <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                      <a href="/connexion" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 22px", background: "var(--terre,#C4531A)", color: "#fff", borderRadius: 99, fontSize: 14, fontWeight: 600, textDecoration: "none" }}>Se connecter &agrave; mon espace</a>
-                      <a href="/mot-de-passe-oublie" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 22px", border: "1px solid var(--sable,#E8D5C0)", color: "var(--terre,#C4531A)", borderRadius: 99, fontSize: 13, fontWeight: 500, textDecoration: "none" }}>Mot de passe oubli&eacute; ?</a>
+                      <Link href="/connexion" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 22px", background: "var(--terre,#C4531A)", color: "#fff", borderRadius: 99, fontSize: 14, fontWeight: 600, textDecoration: "none" }}>Se connecter &agrave; mon espace</Link>
+                      <Link href="/mot-de-passe-oublie" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "10px 22px", border: "1px solid var(--sable,#E8D5C0)", color: "var(--terre,#C4531A)", borderRadius: 99, fontSize: 13, fontWeight: 500, textDecoration: "none" }}>Mot de passe oubli&eacute; ?</Link>
                     </div>
                     <p style={{ fontSize: 12, color: "var(--pierre,#9C958D)", marginTop: 10 }}>Ce n&apos;est pas vous ? Contactez-nous : contact@bativio.fr</p>
                   </div>
