@@ -133,6 +133,9 @@ const FAQ = [
 ];
 
 function JsonLd() {
+  // Organization + WebSite are already emitted by the root layout — emitting
+  // them again here creates duplicate entities in Google's structured data
+  // report. We only need the page-specific FAQPage schema here.
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -146,33 +149,11 @@ function JsonLd() {
     })),
   };
 
-  const orgSchema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "Bativio",
-    url: "https://www.bativio.fr",
-    logo: "https://www.bativio.fr/og-image.png",
-    description:
-      "Plateforme de visibilité et de gestion pour artisans du bâtiment en Rhône-Alpes. Annuaire, vitrines, facturation électronique.",
-    sameAs: [],
-    contactPoint: {
-      "@type": "ContactPoint",
-      contactType: "customer service",
-      availableLanguage: "French",
-    },
-  };
-
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: safeJsonLd(faqSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: safeJsonLd(orgSchema) }}
-      />
-    </>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: safeJsonLd(faqSchema) }}
+    />
   );
 }
 

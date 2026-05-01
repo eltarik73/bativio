@@ -9,6 +9,7 @@ import type { ArtisanPublic, MetierData } from "@/lib/api";
 import { VILLES } from "@/lib/constants";
 import VilleClient from "./VilleClient";
 import UrgenceFab from "@/components/UrgenceFab";
+import VilleSeoSection from "@/components/VilleSeoSection";
 import { safeJsonLd, sanitizeAdminHtml } from "@/lib/html-escape";
 import { prisma } from "@/lib/prisma";
 import MetierVilleListing from "./MetierVilleListing";
@@ -89,8 +90,14 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
     const mock = MOCK_VILLES.find((v) => v.slug === villeSlug);
     nom = mock?.nom || villeSlug;
   }
-  // Layout template adds "| Bativio" → strip any pre-existing "| Bativio" / "— Bativio" to avoid duplication
-  const rawTitle = seoTitle || `Artisans du bâtiment à ${nom}`;
+  // Prefer the in-code title (always with accents) over a possibly stripped
+  // seoTitle from the DB, unless the seoTitle clearly contains diacritics.
+  // Some legacy ville rows have "Artisans du batiment a Chambery" without
+  // accents — we don't want those bubbling up to Google's SERP.
+  const seoTitleHasAccents = /[àâéèêëîïôûùçÀÂÉÈÊÎÏÔÛÙÇ]/.test(seoTitle || "");
+  const codedTitle = `Artisans du bâtiment à ${nom}`;
+  const rawTitle = seoTitleHasAccents ? seoTitle : codedTitle;
+  // Layout template adds "| Bativio" → strip any pre-existing "| Bativio" / "— Bativio"
   const title = rawTitle.replace(/\s*[|—\-–]\s*Bativio\s*$/i, "").trim();
   const description = seoDesc || `Trouvez les meilleurs artisans du bâtiment à ${nom}. Plombier, électricien, peintre, maçon. Devis gratuit, zéro commission.`;
   return {
@@ -202,7 +209,7 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
         {/* Filters + Grid (client) */}
         <VilleClient artisans={artisans} villeSlug={villeSlug} metiers={metiers} villeNom={ville?.nom || villeSlug} />
 
-        {/* SEO content */}
+        {/* SEO content (admin-edited) */}
         {ville?.contenuSeo && (
           <section style={{ padding: "48px 24px", borderTop: "1px solid var(--sable,#E8D5C0)", background: "#fff" }}>
             <div
@@ -210,6 +217,16 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
               dangerouslySetInnerHTML={{ __html: sanitizeAdminHtml(ville.contenuSeo) }}
             />
           </section>
+        )}
+
+        {/* SEO: dense content for ranking — top metiers, tarifs, FAQ, communes proches */}
+        {knownVille && (
+          <VilleSeoSection
+            villeNom={ville?.nom || knownVille.nom}
+            villeSlug={villeSlug}
+            departement={knownVille.departement}
+            artisansCount={artisans.length}
+          />
         )}
       </main>
       <Footer />
@@ -222,7 +239,7 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
           __html: safeJsonLd({
             "@context": "https://schema.org",
             "@type": "ItemList",
-            name: `Artisans du batiment a ${ville?.nom || villeSlug}`,
+            name: `Artisans du bâtiment à ${ville?.nom || villeSlug}`,
             itemListElement: artisans.map((a, i) => ({
               "@type": "ListItem",
               position: i + 1,
@@ -249,6 +266,60 @@ export default async function VillePage({ params }: { params: Promise<{ ville: s
           }),
         }}
       />
+      {/* JSON-LD FAQPage — must match the visible <details> in VilleSeoSection */}
+      {knownVille && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: safeJsonLd({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: [
+                {
+                  "@type": "Question",
+                  name: `Comment trouver un bon artisan à ${ville?.nom || villeSlug} ?`,
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: `Sur Bativio, chaque artisan référencé à ${ville?.nom || villeSlug} est vérifié : SIRET actif, assurance décennale en cours, attestation URSSAF. Vous pouvez comparer les profils, lire les avis clients réels, et demander jusqu'à 3 devis gratuits en 24h pour comparer prix et délais.`,
+                  },
+                },
+                {
+                  "@type": "Question",
+                  name: "Combien coûte un devis sur Bativio ?",
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: `Le devis est totalement gratuit et sans engagement, peu importe l'artisan choisi à ${ville?.nom || villeSlug}. Bativio ne prend aucune commission sur vos travaux : vous payez l'artisan directement, au prix annoncé sur son devis.`,
+                  },
+                },
+                {
+                  "@type": "Question",
+                  name: "Combien de temps pour recevoir mes devis ?",
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: `Les artisans de ${ville?.nom || villeSlug} reçoivent votre demande par email et SMS et répondent généralement sous 24 heures ouvrées. Pour les urgences (fuite d'eau, panne électrique, serrurerie), des artisans d'astreinte 24/7 sont disponibles via la rubrique Urgence 24/7.`,
+                  },
+                },
+                {
+                  "@type": "Question",
+                  name: "Les artisans Bativio facturent-ils en facture électronique ?",
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: `Oui. Tous les artisans Bativio à ${ville?.nom || villeSlug} sont raccordés à une plateforme agréée (PA) conforme à la réforme de facturation électronique 2026. Vos factures sont conformes BOI-TVA, archivées 10 ans et signées cryptographiquement.`,
+                  },
+                },
+                {
+                  "@type": "Question",
+                  name: `MaPrimeRénov' et aides : comment ça fonctionne à ${ville?.nom || villeSlug} ?`,
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: `Les artisans RGE référencés sur Bativio à ${ville?.nom || villeSlug} vous accompagnent pour les dossiers MaPrimeRénov' et CEE. Vous pouvez filtrer par label RGE et obtenir un devis intégrant les aides déductibles.`,
+                  },
+                },
+              ],
+            }),
+          }}
+        />
+      )}
     </>
   );
 }
