@@ -45,9 +45,17 @@ jobs:
       - name: Build (also runs `next build` typecheck)
         env:
           # Build only — no real services hit. Dummy secrets keep the
-          # fail-fast guards in middleware.ts / auth-server.ts happy.
+          # fail-fast guards (middleware.ts / auth-server.ts) and the
+          # third-party SDKs instantiated at module top-level happy
+          # (Resend, Stripe). Real values are set in Vercel.
           DATABASE_URL: postgresql://ci:ci@localhost:5432/ci?schema=public
           JWT_SECRET: ci-only-jwt-secret-not-used-at-runtime
           NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ci
           NEXT_PUBLIC_SITE_URL: https://example.invalid
+          RESEND_API_KEY: re_ci_dummy_not_used
+          STRIPE_SECRET_KEY: sk_test_ci_dummy_not_used
+          STRIPE_WEBHOOK_SECRET: whsec_ci_dummy_not_used
+          ANTHROPIC_API_KEY: sk-ant-ci-dummy-not-used
+          BREVO_API_KEY: ci-dummy-not-used
+          CRON_SECRET: ci-dummy-not-used
         run: npm run build
