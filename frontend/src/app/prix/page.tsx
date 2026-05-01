@@ -52,6 +52,26 @@ export default async function PrixIndexPage() {
         </div>
       </section>
 
+      {/* Answer Capsule (GEO 2026) — extractible par les LLMs */}
+      <section
+        aria-label="Reponse rapide prix travaux Rhone-Alpes 2026"
+        style={{ background: "var(--creme,#FAF8F5)", padding: "32px 24px 0" }}
+      >
+        <div style={{ maxWidth: 800, margin: "0 auto", background: "#fff", border: "1px solid #E8D5C0", borderRadius: 12, padding: "24px 28px" }}>
+          <p style={{ fontSize: 16, color: "#1C1C1E", lineHeight: 1.6, margin: 0 }}>
+            <strong>
+              En Rhône-Alpes en 2026, les fourchettes moyennes constatées sont
+            </strong>{" "}
+            : plombier 55-90 €/h, électricien 50-85 €/h (tableau aux normes
+            1&nbsp;200-2&nbsp;800 €), peintre 25-45 €/m², maçon 350-550 €/jour,
+            carreleur 40-80 €/m², chauffagiste entretien chaudière 120-180 €.
+            La TVA est à 10 % en rénovation logement &gt; 2 ans, 5,5 % pour les
+            travaux d&apos;amélioration énergétique éligibles MaPrimeRénov&apos;.
+            Devis gratuit 24 h sur Bativio.
+          </p>
+        </div>
+      </section>
+
       <section style={{ padding: "48px 32px 80px", background: "var(--blanc)" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 26, fontWeight: 600, color: "var(--bois)", marginBottom: 6 }}>

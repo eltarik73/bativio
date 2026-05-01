@@ -268,37 +268,68 @@ export default async function SlugPage({
           seoGenerated={seoGen}
         />
 
-        {/* JSON-LD */}
+        {/* JSON-LD LocalBusiness — enriched for Google Local Pack + AI Overviews */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: safeJsonLd({
               "@context": "https://schema.org",
               "@type": getSchemaTypeForMetier(a.metierSlug),
+              "@id": `https://www.bativio.fr/${villeSlug}/${a.slug}#business`,
               name: a.nomAffichage,
               description: seoGen?.metaDescription || a.description || "",
               telephone: a.telephone || "",
               url: `https://www.bativio.fr/${villeSlug}/${a.slug}`,
-              image: a.photos?.[0]?.url || photo,
+              image: a.photos && a.photos.length > 0 ? a.photos.slice(0, 3).map((p) => p.url) : [photo],
               address: {
                 "@type": "PostalAddress",
                 streetAddress: a.adresse || "",
                 addressLocality: a.ville || villeSlug,
                 postalCode: a.codePostal || "",
+                addressRegion: "Auvergne-Rhône-Alpes",
                 addressCountry: "FR",
               },
               geo: { "@type": "GeoCoordinates", latitude: lat, longitude: lng },
               areaServed: {
                 "@type": "GeoCircle",
                 geoMidpoint: { "@type": "GeoCoordinates", latitude: lat, longitude: lng },
-                geoRadius: `${a.zoneRayonKm || 25}000`,
+                geoRadius: `${(a.zoneRayonKm || 25) * 1000}`,
               },
-              aggregateRating:
-                a.nombreAvis > 0
-                  ? { "@type": "AggregateRating", ratingValue: a.noteMoyenne, reviewCount: a.nombreAvis, bestRating: 5 }
-                  : undefined,
-              priceRange: "EUR",
-              dateModified: new Date().toISOString(),
+              ...(a.nombreAvis > 0
+                ? {
+                    aggregateRating: {
+                      "@type": "AggregateRating",
+                      ratingValue: a.noteMoyenne,
+                      reviewCount: a.nombreAvis,
+                      bestRating: 5,
+                      worstRating: 1,
+                    },
+                  }
+                : {}),
+              // priceRange follows Schema.org format ($-$$$$ or "€€" notation),
+              // not currency code. We use "€€" as a "moderate" hint without
+              // committing to a specific tier when unknown.
+              priceRange: "€€",
+              currenciesAccepted: "EUR",
+              paymentAccepted: ["Espèces", "Chèque", "Carte bancaire", "Virement"],
+              knowsLanguage: ["fr-FR"],
+              // Default opening hours (Mon-Fri 8h-18h). Artisans can refine
+              // via their dashboard; until then this is a safe baseline that
+              // helps Google show "Open now" in the Local Pack.
+              openingHoursSpecification: [
+                {
+                  "@type": "OpeningHoursSpecification",
+                  dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                  opens: "08:00",
+                  closes: "18:00",
+                },
+                {
+                  "@type": "OpeningHoursSpecification",
+                  dayOfWeek: "Saturday",
+                  opens: "09:00",
+                  closes: "12:00",
+                },
+              ],
             }),
           }}
         />

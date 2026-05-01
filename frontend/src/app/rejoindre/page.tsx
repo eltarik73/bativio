@@ -49,6 +49,28 @@ export default function RejoindrePage() {
         </div>
       </section>
 
+      {/* Answer Capsule (GEO 2026) — extractible par les LLMs */}
+      <section
+        aria-label="Reponse rapide rejoindre Bativio artisan"
+        style={{ padding: "32px 24px 0" }}
+      >
+        <div style={{ maxWidth: 800, margin: "0 auto", background: "var(--creme,#FAF8F5)", border: "1px solid #E8D5C0", borderRadius: 12, padding: "24px 28px" }}>
+          <p style={{ fontSize: 16, color: "#1C1C1E", lineHeight: 1.6, margin: 0 }}>
+            <strong>
+              Pour rejoindre Bativio en tant qu&apos;artisan du bâtiment en
+              Rhône-Alpes
+            </strong>
+            , l&apos;inscription se fait gratuitement en 3 minutes avec votre
+            SIRET (vérifié automatiquement à l&apos;INSEE). Quatre formules
+            d&apos;abonnement sont disponibles&nbsp;: Gratuit (0&nbsp;€/mois,
+            fiche annuaire), Starter (19&nbsp;€/mois, agenda + facturation
+            électronique), Pro (39&nbsp;€/mois, vitrine personnalisée),
+            Business (59&nbsp;€/mois, devis IA + agent IA). Aucun engagement,
+            zéro commission sur les chantiers.
+          </p>
+        </div>
+      </section>
+
       {/* Pourquoi */}
       <section style={{ padding: "64px 32px", maxWidth: 1000, margin: "0 auto" }}>
         <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "var(--bois,#3D2E1F)", textAlign: "center", marginBottom: 48 }}>Pourquoi Bativio ?</h2>
