@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { requireAuth } from "@/lib/auth-server";
@@ -53,7 +54,7 @@ export async function POST(request: NextRequest) {
     await prisma.artisan.update({
       where: { id: artisan.id },
       data: {
-        scoringData: answers as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+        scoringData: answers as Prisma.InputJsonValue,
         scoringScore: scoringResult.score,
         scoringPercent: scoringResult.percent,
         scoringDate: new Date(),

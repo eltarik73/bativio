@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { hashPassword, setAuthCookie } from "@/lib/auth-server";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { isNafBtp } from "@/lib/naf-btp";
+import { consumeRateLimit } from "@/lib/rate-limit";
 
 // Regex anti-injection : pas de <, >, &#, javascript:, data:, etc.
 const SAFE_TEXT = /^[^<>]*$/;
@@ -30,8 +31,6 @@ function stripHtml(str: string): string {
   return str.replace(/<[^>]*>/g, "").trim();
 }
 
-const registerAttempts = new Map<string, { count: number; resetAt: number }>();
-
 function generateSlug(nom: string): string {
   return nom
     .normalize("NFD")
@@ -44,12 +43,10 @@ function generateSlug(nom: string): string {
 
 export async function POST(request: NextRequest) {
   try {
-    // Rate limiting per IP — 10 inscriptions / heure
-    // (couvre coworkings, cabinets multi-artisans, NAT partagé)
+    // Rate limiting per IP — 10 inscriptions / heure (DB-backed, multi-region safe)
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-    const now = Date.now();
-    const ipEntry = registerAttempts.get(ip);
-    if (ipEntry && now < ipEntry.resetAt && ipEntry.count >= 10) {
+    const rl = await consumeRateLimit(`register:${ip}`, 10, 60 * 60 * 1000);
+    if (!rl.allowed) {
       return apiError("Trop de tentatives d'inscription. Réessayez plus tard.", 429);
     }
 
@@ -200,14 +197,6 @@ export async function POST(request: NextRequest) {
 
       return { user, artisan };
     });
-
-    // Track registration attempt for rate limiting
-    const currentIpEntry = registerAttempts.get(ip);
-    if (!currentIpEntry || now >= currentIpEntry.resetAt) {
-      registerAttempts.set(ip, { count: 1, resetAt: now + 60 * 60 * 1000 });
-    } else {
-      currentIpEntry.count++;
-    }
 
     // Set auth cookie
     await setAuthCookie(result.user.id, result.user.role);
