@@ -43,6 +43,39 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
         disallow: ["/dashboard/", "/admin/", "/api/", "/d/", "/devis/"],
       },
+      // Common Crawl — base d'entrainement de la plupart des LLM open source
+      // (Mistral, Llama, etc.) + utilisé par certains pipelines de Perplexity.
+      // Indispensable pour la diffusion dans les réponses IA en 2026.
+      {
+        userAgent: ["CCBot"],
+        allow: "/",
+        disallow: ["/dashboard/", "/admin/", "/api/", "/d/", "/devis/"],
+      },
+      // Meta AI (Llama / Meta AI search)
+      {
+        userAgent: ["Meta-ExternalAgent", "FacebookBot", "facebookexternalhit"],
+        allow: "/",
+        disallow: ["/dashboard/", "/admin/", "/api/", "/d/", "/devis/"],
+      },
+      // Bytespider (TikTok / Doubao) — gros bot IA chinois, audience montante
+      {
+        userAgent: ["Bytespider"],
+        allow: "/",
+        disallow: ["/dashboard/", "/admin/", "/api/", "/d/", "/devis/"],
+      },
+      // DiffBot — crawler utilisé par certains agrégateurs IA dont des
+      // intégrations Grok / Bloomberg.
+      {
+        userAgent: ["Diffbot"],
+        allow: "/",
+        disallow: ["/dashboard/", "/admin/", "/api/", "/d/", "/devis/"],
+      },
+      // You.com / Phind / Cohere / Mistral crawler officiels
+      {
+        userAgent: ["YouBot", "PhindBot", "cohere-ai", "Mistralai-User"],
+        allow: "/",
+        disallow: ["/dashboard/", "/admin/", "/api/", "/d/", "/devis/"],
+      },
       // Bots scraping agressifs / non-utiles SEO — bloqués
       {
         userAgent: ["AhrefsBot", "SemrushBot", "MJ12bot", "DotBot", "PetalBot"],

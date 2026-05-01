@@ -26,16 +26,15 @@ export default function MentionsLegalesPage() {
         <p style={{ fontSize: 13, color: "#9C958D", marginBottom: 32 }}>Dernière mise à jour&nbsp;: 21 avril 2026</p>
 
         <Section title="1. Éditeur du site" id="editeur">
-          <p style={{ marginBottom: 8 }}><strong>Raison sociale&nbsp;:</strong> BATIVIO SAS</p>
+          <p style={{ marginBottom: 8 }}><strong>Raison sociale&nbsp;:</strong> KLIKPHONE SAS (exploite la marque « Bativio »)</p>
           <p style={{ marginBottom: 8 }}><strong>Forme juridique&nbsp;:</strong> Société par actions simplifiée</p>
-          <p style={{ marginBottom: 8 }}><strong>Capital social&nbsp;:</strong> 5&nbsp;000 €</p>
-          <p style={{ marginBottom: 8 }}><strong>Siège social&nbsp;:</strong> 1 place de la Gare, 73000 Chambéry, France</p>
-          <p style={{ marginBottom: 8 }}><strong>SIRET&nbsp;:</strong> 932 458 712 00018</p>
-          <p style={{ marginBottom: 8 }}><strong>RCS&nbsp;:</strong> Chambéry B 932 458 712</p>
-          <p style={{ marginBottom: 8 }}><strong>N° TVA intracommunautaire&nbsp;:</strong> FR 47 932458712</p>
+          <p style={{ marginBottom: 8 }}><strong>Siège social&nbsp;:</strong> 79 place Saint-Léger, 73000 Chambéry, France</p>
+          <p style={{ marginBottom: 8 }}><strong>SIRET (siège)&nbsp;:</strong> 813 961 141 00013</p>
+          <p style={{ marginBottom: 8 }}><strong>SIREN&nbsp;:</strong> 813 961 141</p>
+          <p style={{ marginBottom: 8 }}><strong>RCS&nbsp;:</strong> Chambéry 813 961 141</p>
           <p style={{ marginBottom: 8 }}><strong>Téléphone&nbsp;:</strong> <a href="tel:+33479000000" style={{ color: "#C4531A" }}>+33 (0)4 79 00 00 00</a></p>
           <p style={{ marginBottom: 8 }}><strong>Email&nbsp;:</strong> <a href="mailto:contact@bativio.fr" style={{ color: "#C4531A" }}>contact@bativio.fr</a></p>
-          <p><strong>Directeur de la publication&nbsp;:</strong> Tarik Bouzeggou</p>
+          <p><strong>Directeur de la publication&nbsp;:</strong> Tarik Boudefar</p>
         </Section>
 
         <Section title="2. Hébergement" id="hebergement">
@@ -47,7 +46,7 @@ export default function MentionsLegalesPage() {
         </Section>
 
         <Section title="3. Propriété intellectuelle" id="propriete">
-          <p>L&apos;ensemble des contenus présents sur le site bativio.fr (textes, images, logos, base de données, code source, design, charte graphique) sont la propriété exclusive de BATIVIO SAS ou font l&apos;objet d&apos;une autorisation d&apos;utilisation. Toute reproduction, représentation, modification, publication ou adaptation, totale ou partielle, est interdite sans l&apos;autorisation écrite préalable de BATIVIO SAS, sauf exceptions prévues par la loi (art. L. 122-5 du Code de la propriété intellectuelle).</p>
+          <p>L&apos;ensemble des contenus présents sur le site bativio.fr (textes, images, logos, base de données, code source, design, charte graphique) sont la propriété exclusive de KLIKPHONE SAS (exploite la marque « Bativio ») ou font l&apos;objet d&apos;une autorisation d&apos;utilisation. Toute reproduction, représentation, modification, publication ou adaptation, totale ou partielle, est interdite sans l&apos;autorisation écrite préalable de KLIKPHONE SAS (exploite la marque « Bativio »), sauf exceptions prévues par la loi (art. L. 122-5 du Code de la propriété intellectuelle).</p>
         </Section>
 
         <Section title="4. Données personnelles (RGPD)" id="confidentialite">
@@ -59,7 +58,7 @@ export default function MentionsLegalesPage() {
             <li>Droit de définir des directives post-mortem</li>
             <li>Droit d&apos;introduire une réclamation auprès de la CNIL</li>
           </ul>
-          <p style={{ marginBottom: 12 }}><strong>Délégué à la Protection des Données (DPO)&nbsp;:</strong> Tarik Bouzeggou — <a href="mailto:dpo@bativio.fr" style={{ color: "#C4531A" }}>dpo@bativio.fr</a></p>
+          <p style={{ marginBottom: 12 }}><strong>Délégué à la Protection des Données (DPO)&nbsp;:</strong> Tarik Boudefar — <a href="mailto:dpo@bativio.fr" style={{ color: "#C4531A" }}>dpo@bativio.fr</a></p>
           <p style={{ marginBottom: 12 }}><strong>Finalités du traitement&nbsp;:</strong> mise en relation client/artisan, génération de devis, facturation, support utilisateur, statistiques d&apos;usage anonymes.</p>
           <p style={{ marginBottom: 12 }}><strong>Durée de conservation&nbsp;:</strong> 3 ans après la dernière interaction client (prospect), 10 ans après facturation (obligation comptable art. L. 123-22 Code de commerce).</p>
           <p style={{ marginBottom: 12 }}><strong>Destinataires&nbsp;:</strong> équipe Bativio, artisans destinataires des demandes (uniquement coordonnées de contact), prestataires techniques (Vercel hébergement, Resend emails, Stripe paiements, Cloudinary stockage images) sous accord de traitement RGPD.</p>
@@ -76,7 +75,7 @@ export default function MentionsLegalesPage() {
         </Section>
 
         <Section title="6. Médiation de la consommation" id="mediation">
-          <p style={{ marginBottom: 12 }}>Conformément à l&apos;article L. 612-1 du Code de la consommation, en cas de litige avec BATIVIO SAS et après une tentative de résolution amiable, vous pouvez recourir gratuitement au médiateur de la consommation suivant&nbsp;:</p>
+          <p style={{ marginBottom: 12 }}>Conformément à l&apos;article L. 612-1 du Code de la consommation, en cas de litige avec KLIKPHONE SAS (exploite la marque « Bativio ») et après une tentative de résolution amiable, vous pouvez recourir gratuitement au médiateur de la consommation suivant&nbsp;:</p>
           <p style={{ marginBottom: 8 }}><strong>CNPM Médiation Consommation</strong></p>
           <p style={{ marginBottom: 8 }}>27 avenue de la Libération — 42400 Saint-Chamond</p>
           <p>Site web&nbsp;: <a href="https://www.cnpm-mediation-consommation.eu" target="_blank" rel="noopener noreferrer" style={{ color: "#C4531A" }}>cnpm-mediation-consommation.eu</a></p>

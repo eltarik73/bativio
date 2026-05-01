@@ -5,20 +5,43 @@ import CookieBanner from "@/components/CookieBanner";
 import { safeJsonLd } from "@/lib/html-escape";
 import "./globals.css";
 
+// Enriched Organization schema for E-E-A-T (Expertise, Authority, Trust).
+// Google uses founder + sameAs to build a knowledge panel — even an empty
+// sameAs is fine, what matters is that the author/founder is named.
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Bativio",
+  alternateName: ["Bativio.fr", "Bativio Annuaire Artisans"],
   url: "https://www.bativio.fr",
   logo: "https://www.bativio.fr/icons/icon-192.png",
-  description: "Plateforme d'annuaire et de SaaS pour artisans du bâtiment en Rhône-Alpes. Zéro commission.",
+  image: "https://www.bativio.fr/og-image.png",
+  description: "Annuaire et plateforme SaaS pour artisans du bâtiment en région Rhône-Alpes. Zéro commission, sans engagement, conforme facturation électronique 2026.",
   foundingDate: "2025",
+  founder: {
+    "@type": "Person",
+    name: "Tarik Boudefar",
+    jobTitle: "Fondateur",
+  },
+  knowsAbout: [
+    "Annuaire artisans du bâtiment",
+    "Facturation électronique 2026",
+    "MaPrimeRénov'",
+    "Devis travaux",
+    "Plombier",
+    "Électricien",
+    "Maçon",
+    "Couvreur",
+    "Peintre",
+    "Carreleur",
+  ],
   areaServed: [
-    { "@type": "City", name: "Chambéry" },
-    { "@type": "City", name: "Annecy" },
-    { "@type": "City", name: "Grenoble" },
-    { "@type": "City", name: "Lyon" },
-    { "@type": "City", name: "Valence" },
+    { "@type": "City", name: "Chambéry", "@id": "https://www.wikidata.org/wiki/Q6612" },
+    { "@type": "City", name: "Annecy", "@id": "https://www.wikidata.org/wiki/Q47554" },
+    { "@type": "City", name: "Grenoble", "@id": "https://www.wikidata.org/wiki/Q6604" },
+    { "@type": "City", name: "Lyon", "@id": "https://www.wikidata.org/wiki/Q456" },
+    { "@type": "City", name: "Valence", "@id": "https://www.wikidata.org/wiki/Q11999" },
+    { "@type": "AdministrativeArea", name: "Auvergne-Rhône-Alpes" },
   ],
   address: {
     "@type": "PostalAddress",
@@ -32,6 +55,7 @@ const organizationJsonLd = {
     contactType: "customer support",
     email: "contact@bativio.fr",
     availableLanguage: "French",
+    areaServed: "FR",
   },
 };
 

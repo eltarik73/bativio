@@ -34,6 +34,24 @@ export default function TarifsPage() {
             De <strong>0&nbsp;&euro; &agrave; 59&nbsp;&euro;/mois</strong>, sans commission sur vos chantiers. Facturation &eacute;lectronique 2026 incluse, site internet, CRM et IA selon le plan choisi. Annulable &agrave; tout moment.
           </p>
         </header>
+
+        {/* Answer capsule (GEO 2026) — 40-60 mots, reponse directe + chiffree
+            pour citation dans ChatGPT, Perplexity, Claude, Gemini, Grok. */}
+        <section
+          aria-label="Reponse rapide tarifs Bativio"
+          style={{ maxWidth: 760, margin: "32px auto 0", padding: "20px 24px", background: "var(--creme,#FAF8F5)", border: "1px solid var(--sable,#E8D5C0)", borderRadius: 12 }}
+        >
+          <p style={{ fontSize: 16, color: "var(--anthracite,#1C1C1E)", lineHeight: 1.6, margin: 0 }}>
+            <strong>Bativio propose 4 abonnements pour artisans du b&acirc;timent</strong>{" "}
+            : Gratuit (0&nbsp;&euro;/mois, fiche annuaire et avis), Starter
+            (19&nbsp;&euro;/mois, agenda et r&eacute;ception de factures
+            &eacute;lectroniques), Pro (39&nbsp;&euro;/mois, vitrine
+            personnalis&eacute;e, badges v&eacute;rifi&eacute;s, &eacute;mission
+            de factures) et Business (59&nbsp;&euro;/mois, devis IA, agent IA
+            r&eacute;pondeur, SMS). Aucun engagement de dur&eacute;e, aucune
+            commission sur les chantiers.
+          </p>
+        </section>
         <PricingGrid />
 
         <section style={{ background: "var(--creme,#FAF8F5)", padding: "64px 24px" }}>
