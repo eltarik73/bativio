@@ -137,6 +137,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" className={`${fraunces.variable} ${karla.variable} ${playfair.variable}`}>
+      <head>
+        {/*
+          Preconnect/DNS-prefetch pour ouvrir les sockets TLS aux origines
+          tierces critiques avant que le HTML ne les demande explicitement.
+          Gain mesurable sur le LCP (jusqu'à -300 ms sur 4G mobile).
+          - res.cloudinary.com : toutes les photos artisan
+          - api.bativio.fr : si plus tard une API séparée du Vercel host
+          - invoquo.vercel.app : iframe facturation électronique embarquée
+        */}
+        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+        <link rel="dns-prefetch" href="https://invoquo.vercel.app" />
+      </head>
       <body className="min-h-screen flex flex-col bg-creme text-anthracite font-body antialiased">
         <AuthProvider>{children}</AuthProvider>
         <CookieBanner />
