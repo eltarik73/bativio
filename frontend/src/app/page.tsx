@@ -99,7 +99,6 @@ export default function Home() {
     getMetiers()
       .then((m) => { if (m && m.length > 0) setAllMetiers(m); })
       .catch(() => {});
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filtered = allArtisans.filter((a) => {

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import type { Metadata } from "next";
+import { safeJsonLd } from "@/lib/html-escape";
 
 const METIERS_INFO: Record<string, { nom: string; pluriel: string; emoji: string; description: string; intro: string }> = {
   plombier: { nom: "Plombier", pluriel: "plombiers", emoji: "🔧", description: "Plomberie sanitaire, chauffe-eau, salle de bain", intro: "Les travaux de plomberie comprennent la pose, la réparation et l'entretien des installations sanitaires (robinets, WC, douches, canalisations) et la gestion du chauffe-eau." },
@@ -52,6 +53,65 @@ export default async function PrixMetierPage({ params }: PageProps) {
   }, {});
 
   const moyenne = Math.round(prestations.reduce((sum, p) => sum + p.prixHtMoyen, 0) / prestations.length);
+
+  // Schema PriceSpecification + Article : ces pages "prix métier" sont
+  // des contenus tarifaires que Google et les LLMs peuvent citer
+  // directement dans les AI Overviews/réponses ("combien coûte un X ?").
+  // On émet un Article pour l'autorité éditoriale + un ItemList des
+  // prestations avec OfferCatalog pour les prix structurés.
+  const articleLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: `Prix ${info.nom.toLowerCase()} 2026 — Tarifs ${info.pluriel} en Rhône-Alpes`,
+    description: `Découvrez les prix 2026 des ${prestations.length} prestations de ${info.nom.toLowerCase()} en Rhône-Alpes : ${info.description}. Fourchettes HT bas, moyen, haut.`,
+    image: "https://www.bativio.fr/og-image.png",
+    datePublished: "2026-04-01",
+    dateModified: "2026-05-01",
+    author: {
+      "@type": "Organization",
+      name: "Bativio",
+      url: "https://www.bativio.fr",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Bativio",
+      logo: { "@type": "ImageObject", url: "https://www.bativio.fr/icons/icon-192.png" },
+    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": `https://www.bativio.fr/prix/${metier}` },
+    inLanguage: "fr-FR",
+    keywords: [
+      `prix ${info.nom.toLowerCase()}`,
+      `tarif ${info.nom.toLowerCase()}`,
+      `${info.nom.toLowerCase()} Rhône-Alpes`,
+      "devis travaux 2026",
+    ].join(", "),
+  };
+
+  const offerCatalogLd = {
+    "@context": "https://schema.org",
+    "@type": "OfferCatalog",
+    name: `Prestations ${info.nom.toLowerCase()} Rhône-Alpes`,
+    numberOfItems: prestations.length,
+    itemListElement: prestations.slice(0, 30).map((p, i) => ({
+      "@type": "Offer",
+      position: i + 1,
+      name: p.designation,
+      description: `${p.designation} (${p.unite})`,
+      priceSpecification: {
+        "@type": "PriceSpecification",
+        priceCurrency: "EUR",
+        minPrice: p.prixHtBas,
+        maxPrice: p.prixHtHaut,
+        valueAddedTaxIncluded: false,
+      },
+      areaServed: { "@type": "AdministrativeArea", name: "Auvergne-Rhône-Alpes" },
+      seller: {
+        "@type": "Organization",
+        name: "Bativio",
+        url: "https://www.bativio.fr",
+      },
+    })),
+  };
 
   return (
     <>
@@ -146,6 +206,15 @@ export default async function PrixMetierPage({ params }: PageProps) {
       </section>
 
       <Footer />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(articleLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(offerCatalogLd) }}
+      />
     </>
   );
 }

@@ -121,6 +121,37 @@ export default async function TravauxPage({ params }: { params: Promise<{ slug: 
         "@context": "https://schema.org", "@type": "FAQPage",
         mainEntity: t.faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
       }) }} />
+
+      {/* Schema Service en plus du FAQPage : permet de ranker sur la
+          requête type "rénovation salle de bain Chambéry" et d'apparaître
+          dans Google Local Pack pour les services. */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd({
+        "@context": "https://schema.org",
+        "@type": "Service",
+        name: t.nom,
+        description: t.description || `${t.nom} en Rhône-Alpes — devis gratuit avec artisans Bativio vérifiés.`,
+        serviceType: t.nom,
+        areaServed: [
+          { "@type": "City", name: "Chambéry" },
+          { "@type": "City", name: "Annecy" },
+          { "@type": "City", name: "Grenoble" },
+          { "@type": "City", name: "Lyon" },
+          { "@type": "City", name: "Valence" },
+        ],
+        provider: {
+          "@type": "Organization",
+          name: "Bativio",
+          url: "https://www.bativio.fr",
+          logo: "https://www.bativio.fr/icons/icon-192.png",
+        },
+        offers: {
+          "@type": "Offer",
+          url: `https://www.bativio.fr/travaux/${slug}`,
+          priceCurrency: "EUR",
+          availability: "https://schema.org/InStock",
+          description: "Devis gratuit en 24 h, sans engagement, zéro commission.",
+        },
+      }) }} />
     </>
   );
 }

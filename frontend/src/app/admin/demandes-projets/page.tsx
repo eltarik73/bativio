@@ -69,7 +69,7 @@ export default function AdminDemandesProjetsPage() {
     } catch { /* noop */ }
   };
 
-  useEffect(() => { if (showSettings) loadSettings(); /* eslint-disable-next-line */ }, [showSettings]);
+  useEffect(() => { if (showSettings) loadSettings(); }, [showSettings]);
 
   const totalNouvelle = stats.NOUVELLE || 0;
   const totalRoutee = stats.ROUTEE || 0;
