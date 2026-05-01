@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { safeJsonLd } from "@/lib/html-escape";
 
 interface Row {
   label: string;
@@ -222,6 +223,53 @@ export default async function ComparatifPage({ params }: { params: Promise<{ slu
   const c = COMPARATIFS[slug];
   if (!c) notFound();
 
+  // Schema Article : ces pages sont des articles editoriaux comparatifs.
+  // L'autorité (author Person + dateModified) compte pour ranker sur des
+  // requêtes du type "alternative à PagesJaunes", "Bativio ou Habitatpresto".
+  const articleLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: `Bativio vs ${c.theirName} — Comparatif annuaire artisans 2026`,
+    description: c.oneLiner,
+    image: "https://www.bativio.fr/og-image.png",
+    datePublished: "2026-04-15",
+    dateModified: "2026-04-15",
+    author: {
+      "@type": "Person",
+      name: "Tarik Boudefar",
+      jobTitle: "Fondateur de Bativio",
+      url: "https://www.bativio.fr/a-propos",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Bativio",
+      logo: { "@type": "ImageObject", url: "https://www.bativio.fr/icons/icon-192.png" },
+    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": `https://www.bativio.fr/comparatif/${slug}` },
+    inLanguage: "fr-FR",
+    keywords: [
+      `bativio vs ${c.theirName.toLowerCase()}`,
+      `alternative ${c.theirName.toLowerCase()}`,
+      "annuaire artisans BTP",
+      "comparatif 2026",
+      "Rhône-Alpes",
+    ].join(", "),
+    // about : entites comparees (Bativio + concurrent) pour aider Google
+    // a rattacher cette page aux requetes "X vs Y" automatiquement.
+    about: [
+      {
+        "@type": "Organization",
+        name: "Bativio",
+        url: "https://www.bativio.fr",
+      },
+      {
+        "@type": "Organization",
+        name: c.theirName,
+        url: `https://${c.theirDomain}`,
+      },
+    ],
+  };
+
   return (
     <>
       <Navbar />
@@ -307,6 +355,11 @@ export default async function ComparatifPage({ params }: { params: Promise<{ slu
         </section>
       </main>
       <Footer />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(articleLd) }}
+      />
     </>
   );
 }
