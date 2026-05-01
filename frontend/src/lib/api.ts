@@ -75,9 +75,9 @@ export interface ServiceData {
 export interface PhotoData {
   id: string;
   url: string;
-  titre: string;
-  type: string;
-  paireId: string;
+  titre: string | null;
+  type: "SIMPLE" | "AVANT" | "APRES";
+  paireId: string | null;
   ordre: number;
 }
 

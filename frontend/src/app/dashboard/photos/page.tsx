@@ -54,33 +54,55 @@ export default function PhotosPage() {
   const removeServer = async (photoId: string) => {
     try {
       await fetchWithAuth(`/artisans/me/photos/${photoId}`, { method: "DELETE" });
-      setServerPhotos((p) => p.filter((ph) => ph.id !== photoId));
-    } catch {
-      // silent
+      const target = serverPhotos.find((ph) => ph.id === photoId);
+      const pairId = target?.paireId ?? null;
+      setServerPhotos((p) => p.filter((ph) => ph.id !== photoId && ph.id !== pairId));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Erreur lors de la suppression");
     }
+  };
+
+  const uploadOne = async (file: File, type: "SIMPLE" | "AVANT" | "APRES", paireId?: string): Promise<PhotoData | null> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("type", type);
+    if (paireId) formData.append("paireId", paireId);
+    const res = await fetch(`${API_URL}/artisans/me/photos/upload`, {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || "Upload échoué");
+    return (json.data as PhotoData) ?? null;
   };
 
   const uploadPhotos = async () => {
     if (localPhotos.length === 0) return;
+    if (tab === "av" && localPhotos.length % 2 !== 0) {
+      setError("Avant / Après : sélectionnez un nombre pair de photos (paires avant + après).");
+      return;
+    }
     setUploading(true);
     setError(null);
 
     try {
-      for (const lp of localPhotos) {
-        const formData = new FormData();
-        formData.append("file", lp.file);
-        formData.append("type", tab === "av" ? "AVANT_APRES" : "SIMPLE");
-
-        const res = await fetch(`${API_URL}/artisans/me/photos/upload`, {
-          method: "POST",
-          credentials: "include",
-          body: formData,
-        });
-        const json = await res.json();
-        if (json.success && json.data) {
-          setServerPhotos((prev) => [...prev, json.data]);
+      if (tab === "simple") {
+        for (const lp of localPhotos) {
+          const photo = await uploadOne(lp.file, "SIMPLE");
+          if (photo) setServerPhotos((prev) => [...prev, photo]);
+          URL.revokeObjectURL(lp.preview);
         }
-        URL.revokeObjectURL(lp.preview);
+      } else {
+        // Avant/Après : grouper par paires (impair = AVANT, pair = APRES)
+        for (let i = 0; i < localPhotos.length; i += 2) {
+          const avant = await uploadOne(localPhotos[i].file, "AVANT");
+          if (!avant) continue;
+          const apres = await uploadOne(localPhotos[i + 1].file, "APRES", avant.id);
+          setServerPhotos((prev) => [...prev, avant, ...(apres ? [apres] : [])]);
+          URL.revokeObjectURL(localPhotos[i].preview);
+          URL.revokeObjectURL(localPhotos[i + 1].preview);
+        }
       }
       setLocalPhotos([]);
     } catch (e: unknown) {
@@ -124,6 +146,11 @@ export default function PhotosPage() {
         <p style={{ fontSize: 13, color: "#C5C0B9", marginBottom: 12 }}>ou</p>
         <span style={{ display: "inline-flex", alignItems: "center", height: 40, padding: "0 20px", borderRadius: 8, border: "1.5px solid #E0DDD8", fontSize: 13, fontWeight: 600, color: "#C4531A" }}>Choisir des photos</span>
         <p style={{ fontSize: 12, color: "#C5C0B9", marginTop: 12 }}>JPG, PNG ou WebP &middot; max 10 Mo</p>
+        {tab === "av" && (
+          <p style={{ fontSize: 12, color: "#C4531A", marginTop: 6, fontWeight: 600 }}>
+            Sélectionnez vos photos par paires : <strong>1ère = avant, 2e = après</strong>
+          </p>
+        )}
       </div>
 
       {/* Error */}
@@ -137,13 +164,19 @@ export default function PhotosPage() {
       {localPhotos.length > 0 && (
         <>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12, marginTop: 24 }}>
-            {localPhotos.map((p, i) => (
-              <div key={i} style={{ position: "relative", aspectRatio: "1", borderRadius: 12, overflow: "hidden", border: "2px dashed #E8A84C" }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={p.preview} alt="Photo en attente d'envoi" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                <button onClick={(e) => { e.stopPropagation(); removeLocal(i); }} style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: "50%", background: "rgba(0,0,0,.5)", color: "#fff", border: "none", cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>&times;</button>
-              </div>
-            ))}
+            {localPhotos.map((p, i) => {
+              const avLabel = tab === "av" ? (i % 2 === 0 ? "Avant" : "Après") : null;
+              return (
+                <div key={i} style={{ position: "relative", aspectRatio: "1", borderRadius: 12, overflow: "hidden", border: "2px dashed #E8A84C" }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={p.preview} alt={avLabel ? `Photo ${avLabel.toLowerCase()} en attente d'envoi` : "Photo en attente d'envoi"} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  {avLabel && (
+                    <span aria-hidden="true" style={{ position: "absolute", top: 8, left: 8, padding: "3px 8px", borderRadius: 6, background: i % 2 === 0 ? "#3D2E1F" : "#C4531A", color: "#fff", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.4 }}>{avLabel}</span>
+                  )}
+                  <button aria-label={`Retirer la photo ${i + 1}`} onClick={(e) => { e.stopPropagation(); removeLocal(i); }} style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: "50%", background: "rgba(0,0,0,.5)", color: "#fff", border: "none", cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>&times;</button>
+                </div>
+              );
+            })}
           </div>
           <button
             onClick={uploadPhotos}
@@ -160,16 +193,22 @@ export default function PhotosPage() {
         <>
           <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginTop: 32, marginBottom: 12 }}>Mes photos en ligne</h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
-            {serverPhotos.map((p) => (
-              <div key={p.id} style={{ position: "relative", aspectRatio: "1", borderRadius: 12, overflow: "hidden", border: "1px solid var(--sable,#E8D5C0)" }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={p.url} alt={p.titre || ""} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                <button onClick={(e) => { e.stopPropagation(); removeServer(p.id); }} style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: "50%", background: "rgba(0,0,0,.5)", color: "#fff", border: "none", cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>&times;</button>
-                {p.titre && (
-                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "6px 10px", background: "rgba(0,0,0,.5)", fontSize: 11, color: "#fff", fontWeight: 500 }}>{p.titre}</div>
-                )}
-              </div>
-            ))}
+            {serverPhotos.map((p) => {
+              const typeLabel = p.type === "AVANT" ? "Avant" : p.type === "APRES" ? "Après" : null;
+              return (
+                <div key={p.id} style={{ position: "relative", aspectRatio: "1", borderRadius: 12, overflow: "hidden", border: "1px solid var(--sable,#E8D5C0)" }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={p.url} alt={p.titre || (typeLabel ? `Photo ${typeLabel.toLowerCase()}` : "Photo")} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  {typeLabel && (
+                    <span aria-hidden="true" style={{ position: "absolute", top: 8, left: 8, padding: "3px 8px", borderRadius: 6, background: p.type === "AVANT" ? "#3D2E1F" : "#C4531A", color: "#fff", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: 0.4 }}>{typeLabel}</span>
+                  )}
+                  <button aria-label="Supprimer cette photo" onClick={(e) => { e.stopPropagation(); removeServer(p.id); }} style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: "50%", background: "rgba(0,0,0,.5)", color: "#fff", border: "none", cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>&times;</button>
+                  {p.titre && (
+                    <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "6px 10px", background: "rgba(0,0,0,.5)", fontSize: 11, color: "#fff", fontWeight: 500 }}>{p.titre}</div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </>
       ) : localPhotos.length === 0 ? (

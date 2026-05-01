@@ -44,11 +44,12 @@ function generateSlug(nom: string): string {
 
 export async function POST(request: NextRequest) {
   try {
-    // Rate limiting per IP
+    // Rate limiting per IP — 10 inscriptions / heure
+    // (couvre coworkings, cabinets multi-artisans, NAT partagé)
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
     const now = Date.now();
     const ipEntry = registerAttempts.get(ip);
-    if (ipEntry && now < ipEntry.resetAt && ipEntry.count >= 3) {
+    if (ipEntry && now < ipEntry.resetAt && ipEntry.count >= 10) {
       return apiError("Trop de tentatives d'inscription. Réessayez plus tard.", 429);
     }
 

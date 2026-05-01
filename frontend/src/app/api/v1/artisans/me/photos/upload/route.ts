@@ -36,6 +36,8 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
+    const rawType = (formData.get("type") as string | null)?.toUpperCase() ?? "SIMPLE";
+    const paireId = (formData.get("paireId") as string | null) || null;
 
     if (!file) {
       return apiError("Aucun fichier fourni", 400);
@@ -49,6 +51,26 @@ export async function POST(request: NextRequest) {
     // Validate file size
     if (file.size > MAX_FILE_SIZE) {
       return apiError("Le fichier dépasse la taille maximale de 10 Mo.", 400);
+    }
+
+    // Map legacy "AVANT_APRES" sent by the dashboard tab to AVANT
+    // (when no paireId is provided, treat the first photo as AVANT)
+    const photoType: "SIMPLE" | "AVANT" | "APRES" =
+      rawType === "AVANT" ? "AVANT" :
+      rawType === "APRES" ? "APRES" :
+      rawType === "AVANT_APRES" ? (paireId ? "APRES" : "AVANT") :
+      "SIMPLE";
+
+    // If paireId provided, verify it belongs to this artisan and is currently
+    // an AVANT photo with no APRES yet — prevents cross-artisan tampering
+    if (paireId) {
+      const paire = await prisma.photo.findUnique({ where: { id: paireId } });
+      if (!paire || paire.artisanId !== artisan.id) {
+        return apiError("Photo paire introuvable", 400);
+      }
+      if (paire.type !== "AVANT") {
+        return apiError("La photo paire doit être de type AVANT", 400);
+      }
     }
 
     // Convert file to buffer for Cloudinary upload
@@ -85,14 +107,26 @@ export async function POST(request: NextRequest) {
     });
     const nextOrdre = (lastPhoto?.ordre ?? -1) + 1;
 
-    // Create Photo record
-    const photo = await prisma.photo.create({
-      data: {
-        artisanId: artisan.id,
-        url: uploadResult.secure_url,
-        cloudinaryPublicId: uploadResult.public_id,
-        ordre: nextOrdre,
-      },
+    // Create Photo record (and link to AVANT pair atomically when needed)
+    const photo = await prisma.$transaction(async (tx) => {
+      const created = await tx.photo.create({
+        data: {
+          artisanId: artisan.id,
+          url: uploadResult.secure_url,
+          cloudinaryPublicId: uploadResult.public_id,
+          ordre: nextOrdre,
+          type: photoType,
+          paireId: paireId,
+        },
+      });
+      // When this is the APRES of a pair, also point the AVANT photo at it
+      if (photoType === "APRES" && paireId) {
+        await tx.photo.update({
+          where: { id: paireId },
+          data: { paireId: created.id },
+        });
+      }
+      return created;
     });
 
     return apiSuccess(photo, 201);

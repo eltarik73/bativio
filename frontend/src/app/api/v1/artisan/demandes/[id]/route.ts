@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError } from "@/lib/api-response";
 import { requireAuth } from "@/lib/auth-server";
 import { getLeadLimit } from "@/lib/lead-limits";
+import { getEffectivePlan } from "@/lib/plan-gates";
 
 export async function GET(
   _request: NextRequest,
@@ -45,7 +46,7 @@ export async function GET(
     });
     const rank = rankBefore + 1;
 
-    const leadLimit = getLeadLimit(artisan.plan);
+    const leadLimit = getLeadLimit(getEffectivePlan(artisan));
     const masked = leadLimit !== null && rank > leadLimit;
 
     const responseData = {
