@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 
 interface ArtisanAdmin {
@@ -204,6 +205,17 @@ export default function AdminArtisansPage() {
                       </button>
                     </td>
                     <td style={{ padding: "14px 16px", textAlign: "right", display: "flex", gap: 6, justifyContent: "flex-end" }}>
+                      <Link
+                        href={`/admin/artisans/${a.id}`}
+                        style={{
+                          padding: "6px 14px", height: 32, borderRadius: 8, fontSize: 12, fontWeight: 600,
+                          border: "1px solid rgba(0,0,0,.12)", background: "transparent", color: "#374151",
+                          textDecoration: "none", display: "inline-flex", alignItems: "center",
+                        }}
+                        title="Modifier la fiche complète"
+                      >
+                        Modifier
+                      </Link>
                       <button
                         onClick={() => handleToggleActif(a.id, a.actif)}
                         disabled={actionLoading === a.id}

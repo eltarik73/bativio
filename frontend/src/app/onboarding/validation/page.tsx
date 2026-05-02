@@ -204,7 +204,10 @@ export default function ValidationPage() {
   const [artisanStatus, setArtisanStatus] = useState<string | null>(null);
   const [statusLoading, setStatusLoading] = useState(true);
 
-  // On mount: resolve artisan status
+  // On mount: ALWAYS fetch fresh status from /artisans/me.
+  // Don't trust the cached user.artisanStatus — it can be stale after a
+  // prior scoring submission, leading to a 403 "Le scoring n'est possible
+  // qu'en statut ONBOARDING ou REJECTED" when the user re-submits.
   useEffect(() => {
     if (authLoading) return;
 
@@ -213,22 +216,14 @@ export default function ValidationPage() {
       return;
     }
 
-    // Try getting status from user object first
-    const statusFromUser = (user as Record<string, unknown>).artisanStatus as string | undefined;
-    if (statusFromUser) {
-      setArtisanStatus(statusFromUser);
-      setStatusLoading(false);
-      return;
-    }
-
-    // Otherwise fetch from /artisans/me
     (async () => {
       try {
         const data = await fetchWithAuth("/artisans/me") as Record<string, unknown>;
         setArtisanStatus((data.artisanStatus as string) || (data.status as string) || "ONBOARDING");
       } catch {
-        // If endpoint fails, assume ONBOARDING (new artisan)
-        setArtisanStatus("ONBOARDING");
+        // If endpoint fails, fall back to the cached user object, then ONBOARDING.
+        const fallback = (user as Record<string, unknown>).artisanStatus as string | undefined;
+        setArtisanStatus(fallback || "ONBOARDING");
       } finally {
         setStatusLoading(false);
       }
@@ -275,6 +270,22 @@ export default function ValidationPage() {
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Erreur lors de la validation";
+      // If the backend says scoring is not allowed in the current status,
+      // the artisan has already been scored — refetch and redirect.
+      if (/ONBOARDING\s+ou\s+REJECTED/i.test(msg) || /scoring n'est possible/i.test(msg)) {
+        try {
+          const data = await fetchWithAuth("/artisans/me") as Record<string, unknown>;
+          const freshStatus = (data.artisanStatus as string) || "ACTIVE";
+          if (freshStatus === "ACTIVE") {
+            router.push("/dashboard");
+            return;
+          }
+          if (freshStatus === "PENDING_REVIEW") {
+            setStep("pending_review");
+            return;
+          }
+        } catch { /* fall through to error display */ }
+      }
       setError(msg);
       setStep("form");
     }
