@@ -1,19 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
-import {
-  Users,
-  UserPlus,
-  FileText,
-  Euro,
-  TrendingUp,
-  TrendingDown,
-  ArrowRight,
-  RefreshCcw,
-  AlertCircle,
-} from "lucide-react";
 
 interface Stats {
   totalArtisansActif: number;
@@ -40,347 +29,182 @@ const VILLE_LABELS: Record<string, string> = {
   autres: "Autres",
 };
 
-const PLAN_META: Record<string, { label: string; color: string; bg: string }> = {
-  GRATUIT: { label: "Gratuit", color: "#6B6560", bg: "#F0EDE8" },
-  STARTER: { label: "Starter", color: "#0F6E56", bg: "#E6F4EE" },
-  ESSENTIEL: { label: "Starter", color: "#0F6E56", bg: "#E6F4EE" },
-  PRO: { label: "Pro", color: "#185FA5", bg: "#E6EFF8" },
-  PRO_PLUS: { label: "Business", color: "#534AB7", bg: "#EDEBF8" },
-  BUSINESS: { label: "Business", color: "#534AB7", bg: "#EDEBF8" },
-};
+// Display order + label aliases (handles ESSENTIEL legacy → Starter, PRO_PLUS → Business)
+const PLAN_DISPLAY = [
+  { label: "Gratuit",  color: "#C5C0B9", keys: ["GRATUIT"] },
+  { label: "Starter",  color: "#0F6E56", keys: ["STARTER", "ESSENTIEL"] },
+  { label: "Pro",      color: "#185FA5", keys: ["PRO"] },
+  { label: "Business", color: "#534AB7", keys: ["BUSINESS", "PRO_PLUS"] },
+];
 
-function Delta({ value }: { value: number | null }) {
-  if (value === null) {
-    return <span className="text-xs text-gray-400">— pas de comparaison</span>;
-  }
-  if (value === 0) {
-    return <span className="text-xs text-gray-500">stable</span>;
-  }
-  const positive = value > 0;
-  return (
-    <span
-      className={`inline-flex items-center gap-1 text-xs font-medium ${
-        positive ? "text-emerald-600" : "text-red-600"
-      }`}
-    >
-      {positive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-      {positive ? "+" : ""}
-      {value}% vs mois dernier
-    </span>
-  );
-}
-
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  delta,
-  hint,
-  href,
-  accent,
-}: {
-  icon: typeof Users;
-  label: string;
-  value: string | number;
-  delta?: number | null;
-  hint?: string;
-  href?: string;
-  accent?: string;
-}) {
-  const inner = (
-    <div className="group relative h-full rounded-2xl border border-stone-200 bg-white p-6 transition-all hover:border-stone-300 hover:shadow-sm">
-      <div className="mb-4 flex items-center justify-between">
-        <div
-          className="flex h-9 w-9 items-center justify-center rounded-lg"
-          style={{ background: accent ? `${accent}14` : "#F7F5F2" }}
-        >
-          <Icon className="h-[18px] w-[18px]" style={{ color: accent || "#6B6560" }} />
-        </div>
-        {href && (
-          <ArrowRight className="h-4 w-4 text-stone-300 transition-colors group-hover:text-stone-500" />
-        )}
-      </div>
-      <div
-        className="font-display text-3xl font-bold leading-none text-stone-900"
-        style={{ fontFamily: "'Fraunces',serif" }}
-      >
-        {value}
-      </div>
-      <div className="mt-2 text-sm text-stone-500">{label}</div>
-      <div className="mt-3 min-h-[16px]">
-        {delta !== undefined ? <Delta value={delta} /> : hint ? <span className="text-xs text-stone-400">{hint}</span> : null}
-      </div>
-    </div>
-  );
-  return href ? <Link href={href}>{inner}</Link> : inner;
-}
-
-function CardSkeleton() {
-  return (
-    <div className="h-full rounded-2xl border border-stone-200 bg-white p-6">
-      <div className="mb-4 h-9 w-9 animate-pulse rounded-lg bg-stone-100" />
-      <div className="h-9 w-20 animate-pulse rounded bg-stone-100" />
-      <div className="mt-3 h-4 w-32 animate-pulse rounded bg-stone-100" />
-      <div className="mt-3 h-3 w-24 animate-pulse rounded bg-stone-50" />
-    </div>
-  );
-}
+const VILLE_DISPLAY_ORDER = ["chambery", "annecy", "grenoble", "lyon", "valence"];
 
 export default function AdminDashboard() {
   const { fetchWithAuth } = useAuth();
-  const [stats, setStats] = useState<Stats | null>(null);
+  const [data, setData] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const load = useCallback(
-    async (silent = false) => {
-      if (!silent) setLoading(true);
-      else setRefreshing(true);
-      setError(null);
-      try {
-        const data = (await fetchWithAuth("/admin/stats")) as Stats;
-        setStats(data);
-      } catch (e) {
-        setError(e instanceof Error ? e.message : "Erreur de chargement");
-      } finally {
-        setLoading(false);
-        setRefreshing(false);
-      }
-    },
-    [fetchWithAuth]
-  );
 
   useEffect(() => {
-    load();
-  }, [load]);
+    (async () => {
+      try {
+        const res = (await fetchWithAuth("/admin/stats")) as Stats;
+        setData(res);
+      } catch {
+        /* leave data null */
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [fetchWithAuth]);
 
-  const totalForPlanRatio =
-    stats && Object.values(stats.plans).length > 0
-      ? Object.values(stats.plans).reduce((s, n) => s + n, 0)
-      : 1;
-  const totalForVilleRatio =
-    stats && stats.villes.length > 0
-      ? Math.max(stats.villes.reduce((s, v) => s + v.count, 0), 1)
-      : 1;
+  const fmt = (n: number) => n.toLocaleString("fr-FR");
+
+  // KPI cards (same visual layout as the original — only the values are now live)
+  const stats = [
+    {
+      label: "Total artisans",
+      value: loading ? "—" : fmt(data?.totalArtisansActif ?? 0),
+      color: "var(--bois,#3D2E1F)",
+      icon: '<svg width="20" height="20" fill="none" stroke="#E0DDD8" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-7 8-7s8 3 8 7"/></svg>',
+    },
+    {
+      label: "Inscriptions ce mois",
+      value: loading ? "—" : fmt(data?.inscriptionsThisMonth ?? 0),
+      color: "var(--bois,#3D2E1F)",
+      icon: '<svg width="20" height="20" fill="none" stroke="#E0DDD8" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+    },
+    {
+      label: "Devis ce mois",
+      value: loading ? "—" : fmt(data?.totalDevisThisMonth ?? 0),
+      color: "var(--bois,#3D2E1F)",
+      icon: '<svg width="20" height="20" fill="none" stroke="#E0DDD8" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>',
+    },
+    {
+      label: "Revenus estimés",
+      value: loading ? "—" : `${fmt(data?.revenusEstimes ?? 0)} €`,
+      color: "#C4531A",
+      icon: '<svg width="20" height="20" fill="none" stroke="#E0DDD8" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>',
+    },
+  ];
+
+  // Live plan breakdown (legacy ESSENTIEL aggregated into Starter, PRO_PLUS into Business)
+  const planData = PLAN_DISPLAY.map((p) => ({
+    plan: p.label,
+    count: p.keys.reduce((sum, k) => sum + (data?.plans[k] ?? 0), 0),
+    color: p.color,
+  }));
+  const total = Math.max(planData.reduce((s, p) => s + p.count, 0), 1);
+
+  // Live ville breakdown — always show the 5 main villes (even at 0), append "Autres" if any
+  const villesMap = new Map((data?.villes || []).map((v) => [v.slug, v.count]));
+  const villeData = VILLE_DISPLAY_ORDER.map((slug) => ({
+    ville: VILLE_LABELS[slug],
+    count: villesMap.get(slug) ?? 0,
+  }));
+  const autresCount = (data?.villes || [])
+    .filter((v) => !VILLE_DISPLAY_ORDER.includes(v.slug))
+    .reduce((s, v) => s + v.count, 0);
+  if (autresCount > 0) villeData.push({ ville: "Autres", count: autresCount });
+
+  const pendingCount = data?.artisansEnAttente ?? 0;
 
   return (
     <div>
-      {/* Header */}
-      <div className="mb-8 flex items-end justify-between gap-4">
-        <div>
-          <h1
-            className="text-2xl font-bold text-stone-900"
-            style={{ fontFamily: "'Fraunces',serif" }}
-          >
-            Tableau de bord
-          </h1>
-          <p className="mt-1 text-sm text-stone-500">
-            Vue temps réel des inscriptions, plans et activité.
-            {stats && (
-              <span className="ml-2 text-stone-400">
-                · Actualisé {new Date(stats.generatedAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
-              </span>
-            )}
-          </p>
-        </div>
-        <button
-          onClick={() => load(true)}
-          disabled={refreshing}
-          className="inline-flex items-center gap-2 rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm font-medium text-stone-700 transition-colors hover:border-stone-300 hover:bg-stone-50 disabled:opacity-60"
-          title="Recharger les données"
-        >
-          <RefreshCcw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
-          Rafraîchir
-        </button>
+      <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 24 }}>
+        Dashboard
+      </h1>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 16, marginBottom: 32 }} className="max-md:grid-cols-1">
+        {stats.map((s) => (
+          <div key={s.label} style={{ background: "#fff", borderRadius: 14, border: "1px solid var(--sable,#E8D5C0)", padding: 24, position: "relative" }}>
+            <span style={{ position: "absolute", top: 20, right: 20 }} dangerouslySetInnerHTML={{ __html: s.icon }} />
+            <p style={{ fontFamily: "'Fraunces',serif", fontSize: 32, fontWeight: 700, lineHeight: 1, color: s.color }}>{s.value}</p>
+            <p style={{ fontSize: 13, color: "var(--pierre,#9C958D)", marginTop: 8 }}>{s.label}</p>
+          </div>
+        ))}
       </div>
 
-      {/* Error state */}
-      {error && (
-        <div className="mb-6 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-          <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
-          <div>
-            <p className="font-medium">Impossible de charger les statistiques</p>
-            <p className="mt-1 text-red-700/80">{error}</p>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 20 }} className="max-md:grid-cols-1">
+        <div style={{ background: "#fff", borderRadius: 14, border: "1px solid var(--sable,#E8D5C0)", padding: 24 }}>
+          <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 20 }}>
+            Répartition par plan
+          </h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            {planData.map((p) => (
+              <div key={p.plan}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <div style={{ width: 10, height: 10, borderRadius: "50%", background: p.color, flexShrink: 0 }} />
+                    <span style={{ fontSize: 14, color: "var(--bois-mid,#5C4A3A)" }}>{p.plan}</span>
+                  </div>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: "var(--bois,#3D2E1F)" }}>{p.count}</span>
+                </div>
+                <div style={{ width: "100%", height: 6, background: "#F7F5F2", borderRadius: 3, overflow: "hidden" }}>
+                  <div style={{ height: "100%", borderRadius: 3, background: p.color, width: `${(p.count / total) * 100}%`, transition: "width .3s ease" }} />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      )}
 
-      {/* KPI cards */}
-      <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {loading ? (
-          <>
-            <CardSkeleton />
-            <CardSkeleton />
-            <CardSkeleton />
-            <CardSkeleton />
-          </>
-        ) : stats ? (
-          <>
-            <StatCard
-              icon={Users}
-              label="Artisans actifs"
-              value={stats.totalArtisansActif}
-              hint={`${stats.totalArtisansAll} au total (incluant non-validés)`}
-              href="/admin/artisans"
-              accent="#0F6E56"
-            />
-            <StatCard
-              icon={UserPlus}
-              label="Inscriptions ce mois"
-              value={stats.inscriptionsThisMonth}
-              delta={stats.inscriptionsDeltaPct}
-              accent="#185FA5"
-            />
-            <StatCard
-              icon={FileText}
-              label="Demandes ce mois"
-              value={stats.totalDevisThisMonth}
-              delta={stats.devisDeltaPct}
-              href="/admin/demandes-projets"
-              accent="#C4531A"
-            />
-            <StatCard
-              icon={Euro}
-              label="Revenus estimés / mois"
-              value={`${stats.revenusEstimes.toLocaleString("fr-FR")} €`}
-              hint="Somme des plans payants actifs"
-              accent="#534AB7"
-            />
-          </>
-        ) : null}
+        <div style={{ background: "#fff", borderRadius: 14, border: "1px solid var(--sable,#E8D5C0)", padding: 24 }}>
+          <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 20 }}>
+            Répartition par ville
+          </h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            {villeData.map((v) => (
+              <div key={v.ville} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <span style={{ fontSize: 14, color: "var(--bois-mid,#5C4A3A)", flex: 1 }}>{v.ville}</span>
+                <span style={{ fontSize: 14, fontWeight: 600, color: "var(--bois,#3D2E1F)" }}>{v.count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* À valider */}
-      {stats && stats.artisansEnAttente > 0 && (
+      {pendingCount > 0 ? (
         <Link
           href="/admin/validations"
-          className="mb-8 flex items-center justify-between rounded-2xl border border-amber-200 bg-amber-50/60 p-5 transition-colors hover:bg-amber-50"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 16,
+            marginTop: 24,
+            background: "#fff",
+            borderRadius: 14,
+            border: "1px solid var(--sable,#E8D5C0)",
+            padding: 24,
+            textDecoration: "none",
+            transition: "border-color .2s, box-shadow .2s",
+          }}
         >
-          <div className="flex items-center gap-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100">
-              <AlertCircle className="h-5 w-5 text-amber-700" />
-            </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <span style={{ display: "inline-flex", width: 36, height: 36, borderRadius: 10, background: "rgba(196,83,26,.1)", alignItems: "center", justifyContent: "center" }}>
+              <svg width="18" height="18" fill="none" stroke="#C4531A" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            </span>
             <div>
-              <p className="text-sm font-semibold text-amber-900">
-                {stats.artisansEnAttente} artisan{stats.artisansEnAttente > 1 ? "s" : ""} en attente
-                de validation
+              <p style={{ fontSize: 15, fontWeight: 600, color: "var(--bois,#3D2E1F)" }}>
+                {pendingCount} artisan{pendingCount > 1 ? "s" : ""} en attente de validation
               </p>
-              <p className="mt-0.5 text-xs text-amber-700/80">
-                Statuts ONBOARDING / PENDING_NAF_REVIEW / PENDING_REVIEW
+              <p style={{ fontSize: 13, color: "var(--pierre,#9C958D)", marginTop: 2 }}>
+                Onboarding · NAF à valider · scoring en attente
               </p>
             </div>
           </div>
-          <ArrowRight className="h-4 w-4 text-amber-700" />
+          <span style={{ fontSize: 14, fontWeight: 600, color: "#C4531A" }}>Valider →</span>
         </Link>
+      ) : !loading ? (
+        <div style={{ marginTop: 24, background: "#fff", borderRadius: 14, border: "1px solid var(--sable,#E8D5C0)", padding: 24, textAlign: "center" }}>
+          <p style={{ fontSize: 15, color: "var(--pierre,#9C958D)" }}>Aucun artisan en attente de validation. Bonne nouvelle&nbsp;!</p>
+        </div>
+      ) : null}
+
+      {data && (
+        <p style={{ marginTop: 16, fontSize: 12, color: "var(--g400,#9B9590)", textAlign: "right" }}>
+          Synchronisé à {new Date(data.generatedAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+        </p>
       )}
-
-      {/* Breakdown grid */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        {/* Plans */}
-        <div className="rounded-2xl border border-stone-200 bg-white p-6">
-          <div className="mb-5 flex items-center justify-between">
-            <h2
-              className="text-base font-bold text-stone-900"
-              style={{ fontFamily: "'Fraunces',serif" }}
-            >
-              Répartition par plan
-            </h2>
-            <span className="text-xs text-stone-400">artisans actifs uniquement</span>
-          </div>
-          {loading ? (
-            <div className="space-y-3">
-              {[0, 1, 2, 3].map((i) => (
-                <div key={i} className="h-7 animate-pulse rounded bg-stone-100" />
-              ))}
-            </div>
-          ) : stats && Object.keys(stats.plans).length === 0 ? (
-            <p className="py-6 text-center text-sm text-stone-400">Aucun artisan actif</p>
-          ) : (
-            <div className="space-y-4">
-              {stats &&
-                Object.entries(stats.plans)
-                  .sort(([, a], [, b]) => b - a)
-                  .map(([plan, count]) => {
-                    const meta = PLAN_META[plan] || { label: plan, color: "#6B6560", bg: "#F0EDE8" };
-                    const pct = Math.round((count / totalForPlanRatio) * 100);
-                    return (
-                      <div key={plan}>
-                        <div className="mb-1.5 flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span
-                              className="inline-block rounded-full px-2 py-0.5 text-xs font-semibold"
-                              style={{ background: meta.bg, color: meta.color }}
-                            >
-                              {meta.label}
-                            </span>
-                          </div>
-                          <span className="text-sm font-semibold text-stone-700">
-                            {count}
-                            <span className="ml-2 text-xs font-normal text-stone-400">
-                              {pct}%
-                            </span>
-                          </span>
-                        </div>
-                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-stone-100">
-                          <div
-                            className="h-full rounded-full transition-all"
-                            style={{ width: `${pct}%`, background: meta.color }}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-            </div>
-          )}
-        </div>
-
-        {/* Villes */}
-        <div className="rounded-2xl border border-stone-200 bg-white p-6">
-          <div className="mb-5 flex items-center justify-between">
-            <h2
-              className="text-base font-bold text-stone-900"
-              style={{ fontFamily: "'Fraunces',serif" }}
-            >
-              Répartition par ville
-            </h2>
-            <span className="text-xs text-stone-400">artisans actifs uniquement</span>
-          </div>
-          {loading ? (
-            <div className="space-y-3">
-              {[0, 1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-7 animate-pulse rounded bg-stone-100" />
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {stats &&
-                stats.villes.map((v) => {
-                  const pct = Math.round((v.count / totalForVilleRatio) * 100);
-                  return (
-                    <div key={v.slug}>
-                      <div className="mb-1.5 flex items-center justify-between">
-                        <span className="text-sm text-stone-700">
-                          {VILLE_LABELS[v.slug] || v.slug}
-                        </span>
-                        <span className="text-sm font-semibold text-stone-700">
-                          {v.count}
-                          <span className="ml-2 text-xs font-normal text-stone-400">{pct}%</span>
-                        </span>
-                      </div>
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-stone-100">
-                        <div
-                          className="h-full rounded-full bg-orange-500 transition-all"
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-            </div>
-          )}
-        </div>
-      </div>
     </div>
   );
 }
