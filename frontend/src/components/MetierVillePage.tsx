@@ -31,6 +31,114 @@ function getVilleMereName(villeSlug: string): string | null {
   return zone?.villeMere ?? null;
 }
 
+// Tarifs indicatifs par métier (mots-clés long-tail "prix X", "tarif X")
+type TarifLine = { label: string; prix: string; note?: string };
+const TARIFS_PAR_METIER: Record<string, TarifLine[]> = {
+  plombier: [
+    { label: "Dépannage simple (fuite robinet, WC bouché)", prix: "80 — 150 €", note: "intervention < 1h" },
+    { label: "Remplacement chauffe-eau électrique", prix: "350 — 800 €", note: "fourniture incluse" },
+    { label: "Pose chaudière gaz à condensation", prix: "2 500 — 5 000 €", note: "main d'œuvre + appareil" },
+    { label: "Rénovation salle de bain complète", prix: "5 000 — 15 000 €", note: "selon m² et finitions" },
+    { label: "Tarif horaire moyen", prix: "45 — 70 €/h", note: "majoration 50–100% nuit/dimanche" },
+  ],
+  electricien: [
+    { label: "Mise aux normes tableau électrique", prix: "600 — 1 500 €", note: "selon nb de circuits" },
+    { label: "Ajout d'une prise ou interrupteur", prix: "50 — 120 €", note: "fourniture comprise" },
+    { label: "Rénovation électrique appartement 60 m²", prix: "3 000 — 6 000 €", note: "remise aux normes NF C 15-100" },
+    { label: "Installation domotique (volets, éclairage)", prix: "1 500 — 4 000 €", note: "selon nb d'équipements" },
+    { label: "Tarif horaire moyen", prix: "45 — 65 €/h", note: "majoration urgence 30–50%" },
+  ],
+  macon: [
+    { label: "Dalle béton 20 m² (terrasse, garage)", prix: "1 500 — 3 000 €", note: "fourniture + main d'œuvre" },
+    { label: "Mur de clôture (10 m linéaires)", prix: "800 — 2 000 €", note: "selon hauteur et matériau" },
+    { label: "Ravalement façade maison 100 m²", prix: "5 000 — 15 000 €", note: "+ échafaudage" },
+    { label: "Extension maçonnée 20 m²", prix: "20 000 — 40 000 €", note: "hors plomberie/électricité" },
+    { label: "Tarif horaire moyen", prix: "40 — 60 €/h" },
+  ],
+  peintre: [
+    { label: "Peinture appartement 70 m² (2 couches)", prix: "2 500 — 5 000 €", note: "fourniture + main d'œuvre" },
+    { label: "Peinture plafond uniquement", prix: "20 — 35 €/m²", note: "préparation incluse" },
+    { label: "Pose papier peint", prix: "15 — 30 €/m²", note: "hors fourniture du papier" },
+    { label: "Ravalement façade peinte 100 m²", prix: "3 000 — 6 000 €" },
+    { label: "Tarif horaire moyen", prix: "30 — 50 €/h" },
+  ],
+  carreleur: [
+    { label: "Pose carrelage sol 20 m²", prix: "800 — 2 000 €", note: "hors fourniture du carrelage" },
+    { label: "Pose carrelage mural salle de bain", prix: "60 — 120 €/m²", note: "fourniture + pose" },
+    { label: "Tarif horaire moyen", prix: "35 — 55 €/h" },
+  ],
+  menuisier: [
+    { label: "Pose porte intérieure", prix: "200 — 600 €", note: "+ fourniture porte" },
+    { label: "Fenêtre PVC 1 vantail", prix: "400 — 900 €", note: "fourniture + pose" },
+    { label: "Pose parquet 30 m²", prix: "900 — 2 500 €", note: "selon type de parquet" },
+    { label: "Tarif horaire moyen", prix: "40 — 60 €/h" },
+  ],
+  couvreur: [
+    { label: "Réfection toiture 100 m²", prix: "8 000 — 25 000 €", note: "selon couverture (tuile/ardoise)" },
+    { label: "Démoussage + traitement toiture", prix: "10 — 20 €/m²" },
+    { label: "Réparation fuite ponctuelle", prix: "300 — 800 €" },
+    { label: "Tarif horaire moyen", prix: "45 — 65 €/h" },
+  ],
+  chauffagiste: [
+    { label: "Entretien chaudière annuel", prix: "100 — 180 €", note: "obligatoire" },
+    { label: "Remplacement chaudière gaz", prix: "3 000 — 6 000 €", note: "appareil + pose" },
+    { label: "Installation pompe à chaleur air/eau", prix: "10 000 — 18 000 €", note: "éligible MaPrimeRénov" },
+    { label: "Tarif horaire moyen", prix: "45 — 70 €/h" },
+  ],
+};
+
+// Conseils pour bien choisir (par métier — long-tail SEO informationnel)
+const CONSEILS_PAR_METIER: Record<string, string[]> = {
+  plombier: [
+    "Vérifiez la mention RGE si vous installez une chaudière éligible MaPrimeRénov : sans ce label, aucune aide possible.",
+    "Demandez 3 devis détaillés. Un écart de 30% entre artisans est normal — au-delà, méfiance.",
+    "Pour les urgences (fuite, dégât des eaux), exigez un devis écrit même verbal au téléphone : c'est légalement obligatoire si l'intervention dépasse 150 €.",
+    "Privilégiez un plombier basé à moins de 15 km : les frais de déplacement sont moindres et il pourra revenir en SAV facilement.",
+    "Vérifiez l'assurance décennale en cours sur sa fiche Bativio : elle couvre les vices cachés pendant 10 ans.",
+  ],
+  electricien: [
+    "L'électricité est un domaine où le bricolage est interdit pour les installations fixes. Faites appel à un pro Qualifelec ou disposant de l'habilitation électrique.",
+    "Une mise aux normes NF C 15-100 est obligatoire avant toute vente immobilière si le diagnostic électrique révèle des anomalies.",
+    "Pour un tableau électrique, comptez minimum 12 disjoncteurs en logement neuf. Un tableau sous-équipé est une fausse économie.",
+    "Si vous installez une borne de recharge VE, l'électricien doit être certifié IRVE (Infrastructures de Recharge VE) — sinon vous perdez le crédit d'impôt.",
+    "Demandez la photo du tableau après intervention : c'est votre preuve de conformité en cas de sinistre.",
+  ],
+  macon: [
+    "Pour toute extension de plus de 20 m² (40 m² en zone PLU urbain), un permis de construire est obligatoire. Au-delà de 150 m² total, l'architecte est obligatoire aussi.",
+    "Vérifiez si votre projet est en zone sismique 3, 4 ou 5 (cas de la quasi-totalité de la Savoie / Haute-Savoie / Isère) : une attestation parasismique PCMI13 doit être jointe au permis.",
+    "Pour une dalle béton extérieure, prévoyez une pente de 1–2% pour évacuer les eaux de pluie. C'est souvent oublié.",
+    "Demandez un devis avec quantitatif détaillé (m³ de béton, kg d'acier, etc.) : sans ça, impossible de comparer entre artisans.",
+    "La garantie décennale couvre les ouvrages structurels (murs porteurs, fondations, charpente). Vérifiez-la systématiquement.",
+  ],
+  peintre: [
+    "Les peintures écologiques (label Ecolabel ou A+) coûtent 20–30% plus cher mais évitent les COV qui polluent l'air intérieur pendant des semaines.",
+    "Pour une rénovation complète d'un appartement, demandez un planning précis : 3 à 5 jours pour 70 m². Au-delà, l'artisan tire en longueur.",
+    "Préparation = 60% du temps de chantier. Méfiez-vous d'un devis qui chiffre la pose mais pas la préparation (rebouchage, ponçage).",
+    "Pour les pièces humides (salle de bain, cuisine), utilisez une peinture acrylique mate à laque, jamais glycéro qui jaunit.",
+    "Demandez un échantillon couleur appliqué sur votre mur avant validation : la même teinte rend différemment selon l'éclairage.",
+  ],
+  carreleur: [
+    "Comptez 10% de carrelage en plus pour les chutes et les casses lors de la pose.",
+    "Pour une salle de bain, exigez un primaire d'accrochage et une étanchéité (SPEC) avant la pose : sans ça, l'eau s'infiltre dans les joints.",
+    "Le grand format (60×60 ou plus) demande un sol parfaitement plan. Sinon, prévoyez un ragréage en supplément.",
+  ],
+  menuisier: [
+    "Pour une fenêtre, vérifiez le coefficient Uw : plus il est bas (1.0 à 1.4 W/m²K), meilleure est l'isolation.",
+    "Une porte d'entrée doit avoir un point fort A2P 1, 2 ou 3 pour résister à l'effraction. Les assurances exigent souvent A2P 1 minimum.",
+    "Pour un parquet, vérifiez la classe d'usage (21 chambre, 23 séjour, 31 commerce léger) : ne payez pas pour du surdimensionné.",
+  ],
+  couvreur: [
+    "Une toiture doit être inspectée tous les 5 ans minimum. Demandez un audit avec photos drone — c'est devenu standard.",
+    "Pour un démoussage, le traitement curatif (nettoyage haute pression + fongicide) est plus efficace mais plus cher qu'un simple démoussage manuel.",
+    "Si vous changez la couverture, profitez-en pour isoler la toiture par l'extérieur (sarking) : éligible MaPrimeRénov + CEE.",
+  ],
+  chauffagiste: [
+    "L'entretien annuel d'une chaudière gaz est obligatoire (décret 2009-649). En cas de sinistre sans entretien, l'assurance peut refuser.",
+    "Pour une pompe à chaleur, vérifiez le SCOP (rendement saisonnier) : minimum 4.0 pour être performant en climat continental.",
+    "Le crédit d'impôt + MaPrimeRénov peuvent couvrir 30–60% du coût d'une PAC selon vos revenus. Demandez à l'artisan une simulation chiffrée.",
+  ],
+};
+
 // Étapes de la sélection Bativio (réutilisables, signal de confiance fort)
 const PROCESS_STEPS = [
   {
@@ -949,6 +1057,77 @@ export default function MetierVillePage({
             </div>
           </div>
         </section>
+
+        {/* ── Tarifs détaillés (long-tail "prix X", "tarif X à Y") ── */}
+        {(() => {
+          const tarifs = TARIFS_PAR_METIER[metier];
+          if (!tarifs) return null;
+          return (
+            <section className="px-7 py-14 max-md:px-4 bg-white border-t border-sable">
+              <div className="max-w-[760px] mx-auto">
+                <h2 className="font-display text-2xl md:text-3xl font-bold text-anthracite leading-tight mb-3">
+                  Combien co&ucirc;te un {mNom.toLowerCase()} &agrave; {vNom}&nbsp;?
+                </h2>
+                <p className="text-g500 text-[15px] leading-relaxed mb-6">
+                  Tarifs indicatifs pour une intervention &agrave; {vNom} et alentours. Les prix r&eacute;els
+                  varient selon la complexit&eacute; du chantier, l&apos;accessibilit&eacute; et les mat&eacute;riaux choisis.
+                  Demandez plusieurs devis pour comparer.
+                </p>
+                <div className="border border-sable rounded-xl overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-creme border-b border-sable">
+                        <th className="text-left px-4 py-3 font-semibold text-bois">Prestation</th>
+                        <th className="text-left px-4 py-3 font-semibold text-bois whitespace-nowrap">Prix indicatif</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tarifs.map((t, i) => (
+                        <tr key={i} className={i < tarifs.length - 1 ? "border-b border-creme" : ""}>
+                          <td className="px-4 py-3 text-bois-mid">
+                            <div>{t.label}</div>
+                            {t.note && <div className="text-xs text-g400 mt-0.5">{t.note}</div>}
+                          </td>
+                          <td className="px-4 py-3 font-semibold text-anthracite whitespace-nowrap">{t.prix}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <p className="text-xs text-g400 mt-4 italic">
+                  Sources&nbsp;: relevés de devis Bativio + données publiques. Prix TTC, TVA 10% pour la
+                  rénovation de logements de plus de 2 ans (sinon 20%). MaPrimeRénov, CEE et TVA 5,5%
+                  applicables sur certains travaux d&apos;économie d&apos;énergie.
+                </p>
+              </div>
+            </section>
+          );
+        })()}
+
+        {/* ── Conseils pour bien choisir (long-tail informationnel) ── */}
+        {(() => {
+          const conseils = CONSEILS_PAR_METIER[metier];
+          if (!conseils || conseils.length === 0) return null;
+          return (
+            <section className="px-7 py-14 max-md:px-4 bg-creme">
+              <div className="max-w-[760px] mx-auto">
+                <h2 className="font-display text-2xl md:text-3xl font-bold text-anthracite leading-tight mb-5">
+                  {conseils.length} conseils pour bien choisir votre {mNom.toLowerCase()} &agrave; {vNom}
+                </h2>
+                <ol className="space-y-4">
+                  {conseils.map((c, i) => (
+                    <li key={i} className="flex gap-4 items-start">
+                      <span className="flex-shrink-0 w-7 h-7 rounded-full bg-or-light text-or inline-flex items-center justify-center font-bold text-sm">
+                        {i + 1}
+                      </span>
+                      <p className="text-[15px] text-bois-mid leading-relaxed pt-0.5">{c}</p>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </section>
+          );
+        })()}
 
         {/* ── Pourquoi choisir un metier local (bloc édito SEO long-tail) ── */}
         <section className="px-7 py-14 max-md:px-4 bg-creme">
