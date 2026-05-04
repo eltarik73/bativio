@@ -14,8 +14,20 @@ const organizationJsonLd = {
   name: "Bativio",
   alternateName: ["Bativio.fr", "Bativio Annuaire Artisans"],
   url: "https://www.bativio.fr",
-  logo: "https://www.bativio.fr/icons/icon-192.png",
-  image: "https://www.bativio.fr/og-image.png",
+  // Logo absolu PNG carré ≥ 112×112 (guidelines Google) pour le knowledge
+  // panel et les SERP. Le SVG est aussi listé dans `image` pour les bots
+  // capables (les LLM en particulier).
+  logo: {
+    "@type": "ImageObject",
+    url: "https://www.bativio.fr/icons/icon-512.png",
+    width: 512,
+    height: 512,
+  },
+  image: [
+    "https://www.bativio.fr/og-image.png",
+    "https://www.bativio.fr/icons/icon-512.png",
+    "https://www.bativio.fr/icons/logo.svg",
+  ],
   description: "Annuaire et plateforme SaaS pour artisans du bâtiment en région Rhône-Alpes. Zéro commission, sans engagement, conforme facturation électronique 2026.",
   foundingDate: "2025",
   founder: {
@@ -118,8 +130,21 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "Bativio",
   },
+  // Next.js detects app/icon.svg + app/icon.png + app/apple-icon.png
+  // automatically and emits the right <link rel="icon"> tags. We add the
+  // explicit overrides below so that even bots that read metadata first
+  // (Google, social previews) pick up the Bativio mark — never the default
+  // Next.js / Vercel favicon.
   icons: {
-    apple: "/icons/icon-192.png",
+    icon: [
+      { url: "/icons/icon.svg", type: "image/svg+xml" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    shortcut: ["/icons/icon-192.png"],
   },
   openGraph: {
     type: "website",
