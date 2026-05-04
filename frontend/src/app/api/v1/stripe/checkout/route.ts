@@ -9,6 +9,10 @@ export async function POST(request: Request) {
     const body = await request.json();
     const plan = (body.plan || body.priceId || "").toUpperCase() as string;
     const annual = body.annual === true || body.billing === "yearly";
+    // mode = "inscription" → routes success/cancel ramènent vers le flow
+    // d'inscription (scoring après paiement). Sinon, mode "upgrade" classique
+    // (depuis /dashboard/abonnement) → ramène vers le dashboard.
+    const mode = body.mode === "inscription" ? "inscription" : "upgrade";
 
     if (!plan || !(plan in PLAN_CONFIG)) {
       return apiError("Plan invalide", 400);
@@ -63,14 +67,21 @@ export async function POST(request: Request) {
           quantity: 1,
         }];
 
+    const successUrl = mode === "inscription"
+      ? `${appUrl}/onboarding/validation?paid=true&plan=${plan}`
+      : `${appUrl}/dashboard/abonnement?success=true&plan=${plan}`;
+    const cancelUrl = mode === "inscription"
+      ? `${appUrl}/onboarding/validation?cancelled=true`
+      : `${appUrl}/artisan#pricing`;
+
     const checkoutSession = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: "subscription",
       line_items: lineItems,
       allow_promotion_codes: true,
-      success_url: `${appUrl}/dashboard/abonnement?success=true&plan=${plan}`,
-      cancel_url: `${appUrl}/artisan#pricing`,
-      metadata: { artisanId: artisan.id, plan },
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      metadata: { artisanId: artisan.id, plan, flowMode: mode },
     });
 
     return apiSuccess({ url: checkoutSession.url, type: "checkout" });

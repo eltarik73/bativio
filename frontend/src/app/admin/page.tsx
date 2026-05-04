@@ -188,7 +188,7 @@ export default function AdminDashboard() {
                 {pendingCount} artisan{pendingCount > 1 ? "s" : ""} en attente de validation
               </p>
               <p style={{ fontSize: 13, color: "var(--pierre,#9C958D)", marginTop: 2 }}>
-                Onboarding · NAF à valider · scoring en attente
+                NAF à valider · scoring en attente de décision
               </p>
             </div>
           </div>

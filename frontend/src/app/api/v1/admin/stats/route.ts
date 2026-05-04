@@ -54,13 +54,13 @@ export async function GET() {
       prisma.demandeDevis.count({
         where: { createdAt: { gte: startOfLastMonth, lte: endOfLastMonth } },
       }),
-      // Compteur "à valider" — englobe tous les statuts pré-validation
+      // Compteur "à valider" — uniquement les statuts qui attendent une
+      // décision de l'admin. ONBOARDING = artisan en cours d'inscription
+      // (n'a pas encore soumis son scoring), donc rien à valider côté admin.
       prisma.artisan.count({
         where: {
           deletedAt: null,
-          artisanStatus: {
-            in: ["ONBOARDING", "PENDING_NAF_REVIEW", "PENDING_REVIEW"],
-          },
+          artisanStatus: { in: ["PENDING_NAF_REVIEW", "PENDING_REVIEW"] },
         },
       }),
       // Répartition par plan : seulement actifs (sinon le total dépasse totalArtisansActif)

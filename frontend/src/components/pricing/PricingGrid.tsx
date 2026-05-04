@@ -205,7 +205,12 @@ export default function PricingGrid({ currentPlan, ctaHref }: PricingGridProps) 
           // Hide plans below current
           if (isLower) return null;
 
-          const linkHref = ctaHref || (plan.id === "gratuit" ? "/inscription" : "/inscription");
+          // For paid plans, pass the plan + billing in the URL so the
+          // inscription page can redirect to Stripe Checkout right after
+          // the artisan creates their account.
+          const linkHref = ctaHref || (plan.id === "gratuit"
+            ? "/inscription"
+            : `/inscription?plan=${plan.id}&billing=${annual ? "yearly" : "monthly"}`);
 
           return (
             <div key={plan.id} className={`${s.plan} ${plan.featured && !isCurrent ? s.planFeat : ""} ${isCurrent ? s.planCurrent : ""}`}>
