@@ -781,6 +781,17 @@ export default function MetierVillePage({
     name: `${mNom} à ${vNom}`,
     serviceType: mNom,
     description: `Trouvez un ${mNom.toLowerCase()} qualifié à ${vNom}. Devis gratuit en 24 h, artisans vérifiés (SIRET, assurance décennale, attestation URSSAF), zéro commission sur les chantiers.`,
+    keywords: [
+      `${mNom.toLowerCase()} ${vNom}`,
+      `${mNom.toLowerCase()} pas cher ${vNom}`,
+      `${mNom.toLowerCase()} urgence ${vNom}`,
+      `meilleur ${mNom.toLowerCase()} ${vNom}`,
+      `devis ${mNom.toLowerCase()} ${vNom}`,
+      `prix ${mNom.toLowerCase()} ${vNom}`,
+      `tarif ${mNom.toLowerCase()} ${vNom}`,
+      `${mNom.toLowerCase()} certifié RGE`,
+      `artisan ${mNom.toLowerCase()} Rhône-Alpes`,
+    ].join(", "),
     areaServed: {
       "@type": "City",
       name: vNom,

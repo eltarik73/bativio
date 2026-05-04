@@ -125,9 +125,35 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
   // Layout template adds "| Bativio" → strip any pre-existing "| Bativio" / "— Bativio"
   const title = rawTitle.replace(/\s*[|—\-–]\s*Bativio\s*$/i, "").trim();
   const description = seoDesc || `Trouvez les meilleurs artisans du bâtiment à ${nom}. Plombier, électricien, peintre, maçon. Devis gratuit, zéro commission.`;
+  // Mots-cles long-tail couvrant les requêtes les plus tapées sur Chambery
+  // et alentours (electricien, plombier, macon, peintre + variants urgence,
+  // pas cher, devis, prix, certifie, RGE).
+  const vLow = nom.toLowerCase();
+  const keywords = [
+    `artisan ${vLow}`,
+    `artisans batiment ${vLow}`,
+    `plombier ${vLow}`,
+    `electricien ${vLow}`,
+    `macon ${vLow}`,
+    `peintre ${vLow}`,
+    `carreleur ${vLow}`,
+    `menuisier ${vLow}`,
+    `couvreur ${vLow}`,
+    `chauffagiste ${vLow}`,
+    `attestation sismique ${vLow}`,
+    `pcmi13 ${vLow}`,
+    `devis travaux ${vLow}`,
+    `urgence plombier ${vLow}`,
+    `urgence electricien ${vLow}`,
+    `renovation ${vLow}`,
+    `annuaire artisan ${vLow}`,
+    `trouver artisan ${vLow}`,
+    `maprimerenov ${vLow}`,
+  ];
   return {
     title,
     description,
+    keywords,
     alternates: { canonical: `https://www.bativio.fr/${villeSlug}` },
     openGraph: {
       title,

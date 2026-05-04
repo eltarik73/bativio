@@ -134,10 +134,35 @@ export async function generateMetadata({
     const mNom = metierNom(slug);
     const title = `${mNom} \u00e0 ${vNom} \u2014 Artisans v\u00e9rifi\u00e9s`;
     const description = `Trouvez un ${mNom.toLowerCase()} qualifi\u00e9 \u00e0 ${vNom}. Artisans v\u00e9rifi\u00e9s, devis gratuit en 2 minutes. Z\u00e9ro commission.`;
+    const mLow = mNom.toLowerCase();
+    const vLow = vNom.toLowerCase();
+    // Mots-cles long-tail (Bing/Yandex/IA crawlers les consomment encore;
+    // Google les ignore mais ca renforce les signaux pour les LLM bots
+    // ClaudeBot, GPTBot, PerplexityBot autorises dans robots.txt).
+    const keywords = [
+      `${mLow} ${vLow}`,
+      `${mLow} ${vLow} pas cher`,
+      `${mLow} urgence ${vLow}`,
+      `${mLow} 24h ${vLow}`,
+      `meilleur ${mLow} ${vLow}`,
+      `devis ${mLow} ${vLow}`,
+      `tarif ${mLow} ${vLow}`,
+      `prix ${mLow} ${vLow}`,
+      `artisan ${mLow} ${vLow}`,
+      `${mLow} rge ${vLow}`,
+      `${mLow} certifie ${vLow}`,
+      `${mLow} avis ${vLow}`,
+      `${mLow} proche moi`,
+      `trouver ${mLow} ${vLow}`,
+      `annuaire artisan ${vLow}`,
+      `${mLow} depannage ${vLow}`,
+      `${mLow} ${vLow} alentours`,
+    ];
 
     return {
       title,
       description,
+      keywords,
       alternates: {
         canonical: `https://www.bativio.fr/${villeParam}/${slug}`,
       },
