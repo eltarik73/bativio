@@ -70,6 +70,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/faq`, lastModified: new Date("2026-04-15"), changeFrequency: "monthly", priority: 0.7 },
     { url: `${baseUrl}/urgence`, lastModified: SITE_LAST_REFONTE, changeFrequency: "weekly", priority: 0.85 },
     { url: `${baseUrl}/maprimerenov`, lastModified: SITE_LAST_REFONTE, changeFrequency: "monthly", priority: 0.85 },
+    { url: `${baseUrl}/attestation-sismique`, lastModified: new Date("2026-05-04"), changeFrequency: "monthly", priority: 0.85 },
     { url: `${baseUrl}/metiers`, lastModified: new Date("2026-04-22"), changeFrequency: "monthly", priority: 0.85 },
     { url: `${baseUrl}/contact`, lastModified: new Date("2026-04-15"), changeFrequency: "yearly", priority: 0.5 },
     { url: `${baseUrl}/guides`, lastModified: GUIDES_LAST_UPDATE, changeFrequency: "monthly", priority: 0.7 },

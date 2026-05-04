@@ -291,8 +291,12 @@ export function getZoneTier(zone: Zone): 1 | 2 | 3 | 4 | 5 {
 }
 
 // Current publication tier — bump this each sprint to expose more pages.
-// Sprint 1 (mai 2026) : tier 1 only = ~25 zones × 8 métiers = ~200 pages.
-export const CURRENT_PUBLISH_TIER: 1 | 2 | 3 | 4 = 1;
+// Sprint 1 (01/05/2026) : tier 1 only = ~25 zones × 8 métiers = ~200 pages.
+// Sprint 2 (04/05/2026) : tier 4 — Tarik veut être visible sur Chambéry et
+// toutes les communes alentours (Aix-les-Bains, La Motte-Servolex, La Bridoire,
+// Cognin, Albertville, etc.). On expose toutes les zones publiables d'un coup
+// + cron quotidien IndexNow pour pousser l'indexation Bing/Yandex.
+export const CURRENT_PUBLISH_TIER: 1 | 2 | 3 | 4 = 4;
 
 export interface PublishableZone extends Zone {
   villeMere: string;
