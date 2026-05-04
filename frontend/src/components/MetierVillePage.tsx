@@ -1,9 +1,59 @@
 import Link from "next/link";
 import ArtisanCard from "@/components/ArtisanCard";
 import { VILLES, METIERS } from "@/lib/constants";
-import { findPublishableZone } from "@/lib/zones";
+import { findPublishableZone, getZonesForVille } from "@/lib/zones";
 import type { ArtisanPublic } from "@/lib/api";
 import { safeJsonLd } from "@/lib/html-escape";
+
+// Communes alentours pour le maillage interne SEO. Si l'utilisateur est sur
+// une ville principale, on liste les zones publiables autour. S'il est sur
+// une zone (Le Pont-de-Beauvoisin), on liste les autres communes du même
+// bassin pour densifier le linking interne.
+function getCommunesAlentours(villeSlug: string, max = 12): Array<{ name: string; slug: string }> {
+  const direct = getZonesForVille(villeSlug);
+  if (direct.length > 0) {
+    return direct.slice(0, max).map((z) => ({ name: z.name, slug: z.slug }));
+  }
+  // C'est une zone — chercher la ville mère
+  const zone = findPublishableZone(villeSlug);
+  if (!zone) return [];
+  return getZonesForVille(zone.villeMereSlug)
+    .filter((z) => z.slug !== villeSlug)
+    .slice(0, max)
+    .map((z) => ({ name: z.name, slug: z.slug }));
+}
+
+// Pour l'affichage du nom de la ville mère dans la section "alentours"
+function getVilleMereName(villeSlug: string): string | null {
+  const directVille = VILLES.find((v) => v.slug === villeSlug);
+  if (directVille) return directVille.nom;
+  const zone = findPublishableZone(villeSlug);
+  return zone?.villeMere ?? null;
+}
+
+// Étapes de la sélection Bativio (réutilisables, signal de confiance fort)
+const PROCESS_STEPS = [
+  {
+    n: 1,
+    titre: "Vérification administrative",
+    desc: "SIRET valide, code NAF du bâtiment, attestation URSSAF à jour. Aucun artisan ne s'inscrit sans ces 3 piliers — c'est la base de la confiance.",
+  },
+  {
+    n: 2,
+    titre: "Décennale et qualifications",
+    desc: "Assurance décennale en cours, qualifications RGE, Qualibat, Qualifelec contrôlées. Les badges affichés sur la fiche correspondent à des attestations vérifiées.",
+  },
+  {
+    n: 3,
+    titre: "Avis clients authentiques",
+    desc: "Chaque avis est rattaché à un devis ou un chantier réel passé via Bativio. Pas d'avis fantômes ou achetés — la note moyenne reflète l'expérience réelle.",
+  },
+  {
+    n: 4,
+    titre: "Suivi continu",
+    desc: "Si un artisan ne répond plus aux demandes, perd sa décennale ou collectionne les avis négatifs, il est suspendu de l'annuaire. Notre équipe surveille en continu.",
+  },
+] as const;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -868,6 +918,97 @@ export default function MetierVillePage({
             </div>
           </section>
         )}
+
+        {/* ── Process Bativio (4 étapes, signal de confiance pour SEO + UX) ── */}
+        <section className="px-7 py-14 max-md:px-4 bg-white border-t border-sable">
+          <div className="max-w-[1080px] mx-auto">
+            <div className="max-w-[680px] mx-auto text-center mb-10">
+              <span className="inline-block px-3 py-1 rounded-full bg-or-light text-or text-xs font-bold uppercase tracking-wider mb-3">
+                S&eacute;lection en 4 &eacute;tapes
+              </span>
+              <h2 className="font-display text-2xl md:text-3xl font-bold text-anthracite leading-tight mb-3">
+                Comment Bativio s&eacute;lectionne les {mNom.toLowerCase()}s &agrave; {vNom}
+              </h2>
+              <p className="text-g500 text-[15px] leading-relaxed">
+                Aucun {mNom.toLowerCase()} n&apos;arrive dans notre annuaire par hasard.
+                Chaque artisan que vous voyez ici &agrave; {vNom} a pass&eacute; les 4 &eacute;tapes ci-dessous.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[920px] mx-auto">
+              {PROCESS_STEPS.map((s) => (
+                <div key={s.n} className="flex gap-4 items-start">
+                  <span className="flex-shrink-0 w-10 h-10 rounded-full bg-terre text-white inline-flex items-center justify-center font-display font-bold text-lg">
+                    {s.n}
+                  </span>
+                  <div>
+                    <h3 className="font-display text-lg font-bold text-bois mb-1">{s.titre}</h3>
+                    <p className="text-sm text-g500 leading-relaxed">{s.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Pourquoi choisir un metier local (bloc édito SEO long-tail) ── */}
+        <section className="px-7 py-14 max-md:px-4 bg-creme">
+          <div className="max-w-[760px] mx-auto">
+            <h2 className="font-display text-2xl md:text-3xl font-bold text-anthracite leading-tight mb-5">
+              Pourquoi passer par un {mNom.toLowerCase()} local &agrave; {vNom}&nbsp;?
+            </h2>
+            <p className="text-[15px] text-bois-mid leading-[1.75] mb-4">
+              Choisir un {mNom.toLowerCase()} bas&eacute; &agrave; {vNom} ou dans les communes alentours, c&apos;est&nbsp;d&apos;abord
+              gagner en r&eacute;activit&eacute;. Pour un d&eacute;pannage urgent (fuite d&apos;eau, panne &eacute;lectrique,
+              probl&egrave;me de chauffage), un artisan local peut intervenir dans la journ&eacute;e&nbsp;: il conna&icirc;t les
+              quartiers, les r&eacute;sidences, les sp&eacute;cificit&eacute;s du b&acirc;ti local (immeubles haussmanniens du
+              centre-ville, lotissements p&eacute;riph&eacute;riques, fermes r&eacute;nov&eacute;es de bassin).
+            </p>
+            <p className="text-[15px] text-bois-mid leading-[1.75] mb-4">
+              Un {mNom.toLowerCase()} de proximit&eacute; vous co&ucirc;te aussi <strong>moins cher en frais de d&eacute;placement</strong>&nbsp;:
+              pas de majoration kilom&eacute;trique pour intervenir &agrave; quelques minutes de son atelier. Et en cas de SAV
+              ou de retour sur chantier, c&apos;est lui qui revient — pas un sous-traitant introuvable.
+            </p>
+            <p className="text-[15px] text-bois-mid leading-[1.75]">
+              Sur Bativio, tous les {mNom.toLowerCase()}s r&eacute;f&eacute;renc&eacute;s &agrave; {vNom} ont un <strong>SIRET v&eacute;rifi&eacute;</strong>,
+              une assurance d&eacute;cennale en cours et des avis clients authentiques. Le devis est gratuit et sans
+              engagement. Aucune commission n&apos;est pr&eacute;lev&eacute;e sur les chantiers&nbsp;: vous payez l&apos;artisan au juste
+              prix annonc&eacute; sur son devis.
+            </p>
+          </div>
+        </section>
+
+        {/* ── Communes alentours (maillage interne pour SEO local) ── */}
+        {(() => {
+          const alentours = getCommunesAlentours(ville, 14);
+          const villeMere = getVilleMereName(ville);
+          if (alentours.length === 0) return null;
+          return (
+            <section className="px-7 py-14 max-md:px-4 bg-white border-t border-sable">
+              <div className="max-w-[1080px] mx-auto">
+                <div className="max-w-[680px] mb-8">
+                  <h2 className="font-display text-2xl md:text-3xl font-bold text-anthracite leading-tight mb-3">
+                    {mNom} dans les communes autour de {villeMere || vNom}
+                  </h2>
+                  <p className="text-g500 text-[15px] leading-relaxed">
+                    Vous habitez en p&eacute;riph&eacute;rie&nbsp;? Trouvez un {mNom.toLowerCase()} dans votre commune
+                    pr&eacute;cis&eacute;ment.
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
+                  {alentours.map((c) => (
+                    <Link
+                      key={c.slug}
+                      href={`/${c.slug}/${metier}`}
+                      className="px-4 py-3 rounded-lg border border-sable bg-white hover:border-terre hover:bg-creme transition-colors text-sm font-medium text-bois"
+                    >
+                      {mNom} &agrave; {c.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </section>
+          );
+        })()}
 
         {/* ── CTA bottom ──────────────────────────────────────────── */}
         <section className="px-7 py-14 max-md:px-4 text-center">
