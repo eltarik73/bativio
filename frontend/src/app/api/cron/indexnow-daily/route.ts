@@ -140,6 +140,15 @@ export async function GET(request: NextRequest) {
   for (const zone of getAllPublishableZones()) {
     urls.add(`${SITE}/${zone.slug}`);
     for (const m of METIERS) urls.add(`${SITE}/${zone.slug}/${m}`);
+    // Pages dédiées attestation sismique et PCMI13 par ville
+    urls.add(`${SITE}/attestation-sismique/${zone.slug}`);
+    urls.add(`${SITE}/pcmi13/${zone.slug}`);
+  }
+
+  // Idem pour les 5 villes principales
+  for (const v of ["chambery", "annecy", "grenoble", "lyon", "valence"]) {
+    urls.add(`${SITE}/attestation-sismique/${v}`);
+    urls.add(`${SITE}/pcmi13/${v}`);
   }
 
   // Vitrines artisans actifs (DB)

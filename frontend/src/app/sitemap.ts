@@ -71,6 +71,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/urgence`, lastModified: SITE_LAST_REFONTE, changeFrequency: "weekly", priority: 0.85 },
     { url: `${baseUrl}/maprimerenov`, lastModified: SITE_LAST_REFONTE, changeFrequency: "monthly", priority: 0.85 },
     { url: `${baseUrl}/attestation-sismique`, lastModified: new Date("2026-05-04"), changeFrequency: "monthly", priority: 0.85 },
+    { url: `${baseUrl}/pcmi13`, lastModified: new Date("2026-05-04"), changeFrequency: "monthly", priority: 0.8 },
     { url: `${baseUrl}/metiers`, lastModified: new Date("2026-04-22"), changeFrequency: "monthly", priority: 0.85 },
     { url: `${baseUrl}/contact`, lastModified: new Date("2026-04-15"), changeFrequency: "yearly", priority: 0.5 },
     { url: `${baseUrl}/guides`, lastModified: GUIDES_LAST_UPDATE, changeFrequency: "monthly", priority: 0.7 },
@@ -191,6 +192,38 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Prisma may fail during build — skip silently
   }
 
+  // Pages /attestation-sismique/{ville} et /pcmi13/{ville} pour ranker sur
+  // les requêtes "attestation sismique chambery", "pcmi13 chambery", etc.
+  const sismiqueVillePages: MetadataRoute.Sitemap = [
+    ...VILLES.map((v) => ({
+      url: `${baseUrl}/attestation-sismique/${v.slug}`,
+      lastModified: new Date("2026-05-04"),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
+    ...VILLES.map((v) => ({
+      url: `${baseUrl}/pcmi13/${v.slug}`,
+      lastModified: new Date("2026-05-04"),
+      changeFrequency: "monthly" as const,
+      priority: 0.65,
+    })),
+  ];
+  // Idem pour les zones publishable (Aix-les-Bains, La Motte-Servolex, etc.)
+  for (const z of zones) {
+    sismiqueVillePages.push({
+      url: `${baseUrl}/attestation-sismique/${z.slug}`,
+      lastModified: new Date("2026-05-04"),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    });
+    sismiqueVillePages.push({
+      url: `${baseUrl}/pcmi13/${z.slug}`,
+      lastModified: new Date("2026-05-04"),
+      changeFrequency: "monthly",
+      priority: 0.55,
+    });
+  }
+
   return [
     ...staticPages,
     ...prixMetierPages,
@@ -198,6 +231,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...villeMetierPages,
     ...zoneHubPages,
     ...zoneMetierPages,
+    ...sismiqueVillePages,
     ...artisanPages,
     ...travauxPages,
     ...businessCategoryPages,

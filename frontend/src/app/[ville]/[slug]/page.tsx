@@ -113,6 +113,9 @@ const RESERVED_TOP_LEVEL = new Set([
   "rejoindre", "a-propos", "mentions-legales", "cgu", "inscription",
   "connexion", "prix", "travaux", "facturation-electronique", "demande",
   "artisan", "_next", "icons", "videos", "demo-c",
+  // Routes éditoriales SEO avec sous-pages /[ville] dédiées
+  "attestation-sismique", "pcmi13", "guides", "faq", "metiers",
+  "maprimerenov", "urgence", "contact", "plan-du-site",
 ]);
 
 export async function generateMetadata({
