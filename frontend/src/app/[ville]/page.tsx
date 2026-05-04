@@ -16,7 +16,9 @@ import { prisma } from "@/lib/prisma";
 import MetierVilleListing from "./MetierVilleListing";
 import { getAllPublishableZones, findPublishableZone } from "@/lib/zones";
 
-export const revalidate = 3600;
+// Cache court (60s) au lieu d'1h : un nouvel artisan validé doit apparaître
+// dans l'annuaire au plus tard 1 minute après sa validation, pas 1h.
+export const revalidate = 60;
 
 // SEO: lister TOUS les slugs valides + interdire les autres → vrai HTTP 404
 // Inclut villes principales + zones publiables (sprint en cours) + metier-ville composites DB.

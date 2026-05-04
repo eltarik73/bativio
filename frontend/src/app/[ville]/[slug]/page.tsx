@@ -23,7 +23,8 @@ import MetierVillePageComponent, {
 import { getAllPublishableZones } from "@/lib/zones";
 import { notFound } from "next/navigation";
 
-export const revalidate = 3600;
+// Cache court (60s) au lieu d'1h : voir commentaire dans [ville]/page.tsx
+export const revalidate = 60;
 
 // ---------------------------------------------------------------------------
 // Helpers

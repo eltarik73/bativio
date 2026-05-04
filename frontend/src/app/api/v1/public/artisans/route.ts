@@ -21,7 +21,12 @@ export async function GET(request: NextRequest) {
       actif: true,
       visible: true,
       deletedAt: null,
-      profilCompletion: { gte: 50 },
+      // Tous les artisans actifs (validés par l'admin ou auto-acceptés via
+      // scoring) apparaissent dans l'annuaire. Le tri remonte les profils
+      // les plus complets en premier (orderBy plus bas), donc pas besoin
+      // de filtrer par profilCompletion : un artisan validé mais sans
+      // photos/description doit pouvoir être trouvé — il apparaîtra juste
+      // en bas de liste.
       NOT: { slug: { startsWith: "test-" } },
     };
 
