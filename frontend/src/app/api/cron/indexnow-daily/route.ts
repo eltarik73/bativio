@@ -117,6 +117,33 @@ async function pingGoogleSitemap(): Promise<{ ok: boolean; status: number }> {
   }
 }
 
+interface BingResult { ok: boolean; status: number; submitted: number; reason?: string; }
+
+async function submitBingWebmasterTools(urls: string[]): Promise<BingResult> {
+  // Bing Webmaster Tools API : 10 000 URLs/jour si la clé est fournie en env.
+  // Plus efficace qu'IndexNow car force l'inclusion immédiate dans l'index Bing.
+  // Doc : https://www.bing.com/webmasters/help/url-submission-api-3a9d7b35
+  const key = process.env.BING_WMT_API_KEY;
+  if (!key) {
+    return { ok: false, status: 0, submitted: 0, reason: "BING_WMT_API_KEY not set" };
+  }
+  // Limit safe : 500 URLs par batch (l'API accepte 500 en SubmitUrlBatch)
+  const batch = urls.slice(0, 500);
+  try {
+    const res = await fetch(
+      `https://ssl.bing.com/webmaster/api.svc/json/SubmitUrlBatch?apikey=${encodeURIComponent(key)}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({ siteUrl: SITE, urlList: batch }),
+      }
+    );
+    return { ok: res.ok, status: res.status, submitted: batch.length };
+  } catch (e) {
+    return { ok: false, status: 0, submitted: 0, reason: String(e).slice(0, 100) };
+  }
+}
+
 export async function GET(request: NextRequest) {
   // Vercel envoie un header Authorization Bearer ${CRON_SECRET} si défini.
   // On vérifie juste pour éviter qu'un tiers déclenche le cron en boucle.
@@ -181,12 +208,16 @@ export async function GET(request: NextRequest) {
   // 2. Ping Google legacy sitemap endpoint (best effort)
   const googlePing = await pingGoogleSitemap();
 
+  // 3. Bing Webmaster Tools API (si la clé est fournie en env Vercel)
+  const bingWmt = await submitBingWebmasterTools(allUrls);
+
   return NextResponse.json({
     success: true,
     submittedUrls: allUrls.length,
     chunks: chunks.length,
     indexnow: indexNowResults.flat(),
     googleSitemapPing: googlePing,
+    bingWebmaster: bingWmt,
     timestamp: new Date().toISOString(),
   });
 }

@@ -54,6 +54,17 @@ export const ZONES_SEO: Record<string, VilleZones> = {
       { name: "La Ravoire", cp: "73490", insee: "73213", type: "banlieue", pop: 8800, slug: "la-ravoire" },
       { name: "Saint-Baldoph", cp: "73190", insee: "73215", type: "banlieue", pop: 2200, slug: "saint-baldoph" },
       { name: "Saint-Jeoire-Prieuré", cp: "73190", insee: "73230", type: "banlieue", pop: 1100, slug: "saint-jeoire-prieure" },
+      { name: "Saint-Jean-d'Arvey", cp: "73230", insee: "73224", type: "banlieue", pop: 1500, slug: "saint-jean-d-arvey" },
+      { name: "Montagnole", cp: "73000", insee: "73168", type: "banlieue", pop: 1100, slug: "montagnole" },
+      { name: "Saint-Sulpice", cp: "73160", insee: "73271", type: "banlieue", pop: 1100, slug: "saint-sulpice" },
+      { name: "La Thuile", cp: "73190", insee: "73291", type: "banlieue", pop: 700, slug: "la-thuile" },
+      { name: "Thoiry", cp: "73230", insee: "73294", type: "banlieue", pop: 750, slug: "thoiry" },
+      { name: "Curienne", cp: "73190", insee: "73097", type: "banlieue", pop: 530, slug: "curienne" },
+      { name: "Puygros", cp: "73190", insee: "73210", type: "banlieue", pop: 500, slug: "puygros" },
+      { name: "Verel-Pragondran", cp: "73230", insee: "73318", type: "banlieue", pop: 350, slug: "verel-pragondran" },
+      { name: "Les Déserts", cp: "73230", insee: "73101", type: "banlieue", pop: 320, slug: "les-deserts" },
+      { name: "Saint-Cassin", cp: "73160", insee: "73219", type: "banlieue", pop: 240, slug: "saint-cassin" },
+      { name: "Bourdeau", cp: "73370", insee: "73048", type: "banlieue", pop: 540, slug: "bourdeau" },
 
       // Agglo (Aix-les-Bains et bassin)
       { name: "Aix-les-Bains", cp: "73100", insee: "73008", type: "agglo", pop: 30800, slug: "aix-les-bains" },
@@ -61,6 +72,12 @@ export const ZONES_SEO: Record<string, VilleZones> = {
       { name: "Tresserve", cp: "73100", insee: "73297", type: "agglo", pop: 2900, slug: "tresserve" },
       { name: "Grésy-sur-Aix", cp: "73100", insee: "73128", type: "agglo", pop: 5200, slug: "gresy-sur-aix" },
       { name: "Drumettaz-Clarafond", cp: "73420", insee: "73108", type: "agglo", pop: 2500, slug: "drumettaz-clarafond" },
+      { name: "Méry", cp: "73420", insee: "73158", type: "agglo", pop: 1500, slug: "mery" },
+      { name: "Mouxy", cp: "73100", insee: "73182", type: "agglo", pop: 1200, slug: "mouxy" },
+      { name: "Pugny-Chatenod", cp: "73100", insee: "73208", type: "agglo", pop: 1100, slug: "pugny-chatenod" },
+      { name: "Trévignin", cp: "73100", insee: "73299", type: "agglo", pop: 850, slug: "trevignin" },
+      { name: "Brison-Saint-Innocent", cp: "73100", insee: "73055", type: "agglo", pop: 2200, slug: "brison-saint-innocent" },
+      { name: "Viviers-du-Lac", cp: "73420", insee: "73330", type: "agglo", pop: 1800, slug: "viviers-du-lac" },
 
       // Bassin économique
       { name: "Albertville", cp: "73200", insee: "73011", type: "bassin", pop: 19000, slug: "albertville" },
@@ -71,6 +88,11 @@ export const ZONES_SEO: Record<string, VilleZones> = {
       { name: "Saint-Jean-de-Maurienne", cp: "73300", insee: "73248", type: "bassin", pop: 7800, slug: "saint-jean-de-maurienne" },
       { name: "La Bridoire", cp: "73520", insee: "73053", type: "bassin", pop: 800, slug: "la-bridoire" },
       { name: "Aiguebelette-le-Lac", cp: "73610", insee: "73003", type: "bassin", pop: 225, slug: "aiguebelette-le-lac" },
+      { name: "Apremont", cp: "73190", insee: "73015", type: "bassin", pop: 1100, slug: "apremont" },
+      { name: "Chamoux-sur-Gelon", cp: "73390", insee: "73067", type: "bassin", pop: 1700, slug: "chamoux-sur-gelon" },
+      { name: "Le Châtelard", cp: "73630", insee: "73079", type: "bassin", pop: 750, slug: "le-chatelard" },
+      { name: "Les Échelles", cp: "73360", insee: "73113", type: "bassin", pop: 1300, slug: "les-echelles" },
+      { name: "Pontcharra", cp: "38530", insee: "38314", type: "bassin", pop: 7200, slug: "pontcharra" },
     ],
   },
 

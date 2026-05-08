@@ -11,6 +11,10 @@
     {
       "path": "/api/cron/indexnow-daily",
       "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/cron/indexnow-evening",
+      "schedule": "0 17 * * *"
     }
   ],
   "headers": [
