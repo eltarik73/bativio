@@ -38,9 +38,9 @@ export const ZONES_SEO: Record<string, VilleZones> = {
       { name: "Le Biollay", cp: "73000", type: "intramuros", pop: 5000, slug: "le-biollay" },
       { name: "Mérande", cp: "73000", type: "intramuros", pop: 3000, slug: "merande" },
       { name: "Chambéry-le-Vieux", cp: "73000", type: "intramuros", pop: 3500, slug: "chambery-le-vieux" },
-      { name: "Bissy", cp: "73000", type: "intramuros", pop: 3000, slug: "bissy" },
 
       // Banlieue immédiate
+      { name: "Bissy", cp: "73000", type: "banlieue", pop: 3000, slug: "bissy" },
       { name: "Cognin", cp: "73160", insee: "73087", type: "banlieue", pop: 6200, slug: "cognin" },
       { name: "Bassens", cp: "73000", insee: "73031", type: "banlieue", pop: 3800, slug: "bassens" },
       { name: "Saint-Alban-Leysse", cp: "73230", insee: "73213", type: "banlieue", pop: 5800, slug: "saint-alban-leysse" },
@@ -52,6 +52,8 @@ export const ZONES_SEO: Record<string, VilleZones> = {
       { name: "Jacob-Bellecombette", cp: "73000", insee: "73137", type: "banlieue", pop: 3800, slug: "jacob-bellecombette" },
       { name: "Vimines", cp: "73160", insee: "73329", type: "banlieue", pop: 2200, slug: "vimines" },
       { name: "La Ravoire", cp: "73490", insee: "73213", type: "banlieue", pop: 8800, slug: "la-ravoire" },
+      { name: "Saint-Baldoph", cp: "73190", insee: "73215", type: "banlieue", pop: 2200, slug: "saint-baldoph" },
+      { name: "Saint-Jeoire-Prieuré", cp: "73190", insee: "73230", type: "banlieue", pop: 1100, slug: "saint-jeoire-prieure" },
 
       // Agglo (Aix-les-Bains et bassin)
       { name: "Aix-les-Bains", cp: "73100", insee: "73008", type: "agglo", pop: 30800, slug: "aix-les-bains" },
@@ -68,6 +70,7 @@ export const ZONES_SEO: Record<string, VilleZones> = {
       { name: "Yenne", cp: "73170", insee: "73340", type: "bassin", pop: 3000, slug: "yenne" },
       { name: "Saint-Jean-de-Maurienne", cp: "73300", insee: "73248", type: "bassin", pop: 7800, slug: "saint-jean-de-maurienne" },
       { name: "La Bridoire", cp: "73520", insee: "73053", type: "bassin", pop: 800, slug: "la-bridoire" },
+      { name: "Aiguebelette-le-Lac", cp: "73610", insee: "73003", type: "bassin", pop: 225, slug: "aiguebelette-le-lac" },
     ],
   },
 
