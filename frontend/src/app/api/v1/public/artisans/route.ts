@@ -40,13 +40,17 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Filter by metier slug — search in artisanMetiers (multi-metier support)
+    // Filter by metier slug — supporte le métier principal (Artisan.metierId)
+    // ET le multi-métier (table de jointure artisanMetiers).
     if (metier) {
       const metierRecord = await prisma.metier.findUnique({
         where: { slug: metier },
       });
       if (metierRecord) {
-        where.artisanMetiers = { some: { metierId: metierRecord.id } };
+        where.OR = [
+          { metierId: metierRecord.id },
+          { artisanMetiers: { some: { metierId: metierRecord.id } } },
+        ];
       } else {
         // Metier not found — return empty results
         return apiSuccess({

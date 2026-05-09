@@ -20,7 +20,7 @@ import MetierVillePageComponent, {
   villeNom,
   metierNom,
 } from "@/components/MetierVillePage";
-import { getAllPublishableZones } from "@/lib/zones";
+import { getAllPublishableZones, findPublishableZone } from "@/lib/zones";
 import { notFound } from "next/navigation";
 
 // Cache court (60s) au lieu d'1h : voir commentaire dans [ville]/page.tsx
@@ -248,8 +248,29 @@ export default async function SlugPage({
     let artisans: ArtisanPublic[] = [];
     try {
       const baseUrl = getApiBaseUrl();
+      // Pour les zones secondaires (banlieue/agglo/bassin), on requête par
+      // rayon (haversine) à partir des coordonnées de la ville mère plutôt
+      // que par nom strict — sinon les artisans qui couvrent un rayon de
+      // 25-50 km mais sont basés ailleurs n'apparaîtraient pas. Pour les
+      // 5 villes principales, on garde le filtre par nom (plus large déjà).
+      const knownVille = VILLES.find((v) => v.slug === villeSlug);
+      const zone = !knownVille ? findPublishableZone(villeSlug) : null;
+      let queryParams: string;
+      if (zone) {
+        const villeMere = VILLES.find((v) => v.slug === zone.villeMereSlug);
+        if (villeMere) {
+          // Requête par rayon : 35 km depuis la ville mère = couvre toute
+          // l'agglo + bassin proche. Combiné au zoneRayonKm de l'artisan,
+          // l'API retiendra ceux qui peuvent intervenir.
+          queryParams = `metier=${slug}&lat=${villeMere.lat}&lon=${villeMere.lng}&radius=35&size=50`;
+        } else {
+          queryParams = `ville=${villeSlug}&metier=${slug}&size=50`;
+        }
+      } else {
+        queryParams = `ville=${villeSlug}&metier=${slug}&size=50`;
+      }
       const res = await fetch(
-        `${baseUrl}/api/v1/public/artisans?ville=${villeSlug}&metier=${slug}`,
+        `${baseUrl}/api/v1/public/artisans?${queryParams}`,
         { cache: "no-store" }
       );
       const json = await res.json();
