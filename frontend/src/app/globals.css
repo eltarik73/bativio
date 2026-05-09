@@ -48,6 +48,13 @@ a{text-decoration:none;color:inherit;transition:color .15s}button{font-family:'K
 @media(max-width:768px){.bv-card{padding:20px}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
+/* ═══ COLLAPSIBLE SEO SECTIONS (replient le contenu sans le tronquer pour Google) ═══ */
+.bv-collapsible>summary{list-style:none;-webkit-tap-highlight-color:transparent;transition:opacity .15s}
+.bv-collapsible>summary::-webkit-details-marker,.bv-collapsible>summary::marker{display:none}
+.bv-collapsible>summary:hover{opacity:.7}
+.bv-collapsible[open]>summary svg{transform:rotate(180deg)}
+.bv-collapsible[open]>div{animation:fadeIn .25s ease-out}
+
 /* ═══ LIQUID GLASS (warm variant pour Bativio) ═══ */
 .liquid-glass{position:relative;overflow:hidden;background:rgba(255,255,255,.72);backdrop-filter:blur(12px) saturate(1.4);-webkit-backdrop-filter:blur(12px) saturate(1.4);border:none;box-shadow:inset 0 1px 1px rgba(255,255,255,.6),0 4px 20px rgba(61,46,31,.04)}
 .liquid-glass::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1.2px;background:linear-gradient(180deg,rgba(196,83,26,.35) 0%,rgba(196,83,26,.1) 20%,rgba(196,83,26,0) 40%,rgba(196,83,26,0) 60%,rgba(196,83,26,.1) 80%,rgba(196,83,26,.35) 100%);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}

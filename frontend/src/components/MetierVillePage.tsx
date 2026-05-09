@@ -1035,62 +1035,63 @@ export default function MetierVillePage({
           </section>
         )}
 
-        {/* ── Process Bativio (4 étapes, signal de confiance pour SEO + UX) ── */}
-        <section className="px-7 py-16 max-md:px-4 max-md:py-12 border-t border-g100">
-          <div className="max-w-[1080px] mx-auto">
-            <div className="max-w-[680px] mx-auto text-center mb-10">
-              <span className="inline-block px-3 py-1 rounded-full bg-or-light text-or text-xs font-bold uppercase tracking-wider mb-3">
-                S&eacute;lection en 4 &eacute;tapes
-              </span>
-              <h2 className="font-display text-2xl md:text-3xl font-bold text-anthracite leading-tight mb-3">
-                Comment Bativio s&eacute;lectionne les {mNom.toLowerCase()}s &agrave; {vNom}
-              </h2>
-              <p className="text-g500 text-[15px] leading-relaxed">
-                {`Aucun ${mNom.toLowerCase()} n'arrive dans notre annuaire par hasard. Chaque artisan que vous voyez ici à ${vNom} a passé les 4 étapes ci-dessous.`}
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[920px] mx-auto">
+        {/* ── Sections SEO repliables — épurées par défaut, contenu visible
+              au clic. Google indexe le contenu replié comme du contenu visible.
+              Cf https://developers.google.com/search/blog/2014/02/an-improved-search-experience-for-mobile */}
+
+        {/* Process Bativio (4 étapes) — replié par défaut */}
+        <details className="bv-collapsible group px-7 py-8 max-md:px-4 max-md:py-6 border-t border-g100">
+          <summary className="max-w-[760px] mx-auto cursor-pointer list-none flex items-center justify-between gap-4">
+            <h2 className="font-display text-lg font-semibold text-anthracite">
+              Comment Bativio s&eacute;lectionne les {mNom.toLowerCase()}s &agrave; {vNom}
+            </h2>
+            <svg className="flex-shrink-0 w-5 h-5 text-g400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+          </summary>
+          <div className="max-w-[920px] mx-auto mt-6">
+            <p className="text-g500 text-sm leading-relaxed mb-6 max-w-[680px]">
+              {`Aucun ${mNom.toLowerCase()} n'arrive dans notre annuaire par hasard. Chaque artisan que vous voyez ici à ${vNom} a passé les 4 étapes ci-dessous.`}
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {PROCESS_STEPS.map((s) => (
                 <div key={s.n} className="flex gap-4 items-start">
-                  <span className="flex-shrink-0 w-10 h-10 rounded-full bg-terre text-white inline-flex items-center justify-center font-display font-bold text-lg">
-                    {s.n}
-                  </span>
+                  <span className="flex-shrink-0 w-9 h-9 rounded-full bg-terre text-white inline-flex items-center justify-center font-display font-bold text-base">{s.n}</span>
                   <div>
-                    <h3 className="font-display text-lg font-bold text-bois mb-1">{s.titre}</h3>
+                    <h3 className="font-display text-base font-bold text-bois mb-1">{s.titre}</h3>
                     <p className="text-sm text-g500 leading-relaxed">{s.desc}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-        </section>
+        </details>
 
-        {/* ── Tarifs détaillés (long-tail "prix X", "tarif X à Y") ── */}
+        {/* Tarifs — replié par défaut */}
         {(() => {
           const tarifs = TARIFS_PAR_METIER[metier]?.slice(0, 4);
           if (!tarifs) return null;
           return (
-            <section className="px-7 py-16 max-md:px-4 max-md:py-12 border-t border-g100">
-              <div className="max-w-[760px] mx-auto">
-                <h2 className="font-display text-2xl md:text-3xl font-bold text-anthracite leading-tight mb-3">
+            <details className="bv-collapsible group px-7 py-8 max-md:px-4 max-md:py-6 border-t border-g100">
+              <summary className="max-w-[760px] mx-auto cursor-pointer list-none flex items-center justify-between gap-4">
+                <h2 className="font-display text-lg font-semibold text-anthracite">
                   Combien co&ucirc;te un {mNom.toLowerCase()} &agrave; {vNom}&nbsp;?
                 </h2>
-                <p className="text-g500 text-[15px] leading-relaxed mb-6">
-                  Tarifs indicatifs pour une intervention &agrave; {vNom} et alentours. Les prix r&eacute;els
-                  varient selon la complexit&eacute; du chantier, l&apos;accessibilit&eacute; et les mat&eacute;riaux choisis.
-                  Demandez plusieurs devis pour comparer.
+                <svg className="flex-shrink-0 w-5 h-5 text-g400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+              </summary>
+              <div className="max-w-[760px] mx-auto mt-6">
+                <p className="text-g500 text-sm leading-relaxed mb-5">
+                  Tarifs indicatifs pour une intervention &agrave; {vNom} et alentours. Les prix r&eacute;els varient selon la complexit&eacute; du chantier. Demandez plusieurs devis pour comparer.
                 </p>
-                <div className="border border-sable rounded-xl overflow-hidden">
+                <div className="border border-g100 rounded-xl overflow-hidden">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="bg-creme border-b border-sable">
+                      <tr className="bg-g50 border-b border-g100">
                         <th className="text-left px-4 py-3 font-semibold text-bois">Prestation</th>
                         <th className="text-left px-4 py-3 font-semibold text-bois whitespace-nowrap">Prix indicatif</th>
                       </tr>
                     </thead>
                     <tbody>
                       {tarifs.map((t, i) => (
-                        <tr key={i} className={i < tarifs.length - 1 ? "border-b border-creme" : ""}>
+                        <tr key={i} className={i < tarifs.length - 1 ? "border-b border-g100" : ""}>
                           <td className="px-4 py-3 text-bois-mid">
                             <div>{t.label}</div>
                             {t.note && <div className="text-xs text-g400 mt-0.5">{t.note}</div>}
@@ -1101,38 +1102,37 @@ export default function MetierVillePage({
                     </tbody>
                   </table>
                 </div>
-                <p className="text-xs text-g400 mt-4 italic">
-                  Sources&nbsp;: relevés de devis Bativio + données publiques. Prix TTC, TVA 10% pour la
-                  rénovation de logements de plus de 2 ans (sinon 20%). MaPrimeRénov, CEE et TVA 5,5%
-                  applicables sur certains travaux d&apos;économie d&apos;énergie.
+                <p className="text-xs text-g400 mt-3 italic">
+                  Sources&nbsp;: relev&eacute;s de devis Bativio + donn&eacute;es publiques. Prix TTC. MaPrimeR&eacute;nov et TVA 5,5% applicables sur certains travaux.
                 </p>
               </div>
-            </section>
+            </details>
           );
         })()}
 
-        {/* ── Conseils pour bien choisir (long-tail informationnel) ── */}
+        {/* Conseils — replié par défaut */}
         {(() => {
           const conseils = CONSEILS_PAR_METIER[metier]?.slice(0, 3);
           if (!conseils || conseils.length === 0) return null;
           return (
-            <section className="px-7 py-16 max-md:px-4 max-md:py-12 border-t border-g100">
-              <div className="max-w-[760px] mx-auto">
-                <h2 className="font-display text-2xl md:text-3xl font-bold text-anthracite leading-tight mb-5">
+            <details className="bv-collapsible group px-7 py-8 max-md:px-4 max-md:py-6 border-t border-g100">
+              <summary className="max-w-[760px] mx-auto cursor-pointer list-none flex items-center justify-between gap-4">
+                <h2 className="font-display text-lg font-semibold text-anthracite">
                   {conseils.length} conseils pour bien choisir votre {mNom.toLowerCase()} &agrave; {vNom}
                 </h2>
+                <svg className="flex-shrink-0 w-5 h-5 text-g400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+              </summary>
+              <div className="max-w-[760px] mx-auto mt-6">
                 <ol className="space-y-4">
                   {conseils.map((c, i) => (
                     <li key={i} className="flex gap-4 items-start">
-                      <span className="flex-shrink-0 w-7 h-7 rounded-full bg-or-light text-or inline-flex items-center justify-center font-bold text-sm">
-                        {i + 1}
-                      </span>
-                      <p className="text-[15px] text-bois-mid leading-relaxed pt-0.5">{c}</p>
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-or-light text-or inline-flex items-center justify-center font-bold text-xs">{i + 1}</span>
+                      <p className="text-sm text-bois-mid leading-relaxed pt-0.5">{c}</p>
                     </li>
                   ))}
                 </ol>
               </div>
-            </section>
+            </details>
           );
         })()}
 

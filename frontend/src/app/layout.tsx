@@ -125,6 +125,17 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.bativio.fr"),
   alternates: { canonical: "/" },
   manifest: "/manifest.json",
+  // Vérification de propriété pour Google Search Console + Bing Webmaster
+  // Tools. Les tokens sont publics (apparaissent dans le HTML rendu) — pas
+  // de secret. Récupérer le token Google sur https://search.google.com/search-console
+  // (méthode "Préfixe d'URL", balise meta) et le coller dans Vercel env var
+  // GOOGLE_SITE_VERIFICATION. Idem pour Bing via env var BING_SITE_VERIFICATION.
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION || undefined,
+    other: process.env.BING_SITE_VERIFICATION
+      ? { "msvalidate.01": [process.env.BING_SITE_VERIFICATION] }
+      : undefined,
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
