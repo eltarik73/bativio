@@ -875,7 +875,7 @@ export default function MetierVillePage({
 
   return (
     <>
-      <main className="min-h-screen bg-creme">
+      <main className="min-h-screen bg-white">
         {/* ── Breadcrumbs ─────────────────────────────────────────── */}
         <nav aria-label="Fil d'Ariane" className="px-7 pt-5 pb-0 max-md:px-4">
           <ol className="flex items-center gap-1.5 text-sm text-g400 max-w-[1080px] mx-auto">
@@ -903,19 +903,16 @@ export default function MetierVillePage({
         </nav>
 
         {/* ── Hero ────────────────────────────────────────────────── */}
-        <section className="bg-anthracite px-7 mt-4 pt-10 pb-12 max-md:px-4 max-md:pt-7 max-md:pb-9 relative overflow-hidden rounded-2xl max-w-[1120px] mx-auto">
-          <div className="absolute -top-[120px] -right-[80px] w-[400px] h-[400px] rounded-full bg-[rgba(196,83,26,.06)]" />
-          <div className="absolute -bottom-[100px] -left-[60px] w-[340px] h-[340px] rounded-full bg-[rgba(232,168,76,.04)]" />
-          <div className="max-w-[680px] mx-auto text-center relative z-[1]">
-            <h1 className="font-display text-[clamp(24px,4vw,36px)] font-bold text-white leading-[1.15] tracking-[-0.5px] mb-2">
-              {mNom} &agrave;{" "}
-              <em className="not-italic text-or">{vNom}</em> &mdash; Artisans
-              v&eacute;rifi&eacute;s sur Bativio
+        <section className="px-7 pt-10 pb-12 max-md:px-4 max-md:pt-7 max-md:pb-9 max-w-[1120px] mx-auto">
+          <div className="max-w-[760px]">
+            <h1
+              className="font-display font-semibold leading-[1.05] tracking-[-1px] mb-4"
+              style={{ fontSize: "clamp(34px,5.5vw,56px)", color: "var(--bois,#3D2E1F)" }}
+            >
+              {mNom} à {vNom}
             </h1>
-            <p className="text-sm text-white/50 mt-3 max-w-[480px] mx-auto">
-              Comparez les {mNom.toLowerCase()}s de {vNom}, consultez les avis
-              et demandez un devis gratuit en 2&nbsp;minutes. Z&eacute;ro
-              commission.
+            <p className="text-base md:text-lg leading-relaxed max-w-[600px]" style={{ color: "var(--bois-mid,#5C4A3A)" }}>
+              Comparez les {mNom.toLowerCase()}s de {vNom}, consultez les avis et demandez un devis gratuit en 2 minutes. Zéro commission.
             </p>
           </div>
         </section>
@@ -1016,7 +1013,7 @@ export default function MetierVillePage({
 
         {/* ── FAQ ─────────────────────────────────────────────────── */}
         {faq.length > 0 && (
-          <section className="px-7 py-12 max-md:px-4 bg-white border-t border-g100">
+          <section className="px-7 py-16 max-md:px-4 max-md:py-12 border-t border-g100">
             <div className="max-w-[800px] mx-auto">
               <h2 className="font-display text-lg font-semibold text-anthracite mb-4">
                 Questions fr&eacute;quentes &mdash; {mNom} &agrave; {vNom}
@@ -1039,7 +1036,7 @@ export default function MetierVillePage({
         )}
 
         {/* ── Process Bativio (4 étapes, signal de confiance pour SEO + UX) ── */}
-        <section className="px-7 py-14 max-md:px-4 bg-white border-t border-sable">
+        <section className="px-7 py-16 max-md:px-4 max-md:py-12 border-t border-g100">
           <div className="max-w-[1080px] mx-auto">
             <div className="max-w-[680px] mx-auto text-center mb-10">
               <span className="inline-block px-3 py-1 rounded-full bg-or-light text-or text-xs font-bold uppercase tracking-wider mb-3">
@@ -1073,7 +1070,7 @@ export default function MetierVillePage({
           const tarifs = TARIFS_PAR_METIER[metier];
           if (!tarifs) return null;
           return (
-            <section className="px-7 py-14 max-md:px-4 bg-white border-t border-sable">
+            <section className="px-7 py-16 max-md:px-4 max-md:py-12 border-t border-g100">
               <div className="max-w-[760px] mx-auto">
                 <h2 className="font-display text-2xl md:text-3xl font-bold text-anthracite leading-tight mb-3">
                   Combien co&ucirc;te un {mNom.toLowerCase()} &agrave; {vNom}&nbsp;?
@@ -1119,7 +1116,7 @@ export default function MetierVillePage({
           const conseils = CONSEILS_PAR_METIER[metier];
           if (!conseils || conseils.length === 0) return null;
           return (
-            <section className="px-7 py-14 max-md:px-4 bg-creme">
+            <section className="px-7 py-16 max-md:px-4 max-md:py-12 border-t border-g100">
               <div className="max-w-[760px] mx-auto">
                 <h2 className="font-display text-2xl md:text-3xl font-bold text-anthracite leading-tight mb-5">
                   {conseils.length} conseils pour bien choisir votre {mNom.toLowerCase()} &agrave; {vNom}
@@ -1140,7 +1137,7 @@ export default function MetierVillePage({
         })()}
 
         {/* ── Pourquoi choisir un metier local (bloc édito SEO long-tail) ── */}
-        <section className="px-7 py-14 max-md:px-4 bg-creme">
+        <section className="px-7 py-16 max-md:px-4 max-md:py-12 border-t border-g100">
           <div className="max-w-[760px] mx-auto">
             <h2 className="font-display text-2xl md:text-3xl font-bold text-anthracite leading-tight mb-5">
               Pourquoi passer par un {mNom.toLowerCase()} local &agrave; {vNom}&nbsp;?
@@ -1172,7 +1169,7 @@ export default function MetierVillePage({
           const villeMere = getVilleMereName(ville);
           if (alentours.length === 0) return null;
           return (
-            <section className="px-7 py-14 max-md:px-4 bg-white border-t border-sable">
+            <section className="px-7 py-16 max-md:px-4 max-md:py-12 border-t border-g100">
               <div className="max-w-[1080px] mx-auto">
                 <div className="max-w-[680px] mb-8">
                   <h2 className="font-display text-2xl md:text-3xl font-bold text-anthracite leading-tight mb-3">
