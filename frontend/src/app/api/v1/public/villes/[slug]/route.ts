@@ -22,7 +22,8 @@ export async function GET(
         actif: true,
         visible: true,
         deletedAt: null,
-        profilCompletion: { gte: 50 },
+        // Pas de filtre profilCompletion ici : un artisan validé doit
+        // apparaître même s'il n'a pas encore complété sa fiche.
         NOT: { slug: { startsWith: "test-" } },
       },
       include: {

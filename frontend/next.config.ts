@@ -4,6 +4,30 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react"],
   },
+  // Redirects 308 (permanent) pour récupérer les signaux SEO sur les formats
+  // d'URL alternatifs que Google teste/devine. Ex: Google a découvert
+  // /plombier-cognin (format inversé) et /artisans-yenne — on les redirige
+  // vers le bon format /cognin/plombier et /yenne pour ne pas perdre l'autorité.
+  redirects: async () => [
+    // /{metier}-{ville} → /{ville}/{metier} (8 métiers)
+    { source: "/plombier-:ville", destination: "/:ville/plombier", permanent: true },
+    { source: "/electricien-:ville", destination: "/:ville/electricien", permanent: true },
+    { source: "/peintre-:ville", destination: "/:ville/peintre", permanent: true },
+    { source: "/macon-:ville", destination: "/:ville/macon", permanent: true },
+    { source: "/carreleur-:ville", destination: "/:ville/carreleur", permanent: true },
+    { source: "/menuisier-:ville", destination: "/:ville/menuisier", permanent: true },
+    { source: "/couvreur-:ville", destination: "/:ville/couvreur", permanent: true },
+    { source: "/chauffagiste-:ville", destination: "/:ville/chauffagiste", permanent: true },
+    // /artisans-{ville} → /{ville} (hub ville)
+    { source: "/artisans-:ville", destination: "/:ville", permanent: true },
+    // Anciens formats SEO observés
+    { source: "/artisan-:ville", destination: "/:ville", permanent: true },
+    { source: "/artisans/:ville", destination: "/:ville", permanent: true },
+    // Google a découvert /travaux/:slug/:ville (format hypothétique) → redirige
+    // vers la page travaux générique. Si on veut ranker spécifiquement sur
+    // "renovation salle de bain lyon", il faudra créer /travaux/[slug]/[ville].
+    { source: "/travaux/:slug/:ville", destination: "/travaux/:slug", permanent: true },
+  ],
   headers: async () => [
     {
       source: "/(.*)",

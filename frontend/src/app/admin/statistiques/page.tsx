@@ -26,7 +26,12 @@ const topTravaux = [
 export default function StatistiquesPage() {
   return (
     <div>
-      <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 20 }}>Statistiques</h1>
+      <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 24, fontWeight: 700, color: "var(--bois,#3D2E1F)", marginBottom: 12 }}>Statistiques</h1>
+
+      <div style={{ marginBottom: 20, padding: "12px 16px", borderRadius: 12, background: "#FEF3C7", border: "1px solid #FDE68A", color: "#92400E", fontSize: 13, lineHeight: 1.5 }}>
+        <strong>Données mock</strong> — Le tracking analytique (vues, conversions, top travaux) n&apos;est pas encore branché.
+        Pour les vrais chiffres temps réel, voir le <a href="/admin" style={{ textDecoration: "underline", fontWeight: 600 }}>tableau de bord</a>.
+      </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, marginBottom: 24 }}>
         {stats.map((s) => (

@@ -1,5 +1,7 @@
 // Default content for Business vitrines when artisan hasn't filled in data
 
+import { dedupePhotos, buildGallery } from "@/lib/photos";
+
 export interface DefaultMetierContent {
   description: string;
   services: Array<{ titre: string; description: string; prix?: string }>;
@@ -90,5 +92,11 @@ const DEFAULT_FALLBACK: DefaultMetierContent = {
 export function getDefaultContent(metierSlug: string): DefaultMetierContent {
   // Normalize slug
   const slug = metierSlug.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-  return DEFAULTS[slug] || DEFAULT_FALLBACK;
+  const raw = DEFAULTS[slug] || DEFAULT_FALLBACK;
+  // Defensive dedup: even if a metier entry mistakenly shares the same
+  // Unsplash image between heroPhotos and galleryPhotos, callers always
+  // see a clean separation here.
+  const heroPhotos = dedupePhotos(raw.heroPhotos);
+  const galleryPhotos = buildGallery(raw.galleryPhotos, heroPhotos);
+  return { ...raw, heroPhotos, galleryPhotos };
 }

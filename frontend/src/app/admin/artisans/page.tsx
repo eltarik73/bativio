@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 
 interface ArtisanAdmin {
@@ -13,9 +14,21 @@ interface ArtisanAdmin {
   actif: boolean;
   visible: boolean;
   slug: string;
+  deletedAt?: string | null;
   artisanStatus?: string;
   motifRefus?: string | null;
   siret?: string;
+}
+
+// Diagnostic: dit si un artisan apparaît dans l'annuaire public et pourquoi
+// pas le cas échéant. Reflet exact du filtre /api/v1/public/artisans + /villes/[slug].
+// Source : src/app/api/v1/public/artisans/route.ts (where clause).
+function getPublicVisibility(a: ArtisanAdmin): { visible: boolean; reason: string } {
+  if (a.deletedAt) return { visible: false, reason: "Supprimé" };
+  if (!a.actif) return { visible: false, reason: `Non actif (statut ${a.artisanStatus || "?"})` };
+  if (a.visible === false) return { visible: false, reason: "Masqué (toggle visible)" };
+  if (a.slug?.startsWith("test-")) return { visible: false, reason: "Slug réservé aux tests" };
+  return { visible: true, reason: "Apparaît dans l'annuaire" };
 }
 
 interface PageResponse {
@@ -169,25 +182,47 @@ export default function AdminArtisansPage() {
                       </span>
                     </td>
                     <td style={{ padding: "14px 16px" }}>
-                      {a.actif ? (
-                        <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: 20, background: "rgba(34,197,94,.08)" }}>
-                          <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#22c55e" }} />
-                          <span style={{ fontSize: 12, color: "#15803d", fontWeight: 600 }}>Actif</span>
-                        </span>
-                      ) : a.artisanStatus === "PENDING_NAF_REVIEW" ? (
-                        <span
-                          title={a.motifRefus || "NAF hors BTP — validation admin requise"}
-                          style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: 20, background: "rgba(220,38,38,.08)", cursor: "help" }}
-                        >
-                          <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#dc2626" }} />
-                          <span style={{ fontSize: 12, color: "#b91c1c", fontWeight: 600 }}>NAF à valider</span>
-                        </span>
-                      ) : (
-                        <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: 20, background: "rgba(245,158,11,.08)" }}>
-                          <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#f59e0b" }} />
-                          <span style={{ fontSize: 12, color: "#b45309", fontWeight: 600 }}>En attente</span>
-                        </span>
-                      )}
+                      {(() => {
+                        const pv = getPublicVisibility(a);
+                        return (
+                          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                            {a.actif ? (
+                              <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: 20, background: "rgba(34,197,94,.08)", width: "fit-content" }}>
+                                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#22c55e" }} />
+                                <span style={{ fontSize: 12, color: "#15803d", fontWeight: 600 }}>Actif</span>
+                              </span>
+                            ) : a.artisanStatus === "PENDING_NAF_REVIEW" ? (
+                              <span
+                                title={a.motifRefus || "NAF hors BTP — validation admin requise"}
+                                style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: 20, background: "rgba(220,38,38,.08)", cursor: "help", width: "fit-content" }}
+                              >
+                                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#dc2626" }} />
+                                <span style={{ fontSize: 12, color: "#b91c1c", fontWeight: 600 }}>NAF à valider</span>
+                              </span>
+                            ) : (
+                              <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: 20, background: "rgba(245,158,11,.08)", width: "fit-content" }}>
+                                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#f59e0b" }} />
+                                <span style={{ fontSize: 12, color: "#b45309", fontWeight: 600 }}>En attente</span>
+                              </span>
+                            )}
+                            <span
+                              title={pv.reason}
+                              style={{
+                                fontSize: 11,
+                                color: pv.visible ? "#15803d" : "#b45309",
+                                fontWeight: 500,
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 4,
+                                cursor: "help",
+                              }}
+                            >
+                              <span style={{ fontSize: 11 }}>{pv.visible ? "✓" : "✗"}</span>
+                              <span>{pv.visible ? "Annuaire" : "Hors annuaire"}</span>
+                            </span>
+                          </div>
+                        );
+                      })()}
                     </td>
                     <td style={{ padding: "14px 16px", textAlign: "center" }}>
                       <button
@@ -204,6 +239,17 @@ export default function AdminArtisansPage() {
                       </button>
                     </td>
                     <td style={{ padding: "14px 16px", textAlign: "right", display: "flex", gap: 6, justifyContent: "flex-end" }}>
+                      <Link
+                        href={`/admin/artisans/${a.id}`}
+                        style={{
+                          padding: "6px 14px", height: 32, borderRadius: 8, fontSize: 12, fontWeight: 600,
+                          border: "1px solid rgba(0,0,0,.12)", background: "transparent", color: "#374151",
+                          textDecoration: "none", display: "inline-flex", alignItems: "center",
+                        }}
+                        title="Modifier la fiche complète"
+                      >
+                        Modifier
+                      </Link>
                       <button
                         onClick={() => handleToggleActif(a.id, a.actif)}
                         disabled={actionLoading === a.id}

@@ -20,9 +20,11 @@ import MetierVillePageComponent, {
   villeNom,
   metierNom,
 } from "@/components/MetierVillePage";
+import { getAllPublishableZones, findPublishableZone } from "@/lib/zones";
 import { notFound } from "next/navigation";
 
-export const revalidate = 3600;
+// Cache court (60s) au lieu d'1h : voir commentaire dans [ville]/page.tsx
+export const revalidate = 60;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -58,11 +60,23 @@ export function generateStaticParams() {
     ).forEach((a) => p.push({ ville: v.slug, slug: a.slug }));
   }
 
-  // Metier pages: 5 villes x 28 metiers = 140 pages
+  // Metier pages: 5 villes principales x 28 metiers = 140 pages
   const villeSlugs = ["chambery", "annecy", "grenoble", "lyon", "valence"];
   for (const ville of villeSlugs) {
     for (const metier of METIER_SLUGS) {
       p.push({ ville, slug: metier });
+    }
+  }
+
+  // SEO zones (sprint en cours) x 8 metiers prioritaires.
+  // Tier 1 = Lyon arrondissements + grosses banlieues + Aix-les-Bains, etc.
+  const ZONE_METIERS = [
+    "plombier", "electricien", "peintre", "macon",
+    "carreleur", "menuisier", "couvreur", "chauffagiste",
+  ];
+  for (const z of getAllPublishableZones()) {
+    for (const m of ZONE_METIERS) {
+      p.push({ ville: z.slug, slug: m });
     }
   }
 
@@ -99,6 +113,9 @@ const RESERVED_TOP_LEVEL = new Set([
   "rejoindre", "a-propos", "mentions-legales", "cgu", "inscription",
   "connexion", "prix", "travaux", "facturation-electronique", "demande",
   "artisan", "_next", "icons", "videos", "demo-c",
+  // Routes éditoriales SEO avec sous-pages /[ville] dédiées
+  "attestation-sismique", "pcmi13", "guides", "faq", "metiers",
+  "maprimerenov", "urgence", "contact", "plan-du-site",
 ]);
 
 export async function generateMetadata({
@@ -120,10 +137,35 @@ export async function generateMetadata({
     const mNom = metierNom(slug);
     const title = `${mNom} \u00e0 ${vNom} \u2014 Artisans v\u00e9rifi\u00e9s`;
     const description = `Trouvez un ${mNom.toLowerCase()} qualifi\u00e9 \u00e0 ${vNom}. Artisans v\u00e9rifi\u00e9s, devis gratuit en 2 minutes. Z\u00e9ro commission.`;
+    const mLow = mNom.toLowerCase();
+    const vLow = vNom.toLowerCase();
+    // Mots-cles long-tail (Bing/Yandex/IA crawlers les consomment encore;
+    // Google les ignore mais ca renforce les signaux pour les LLM bots
+    // ClaudeBot, GPTBot, PerplexityBot autorises dans robots.txt).
+    const keywords = [
+      `${mLow} ${vLow}`,
+      `${mLow} ${vLow} pas cher`,
+      `${mLow} urgence ${vLow}`,
+      `${mLow} 24h ${vLow}`,
+      `meilleur ${mLow} ${vLow}`,
+      `devis ${mLow} ${vLow}`,
+      `tarif ${mLow} ${vLow}`,
+      `prix ${mLow} ${vLow}`,
+      `artisan ${mLow} ${vLow}`,
+      `${mLow} rge ${vLow}`,
+      `${mLow} certifie ${vLow}`,
+      `${mLow} avis ${vLow}`,
+      `${mLow} proche moi`,
+      `trouver ${mLow} ${vLow}`,
+      `annuaire artisan ${vLow}`,
+      `${mLow} depannage ${vLow}`,
+      `${mLow} ${vLow} alentours`,
+    ];
 
     return {
       title,
       description,
+      keywords,
       alternates: {
         canonical: `https://www.bativio.fr/${villeParam}/${slug}`,
       },
@@ -206,8 +248,29 @@ export default async function SlugPage({
     let artisans: ArtisanPublic[] = [];
     try {
       const baseUrl = getApiBaseUrl();
+      // Pour les zones secondaires (banlieue/agglo/bassin), on requête par
+      // rayon (haversine) à partir des coordonnées de la ville mère plutôt
+      // que par nom strict — sinon les artisans qui couvrent un rayon de
+      // 25-50 km mais sont basés ailleurs n'apparaîtraient pas. Pour les
+      // 5 villes principales, on garde le filtre par nom (plus large déjà).
+      const knownVille = VILLES.find((v) => v.slug === villeSlug);
+      const zone = !knownVille ? findPublishableZone(villeSlug) : null;
+      let queryParams: string;
+      if (zone) {
+        const villeMere = VILLES.find((v) => v.slug === zone.villeMereSlug);
+        if (villeMere) {
+          // Requête par rayon : 35 km depuis la ville mère = couvre toute
+          // l'agglo + bassin proche. Combiné au zoneRayonKm de l'artisan,
+          // l'API retiendra ceux qui peuvent intervenir.
+          queryParams = `metier=${slug}&lat=${villeMere.lat}&lon=${villeMere.lng}&radius=35&size=50`;
+        } else {
+          queryParams = `ville=${villeSlug}&metier=${slug}&size=50`;
+        }
+      } else {
+        queryParams = `ville=${villeSlug}&metier=${slug}&size=50`;
+      }
       const res = await fetch(
-        `${baseUrl}/api/v1/public/artisans?ville=${villeSlug}&metier=${slug}`,
+        `${baseUrl}/api/v1/public/artisans?${queryParams}`,
         { cache: "no-store" }
       );
       const json = await res.json();

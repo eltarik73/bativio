@@ -4,9 +4,20 @@ import { useState } from "react";
 import Image from "next/image";
 import type { PhotoData } from "@/lib/api";
 import type { PhotoLayoutType } from "@/lib/vitrine-config";
+import { getImageId } from "@/lib/photos";
 export default function PhotoGallery({ photos, layout, primary, metierNom, ville }: { photos: PhotoData[]; layout: PhotoLayoutType; primary: string; metierNom?: string; ville?: string }) {
   const [lightbox, setLightbox] = useState<number | null>(null);
-  const items = photos.length > 0 ? photos : [];
+  // Dedupe by stable image identity (handles Cloudinary transforms +
+  // Unsplash size variants + duplicate uploads by the artisan).
+  const seenIds = new Set<string>();
+  const items: PhotoData[] = [];
+  for (const p of photos) {
+    if (!p?.url) continue;
+    const id = getImageId(p.url);
+    if (!id || seenIds.has(id)) continue;
+    seenIds.add(id);
+    items.push(p);
+  }
   const urls = items.map((p) => p.url);
   const titles = items.map((p) => p.titre);
 

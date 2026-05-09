@@ -1,8 +1,167 @@
 import Link from "next/link";
 import ArtisanCard from "@/components/ArtisanCard";
 import { VILLES, METIERS } from "@/lib/constants";
+import { findPublishableZone, getZonesForVille } from "@/lib/zones";
 import type { ArtisanPublic } from "@/lib/api";
 import { safeJsonLd } from "@/lib/html-escape";
+
+// Communes alentours pour le maillage interne SEO. Si l'utilisateur est sur
+// une ville principale, on liste les zones publiables autour. S'il est sur
+// une zone (Le Pont-de-Beauvoisin), on liste les autres communes du même
+// bassin pour densifier le linking interne.
+function getCommunesAlentours(villeSlug: string, max = 12): Array<{ name: string; slug: string }> {
+  const direct = getZonesForVille(villeSlug);
+  if (direct.length > 0) {
+    return direct.slice(0, max).map((z) => ({ name: z.name, slug: z.slug }));
+  }
+  // C'est une zone — chercher la ville mère
+  const zone = findPublishableZone(villeSlug);
+  if (!zone) return [];
+  return getZonesForVille(zone.villeMereSlug)
+    .filter((z) => z.slug !== villeSlug)
+    .slice(0, max)
+    .map((z) => ({ name: z.name, slug: z.slug }));
+}
+
+// Pour l'affichage du nom de la ville mère dans la section "alentours"
+function getVilleMereName(villeSlug: string): string | null {
+  const directVille = VILLES.find((v) => v.slug === villeSlug);
+  if (directVille) return directVille.nom;
+  const zone = findPublishableZone(villeSlug);
+  return zone?.villeMere ?? null;
+}
+
+// Tarifs indicatifs par métier (mots-clés long-tail "prix X", "tarif X")
+type TarifLine = { label: string; prix: string; note?: string };
+const TARIFS_PAR_METIER: Record<string, TarifLine[]> = {
+  plombier: [
+    { label: "Dépannage simple (fuite robinet, WC bouché)", prix: "80 — 150 €", note: "intervention < 1h" },
+    { label: "Remplacement chauffe-eau électrique", prix: "350 — 800 €", note: "fourniture incluse" },
+    { label: "Pose chaudière gaz à condensation", prix: "2 500 — 5 000 €", note: "main d'œuvre + appareil" },
+    { label: "Rénovation salle de bain complète", prix: "5 000 — 15 000 €", note: "selon m² et finitions" },
+    { label: "Tarif horaire moyen", prix: "45 — 70 €/h", note: "majoration 50–100% nuit/dimanche" },
+  ],
+  electricien: [
+    { label: "Mise aux normes tableau électrique", prix: "600 — 1 500 €", note: "selon nb de circuits" },
+    { label: "Ajout d'une prise ou interrupteur", prix: "50 — 120 €", note: "fourniture comprise" },
+    { label: "Rénovation électrique appartement 60 m²", prix: "3 000 — 6 000 €", note: "remise aux normes NF C 15-100" },
+    { label: "Installation domotique (volets, éclairage)", prix: "1 500 — 4 000 €", note: "selon nb d'équipements" },
+    { label: "Tarif horaire moyen", prix: "45 — 65 €/h", note: "majoration urgence 30–50%" },
+  ],
+  macon: [
+    { label: "Dalle béton 20 m² (terrasse, garage)", prix: "1 500 — 3 000 €", note: "fourniture + main d'œuvre" },
+    { label: "Mur de clôture (10 m linéaires)", prix: "800 — 2 000 €", note: "selon hauteur et matériau" },
+    { label: "Ravalement façade maison 100 m²", prix: "5 000 — 15 000 €", note: "+ échafaudage" },
+    { label: "Extension maçonnée 20 m²", prix: "20 000 — 40 000 €", note: "hors plomberie/électricité" },
+    { label: "Tarif horaire moyen", prix: "40 — 60 €/h" },
+  ],
+  peintre: [
+    { label: "Peinture appartement 70 m² (2 couches)", prix: "2 500 — 5 000 €", note: "fourniture + main d'œuvre" },
+    { label: "Peinture plafond uniquement", prix: "20 — 35 €/m²", note: "préparation incluse" },
+    { label: "Pose papier peint", prix: "15 — 30 €/m²", note: "hors fourniture du papier" },
+    { label: "Ravalement façade peinte 100 m²", prix: "3 000 — 6 000 €" },
+    { label: "Tarif horaire moyen", prix: "30 — 50 €/h" },
+  ],
+  carreleur: [
+    { label: "Pose carrelage sol 20 m²", prix: "800 — 2 000 €", note: "hors fourniture du carrelage" },
+    { label: "Pose carrelage mural salle de bain", prix: "60 — 120 €/m²", note: "fourniture + pose" },
+    { label: "Tarif horaire moyen", prix: "35 — 55 €/h" },
+  ],
+  menuisier: [
+    { label: "Pose porte intérieure", prix: "200 — 600 €", note: "+ fourniture porte" },
+    { label: "Fenêtre PVC 1 vantail", prix: "400 — 900 €", note: "fourniture + pose" },
+    { label: "Pose parquet 30 m²", prix: "900 — 2 500 €", note: "selon type de parquet" },
+    { label: "Tarif horaire moyen", prix: "40 — 60 €/h" },
+  ],
+  couvreur: [
+    { label: "Réfection toiture 100 m²", prix: "8 000 — 25 000 €", note: "selon couverture (tuile/ardoise)" },
+    { label: "Démoussage + traitement toiture", prix: "10 — 20 €/m²" },
+    { label: "Réparation fuite ponctuelle", prix: "300 — 800 €" },
+    { label: "Tarif horaire moyen", prix: "45 — 65 €/h" },
+  ],
+  chauffagiste: [
+    { label: "Entretien chaudière annuel", prix: "100 — 180 €", note: "obligatoire" },
+    { label: "Remplacement chaudière gaz", prix: "3 000 — 6 000 €", note: "appareil + pose" },
+    { label: "Installation pompe à chaleur air/eau", prix: "10 000 — 18 000 €", note: "éligible MaPrimeRénov" },
+    { label: "Tarif horaire moyen", prix: "45 — 70 €/h" },
+  ],
+};
+
+// Conseils pour bien choisir (par métier — long-tail SEO informationnel)
+const CONSEILS_PAR_METIER: Record<string, string[]> = {
+  plombier: [
+    "Vérifiez la mention RGE si vous installez une chaudière éligible MaPrimeRénov : sans ce label, aucune aide possible.",
+    "Demandez 3 devis détaillés. Un écart de 30% entre artisans est normal — au-delà, méfiance.",
+    "Pour les urgences (fuite, dégât des eaux), exigez un devis écrit même verbal au téléphone : c'est légalement obligatoire si l'intervention dépasse 150 €.",
+    "Privilégiez un plombier basé à moins de 15 km : les frais de déplacement sont moindres et il pourra revenir en SAV facilement.",
+    "Vérifiez l'assurance décennale en cours sur sa fiche Bativio : elle couvre les vices cachés pendant 10 ans.",
+  ],
+  electricien: [
+    "L'électricité est un domaine où le bricolage est interdit pour les installations fixes. Faites appel à un pro Qualifelec ou disposant de l'habilitation électrique.",
+    "Une mise aux normes NF C 15-100 est obligatoire avant toute vente immobilière si le diagnostic électrique révèle des anomalies.",
+    "Pour un tableau électrique, comptez minimum 12 disjoncteurs en logement neuf. Un tableau sous-équipé est une fausse économie.",
+    "Si vous installez une borne de recharge VE, l'électricien doit être certifié IRVE (Infrastructures de Recharge VE) — sinon vous perdez le crédit d'impôt.",
+    "Demandez la photo du tableau après intervention : c'est votre preuve de conformité en cas de sinistre.",
+  ],
+  macon: [
+    "Pour toute extension de plus de 20 m² (40 m² en zone PLU urbain), un permis de construire est obligatoire. Au-delà de 150 m² total, l'architecte est obligatoire aussi.",
+    "Vérifiez si votre projet est en zone sismique 3, 4 ou 5 (cas de la quasi-totalité de la Savoie / Haute-Savoie / Isère) : une attestation parasismique PCMI13 doit être jointe au permis.",
+    "Pour une dalle béton extérieure, prévoyez une pente de 1–2% pour évacuer les eaux de pluie. C'est souvent oublié.",
+    "Demandez un devis avec quantitatif détaillé (m³ de béton, kg d'acier, etc.) : sans ça, impossible de comparer entre artisans.",
+    "La garantie décennale couvre les ouvrages structurels (murs porteurs, fondations, charpente). Vérifiez-la systématiquement.",
+  ],
+  peintre: [
+    "Les peintures écologiques (label Ecolabel ou A+) coûtent 20–30% plus cher mais évitent les COV qui polluent l'air intérieur pendant des semaines.",
+    "Pour une rénovation complète d'un appartement, demandez un planning précis : 3 à 5 jours pour 70 m². Au-delà, l'artisan tire en longueur.",
+    "Préparation = 60% du temps de chantier. Méfiez-vous d'un devis qui chiffre la pose mais pas la préparation (rebouchage, ponçage).",
+    "Pour les pièces humides (salle de bain, cuisine), utilisez une peinture acrylique mate à laque, jamais glycéro qui jaunit.",
+    "Demandez un échantillon couleur appliqué sur votre mur avant validation : la même teinte rend différemment selon l'éclairage.",
+  ],
+  carreleur: [
+    "Comptez 10% de carrelage en plus pour les chutes et les casses lors de la pose.",
+    "Pour une salle de bain, exigez un primaire d'accrochage et une étanchéité (SPEC) avant la pose : sans ça, l'eau s'infiltre dans les joints.",
+    "Le grand format (60×60 ou plus) demande un sol parfaitement plan. Sinon, prévoyez un ragréage en supplément.",
+  ],
+  menuisier: [
+    "Pour une fenêtre, vérifiez le coefficient Uw : plus il est bas (1.0 à 1.4 W/m²K), meilleure est l'isolation.",
+    "Une porte d'entrée doit avoir un point fort A2P 1, 2 ou 3 pour résister à l'effraction. Les assurances exigent souvent A2P 1 minimum.",
+    "Pour un parquet, vérifiez la classe d'usage (21 chambre, 23 séjour, 31 commerce léger) : ne payez pas pour du surdimensionné.",
+  ],
+  couvreur: [
+    "Une toiture doit être inspectée tous les 5 ans minimum. Demandez un audit avec photos drone — c'est devenu standard.",
+    "Pour un démoussage, le traitement curatif (nettoyage haute pression + fongicide) est plus efficace mais plus cher qu'un simple démoussage manuel.",
+    "Si vous changez la couverture, profitez-en pour isoler la toiture par l'extérieur (sarking) : éligible MaPrimeRénov + CEE.",
+  ],
+  chauffagiste: [
+    "L'entretien annuel d'une chaudière gaz est obligatoire (décret 2009-649). En cas de sinistre sans entretien, l'assurance peut refuser.",
+    "Pour une pompe à chaleur, vérifiez le SCOP (rendement saisonnier) : minimum 4.0 pour être performant en climat continental.",
+    "Le crédit d'impôt + MaPrimeRénov peuvent couvrir 30–60% du coût d'une PAC selon vos revenus. Demandez à l'artisan une simulation chiffrée.",
+  ],
+};
+
+// Étapes de la sélection Bativio (réutilisables, signal de confiance fort)
+const PROCESS_STEPS = [
+  {
+    n: 1,
+    titre: "Vérification administrative",
+    desc: "SIRET valide, code NAF du bâtiment, attestation URSSAF à jour. Aucun artisan ne s'inscrit sans ces 3 piliers — c'est la base de la confiance.",
+  },
+  {
+    n: 2,
+    titre: "Décennale et qualifications",
+    desc: "Assurance décennale en cours, qualifications RGE, Qualibat, Qualifelec contrôlées. Les badges affichés sur la fiche correspondent à des attestations vérifiées.",
+  },
+  {
+    n: 3,
+    titre: "Avis clients authentiques",
+    desc: "Chaque avis est rattaché à un devis ou un chantier réel passé via Bativio. Pas d'avis fantômes ou achetés — la note moyenne reflète l'expérience réelle.",
+  },
+  {
+    n: 4,
+    titre: "Suivi continu",
+    desc: "Si un artisan ne répond plus aux demandes, perd sa décennale ou collectionne les avis négatifs, il est suspendu de l'annuaire. Notre équipe surveille en continu.",
+  },
+] as const;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -14,7 +173,11 @@ function capitalize(s: string): string {
 
 export function villeNom(slug: string): string {
   const v = VILLES.find((v) => v.slug === slug);
-  return v?.nom ?? capitalize(slug);
+  if (v) return v.nom;
+  // Fallback : zones SEO (Aix-les-Bains, Villeurbanne, Lyon 3e, etc.)
+  const z = findPublishableZone(slug);
+  if (z) return z.name;
+  return capitalize(slug);
 }
 
 export function metierNom(slug: string): string {
@@ -32,7 +195,7 @@ export const METIER_SEO_CONTENT: Record<
 > = {
   plombier: {
     intro:
-      "Trouver un plombier fiable est essentiel pour vos travaux de plomberie, qu'il s'agisse d'une fuite urgente, de la renovation d'une salle de bain ou de l'installation d'un chauffe-eau. A {ville}, les plombiers inscrits sur Bativio sont tous verifies : numero SIRET valide, assurance decennale, et avis clients authentiques. Que vous ayez besoin d'un depannage rapide un dimanche matin ou d'un devis pour refaire toute votre tuyauterie, notre annuaire vous permet de comparer les artisans de votre secteur et de les contacter directement. Chaque plombier a sa fiche detaillee avec ses specialites (plomberie sanitaire, chauffage, debouchage, installation VMC), ses tarifs indicatifs et les photos de ses realisations. En passant par Bativio, vous beneficiez d'un service 100% gratuit pour le particulier, sans commission ni frais caches. Les plombiers paient un abonnement mensuel fixe pour etre visibles, ce qui garantit leur motivation a vous fournir un service de qualite. La reactivite est cle dans le metier de plombier : grace aux notifications instantanees, votre demande de devis est transmise en temps reel a l'artisan qui peut vous rappeler dans les minutes qui suivent.",
+      "Trouver un plombier fiable est essentiel pour vos travaux de plomberie, qu'il s'agisse d'une fuite urgente, de la rénovation d'une salle de bain ou de l'installation d'un chauffe-eau. À {ville}, les plombiers inscrits sur Bativio sont tous vérifiés : numéro SIRET valide, assurance décennale, et avis clients authentiques. Que vous ayez besoin d'un dépannage rapide un dimanche matin ou d'un devis pour refaire toute votre tuyauterie, notre annuaire vous permet de comparer les artisans de votre secteur et de les contacter directement. Chaque plombier a sa fiche détaillée avec ses spécialités (plomberie sanitaire, chauffage, débouchage, installation VMC), ses tarifs indicatifs et les photos de ses réalisations. En passant par Bativio, vous bénéficiez d'un service 100% gratuit pour le particulier, sans commission ni frais cachés. Les plombiers paient un abonnement mensuel fixe pour être visibles, ce qui garantit leur motivation à vous fournir un service de qualité. La réactivité est clé dans le métier de plombier : grâce aux notifications instantanées, votre demande de devis est transmise en temps réel à l'artisan qui peut vous rappeler dans les minutes qui suivent.",
     faq: [
       {
         q: "Comment trouver un bon plombier a {ville} ?",
@@ -50,19 +213,19 @@ export const METIER_SEO_CONTENT: Record<
   },
   electricien: {
     intro:
-      "Un probleme electrique ne peut pas attendre. Que ce soit pour une panne de courant, la mise aux normes de votre tableau electrique ou l'installation de prises et eclairages dans un logement neuf, les electriciens de {ville} inscrits sur Bativio sont la pour intervenir rapidement et en toute securite. L'electricite est un domaine ou le professionnalisme est non-negociable : un travail mal fait peut entrainer des risques d'incendie ou d'electrocution. C'est pourquoi chaque electricien de notre annuaire est verifie et affiche clairement ses qualifications (Qualifelec, habilitation electrique, certification NF C 15-100). Sur Bativio, vous pouvez consulter les specialites de chaque electricien : installation electrique complete, domotique, mise en conformite, interphone, VMC, panneaux solaires. Les photos de chantiers realises et les avis clients vous aident a faire votre choix en toute confiance. Demandez votre devis gratuitement : l'electricien recoit votre demande instantanement et peut vous proposer un creneau d'intervention dans les 24 heures. Aucune commission n'est prelevee sur les travaux — vous payez directement votre artisan au juste prix.",
+      "Un problème électrique ne peut pas attendre. Que ce soit pour une panne de courant, la mise aux normes de votre tableau électrique ou l'installation de prises et éclairages dans un logement neuf, les électriciens de {ville} inscrits sur Bativio sont là pour intervenir rapidement et en toute sécurité. L'électricité est un domaine où le professionnalisme est non-négociable : un travail mal fait peut entraîner des risques d'incendie ou d'électrocution. C'est pourquoi chaque électricien de notre annuaire est vérifié et affiche clairement ses qualifications (Qualifelec, habilitation électrique, certification NF C 15-100). Sur Bativio, vous pouvez consulter les spécialités de chaque électricien : installation électrique complète, domotique, mise en conformité, interphone, VMC, panneaux solaires. Les photos de chantiers réalisés et les avis clients vous aident à faire votre choix en toute confiance. Demandez votre devis gratuitement : l'électricien reçoit votre demande instantanément et peut vous proposer un créneau d'intervention dans les 24 heures. Aucune commission n'est prélevée sur les travaux — vous payez directement votre artisan au juste prix.",
     faq: [
       {
-        q: "Comment choisir un electricien qualifie a {ville} ?",
-        a: "Verifiez que l'electricien possede une qualification Qualifelec ou une habilitation electrique a jour. Sur Bativio, ces certifications sont affichees sous forme de badges verifies sur chaque fiche artisan. Comparez les avis clients et demandez plusieurs devis pour trouver le bon rapport qualite-prix.",
+        q: "Comment choisir un électricien qualifié à {ville} ?",
+        a: "Vérifiez que l'électricien possède une qualification Qualifelec ou une habilitation électrique à jour. Sur Bativio, ces certifications sont affichées sous forme de badges vérifiés sur chaque fiche artisan. Comparez les avis clients et demandez plusieurs devis pour trouver le bon rapport qualité-prix.",
       },
       {
-        q: "Quel est le prix d'une mise aux normes electriques ?",
-        a: "A {ville}, une mise aux normes d'un tableau electrique coute entre 600 et 1500 euros. Pour une renovation electrique complete d'un appartement de 60m2, comptez entre 3000 et 6000 euros. Ces prix varient selon l'etat de l'installation existante et les travaux necessaires.",
+        q: "Quel est le prix d'une mise aux normes électriques ?",
+        a: "À {ville}, une mise aux normes d'un tableau électrique coûte entre 600 et 1500 euros. Pour une rénovation électrique complète d'un appartement de 60 m², comptez entre 3000 et 6000 euros. Ces prix varient selon l'état de l'installation existante et les travaux nécessaires.",
       },
       {
-        q: "Un electricien peut-il intervenir en urgence a {ville} ?",
-        a: "Oui, de nombreux electriciens sur Bativio proposent des interventions d'urgence a {ville} et ses environs. Envoyez votre demande via le formulaire de devis en precisant l'urgence : l'artisan est notifie immediatement par SMS et peut generalement intervenir dans la journee.",
+        q: "Un électricien peut-il intervenir en urgence à {ville} ?",
+        a: "Oui, de nombreux électriciens sur Bativio proposent des interventions d'urgence à {ville} et ses environs. Envoyez votre demande via le formulaire de devis en précisant l'urgence : l'artisan est notifié immédiatement par SMS et peut généralement intervenir dans la journée.",
       },
     ],
   },
@@ -618,6 +781,17 @@ export default function MetierVillePage({
     name: `${mNom} à ${vNom}`,
     serviceType: mNom,
     description: `Trouvez un ${mNom.toLowerCase()} qualifié à ${vNom}. Devis gratuit en 24 h, artisans vérifiés (SIRET, assurance décennale, attestation URSSAF), zéro commission sur les chantiers.`,
+    keywords: [
+      `${mNom.toLowerCase()} ${vNom}`,
+      `${mNom.toLowerCase()} pas cher ${vNom}`,
+      `${mNom.toLowerCase()} urgence ${vNom}`,
+      `meilleur ${mNom.toLowerCase()} ${vNom}`,
+      `devis ${mNom.toLowerCase()} ${vNom}`,
+      `prix ${mNom.toLowerCase()} ${vNom}`,
+      `tarif ${mNom.toLowerCase()} ${vNom}`,
+      `${mNom.toLowerCase()} certifié RGE`,
+      `artisan ${mNom.toLowerCase()} Rhône-Alpes`,
+    ].join(", "),
     areaServed: {
       "@type": "City",
       name: vNom,
@@ -701,7 +875,7 @@ export default function MetierVillePage({
 
   return (
     <>
-      <main className="min-h-screen bg-creme">
+      <main className="min-h-screen bg-white">
         {/* ── Breadcrumbs ─────────────────────────────────────────── */}
         <nav aria-label="Fil d'Ariane" className="px-7 pt-5 pb-0 max-md:px-4">
           <ol className="flex items-center gap-1.5 text-sm text-g400 max-w-[1080px] mx-auto">
@@ -729,19 +903,16 @@ export default function MetierVillePage({
         </nav>
 
         {/* ── Hero ────────────────────────────────────────────────── */}
-        <section className="bg-anthracite px-7 mt-4 pt-10 pb-12 max-md:px-4 max-md:pt-7 max-md:pb-9 relative overflow-hidden rounded-2xl max-w-[1120px] mx-auto">
-          <div className="absolute -top-[120px] -right-[80px] w-[400px] h-[400px] rounded-full bg-[rgba(196,83,26,.06)]" />
-          <div className="absolute -bottom-[100px] -left-[60px] w-[340px] h-[340px] rounded-full bg-[rgba(232,168,76,.04)]" />
-          <div className="max-w-[680px] mx-auto text-center relative z-[1]">
-            <h1 className="font-display text-[clamp(24px,4vw,36px)] font-bold text-white leading-[1.15] tracking-[-0.5px] mb-2">
-              {mNom} &agrave;{" "}
-              <em className="not-italic text-or">{vNom}</em> &mdash; Artisans
-              v&eacute;rifi&eacute;s sur Bativio
+        <section className="px-7 pt-12 pb-8 max-md:px-4 max-md:pt-8 max-md:pb-6 max-w-[1080px] mx-auto">
+          <div className="max-w-[720px]">
+            <h1
+              className="font-display font-semibold leading-[1.1] tracking-[-0.8px] mb-3"
+              style={{ fontSize: "clamp(30px,4.4vw,44px)", color: "var(--bois,#3D2E1F)" }}
+            >
+              {mNom} à {vNom}
             </h1>
-            <p className="text-sm text-white/50 mt-3 max-w-[480px] mx-auto">
-              Comparez les {mNom.toLowerCase()}s de {vNom}, consultez les avis
-              et demandez un devis gratuit en 2&nbsp;minutes. Z&eacute;ro
-              commission.
+            <p className="text-base leading-relaxed max-w-[560px]" style={{ color: "var(--g500,#6B6560)" }}>
+              {`Comparez les ${mNom.toLowerCase()}s de ${vNom}, consultez les avis et demandez un devis gratuit en 2 minutes. Zéro commission.`}
             </p>
           </div>
         </section>
@@ -842,7 +1013,7 @@ export default function MetierVillePage({
 
         {/* ── FAQ ─────────────────────────────────────────────────── */}
         {faq.length > 0 && (
-          <section className="px-7 py-12 max-md:px-4 bg-white border-t border-g100">
+          <section className="px-7 py-16 max-md:px-4 max-md:py-12 border-t border-g100">
             <div className="max-w-[800px] mx-auto">
               <h2 className="font-display text-lg font-semibold text-anthracite mb-4">
                 Questions fr&eacute;quentes &mdash; {mNom} &agrave; {vNom}
@@ -863,6 +1034,142 @@ export default function MetierVillePage({
             </div>
           </section>
         )}
+
+        {/* ── Sections SEO repliables — épurées par défaut, contenu visible
+              au clic. Google indexe le contenu replié comme du contenu visible.
+              Cf https://developers.google.com/search/blog/2014/02/an-improved-search-experience-for-mobile */}
+
+        {/* Process Bativio (4 étapes) — replié par défaut */}
+        <details className="bv-collapsible group px-7 py-8 max-md:px-4 max-md:py-6 border-t border-g100">
+          <summary className="max-w-[760px] mx-auto cursor-pointer list-none flex items-center justify-between gap-4">
+            <h2 className="font-display text-lg font-semibold text-anthracite">
+              Comment Bativio s&eacute;lectionne les {mNom.toLowerCase()}s &agrave; {vNom}
+            </h2>
+            <svg className="flex-shrink-0 w-5 h-5 text-g400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+          </summary>
+          <div className="max-w-[920px] mx-auto mt-6">
+            <p className="text-g500 text-sm leading-relaxed mb-6 max-w-[680px]">
+              {`Aucun ${mNom.toLowerCase()} n'arrive dans notre annuaire par hasard. Chaque artisan que vous voyez ici à ${vNom} a passé les 4 étapes ci-dessous.`}
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {PROCESS_STEPS.map((s) => (
+                <div key={s.n} className="flex gap-4 items-start">
+                  <span className="flex-shrink-0 w-9 h-9 rounded-full bg-terre text-white inline-flex items-center justify-center font-display font-bold text-base">{s.n}</span>
+                  <div>
+                    <h3 className="font-display text-base font-bold text-bois mb-1">{s.titre}</h3>
+                    <p className="text-sm text-g500 leading-relaxed">{s.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </details>
+
+        {/* Tarifs — replié par défaut */}
+        {(() => {
+          const tarifs = TARIFS_PAR_METIER[metier]?.slice(0, 4);
+          if (!tarifs) return null;
+          return (
+            <details className="bv-collapsible group px-7 py-8 max-md:px-4 max-md:py-6 border-t border-g100">
+              <summary className="max-w-[760px] mx-auto cursor-pointer list-none flex items-center justify-between gap-4">
+                <h2 className="font-display text-lg font-semibold text-anthracite">
+                  Combien co&ucirc;te un {mNom.toLowerCase()} &agrave; {vNom}&nbsp;?
+                </h2>
+                <svg className="flex-shrink-0 w-5 h-5 text-g400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+              </summary>
+              <div className="max-w-[760px] mx-auto mt-6">
+                <p className="text-g500 text-sm leading-relaxed mb-5">
+                  Tarifs indicatifs pour une intervention &agrave; {vNom} et alentours. Les prix r&eacute;els varient selon la complexit&eacute; du chantier. Demandez plusieurs devis pour comparer.
+                </p>
+                <div className="border border-g100 rounded-xl overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-g50 border-b border-g100">
+                        <th className="text-left px-4 py-3 font-semibold text-bois">Prestation</th>
+                        <th className="text-left px-4 py-3 font-semibold text-bois whitespace-nowrap">Prix indicatif</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tarifs.map((t, i) => (
+                        <tr key={i} className={i < tarifs.length - 1 ? "border-b border-g100" : ""}>
+                          <td className="px-4 py-3 text-bois-mid">
+                            <div>{t.label}</div>
+                            {t.note && <div className="text-xs text-g400 mt-0.5">{t.note}</div>}
+                          </td>
+                          <td className="px-4 py-3 font-semibold text-anthracite whitespace-nowrap">{t.prix}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <p className="text-xs text-g400 mt-3 italic">
+                  Sources&nbsp;: relev&eacute;s de devis Bativio + donn&eacute;es publiques. Prix TTC. MaPrimeR&eacute;nov et TVA 5,5% applicables sur certains travaux.
+                </p>
+              </div>
+            </details>
+          );
+        })()}
+
+        {/* Conseils — replié par défaut */}
+        {(() => {
+          const conseils = CONSEILS_PAR_METIER[metier]?.slice(0, 3);
+          if (!conseils || conseils.length === 0) return null;
+          return (
+            <details className="bv-collapsible group px-7 py-8 max-md:px-4 max-md:py-6 border-t border-g100">
+              <summary className="max-w-[760px] mx-auto cursor-pointer list-none flex items-center justify-between gap-4">
+                <h2 className="font-display text-lg font-semibold text-anthracite">
+                  {conseils.length} conseils pour bien choisir votre {mNom.toLowerCase()} &agrave; {vNom}
+                </h2>
+                <svg className="flex-shrink-0 w-5 h-5 text-g400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+              </summary>
+              <div className="max-w-[760px] mx-auto mt-6">
+                <ol className="space-y-4">
+                  {conseils.map((c, i) => (
+                    <li key={i} className="flex gap-4 items-start">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-or-light text-or inline-flex items-center justify-center font-bold text-xs">{i + 1}</span>
+                      <p className="text-sm text-bois-mid leading-relaxed pt-0.5">{c}</p>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </details>
+          );
+        })()}
+
+        {/* Section "Pourquoi local" retirée — redondante avec l'intro métier
+            et la section "Comment Bativio sélectionne". Plus épuré. */}
+
+        {/* ── Communes alentours (maillage interne pour SEO local) ── */}
+        {(() => {
+          const alentours = getCommunesAlentours(ville, 14);
+          const villeMere = getVilleMereName(ville);
+          if (alentours.length === 0) return null;
+          return (
+            <section className="px-7 py-16 max-md:px-4 max-md:py-12 border-t border-g100">
+              <div className="max-w-[1080px] mx-auto">
+                <div className="max-w-[680px] mb-8">
+                  <h2 className="font-display text-2xl md:text-3xl font-bold text-anthracite leading-tight mb-3">
+                    {mNom} dans les communes autour de {villeMere || vNom}
+                  </h2>
+                  <p className="text-g500 text-[15px] leading-relaxed">
+                    {`Vous habitez en périphérie ? Trouvez un ${mNom.toLowerCase()} dans votre commune précisément.`}
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
+                  {alentours.map((c) => (
+                    <Link
+                      key={c.slug}
+                      href={`/${c.slug}/${metier}`}
+                      className="px-4 py-3 rounded-lg border border-sable bg-white hover:border-terre hover:bg-creme transition-colors text-sm font-medium text-bois"
+                    >
+                      {mNom} &agrave; {c.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </section>
+          );
+        })()}
 
         {/* ── CTA bottom ──────────────────────────────────────────── */}
         <section className="px-7 py-14 max-md:px-4 text-center">

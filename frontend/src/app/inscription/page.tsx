@@ -1,13 +1,17 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { METIERS, VILLES } from "@/lib/constants";
 import VilleAutocomplete from "@/components/VilleAutocomplete/VilleAutocomplete";
 
 const API_URL = "/api/v1";
+
+// Plans payants reconnus depuis le query param `?plan=starter` (passé
+// par PricingGrid quand l'artisan choisit une formule payante sur /tarifs).
+const PAID_PLANS = new Set(["starter", "pro", "business"]);
 
 const STEP_LABELS = ["SIREN", "Infos", "Métier", "Zone", "Photos"];
 const ARROW_R = <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" /></svg>;
@@ -16,12 +20,20 @@ const CHECK_I = <svg width="18" height="18" fill="none" stroke="currentColor" st
 
 export default function InscriptionPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { isAuthenticated, loading: authLoading, updateUser, login: authLogin } = useAuth();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [photoToast, setPhotoToast] = useState("");
   const [metierSearch, setMetierSearch] = useState("");
+
+  // Plan choisi sur /tarifs avant d'arriver sur /inscription. Si défini et
+  // payant, on redirige vers Stripe Checkout après création du compte.
+  const selectedPlan = (searchParams.get("plan") || "").toLowerCase();
+  const billingYearly = searchParams.get("billing") === "yearly";
+  const isPaidFlow = PAID_PLANS.has(selectedPlan);
+  const planLabels: Record<string, string> = { starter: "Starter (19€/mois)", pro: "Pro (39€/mois)", business: "Business (59€/mois)" };
 
   const [justRegistered, setJustRegistered] = useState(false);
   // Redirect if already authenticated (but not if just registered — we want to go to scoring)
@@ -165,6 +177,31 @@ export default function InscriptionPage() {
     return json.data;
   };
 
+  // For paid plans (selected on /tarifs), open a Stripe Checkout session
+  // and redirect to Stripe. Falls back to scoring page if anything fails.
+  const goToStripeCheckout = async (): Promise<boolean> => {
+    try {
+      const res = await fetch(`${API_URL}/stripe/checkout`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          plan: selectedPlan.toUpperCase(),
+          annual: billingYearly,
+          mode: "inscription",
+        }),
+      });
+      const json = await res.json();
+      if (json.success && json.data?.url) {
+        window.location.href = json.data.url;
+        return true;
+      }
+      return false;
+    } catch {
+      return false;
+    }
+  };
+
   // Upload photos to backend after registration
   const uploadPhotos = async (filesToUpload: File[]): Promise<number> => {
     if (filesToUpload.length === 0) return 0;
@@ -205,6 +242,11 @@ export default function InscriptionPage() {
           setPhotoToast("Photos enregistrées ultérieurement");
         }
       }
+      // Paid plan : redirect to Stripe Checkout. Fallback to scoring on failure.
+      if (isPaidFlow) {
+        const ok = await goToStripeCheckout();
+        if (ok) return; // browser navigates to Stripe
+      }
       router.push("/onboarding/validation");
     } catch (err) {
       // Bug 7 fix: meilleur parsing erreur
@@ -223,6 +265,10 @@ export default function InscriptionPage() {
     setLoading(true); setError("");
     try {
       await doRegister();
+      if (isPaidFlow) {
+        const ok = await goToStripeCheckout();
+        if (ok) return;
+      }
       router.push("/onboarding/validation");
     } catch (err) {
       if (err instanceof Error) {
@@ -260,8 +306,53 @@ export default function InscriptionPage() {
         <div style={{ textAlign: "center", marginBottom: 32, maxWidth: 540 }}>
           <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "var(--bois,#3D2E1F)", letterSpacing: -0.5, marginBottom: 8 }}>Cr&eacute;ez votre page pro en 3 minutes</h1>
           <p style={{ fontSize: 15, color: "#6B6560", lineHeight: 1.6, marginBottom: 12 }}>Rejoignez les artisans de Chamb&eacute;ry, Annecy, Grenoble, Lyon et Valence</p>
-          <p style={{ fontSize: 13, color: "var(--pierre,#9C958D)", fontWeight: 500 }}>Gratuit &middot; Sans engagement &middot; Sans carte bancaire</p>
+          <p style={{ fontSize: 13, color: "var(--pierre,#9C958D)", fontWeight: 500 }}>
+            {isPaidFlow ? "Sans engagement · Annulable à tout moment" : "Gratuit · Sans engagement · Sans carte bancaire"}
+          </p>
         </div>
+
+        {/* Plan choisi badge — visible si l'artisan vient de /tarifs avec ?plan=... */}
+        {isPaidFlow && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              maxWidth: 540,
+              width: "100%",
+              padding: "12px 16px",
+              marginBottom: 24,
+              borderRadius: 12,
+              background: "rgba(196,83,26,.08)",
+              border: "1px solid rgba(196,83,26,.2)",
+            }}
+          >
+            <span
+              style={{
+                display: "inline-flex",
+                width: 32,
+                height: 32,
+                borderRadius: 8,
+                background: "rgba(196,83,26,.15)",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <svg width="16" height="16" fill="none" stroke="#C4531A" strokeWidth="2" viewBox="0 0 24 24">
+                <path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+              </svg>
+            </span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "var(--bois,#3D2E1F)", lineHeight: 1.3 }}>
+                Plan choisi&nbsp;: {planLabels[selectedPlan] || selectedPlan}{billingYearly ? " · facturation annuelle" : ""}
+              </p>
+              <p style={{ fontSize: 12, color: "var(--pierre,#9C958D)", marginTop: 2 }}>
+                Cr&eacute;ez votre compte, puis vous serez redirig&eacute; vers le paiement s&eacute;curis&eacute; Stripe.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Stepper */}
         <div className="reg-stepper">
