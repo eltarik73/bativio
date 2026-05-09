@@ -195,7 +195,7 @@ export const METIER_SEO_CONTENT: Record<
 > = {
   plombier: {
     intro:
-      "Trouver un plombier fiable est essentiel pour vos travaux de plomberie, qu'il s'agisse d'une fuite urgente, de la renovation d'une salle de bain ou de l'installation d'un chauffe-eau. A {ville}, les plombiers inscrits sur Bativio sont tous verifies : numero SIRET valide, assurance decennale, et avis clients authentiques. Que vous ayez besoin d'un depannage rapide un dimanche matin ou d'un devis pour refaire toute votre tuyauterie, notre annuaire vous permet de comparer les artisans de votre secteur et de les contacter directement. Chaque plombier a sa fiche detaillee avec ses specialites (plomberie sanitaire, chauffage, debouchage, installation VMC), ses tarifs indicatifs et les photos de ses realisations. En passant par Bativio, vous beneficiez d'un service 100% gratuit pour le particulier, sans commission ni frais caches. Les plombiers paient un abonnement mensuel fixe pour etre visibles, ce qui garantit leur motivation a vous fournir un service de qualite. La reactivite est cle dans le metier de plombier : grace aux notifications instantanees, votre demande de devis est transmise en temps reel a l'artisan qui peut vous rappeler dans les minutes qui suivent.",
+      "Trouver un plombier fiable est essentiel pour vos travaux de plomberie, qu'il s'agisse d'une fuite urgente, de la rénovation d'une salle de bain ou de l'installation d'un chauffe-eau. À {ville}, les plombiers inscrits sur Bativio sont tous vérifiés : numéro SIRET valide, assurance décennale, et avis clients authentiques. Que vous ayez besoin d'un dépannage rapide un dimanche matin ou d'un devis pour refaire toute votre tuyauterie, notre annuaire vous permet de comparer les artisans de votre secteur et de les contacter directement. Chaque plombier a sa fiche détaillée avec ses spécialités (plomberie sanitaire, chauffage, débouchage, installation VMC), ses tarifs indicatifs et les photos de ses réalisations. En passant par Bativio, vous bénéficiez d'un service 100% gratuit pour le particulier, sans commission ni frais cachés. Les plombiers paient un abonnement mensuel fixe pour être visibles, ce qui garantit leur motivation à vous fournir un service de qualité. La réactivité est clé dans le métier de plombier : grâce aux notifications instantanées, votre demande de devis est transmise en temps réel à l'artisan qui peut vous rappeler dans les minutes qui suivent.",
     faq: [
       {
         q: "Comment trouver un bon plombier a {ville} ?",
@@ -213,19 +213,19 @@ export const METIER_SEO_CONTENT: Record<
   },
   electricien: {
     intro:
-      "Un probleme electrique ne peut pas attendre. Que ce soit pour une panne de courant, la mise aux normes de votre tableau electrique ou l'installation de prises et eclairages dans un logement neuf, les electriciens de {ville} inscrits sur Bativio sont la pour intervenir rapidement et en toute securite. L'electricite est un domaine ou le professionnalisme est non-negociable : un travail mal fait peut entrainer des risques d'incendie ou d'electrocution. C'est pourquoi chaque electricien de notre annuaire est verifie et affiche clairement ses qualifications (Qualifelec, habilitation electrique, certification NF C 15-100). Sur Bativio, vous pouvez consulter les specialites de chaque electricien : installation electrique complete, domotique, mise en conformite, interphone, VMC, panneaux solaires. Les photos de chantiers realises et les avis clients vous aident a faire votre choix en toute confiance. Demandez votre devis gratuitement : l'electricien recoit votre demande instantanement et peut vous proposer un creneau d'intervention dans les 24 heures. Aucune commission n'est prelevee sur les travaux — vous payez directement votre artisan au juste prix.",
+      "Un problème électrique ne peut pas attendre. Que ce soit pour une panne de courant, la mise aux normes de votre tableau électrique ou l'installation de prises et éclairages dans un logement neuf, les électriciens de {ville} inscrits sur Bativio sont là pour intervenir rapidement et en toute sécurité. L'électricité est un domaine où le professionnalisme est non-négociable : un travail mal fait peut entraîner des risques d'incendie ou d'électrocution. C'est pourquoi chaque électricien de notre annuaire est vérifié et affiche clairement ses qualifications (Qualifelec, habilitation électrique, certification NF C 15-100). Sur Bativio, vous pouvez consulter les spécialités de chaque électricien : installation électrique complète, domotique, mise en conformité, interphone, VMC, panneaux solaires. Les photos de chantiers réalisés et les avis clients vous aident à faire votre choix en toute confiance. Demandez votre devis gratuitement : l'électricien reçoit votre demande instantanément et peut vous proposer un créneau d'intervention dans les 24 heures. Aucune commission n'est prélevée sur les travaux — vous payez directement votre artisan au juste prix.",
     faq: [
       {
-        q: "Comment choisir un electricien qualifie a {ville} ?",
-        a: "Verifiez que l'electricien possede une qualification Qualifelec ou une habilitation electrique a jour. Sur Bativio, ces certifications sont affichees sous forme de badges verifies sur chaque fiche artisan. Comparez les avis clients et demandez plusieurs devis pour trouver le bon rapport qualite-prix.",
+        q: "Comment choisir un électricien qualifié à {ville} ?",
+        a: "Vérifiez que l'électricien possède une qualification Qualifelec ou une habilitation électrique à jour. Sur Bativio, ces certifications sont affichées sous forme de badges vérifiés sur chaque fiche artisan. Comparez les avis clients et demandez plusieurs devis pour trouver le bon rapport qualité-prix.",
       },
       {
-        q: "Quel est le prix d'une mise aux normes electriques ?",
-        a: "A {ville}, une mise aux normes d'un tableau electrique coute entre 600 et 1500 euros. Pour une renovation electrique complete d'un appartement de 60m2, comptez entre 3000 et 6000 euros. Ces prix varient selon l'etat de l'installation existante et les travaux necessaires.",
+        q: "Quel est le prix d'une mise aux normes électriques ?",
+        a: "À {ville}, une mise aux normes d'un tableau électrique coûte entre 600 et 1500 euros. Pour une rénovation électrique complète d'un appartement de 60 m², comptez entre 3000 et 6000 euros. Ces prix varient selon l'état de l'installation existante et les travaux nécessaires.",
       },
       {
-        q: "Un electricien peut-il intervenir en urgence a {ville} ?",
-        a: "Oui, de nombreux electriciens sur Bativio proposent des interventions d'urgence a {ville} et ses environs. Envoyez votre demande via le formulaire de devis en precisant l'urgence : l'artisan est notifie immediatement par SMS et peut generalement intervenir dans la journee.",
+        q: "Un électricien peut-il intervenir en urgence à {ville} ?",
+        a: "Oui, de nombreux électriciens sur Bativio proposent des interventions d'urgence à {ville} et ses environs. Envoyez votre demande via le formulaire de devis en précisant l'urgence : l'artisan est notifié immédiatement par SMS et peut généralement intervenir dans la journée.",
       },
     ],
   },
@@ -1049,8 +1049,7 @@ export default function MetierVillePage({
                 Comment Bativio s&eacute;lectionne les {mNom.toLowerCase()}s &agrave; {vNom}
               </h2>
               <p className="text-g500 text-[15px] leading-relaxed">
-                Aucun {mNom.toLowerCase()} n&apos;arrive dans notre annuaire par hasard.
-                Chaque artisan que vous voyez ici &agrave; {vNom} a pass&eacute; les 4 &eacute;tapes ci-dessous.
+                {`Aucun ${mNom.toLowerCase()} n'arrive dans notre annuaire par hasard. Chaque artisan que vous voyez ici à ${vNom} a passé les 4 étapes ci-dessous.`}
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[920px] mx-auto">
@@ -1180,8 +1179,7 @@ export default function MetierVillePage({
                     {mNom} dans les communes autour de {villeMere || vNom}
                   </h2>
                   <p className="text-g500 text-[15px] leading-relaxed">
-                    Vous habitez en p&eacute;riph&eacute;rie&nbsp;? Trouvez un {mNom.toLowerCase()} dans votre commune
-                    pr&eacute;cis&eacute;ment.
+                    {`Vous habitez en périphérie ? Trouvez un ${mNom.toLowerCase()} dans votre commune précisément.`}
                   </p>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
