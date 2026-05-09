@@ -903,16 +903,16 @@ export default function MetierVillePage({
         </nav>
 
         {/* ── Hero ────────────────────────────────────────────────── */}
-        <section className="px-7 pt-10 pb-12 max-md:px-4 max-md:pt-7 max-md:pb-9 max-w-[1120px] mx-auto">
-          <div className="max-w-[760px]">
+        <section className="px-7 pt-12 pb-8 max-md:px-4 max-md:pt-8 max-md:pb-6 max-w-[1080px] mx-auto">
+          <div className="max-w-[720px]">
             <h1
-              className="font-display font-semibold leading-[1.05] tracking-[-1px] mb-4"
-              style={{ fontSize: "clamp(34px,5.5vw,56px)", color: "var(--bois,#3D2E1F)" }}
+              className="font-display font-semibold leading-[1.1] tracking-[-0.8px] mb-3"
+              style={{ fontSize: "clamp(30px,4.4vw,44px)", color: "var(--bois,#3D2E1F)" }}
             >
               {mNom} à {vNom}
             </h1>
-            <p className="text-base md:text-lg leading-relaxed max-w-[600px]" style={{ color: "var(--bois-mid,#5C4A3A)" }}>
-              Comparez les {mNom.toLowerCase()}s de {vNom}, consultez les avis et demandez un devis gratuit en 2 minutes. Zéro commission.
+            <p className="text-base leading-relaxed max-w-[560px]" style={{ color: "var(--g500,#6B6560)" }}>
+              {`Comparez les ${mNom.toLowerCase()}s de ${vNom}, consultez les avis et demandez un devis gratuit en 2 minutes. Zéro commission.`}
             </p>
           </div>
         </section>
@@ -1067,7 +1067,7 @@ export default function MetierVillePage({
 
         {/* ── Tarifs détaillés (long-tail "prix X", "tarif X à Y") ── */}
         {(() => {
-          const tarifs = TARIFS_PAR_METIER[metier];
+          const tarifs = TARIFS_PAR_METIER[metier]?.slice(0, 4);
           if (!tarifs) return null;
           return (
             <section className="px-7 py-16 max-md:px-4 max-md:py-12 border-t border-g100">
@@ -1113,7 +1113,7 @@ export default function MetierVillePage({
 
         {/* ── Conseils pour bien choisir (long-tail informationnel) ── */}
         {(() => {
-          const conseils = CONSEILS_PAR_METIER[metier];
+          const conseils = CONSEILS_PAR_METIER[metier]?.slice(0, 3);
           if (!conseils || conseils.length === 0) return null;
           return (
             <section className="px-7 py-16 max-md:px-4 max-md:py-12 border-t border-g100">
@@ -1136,32 +1136,8 @@ export default function MetierVillePage({
           );
         })()}
 
-        {/* ── Pourquoi choisir un metier local (bloc édito SEO long-tail) ── */}
-        <section className="px-7 py-16 max-md:px-4 max-md:py-12 border-t border-g100">
-          <div className="max-w-[760px] mx-auto">
-            <h2 className="font-display text-2xl md:text-3xl font-bold text-anthracite leading-tight mb-5">
-              Pourquoi passer par un {mNom.toLowerCase()} local &agrave; {vNom}&nbsp;?
-            </h2>
-            <p className="text-[15px] text-bois-mid leading-[1.75] mb-4">
-              Choisir un {mNom.toLowerCase()} bas&eacute; &agrave; {vNom} ou dans les communes alentours, c&apos;est&nbsp;d&apos;abord
-              gagner en r&eacute;activit&eacute;. Pour un d&eacute;pannage urgent (fuite d&apos;eau, panne &eacute;lectrique,
-              probl&egrave;me de chauffage), un artisan local peut intervenir dans la journ&eacute;e&nbsp;: il conna&icirc;t les
-              quartiers, les r&eacute;sidences, les sp&eacute;cificit&eacute;s du b&acirc;ti local (immeubles haussmanniens du
-              centre-ville, lotissements p&eacute;riph&eacute;riques, fermes r&eacute;nov&eacute;es de bassin).
-            </p>
-            <p className="text-[15px] text-bois-mid leading-[1.75] mb-4">
-              Un {mNom.toLowerCase()} de proximit&eacute; vous co&ucirc;te aussi <strong>moins cher en frais de d&eacute;placement</strong>&nbsp;:
-              pas de majoration kilom&eacute;trique pour intervenir &agrave; quelques minutes de son atelier. Et en cas de SAV
-              ou de retour sur chantier, c&apos;est lui qui revient — pas un sous-traitant introuvable.
-            </p>
-            <p className="text-[15px] text-bois-mid leading-[1.75]">
-              Sur Bativio, tous les {mNom.toLowerCase()}s r&eacute;f&eacute;renc&eacute;s &agrave; {vNom} ont un <strong>SIRET v&eacute;rifi&eacute;</strong>,
-              une assurance d&eacute;cennale en cours et des avis clients authentiques. Le devis est gratuit et sans
-              engagement. Aucune commission n&apos;est pr&eacute;lev&eacute;e sur les chantiers&nbsp;: vous payez l&apos;artisan au juste
-              prix annonc&eacute; sur son devis.
-            </p>
-          </div>
-        </section>
+        {/* Section "Pourquoi local" retirée — redondante avec l'intro métier
+            et la section "Comment Bativio sélectionne". Plus épuré. */}
 
         {/* ── Communes alentours (maillage interne pour SEO local) ── */}
         {(() => {
