@@ -951,11 +951,12 @@ export default function MetierVillePage({
 
             {artisans.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {artisans.map((a) => (
+                {artisans.map((a, i) => (
                   <ArtisanCard
                     key={a.id || a.slug}
                     artisan={a}
                     villeSlug={ville}
+                    priority={i === 0}
                   />
                 ))}
               </div>

@@ -23,15 +23,15 @@
   --color-g100: #EDEBE7;
   --color-g200: #E0DDD8;
   --color-g300: #C5C0B9;
-  --color-g400: #9B9590;
-  --color-g500: #6B6560;
+  --color-g400: #767575;
+  --color-g500: #5C5651;
   --color-green: #22c55e;
   --font-display: "Fraunces", serif;
   --font-body: "Karla", sans-serif;
   --font-calli: var(--font-playfair), "Playfair Display", serif;
 }
 
-:root{--terre:#C4531A;--terre-h:#D4733A;--terre-deep:#8B3A12;--anthracite:#1C1C1E;--or:#C9943A;--or-light:#FDF5E8;--creme:#FAF8F5;--blanc:#FFFFFF;--sable:#E8D5C0;--sable-light:#F2EAE0;--bois:#3D2E1F;--bois-mid:#5C4A3A;--argile:#D4956B;--mousse:#4A6741;--mousse-light:#E8F0E6;--pierre:#9C958D;--g50:#F7F5F2;--g100:#EDEBE7;--g200:#E0DDD8;--g300:#C5C0B9;--g400:#9B9590;--g500:#6B6560;--green:#22c55e}
+:root{--terre:#C4531A;--terre-h:#D4733A;--terre-deep:#8B3A12;--anthracite:#1C1C1E;--or:#C9943A;--or-light:#FDF5E8;--creme:#FAF8F5;--blanc:#FFFFFF;--sable:#E8D5C0;--sable-light:#F2EAE0;--bois:#3D2E1F;--bois-mid:#5C4A3A;--argile:#D4956B;--mousse:#4A6741;--mousse-light:#E8F0E6;--pierre:#9C958D;--g50:#F7F5F2;--g100:#EDEBE7;--g200:#E0DDD8;--g300:#C5C0B9;--g400:#767575;--g500:#5C5651;--green:#22c55e}
 
 /* ═══ CALLIGRAPHIC ACCENT ═══ */
 .calli{font-family:var(--font-calli,'Fraunces',serif);font-style:italic;font-weight:500;color:var(--terre);position:relative;display:inline-block}
@@ -39,7 +39,7 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:'Karla',sans-serif;color:var(--anthracite);background:var(--creme);-webkit-font-smoothing:antialiased;overflow-x:hidden}
-a{text-decoration:none;color:inherit;transition:color .15s}button{font-family:'Karla',sans-serif;cursor:pointer;border:none;transition:all .2s}
+a{text-decoration:none;transition:color .15s}a:not([class*="text-"]){color:inherit}button{font-family:'Karla',sans-serif;cursor:pointer;border:none;transition:all .2s}
 .hide-scroll{-ms-overflow-style:none;scrollbar-width:none}.hide-scroll::-webkit-scrollbar{display:none}
 
 /* ═══ GLOBAL POLISH ═══ */
@@ -103,7 +103,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .nav-logo{font-family:'Fraunces',serif;font-size:24px;font-weight:700;color:var(--terre);letter-spacing:-.5px}
 .nav-r{display:flex;align-items:center;gap:20px}
 .nav-link{font-size:14px;font-weight:500;color:var(--g500);transition:color .2s}.nav-link:hover{color:var(--anthracite)}
-.nav-cta{font-size:13px;font-weight:600;color:var(--blanc);background:var(--terre);padding:10px 22px;border-radius:10px;transition:all .2s;letter-spacing:.2px}.nav-cta:hover{background:var(--terre-h)}
+.nav-cta{font-size:13px;font-weight:600;color:#fff;background:var(--terre);padding:10px 22px;border-radius:10px;transition:all .2s;letter-spacing:.2px}a.nav-cta{color:#fff}.nav-cta:hover{background:var(--terre-h)}
 
 /* ═══ HERO — plus grand ═══ */
 .hero{background:var(--anthracite);padding:64px 32px 72px;position:relative;overflow:hidden}
@@ -251,13 +251,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .footer-inner{max-width:1100px;margin:0 auto}
 .footer-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:32px;margin-bottom:28px}
 .footer-col-title{font-family:'Fraunces',serif;font-size:13px;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:12px;letter-spacing:.3px}
-.footer-col a{display:block;font-size:13px;color:rgba(255,255,255,.45);padding:5px 0;transition:color .15s}
+.footer-col a{display:block;font-size:13px;color:rgba(255,255,255,.7);padding:5px 0;transition:color .15s}
 .footer-col a:hover{color:var(--or)}
 .footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:24px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
-.footer-trust{font-size:12px;color:rgba(255,255,255,.35);letter-spacing:.3px}
-.footer-copy{font-size:12px;color:rgba(255,255,255,.25)}
+.footer-trust{font-size:12px;color:rgba(255,255,255,.7);letter-spacing:.3px}
+.footer-copy{font-size:12px;color:rgba(255,255,255,.65)}
 .footer-logo{font-family:'Fraunces',serif;font-size:22px;font-weight:700;color:var(--terre);margin-bottom:12px;display:block}
-.footer-logo-desc{font-size:13px;color:rgba(255,255,255,.35);line-height:1.5}
+.footer-logo-desc{font-size:13px;color:rgba(255,255,255,.65);line-height:1.5}
 @media(max-width:768px){
   .footer{padding:40px 16px 24px}
   .footer-cols{grid-template-columns:repeat(2,1fr);gap:28px}
