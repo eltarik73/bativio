@@ -16,7 +16,7 @@ function metierSlug(metierNom: string) {
   return metierNom.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z]/g, "");
 }
 
-export default function ArtisanCard({ artisan, villeSlug }: { artisan: ArtisanPublic; villeSlug?: string }) {
+export default function ArtisanCard({ artisan, villeSlug, priority }: { artisan: ArtisanPublic; villeSlug?: string; priority?: boolean }) {
   const vs = villeSlug || slugify(artisan.ville || "chambery");
   const ms = metierSlug(artisan.metierNom || "plombier");
   const photo = getArtisanPhoto({
@@ -47,6 +47,8 @@ export default function ArtisanCard({ artisan, villeSlug }: { artisan: ArtisanPu
             style={{ objectFit: "cover" }}
             onError={() => setImgSrc(FALLBACK_PHOTO)}
             sizes="(max-width: 768px) 100vw, 400px"
+            priority={priority}
+            fetchPriority={priority ? "high" : undefined}
           />
           <div className="card-badge" style={{ background: color }}>
             <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" dangerouslySetInnerHTML={{ __html: icon }} />

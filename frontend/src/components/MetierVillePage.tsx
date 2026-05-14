@@ -951,11 +951,12 @@ export default function MetierVillePage({
 
             {artisans.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {artisans.map((a) => (
+                {artisans.map((a, i) => (
                   <ArtisanCard
                     key={a.id || a.slug}
                     artisan={a}
                     villeSlug={ville}
+                    priority={i === 0}
                   />
                 ))}
               </div>
@@ -1138,6 +1139,49 @@ export default function MetierVillePage({
 
         {/* Section "Pourquoi local" retirée — redondante avec l'intro métier
             et la section "Comment Bativio sélectionne". Plus épuré. */}
+
+        {/* ── Autres métiers à la même ville (maillage interne SEO) ──
+              Booste l'autorité topical de la page : Google associe la ville
+              avec tous les métiers. Et l'utilisateur découvre les autres
+              services Bativio dans sa commune. */}
+        {(() => {
+          const AUTRES_METIERS = [
+            { slug: "plombier", nom: "Plombier" },
+            { slug: "electricien", nom: "Électricien" },
+            { slug: "peintre", nom: "Peintre" },
+            { slug: "macon", nom: "Maçon" },
+            { slug: "carreleur", nom: "Carreleur" },
+            { slug: "menuisier", nom: "Menuisier" },
+            { slug: "couvreur", nom: "Couvreur" },
+            { slug: "chauffagiste", nom: "Chauffagiste" },
+          ].filter((m) => m.slug !== metier);
+          return (
+            <section className="px-7 py-16 max-md:px-4 max-md:py-12 border-t border-g100 bg-creme">
+              <div className="max-w-[1080px] mx-auto">
+                <div className="max-w-[680px] mb-8">
+                  <h2 className="font-display text-2xl md:text-3xl font-bold text-anthracite leading-tight mb-3">
+                    Autres artisans &agrave; {vNom}
+                  </h2>
+                  <p className="text-g500 text-[15px] leading-relaxed">
+                    Besoin d&apos;un autre m&eacute;tier dans le b&acirc;timent &agrave; {vNom}&nbsp;?
+                    Tous nos artisans sont v&eacute;rifi&eacute;s SIRET et assurance d&eacute;cennale.
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
+                  {AUTRES_METIERS.map((m) => (
+                    <Link
+                      key={m.slug}
+                      href={`/${ville}/${m.slug}`}
+                      className="px-4 py-3 rounded-lg border border-sable bg-white hover:border-terre hover:bg-creme transition-colors text-sm font-medium text-bois"
+                    >
+                      {m.nom} &agrave; {vNom}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </section>
+          );
+        })()}
 
         {/* ── Communes alentours (maillage interne pour SEO local) ── */}
         {(() => {
