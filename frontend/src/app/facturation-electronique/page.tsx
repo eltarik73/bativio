@@ -4,11 +4,37 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { safeJsonLd } from "@/lib/html-escape";
 
+// Metadata optimisée pour 2 requêtes cibles :
+// - "logiciel facturation artisan" (niche moins concurrentielle, mainstream)
+// - "facturation électronique artisans 2026" (long-tail haute intention)
 export const metadata: Metadata = {
-  title: "Facturation électronique pour artisans — prête 09/2026",
+  title: "Logiciel de facturation artisan BTP — gratuit, conforme 2026",
   description:
-    "Obligation sept. 2026 : recevez et émettez vos factures électroniques. Bativio est connecté à une plateforme agréée. Conforme, simple, intégré.",
+    "Logiciel de facturation pour artisans du BTP : devis, factures, conformité PA sept. 2026, MaPrimeRénov'. Plateforme agréée intégrée. Essai gratuit, zéro commission.",
+  keywords: [
+    "logiciel facturation artisan",
+    "logiciel facturation artisan btp",
+    "logiciel facture artisan",
+    "logiciel devis facture artisan",
+    "logiciel facturation gratuit artisan",
+    "logiciel facturation electronique artisan",
+    "logiciel facturation auto-entrepreneur batiment",
+    "facturation electronique 2026 artisan",
+    "logiciel devis facture batiment",
+    "logiciel comptabilite artisan btp",
+    "facturation electronique obligation 2026",
+    "plateforme agreee facturation",
+    "logiciel facture maprimerenov",
+    "logiciel devis batiment",
+    "facturx artisan",
+  ],
   alternates: { canonical: "https://www.bativio.fr/facturation-electronique" },
+  openGraph: {
+    title: "Logiciel de facturation artisan BTP — gratuit, conforme 2026 | Bativio",
+    description: "Logiciel de facturation pour artisans BTP : devis, factures, conformité PA 09/2026. Plateforme agréée intégrée. Essai gratuit.",
+    url: "https://www.bativio.fr/facturation-electronique",
+    images: [{ url: "https://www.bativio.fr/og-image.png", width: 1200, height: 630 }],
+  },
 };
 
 const TIMELINE = [
@@ -133,9 +159,12 @@ const FAQ = [
 ];
 
 function JsonLd() {
-  // Organization + WebSite are already emitted by the root layout — emitting
-  // them again here creates duplicate entities in Google's structured data
-  // report. We only need the page-specific FAQPage schema here.
+  // Organization + WebSite are already emitted by the root layout.
+  // Page-specific schemas :
+  // - FAQPage (rich snippets sur SERP)
+  // - SoftwareApplication (positionne Bativio comme "logiciel" pour le
+  //   keyword cible "logiciel facturation artisan" — Google associe alors
+  //   la page à la catégorie logicielle dans son knowledge graph)
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -149,10 +178,84 @@ function JsonLd() {
     })),
   };
 
+  const softwareSchema = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Bativio — Logiciel de facturation pour artisans BTP",
+    applicationCategory: "BusinessApplication",
+    applicationSubCategory: "InvoicingSoftware",
+    operatingSystem: "Web, iOS, Android",
+    description:
+      "Logiciel de facturation pour artisans du BTP, conforme à l'obligation de facturation électronique 2026. Devis, factures, MaPrimeRénov', plateforme agréée intégrée.",
+    url: "https://www.bativio.fr/facturation-electronique",
+    offers: [
+      {
+        "@type": "Offer",
+        name: "Gratuit",
+        price: "0",
+        priceCurrency: "EUR",
+        description: "Plan gratuit : annuaire, profil public, devis en ligne",
+      },
+      {
+        "@type": "Offer",
+        name: "Starter",
+        price: "19",
+        priceCurrency: "EUR",
+        priceSpecification: {
+          "@type": "UnitPriceSpecification",
+          price: "19",
+          priceCurrency: "EUR",
+          unitText: "MONTH",
+        },
+      },
+      {
+        "@type": "Offer",
+        name: "Pro",
+        price: "39",
+        priceCurrency: "EUR",
+        priceSpecification: {
+          "@type": "UnitPriceSpecification",
+          price: "39",
+          priceCurrency: "EUR",
+          unitText: "MONTH",
+        },
+      },
+      {
+        "@type": "Offer",
+        name: "Business",
+        price: "59",
+        priceCurrency: "EUR",
+        priceSpecification: {
+          "@type": "UnitPriceSpecification",
+          price: "59",
+          priceCurrency: "EUR",
+          unitText: "MONTH",
+        },
+      },
+    ],
+    featureList: [
+      "Devis personnalisés en ligne",
+      "Factures électroniques conformes 2026",
+      "Plateforme agréée (PA) intégrée",
+      "Génération MaPrimeRénov'",
+      "Conformité Factur-X / Peppol",
+      "Annuaire artisans",
+      "CRM clients",
+      "Agenda et RDV",
+    ],
+    audience: {
+      "@type": "Audience",
+      audienceType: "Artisans du bâtiment",
+    },
+    inLanguage: "fr-FR",
+  };
+
+  const combined = [faqSchema, softwareSchema];
+
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: safeJsonLd(faqSchema) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLd(combined) }}
     />
   );
 }
@@ -227,21 +330,21 @@ export default function FacturationElectroniquePage() {
                 marginBottom: 16,
               }}
             >
-              Facturation électronique —{" "}
-              <span style={{ color: "#E8A84C" }}>Votre entreprise est-elle prête ?</span>
+              Logiciel de facturation artisan BTP —{" "}
+              <span style={{ color: "#E8A84C" }}>conforme à l&apos;obligation 2026</span>
             </h1>
             <p
               style={{
                 fontSize: 18,
-                color: "rgba(255,255,255,.55)",
+                color: "rgba(255,255,255,.78)",
                 lineHeight: 1.6,
-                maxWidth: 580,
+                maxWidth: 620,
                 margin: "0 auto 32px",
               }}
             >
-              À partir de septembre 2026, toutes les entreprises doivent pouvoir recevoir des
-              factures électroniques. Bativio est connecté à une plateforme agréée pour vous
-              simplifier la mise en conformité.
+              Le logiciel de facturation pour artisans du BTP qui vous met en conformité avec
+              l&apos;obligation de facturation électronique de septembre 2026. Devis, factures,
+              MaPrimeRénov&apos;, plateforme agréée intégrée. Essai gratuit, zéro commission.
             </p>
             <Link
               href="/inscription"
