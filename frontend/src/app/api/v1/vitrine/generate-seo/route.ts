@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { apiSuccess, apiError, handleAuthError } from "@/lib/api-response";
 import { requireFeature } from "@/lib/auth-server";
+import { MODEL_SONNET } from "@/lib/claude";
 
 export async function POST(_request: NextRequest) {
   try {
@@ -85,7 +86,8 @@ IMPORTANT :
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
+        // Sonnet 4.6 : generation contenu SEO vitrine (qualité OK)
+        model: MODEL_SONNET,
         max_tokens: 2000,
         messages: [{ role: "user", content: prompt }],
       }),

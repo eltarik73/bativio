@@ -1,0 +1,93 @@
+name: Claude Code Review
+
+# Review automatique de chaque PR par Claude Opus 4.7.
+# Focus sécurité (IDOR, leaks, multi-tenant) + SEO + qualité code.
+#
+# Pré-requis : ajouter le secret ANTHROPIC_API_KEY dans Settings > Secrets
+# and variables > Actions du repo.
+# Récupération du token : https://console.anthropic.com/settings/keys
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  review:
+    name: Claude Opus 4.7 review
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+
+    # Skip drafts and the bot's own PRs to éviter boucles infinies
+    if: github.event.pull_request.draft == false && github.event.pull_request.user.type != 'Bot'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Claude Code Review
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: "--model claude-opus-4-7"
+          prompt: |
+            Review cette PR en français. Tu es un reviewer senior expert
+            Bativio (SaaS B2B artisans Rhône-Alpes, Next.js 16 + Prisma +
+            JWT cookie auth + Stripe + Cloudinary + plan-gated features).
+
+            ## Focus PRIORITAIRE (P0)
+
+            1. **Sécurité multi-tenant** (le risque #1 pour Bativio) :
+               - Vérifier que chaque endpoint `/api/v1/artisans/me/*` filtre
+                 par `userId` du JWT, pas par paramètre client
+               - Pas d'IDOR (Insecure Direct Object Reference) sur ids
+                 cuid (devis, photos, rdv, demandes...)
+               - Endpoints `/api/v1/admin/*` vérifient `role === 'ADMIN'`
+               - Endpoints publics ne leaknent pas `email`, `plan`,
+                 `siret`, `planOverride`, `planOverrideExpireAt`
+
+            2. **Secrets et credentials** :
+               - Aucun token, JWT_SECRET, API key, DATABASE_URL dans le
+                 code ou les commits
+               - Pas de header `Authorization: Bearer ...` côté client
+                 (Bativio utilise le cookie HttpOnly `bativio-session`)
+
+            3. **Plan enforcement** :
+               - Utilisation de `getEffectivePlan(artisan)` (pas
+                 `artisan.plan` direct car planOverride existe)
+               - `hasFeature()` ou `requireFeature()` sur les endpoints
+                 premium (devis-IA, agenda, facturation Invoquo)
+
+            ## Focus SEO (P1)
+
+            - Pages publiques ont `generateMetadata()` avec title + description
+            - Title < 60 chars, description < 160 chars
+            - Pas de noindex involontaire
+            - Schema.org cohérent (pas de duplicate Organization/WebSite)
+            - Pas de regression sur les pages /[ville]/[metier] (canonical,
+              sitemap, redirects)
+
+            ## Focus qualité code (P2)
+
+            - TypeScript strict, pas de `any` non justifié
+            - Server Components par défaut, `"use client"` seulement quand
+              nécessaire (useState/useEffect/onClick)
+            - `prisma` jamais importé dans un Client Component
+            - apiSuccess/apiError pour toutes les API Routes
+            - `authFetch()` côté client (jamais `fetch()` nu pour endpoints
+              authentifiés)
+
+            ## Comportement
+
+            - Si tout est OK : un commentaire bref "✅ LGTM" + 1 ligne par
+              point sécurité vérifié
+            - Si problème : commentaires inline précis avec ligne + fix
+              suggéré
+            - Si problème CRITIQUE (leak, IDOR, secret commit) : flag
+              "🚨 BLOQUANT" en début de review
+            - Ne PAS approuver/merger automatiquement — le reviewer humain
+              (Tarik) garde le contrôle final
