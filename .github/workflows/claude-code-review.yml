@@ -31,9 +31,14 @@ jobs:
 
       - name: Claude Code Review
         uses: anthropics/claude-code-action@v1
+        # Syntax officielle : ANTHROPIC_API_KEY en env, claude_args en JSON
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude_args: "--model claude-opus-4-7"
+          claude_args: |
+            {
+              "model": "claude-opus-4-7"
+            }
           prompt: |
             Review cette PR en français. Tu es un reviewer senior expert
             Bativio (SaaS B2B artisans Rhône-Alpes, Next.js 16 + Prisma +
@@ -41,53 +46,41 @@ jobs:
 
             ## Focus PRIORITAIRE (P0)
 
-            1. **Sécurité multi-tenant** (le risque #1 pour Bativio) :
-               - Vérifier que chaque endpoint `/api/v1/artisans/me/*` filtre
-                 par `userId` du JWT, pas par paramètre client
-               - Pas d'IDOR (Insecure Direct Object Reference) sur ids
-                 cuid (devis, photos, rdv, demandes...)
-               - Endpoints `/api/v1/admin/*` vérifient `role === 'ADMIN'`
-               - Endpoints publics ne leaknent pas `email`, `plan`,
-                 `siret`, `planOverride`, `planOverrideExpireAt`
+            1. **Sécurité multi-tenant** :
+               - Endpoints /api/v1/artisans/me/* filtrent par userId du JWT
+               - Pas d'IDOR sur ids cuid (devis, photos, rdv, demandes)
+               - Endpoints /api/v1/admin/* vérifient role === 'ADMIN'
+               - Endpoints publics ne leakent pas email, plan, siret,
+                 planOverride, planOverrideExpireAt
 
             2. **Secrets et credentials** :
-               - Aucun token, JWT_SECRET, API key, DATABASE_URL dans le
-                 code ou les commits
-               - Pas de header `Authorization: Bearer ...` côté client
-                 (Bativio utilise le cookie HttpOnly `bativio-session`)
+               - Aucun token, JWT_SECRET, API key, DATABASE_URL dans code
+               - Pas de header Authorization: Bearer côté client
+                 (Bativio = cookie HttpOnly bativio-session)
 
             3. **Plan enforcement** :
-               - Utilisation de `getEffectivePlan(artisan)` (pas
-                 `artisan.plan` direct car planOverride existe)
-               - `hasFeature()` ou `requireFeature()` sur les endpoints
-                 premium (devis-IA, agenda, facturation Invoquo)
+               - getEffectivePlan(artisan) utilisé (pas artisan.plan direct)
+               - hasFeature() ou requireFeature() sur endpoints premium
 
             ## Focus SEO (P1)
 
-            - Pages publiques ont `generateMetadata()` avec title + description
-            - Title < 60 chars, description < 160 chars
+            - generateMetadata() sur pages publiques avec title+description
+            - Title <60 chars, description <160 chars
             - Pas de noindex involontaire
-            - Schema.org cohérent (pas de duplicate Organization/WebSite)
-            - Pas de regression sur les pages /[ville]/[metier] (canonical,
-              sitemap, redirects)
+            - Schema.org cohérent
+            - Pas de régression /[ville]/[metier] (canonical, sitemap)
 
             ## Focus qualité code (P2)
 
-            - TypeScript strict, pas de `any` non justifié
-            - Server Components par défaut, `"use client"` seulement quand
-              nécessaire (useState/useEffect/onClick)
-            - `prisma` jamais importé dans un Client Component
-            - apiSuccess/apiError pour toutes les API Routes
-            - `authFetch()` côté client (jamais `fetch()` nu pour endpoints
-              authentifiés)
+            - TypeScript strict, pas de any non justifié
+            - Server Components par défaut
+            - prisma jamais dans Client Component
+            - apiSuccess/apiError pour API Routes
+            - authFetch() côté client
 
             ## Comportement
 
-            - Si tout est OK : un commentaire bref "✅ LGTM" + 1 ligne par
-              point sécurité vérifié
-            - Si problème : commentaires inline précis avec ligne + fix
-              suggéré
-            - Si problème CRITIQUE (leak, IDOR, secret commit) : flag
-              "🚨 BLOQUANT" en début de review
-            - Ne PAS approuver/merger automatiquement — le reviewer humain
-              (Tarik) garde le contrôle final
+            - Si tout OK : commentaire bref "✅ LGTM" + 1 ligne par check
+            - Si problème : commentaires inline précis + fix suggéré
+            - Si CRITIQUE (leak, IDOR, secret) : flag "🚨 BLOQUANT"
+            - Ne PAS approuver/merger automatiquement
