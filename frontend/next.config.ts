@@ -27,6 +27,10 @@ const nextConfig: NextConfig = {
     // vers la page travaux générique. Si on veut ranker spécifiquement sur
     // "renovation salle de bain lyon", il faudra créer /travaux/[slug]/[ville].
     { source: "/travaux/:slug/:ville", destination: "/travaux/:slug", permanent: true },
+    // Renommage slug Novasan (mai 2026) : l'ancien slug 'novasan-n-s' devient
+    // 'novasan' pour utilisation dans GMB. Redirect 301 préserve le SEO
+    // accumulé sur l'ancienne URL.
+    { source: "/:ville/novasan-n-s", destination: "/:ville/novasan", permanent: true },
   ],
   headers: async () => [
     {
