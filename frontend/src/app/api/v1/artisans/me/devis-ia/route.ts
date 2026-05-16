@@ -7,6 +7,7 @@ import { hasFeature } from "@/lib/plans";
 import type { PlanType } from "@/lib/plans";
 import { getEffectivePlan } from "@/lib/plan-gates";
 import crypto from "crypto";
+import { MODEL_OPUS } from "@/lib/claude";
 
 const devisIASchema = z.object({
   description: z.string().min(10, "La description doit contenir au moins 10 caracteres"),
@@ -152,7 +153,9 @@ Reponds uniquement avec le JSON.`;
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
+        // Upgrade vers Opus 4.7 (mai 2026) : qualité devis premium pour
+        // plan BUSINESS qui justifie le surcoût.
+        model: MODEL_OPUS,
         max_tokens: 4096,
         system: systemPrompt,
         messages: [{ role: "user", content: userPrompt }],

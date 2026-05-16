@@ -38,8 +38,12 @@ export interface TokenUsage {
   costEur: number;
 }
 
+// Tarifs API Anthropic — vérifier régulièrement sur
+// https://platform.claude.com/docs/en/about-claude/pricing
+// Opus 4.7 (avril 2026) : $5 / $25 par MTok (revu à la baisse vs Opus 4 ancien
+// qui était à 15/75). Sonnet 4.6 : $3/$15. Haiku 4.5 : $1/$5.
 const PRICING_USD_PER_1M: Record<string, { in: number; out: number }> = {
-  [MODEL_OPUS]: { in: 15, out: 75 },
+  [MODEL_OPUS]: { in: 5, out: 25 },
   [MODEL_SONNET]: { in: 3, out: 15 },
   [MODEL_HAIKU]: { in: 1, out: 5 },
 };

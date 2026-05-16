@@ -5,6 +5,7 @@ import { requireAuth } from "@/lib/auth-server";
 import { hasFeature } from "@/lib/plans";
 import type { PlanType } from "@/lib/plans";
 import { getEffectivePlan } from "@/lib/plan-gates";
+import { MODEL_SONNET } from "@/lib/claude";
 
 export async function POST(_request: NextRequest) {
   try {
@@ -64,7 +65,8 @@ Réponds en JSON avec exactement cette structure :
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
+        // Sonnet 4.6 suffit pour rewrite SEO (pas critique = pas Opus)
+        model: MODEL_SONNET,
         max_tokens: 500,
         messages: [{ role: "user", content: prompt }],
       }),
