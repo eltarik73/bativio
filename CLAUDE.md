@@ -338,8 +338,17 @@ Bativio intègre Invoquo (invoquo.vercel.app) en iframe embed.
 ## Déploiement
 
 ### Bativio
-Les pushes GitHub déclenchent des builds Vercel CANCELED (root directory issue).
-**Déployer via CLI :**
+**Depuis le 16/05/2026** : les pushes GitHub déploient automatiquement en
+production. Le `rootDirectory` du projet Vercel a été configuré sur
+`frontend` (via API PATCH), ce qui était la cause du bug "No Next.js
+version detected" sur les builds auto.
+
+Workflow standard :
+1. Commit + push sur la branche
+2. Créer PR → merger sur `main`
+3. Vercel build auto se déclenche, prod live en 2-3 min
+
+**Déploiement CLI** (toujours possible, utile pour preview rapide sans PR) :
 ```bash
 cd frontend
 npm run build
