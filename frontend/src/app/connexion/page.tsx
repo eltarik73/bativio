@@ -69,8 +69,11 @@ export default function ConnexionPage() {
   if (magicSent) {
     return (
       <><Navbar />
-      <main style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "85vh", padding: 16, background: "var(--creme)" }}>
-        <div style={{ background: "var(--blanc)", borderRadius: 16, border: "1px solid var(--sable)", boxShadow: "0 4px 24px rgba(61,46,31,.04)", maxWidth: 440, width: "100%", padding: 40, textAlign: "center" }}>
+      {/* minHeight auto (pas 85vh) pour eviter que la card soit cachee derriere
+          le cookie banner fixed en bas sur mobile. paddingBottom 160 reserve
+          l'espace du cookie banner (~130px) + marge. */}
+      <main style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "32px 16px 160px", background: "var(--creme)" }}>
+        <div style={{ background: "var(--blanc)", borderRadius: 16, border: "1px solid var(--sable)", boxShadow: "0 4px 24px rgba(61,46,31,.04)", maxWidth: 440, width: "100%", padding: "32px 24px", textAlign: "center" }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>&#9993;</div>
           <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 22, fontWeight: 700, color: "var(--bois)", marginBottom: 8 }}>V&eacute;rifiez votre bo&icirc;te mail</h1>
           <p style={{ fontSize: 14, color: "var(--bois-mid,#5C4A3A)", lineHeight: 1.6, marginBottom: 4 }}>
@@ -98,8 +101,12 @@ export default function ConnexionPage() {
 
   return (
     <><Navbar />
-    <main style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "85vh", padding: 16, background: "var(--creme)" }}>
-      <div style={{ background: "var(--blanc)", borderRadius: 16, border: "1px solid var(--sable)", boxShadow: "0 4px 24px rgba(61,46,31,.04)", maxWidth: 440, width: "100%", padding: 40 }}>
+    {/* Mobile : pas de 85vh (cookie banner cache le bas), pas de padding 40
+        sur la card (trop grand sur 390px). 160px paddingBottom sur main pour
+        que le bouton Magic link + lien Inscription restent visibles meme
+        avec le cookie banner ~130px en bas. */}
+    <main style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "32px 16px 160px", background: "var(--creme)" }}>
+      <div style={{ background: "var(--blanc)", borderRadius: 16, border: "1px solid var(--sable)", boxShadow: "0 4px 24px rgba(61,46,31,.04)", maxWidth: 440, width: "100%", padding: "32px 24px" }}>
         <div style={{ textAlign: "center", marginBottom: 32 }}>
           <h1 style={{ fontFamily: "'Fraunces',serif", fontSize: 28, fontWeight: 700, color: "var(--terre)", letterSpacing: -0.5 }}>Bativio</h1>
           <p style={{ marginTop: 8, fontSize: 15, color: "var(--bois)", fontWeight: 600 }}>Connectez-vous &agrave; votre espace professionnel</p>

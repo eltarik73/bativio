@@ -62,8 +62,7 @@ export default function MotDePasseOubliePage() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            minHeight: "85vh",
-            padding: 16,
+            padding: "32px 16px 160px",
             background: "var(--creme)",
           }}
         >
@@ -75,7 +74,7 @@ export default function MotDePasseOubliePage() {
               boxShadow: "0 4px 24px rgba(61,46,31,.04)",
               maxWidth: 440,
               width: "100%",
-              padding: 40,
+              padding: '32px 24px',
               textAlign: "center",
             }}
           >
@@ -152,8 +151,7 @@ export default function MotDePasseOubliePage() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          minHeight: "85vh",
-          padding: 16,
+          padding: "32px 16px 160px",
           background: "var(--creme)",
         }}
       >
@@ -165,7 +163,7 @@ export default function MotDePasseOubliePage() {
             boxShadow: "0 4px 24px rgba(61,46,31,.04)",
             maxWidth: 440,
             width: "100%",
-            padding: 40,
+            padding: '32px 24px',
           }}
         >
           <div style={{ textAlign: "center", marginBottom: 32 }}>
