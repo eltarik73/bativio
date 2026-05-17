@@ -103,18 +103,18 @@ async function pingIndexNow(urls: string[]): Promise<IndexNowResult[]> {
   );
 }
 
-async function pingGoogleSitemap(): Promise<{ ok: boolean; status: number }> {
-  // Legacy endpoint : Google a déprécié officiellement en 2023, mais l'URL
-  // répond toujours 200. Best effort, no harm.
-  try {
-    const res = await fetch(
-      `https://www.google.com/ping?sitemap=${encodeURIComponent(SITE + "/sitemap.xml")}`,
-      { method: "GET" }
-    );
-    return { ok: res.ok, status: res.status };
-  } catch {
-    return { ok: false, status: 0 };
-  }
+async function pingGoogleSitemap(): Promise<{ ok: boolean; status: number; reason?: string }> {
+  // L'endpoint legacy `google.com/ping?sitemap=...` a été definitivement
+  // déprécié par Google en juin 2023 et renvoie maintenant 404 (vérifié
+  // le 17/05/2026). On retire l'appel pour ne plus polluer les logs.
+  //
+  // Google découvre les nouveaux contenus via :
+  // 1. Sitemap.xml soumis dans GSC (déjà fait)
+  // 2. Crawl naturel des liens internes (sitemap, navigation)
+  // 3. URLs forcées via GSC "Inspection URL" + "Demander indexation"
+  //
+  // Pas besoin de ping API legacy.
+  return { ok: true, status: 200, reason: "Legacy endpoint deprecated 06/2023 — skipped" };
 }
 
 interface BingResult { ok: boolean; status: number; submitted: number; reason?: string; }
