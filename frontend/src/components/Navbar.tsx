@@ -443,8 +443,17 @@ export default function Navbar() {
       {/* Inline style for mobile hamburger visibility and hiding desktop elements on mobile */}
       <style>{`
         @media (max-width: 768px) {
+          /* Cache tous les liens desktop (.nav-link + .nav-cta + le bouton
+             Espace artisan) - sinon ils débordent du viewport iPhone et
+             provoquent un scroll horizontal de la page entière */
+          .nav-r .nav-link,
+          .nav-r .nav-cta { display: none !important; }
+          /* Affiche le menu burger */
           .nav-hamburger { display: flex !important; }
+          /* Cache le nom d'entreprise (mais garde l'avatar+chevron) */
           .nav-user-name { display: none !important; }
+          /* nav-r reduit gap (sinon trop d'espace entre avatar et burger) */
+          .nav-r { gap: 12px; }
         }
       `}</style>
     </nav>
