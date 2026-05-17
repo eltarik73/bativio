@@ -120,15 +120,47 @@ async function pingGoogleSitemap(): Promise<{ ok: boolean; status: number }> {
 interface BingResult { ok: boolean; status: number; submitted: number; reason?: string; }
 
 async function submitBingWebmasterTools(urls: string[]): Promise<BingResult> {
-  // Bing Webmaster Tools API : 10 000 URLs/jour si la clé est fournie en env.
-  // Plus efficace qu'IndexNow car force l'inclusion immédiate dans l'index Bing.
+  // Bing Webmaster Tools API. Quota théorique 10 000 URLs/jour, mais en
+  // pratique Bing alloue un quota daily plus bas pour les nouveaux sites
+  // (Bativio = 100 URLs/jour, monthly 2300).
+  //
+  // Bug constaté 17/05/2026 : envoyer 500 URLs quand quota daily restant
+  // = 37 fait échouer TOUT le batch (HTTP 400 "Quota remaining for today: 37").
+  //
+  // Fix : on récupère d'abord le quota daily disponible et on slice à
+  // min(500, quotaRestant). Si quota = 0, skip pour économiser un appel.
   // Doc : https://www.bing.com/webmasters/help/url-submission-api-3a9d7b35
   const key = process.env.BING_WMT_API_KEY;
   if (!key) {
     return { ok: false, status: 0, submitted: 0, reason: "BING_WMT_API_KEY not set" };
   }
-  // Limit safe : 500 URLs par batch (l'API accepte 500 en SubmitUrlBatch)
-  const batch = urls.slice(0, 500);
+
+  // 1. Récupère le quota daily restant
+  let dailyQuota = 500;
+  try {
+    const qRes = await fetch(
+      `https://ssl.bing.com/webmaster/api.svc/json/GetUrlSubmissionQuota?siteUrl=${encodeURIComponent(SITE)}&apikey=${encodeURIComponent(key)}`,
+    );
+    if (qRes.ok) {
+      const qData = await qRes.json();
+      dailyQuota = qData?.d?.DailyQuota ?? 500;
+    }
+  } catch {
+    // Si quota check échoue, on tente quand même avec 100 (safe default)
+    dailyQuota = 100;
+  }
+
+  if (dailyQuota === 0) {
+    return { ok: true, status: 200, submitted: 0, reason: "Quota Bing épuisé pour aujourd'hui (réessai demain)" };
+  }
+
+  // 2. Slice URLs à min(500 batch max, quotaRestant)
+  const batchSize = Math.min(500, dailyQuota);
+  // Priorise les URLs les plus stratégiques (statics + tier 1) en début
+  // de liste (déjà ordonnées dans le code appelant via STATIC_HIGH_PRIORITY)
+  const batch = urls.slice(0, batchSize);
+
+  // 3. Submit batch
   try {
     const res = await fetch(
       `https://ssl.bing.com/webmaster/api.svc/json/SubmitUrlBatch?apikey=${encodeURIComponent(key)}`,
@@ -138,7 +170,8 @@ async function submitBingWebmasterTools(urls: string[]): Promise<BingResult> {
         body: JSON.stringify({ siteUrl: SITE, urlList: batch }),
       }
     );
-    return { ok: res.ok, status: res.status, submitted: batch.length };
+    const reason = res.ok ? undefined : `HTTP ${res.status} (quota dispo=${dailyQuota}, batch=${batchSize})`;
+    return { ok: res.ok, status: res.status, submitted: batch.length, reason };
   } catch (e) {
     return { ok: false, status: 0, submitted: 0, reason: String(e).slice(0, 100) };
   }
