@@ -42,21 +42,24 @@ export function useAuth() {
   return useContext(AuthContext);
 }
 
-// Lazy initial state: read the session cookie synchronously on mount so
-// anonymous visitors render immediately with `loading=false` and we skip
-// the /auth/me round-trip + Prisma query for them. This also satisfies
-// react-hooks/set-state-in-effect (Next 16) by avoiding a setState call
-// inside the effect body when there's no cookie.
-function readHasSessionCookie(): boolean {
-  if (typeof document === "undefined") return false;
-  return document.cookie.includes("bativio-session=");
-}
+// BUGFIX 18/05/2026 (Tarik) : la session cookie 'bativio-session' est HttpOnly
+// (cf middleware.ts + auth-server.ts). Donc document.cookie NE LA VOIT PAS
+// côté client. L'optimisation precedente readHasSessionCookie() retournait
+// toujours false -> loading initialise a false -> useEffect skip fetchMe ->
+// user reste null -> "Connexion requise" sur chaque page protegee meme
+// quand l'utilisateur EST connecte. Bug majeur signale par Tarik :
+// "a chaque actualisation /admin il faut se reconnecter".
+//
+// Fix : on toujours fetch /auth/me au mount. Le backend confirme la session
+// via le cookie HttpOnly automatiquement envoye. Surcout : 1 query DB par
+// page load - acceptable car middleware Next ne peut pas tester
+// l'authentification cote serveur sans introduire de complexite.
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  // Only "loading" while we actually plan to fetch /auth/me — i.e. only
-  // when a session cookie is present.
-  const [loading, setLoading] = useState<boolean>(() => readHasSessionCookie());
+  // Toujours loading=true au mount : on doit checker la session via
+  // /auth/me (cookie HttpOnly invisible cote JS).
+  const [loading, setLoading] = useState<boolean>(true);
 
   // Fetch current user from session cookie
   const fetchMe = useCallback(async (): Promise<User | null> => {
@@ -70,9 +73,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Init on mount — only fetch when we actually have a session cookie.
+  // Init on mount — fetch /auth/me et set user si session valide.
   useEffect(() => {
-    if (!loading) return; // anonymous visitor, nothing to do
     let cancelled = false;
     fetchMe().then((u) => {
       if (!cancelled) {
@@ -81,10 +83,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
     return () => { cancelled = true; };
-    // `loading` is read once at mount (it's the lazy-init value); ignoring
-    // it from deps is intentional — re-running on every loading flip would
-    // re-trigger /auth/me after a logout.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchMe]);
 
   // Login
