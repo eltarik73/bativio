@@ -11,11 +11,13 @@ import type { PhotoLayoutType } from "@/lib/vitrine-config";
 import { METIER_PHOTOS } from "@/lib/metier-config";
 import ChatDevis from "@/components/ChatDevis/ChatDevis";
 import ArtisanBadges from "@/components/ArtisanBadges";
+import { useTelephoneTracking } from "@/hooks/useTelephoneTracking";
 
 const JOURS = ["", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 const PLACEHOLDERS = Object.values(METIER_PHOTOS).slice(0, 4);
 
 export default function VitrineVitrine({ a, photo, primary, accent, villeSlug }: { a: ArtisanPublic; photo: string; primary: string; accent: string; villeSlug: string }) {
+  useTelephoneTracking(a.slug);
   const sliderPhotos = (a.photos && a.photos.length > 0) ? a.photos.map((p) => p.url) : [photo, ...PLACEHOLDERS.slice(0, 2)];
   const [slideIdx, setSlideIdx] = useState(0);
   const [devisOpen, setDevisOpen] = useState(false);

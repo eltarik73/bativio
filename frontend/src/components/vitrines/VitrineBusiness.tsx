@@ -8,6 +8,7 @@ import type { SeoGenerated } from "@/lib/vitrine-config";
 import { getVitrineConfig } from "@/lib/vitrine-config";
 import { getDefaultContent } from "@/lib/vitrine-defaults";
 import { buildGallery, getImageId, dedupePhotos } from "@/lib/photos";
+import { useTelephoneTracking } from "@/hooks/useTelephoneTracking";
 
 const JOURS = ["", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 
@@ -23,6 +24,8 @@ interface Props {
 
 export default function VitrineBusiness({ a, photo, primary, villeSlug, vitrineConfig: rawConfig, seoGenerated }: Props) {
   const [devisOpen, setDevisOpen] = useState(false);
+  // Tracking auto des clics tel: -> /admin/statistiques (category phone_call)
+  useTelephoneTracking(a.slug);
   const config = getVitrineConfig(rawConfig);
   const sec = config.sections;
 

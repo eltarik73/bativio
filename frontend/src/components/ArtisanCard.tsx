@@ -36,8 +36,28 @@ export default function ArtisanCard({ artisan, villeSlug, priority }: { artisan:
 
   const hasRating = artisan.noteMoyenne != null && artisan.noteMoyenne > 0 && artisan.nombreAvis > 0;
 
+  // Tracking : clic sur la fiche artisan = vue vitrine. Mesure dans
+  // /admin/statistiques > Clics sortants (categorie "vitrine_view").
+  // Envoyé via navigator.sendBeacon (non-bloquant, survit a la navigation).
+  const handleCardClick = () => {
+    try {
+      const payload = JSON.stringify({
+        label: `vitrine_${artisan.slug}`,
+        targetUrl: `https://www.bativio.fr/${vs}/${artisan.slug}`,
+        sourcePage: typeof window !== "undefined" ? window.location.pathname : "/",
+        category: "vitrine_view",
+      });
+      const blob = new Blob([payload], { type: "application/json" });
+      if (typeof navigator !== "undefined" && navigator.sendBeacon) {
+        navigator.sendBeacon("/api/v1/public/track-click", blob);
+      }
+    } catch {
+      // jamais bloquant
+    }
+  };
+
   return (
-    <Link href={`/${vs}/${artisan.slug}`}>
+    <Link href={`/${vs}/${artisan.slug}`} onClick={handleCardClick}>
       <article className="card">
         <div className="card-photo">
           <Image
