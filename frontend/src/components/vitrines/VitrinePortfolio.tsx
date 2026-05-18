@@ -10,10 +10,12 @@ import PhotoGallery from "@/components/vitrines/PhotoGallery";
 import type { PhotoLayoutType } from "@/lib/vitrine-config";
 import ChatDevis from "@/components/ChatDevis/ChatDevis";
 import ArtisanBadges from "@/components/ArtisanBadges";
+import { useTelephoneTracking } from "@/hooks/useTelephoneTracking";
 
 export default function VitrinePortfolio({ a, photo, primary, accent, villeSlug }: { a: ArtisanPublic; photo: string; primary: string; accent: string; villeSlug: string }) {
   const [devisOpen, setDevisOpen] = useState(false);
   const [toast, setToast] = useState(false);
+  useTelephoneTracking(a.slug);
 
   const metierSlug = (a.metierNom || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-");
 

@@ -57,9 +57,16 @@ export async function GET() {
       // Compteur "à valider" — uniquement les statuts qui attendent une
       // décision de l'admin. ONBOARDING = artisan en cours d'inscription
       // (n'a pas encore soumis son scoring), donc rien à valider côté admin.
+      //
+      // BUGFIX 18/05/2026 : on exclut explicitement actif=true. Sinon un
+      // artisan qu'un admin a active manuellement (mise actif=true) reste
+      // bizarrement dans "en attente" si l'artisanStatus n'a pas ete remis
+      // a ACTIVE (incoherence DB). Tarik a signale ce bug. Si actif=true,
+      // l'artisan est de fait valide, peu importe son artisanStatus historique.
       prisma.artisan.count({
         where: {
           deletedAt: null,
+          actif: false,
           artisanStatus: { in: ["PENDING_NAF_REVIEW", "PENDING_REVIEW"] },
         },
       }),

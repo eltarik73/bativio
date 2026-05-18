@@ -11,12 +11,16 @@ import type { PhotoLayoutType } from "@/lib/vitrine-config";
 import ChatDevis from "@/components/ChatDevis/ChatDevis";
 import ArtisanBadges from "@/components/ArtisanBadges";
 import ExternalCtaButton from "@/components/ExternalCtaButton";
+import { useTelephoneTracking } from "@/hooks/useTelephoneTracking";
 
 const JOURS = ["", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 
 export default function VitrineClassique({ a, photo, primary, accent, villeSlug }: { a: ArtisanPublic; photo: string; primary: string; accent: string; villeSlug: string }) {
   const [devisOpen, setDevisOpen] = useState(false);
   const [toast, setToast] = useState(false);
+
+  // Tracking auto des clics tel: -> ClickEvent category "phone_call"
+  useTelephoneTracking(a.slug);
 
   const metierSlug = (a.metierNom || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-");
 
