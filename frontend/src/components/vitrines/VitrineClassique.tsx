@@ -10,6 +10,7 @@ import PhotoGallery from "@/components/vitrines/PhotoGallery";
 import type { PhotoLayoutType } from "@/lib/vitrine-config";
 import ChatDevis from "@/components/ChatDevis/ChatDevis";
 import ArtisanBadges from "@/components/ArtisanBadges";
+import ExternalCtaButton from "@/components/ExternalCtaButton";
 
 const JOURS = ["", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 
@@ -152,6 +153,65 @@ export default function VitrineClassique({ a, photo, primary, accent, villeSlug 
                   </div>
                 );
               })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* CTA monpcmi13 — affiche uniquement pour les Bureaux d'etude
+          (AZ TECH monpcmi13). Permet aux clients de commander directement
+          une attestation sismique en ligne sans passer par le formulaire devis. */}
+      {a.metierSlug === "bureau-etude" && (
+        <section style={{ background: "#fff", padding: "32px 32px 48px", borderTop: "1px solid #EDEBE7" }}>
+          <div style={{ maxWidth: 880, margin: "0 auto" }}>
+            <div style={{
+              background: "linear-gradient(135deg, rgba(73,103,65,.06) 0%, rgba(73,103,65,.02) 100%)",
+              border: "1px solid rgba(73,103,65,.2)",
+              borderRadius: 16,
+              padding: "28px 32px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              gap: 14,
+            }}>
+              <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: 20, background: "rgba(73,103,65,.12)", color: "#4A6741", fontSize: 11, fontWeight: 700, letterSpacing: 1.2, textTransform: "uppercase" }}>
+                Commande en ligne — monpcmi13.com
+              </span>
+              <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(20px,2.6vw,26px)", fontWeight: 700, color: "#1C1C1E", lineHeight: 1.25, margin: 0 }}>
+                Créez votre attestation sismique en 5 min, reçue sous 24h
+              </h3>
+              <p style={{ fontSize: 14, color: "#5C4A3A", lineHeight: 1.6, maxWidth: 560, margin: 0 }}>
+                Service en ligne <strong>monpcmi13.com</strong> opéré par {a.nomAffichage}.
+                Remplissez le formulaire, payez en ligne, recevez l&apos;attestation Cerfa
+                PCMI13 conforme Eurocode 8 par email.
+              </p>
+              <ExternalCtaButton
+                href="https://www.monpcmi13.com"
+                trackLabel={`cta_monpcmi13_vitrine_${a.slug}`}
+                category="cta_partner"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 10,
+                  padding: "14px 28px",
+                  borderRadius: 12,
+                  background: "#4A6741",
+                  color: "#fff",
+                  fontSize: 15,
+                  fontWeight: 700,
+                  textDecoration: "none",
+                  boxShadow: "0 4px 14px rgba(73,103,65,.25)",
+                }}
+              >
+                Commander mon attestation en ligne
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M7 17l9.2-9.2M17 17V8H8" />
+                </svg>
+              </ExternalCtaButton>
+              <p style={{ fontSize: 12, color: "#9C958D", margin: 0, marginTop: 4 }}>
+                Ou utilisez le formulaire ci-dessous pour une demande personnalisée auprès de l&apos;artisan
+              </p>
             </div>
           </div>
         </section>
