@@ -72,7 +72,7 @@ export default function ClicksOutbound() {
     (async () => {
       try {
         // authFetch<T> retourne T directement (deserialise + unwrap data)
-        const result = await authFetch<ClicksData>("/api/v1/admin/clicks");
+        const result = await authFetch<ClicksData>("/admin/clicks");
         if (active) setData(result);
       } catch (e) {
         if (active) setError(e instanceof Error ? e.message : String(e));
