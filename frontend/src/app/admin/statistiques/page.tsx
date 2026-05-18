@@ -1,3 +1,5 @@
+import ClicksOutbound from "@/components/admin/ClicksOutbound";
+
 const C: React.CSSProperties = { background: "#fff", borderRadius: 14, border: "1px solid var(--sable,#E8D5C0)", padding: 20 };
 
 const stats = [
@@ -75,6 +77,9 @@ export default function StatistiquesPage() {
           ))}
         </div>
       </div>
+
+      {/* Section live data : clics sortants (boutons CTA externes) */}
+      <ClicksOutbound />
     </div>
   );
 }

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import ExternalCtaButton from "@/components/ExternalCtaButton";
 import { safeJsonLd } from "@/lib/html-escape";
 import { VILLES } from "@/lib/constants";
 import { findPublishableZone, getAllPublishableZones, ZONES_SEO } from "@/lib/zones";
@@ -219,6 +220,46 @@ export default async function AttestationSismiqueVillePage({
                 Tous les artisans de {info.nom}
               </Link>
             </div>
+          </div>
+        </section>
+
+        {/* Bouton partenaire monpcmi13.com — solution rapide en ligne pour
+            commander l'attestation. Backlink reciproque + tracking ClickEvent. */}
+        <section style={{ padding: "32px 24px", background: "#fff", borderBottom: "1px solid var(--sable,#E8D5C0)" }}>
+          <div style={{ maxWidth: 760, margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: 16 }}>
+            <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: 20, background: "rgba(73,103,65,.10)", color: "var(--mousse,#4A6741)", fontSize: 11, fontWeight: 700, letterSpacing: 1.2, textTransform: "uppercase" }}>
+              Solution rapide en ligne
+            </span>
+            <h2 style={{ fontFamily: "'Fraunces',serif", fontSize: "clamp(20px,2.5vw,26px)", fontWeight: 700, color: "var(--anthracite,#1C1C1E)", lineHeight: 1.25, margin: 0 }}>
+              Créez votre attestation en 5 min, recevez-la dans les 24h
+            </h2>
+            <p style={{ fontSize: 14, color: "var(--bois-mid,#5C4A3A)", lineHeight: 1.6, maxWidth: 540, margin: 0 }}>
+              Service partenaire <strong>monpcmi13.com</strong> — formulaire en ligne simple, attestation
+              parasismique conforme Eurocode 8, livrée par email.
+            </p>
+            <ExternalCtaButton
+              href="https://www.monpcmi13.com"
+              trackLabel={`cta_monpcmi13_attestation_${ville}`}
+              category="cta_partner"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 10,
+                padding: "14px 28px",
+                borderRadius: 12,
+                background: "var(--mousse,#4A6741)",
+                color: "#fff",
+                fontSize: 15,
+                fontWeight: 700,
+                textDecoration: "none",
+                boxShadow: "0 4px 14px rgba(73,103,65,.20)",
+              }}
+            >
+              Créer mon attestation sur monpcmi13.com
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M7 17l9.2-9.2M17 17V8H8" />
+              </svg>
+            </ExternalCtaButton>
           </div>
         </section>
 
