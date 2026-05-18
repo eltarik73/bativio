@@ -1012,6 +1012,30 @@ model StripeWebhookEvent {
   @@index([processedAt])
 }
 
+// ClickEvent — tracking des clics sortants (boutons CTA externes, redirections,
+// boutons "Devis", "Voir vitrine", "Visiter monpcmi13.com" etc.).
+// Permet de mesurer l'efficacité des CTA et les flux d'audience cross-domain.
+model ClickEvent {
+  id        String   @id @default(cuid())
+  // Identifiant logique du bouton/lien cliqué (ex "cta_monpcmi13", "vitrine_novasan")
+  label     String
+  // URL de destination du clic (ex "https://www.monpcmi13.com")
+  targetUrl String   @map("target_url")
+  // Page source où le clic a eu lieu (ex "/attestation-sismique/chambery")
+  sourcePage String  @map("source_page")
+  // Catégorie pour agréger dans le dashboard ("cta_external", "redirect_partner", "vitrine")
+  category  String?
+  userAgent String?  @map("user_agent")
+  referer   String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("click_event")
+  @@index([label, createdAt])
+  @@index([sourcePage])
+  @@index([category, createdAt])
+  @@index([createdAt])
+}
+
 model NewsletterSubscriber {
   id           String   @id @default(cuid())
   email        String   @unique
