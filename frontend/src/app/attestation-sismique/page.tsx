@@ -3,6 +3,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ExternalCtaButton from "@/components/ExternalCtaButton";
+import BureauxEtudeSection from "@/components/BureauxEtudeSection";
 import { safeJsonLd } from "@/lib/html-escape";
 
 export const revalidate = 3600;
@@ -72,7 +73,7 @@ const FAQ = [
   },
 ];
 
-export default function AttestationSismiquePage() {
+export default async function AttestationSismiquePage() {
   const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -214,6 +215,9 @@ export default function AttestationSismiquePage() {
             </ExternalCtaButton>
           </div>
         </section>
+
+        {/* Bureaux d'etude qualifies (fetch DB : metier bureau-etude) */}
+        <BureauxEtudeSection />
 
         {/* Pourquoi */}
         <section style={{ padding: "56px 24px", background: "var(--creme,#FAF8F5)" }}>
