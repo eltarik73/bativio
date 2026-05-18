@@ -1,8 +1,8 @@
 // scripts/setup-aztech-tarifs-sismobat.ts
 //
 // Configure les services + tarifs d'AZ TECH (monpcmi13) avec les tarifs
-// SismoBat (https://sismobat.fr) :
-// - Attestation PCMI13   : 187 € — délai 48h
+// officiels SismoBat (https://sismobat.fr — verifies avec Tarik 18/05/2026) :
+// - Attestation PCMI13   : 189 € — délai 48h
 // - Attestation AT2      : 397 € — délai 72h
 // - Pack PCMI13 + AT2    : 490 € — délai 48-72h
 //
@@ -19,8 +19,8 @@ const TARIFS = [
     titre: "Attestation sismique PCMI13",
     description:
       "Vérification des plans et conformité zone sismique. Attestation officielle PCMI13 (Cerfa) délivrée par email pour votre dossier de permis de construire. Conforme Eurocode 8.",
-    prixIndicatif: "187 €",
-    prixUnitaire: 187,
+    prixIndicatif: "189 €",
+    prixUnitaire: 189,
     unite: "forfait",
     categorie: "Attestation parasismique",
     delai: "48h",
