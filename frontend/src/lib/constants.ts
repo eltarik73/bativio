@@ -52,6 +52,7 @@ export const METIERS = [
   { nom: "Assainissement", slug: "assainissement", icone: "\u{1F6B0}", categorie: "exterieur" },
   { nom: "Étanchéité", slug: "etancheite", icone: "\u{1F4A7}", categorie: "exterieur" },
   // AUTRE
+  { nom: "Bureau d'étude", slug: "bureau-etude", icone: "\u{1F4D0}", categorie: "etudes" },
   { nom: "Autre", slug: "autre", icone: "\u{1F6E0}\uFE0F", categorie: "autre" },
 ] as const;
 

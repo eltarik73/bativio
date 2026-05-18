@@ -106,6 +106,14 @@ const METIERS: Metier[] = [
     travaux: ["Cuisine équipée sur mesure", "Salle de bain clé en main", "Îlot central", "Meubles buanderie"],
     rge: false,
   },
+  {
+    slug: "bureau-etude",
+    nom: "Bureau d'étude",
+    emoji: "📐",
+    intro: "Études techniques structure, attestation sismique PCMI13, AT2, calcul parasismique Eurocode 8 pour permis de construire.",
+    travaux: ["Attestation sismique PCMI13", "Attestation AT2 fin de chantier", "Étude structure parasismique", "Pack PCMI13 + AT2"],
+    rge: false,
+  },
 ];
 
 const VILLES = [

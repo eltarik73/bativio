@@ -68,11 +68,13 @@ export function generateStaticParams() {
     }
   }
 
-  // SEO zones (sprint en cours) x 8 metiers prioritaires.
+  // SEO zones (sprint en cours) x metiers prioritaires.
   // Tier 1 = Lyon arrondissements + grosses banlieues + Aix-les-Bains, etc.
+  // bureau-etude inclus car AZ TECH (monpcmi13) cible aussi les zones SEO.
   const ZONE_METIERS = [
     "plombier", "electricien", "peintre", "macon",
     "carreleur", "menuisier", "couvreur", "chauffagiste",
+    "bureau-etude",
   ];
   for (const z of getAllPublishableZones()) {
     for (const m of ZONE_METIERS) {

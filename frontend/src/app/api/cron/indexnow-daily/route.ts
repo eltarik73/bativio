@@ -20,6 +20,7 @@ const KEY_LOCATION = `${SITE}/${INDEXNOW_KEY}.txt`;
 const METIERS = [
   "plombier", "electricien", "peintre", "macon",
   "carreleur", "menuisier", "couvreur", "chauffagiste",
+  "bureau-etude",
 ];
 
 // Pages éditoriales statiques (toujours pingées en premier — pages-clés brand/SEO)

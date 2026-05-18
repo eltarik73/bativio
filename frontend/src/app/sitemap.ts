@@ -33,6 +33,7 @@ function slugifyVille(ville: string): string {
 const METIERS_SLUGS = [
   "plombier", "electricien", "peintre", "macon",
   "carreleur", "menuisier", "couvreur", "chauffagiste",
+  "bureau-etude",
 ] as const;
 
 const VILLES_SLUGS = [

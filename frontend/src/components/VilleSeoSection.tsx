@@ -19,6 +19,7 @@ const TOP_METIERS_SLUGS = [
   "plombier", "electricien", "peintre", "macon",
   "couvreur", "carreleur", "menuisier", "chauffagiste",
   "platrier", "serrurier", "vitrier", "paysagiste",
+  "bureau-etude",
 ];
 
 interface Props {

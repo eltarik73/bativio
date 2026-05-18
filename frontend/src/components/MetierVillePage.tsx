@@ -85,6 +85,12 @@ const TARIFS_PAR_METIER: Record<string, TarifLine[]> = {
     { label: "Installation pompe à chaleur air/eau", prix: "10 000 — 18 000 €", note: "éligible MaPrimeRénov" },
     { label: "Tarif horaire moyen", prix: "45 — 70 €/h" },
   ],
+  "bureau-etude": [
+    { label: "Attestation sismique PCMI13", prix: "189 €", note: "délai 48h, conforme Eurocode 8" },
+    { label: "Attestation sismique AT2 fin de chantier", prix: "397 €", note: "délai 72h" },
+    { label: "Pack PCMI13 + AT2", prix: "490 €", note: "économie 96 € vs séparé" },
+    { label: "Étude structure complète (BET)", prix: "1 200 — 3 500 €", note: "selon complexité projet" },
+  ],
 };
 
 // Conseils pour bien choisir (par métier — long-tail SEO informationnel)
@@ -136,6 +142,11 @@ const CONSEILS_PAR_METIER: Record<string, string[]> = {
     "L'entretien annuel d'une chaudière gaz est obligatoire (décret 2009-649). En cas de sinistre sans entretien, l'assurance peut refuser.",
     "Pour une pompe à chaleur, vérifiez le SCOP (rendement saisonnier) : minimum 4.0 pour être performant en climat continental.",
     "Le crédit d'impôt + MaPrimeRénov peuvent couvrir 30–60% du coût d'une PAC selon vos revenus. Demandez à l'artisan une simulation chiffrée.",
+  ],
+  "bureau-etude": [
+    "L'attestation sismique PCMI13 est obligatoire pour tout permis de construire en zone sismique 3, 4 ou 5. Sans elle, la mairie suspend l'instruction du dossier (article R. 431-16-c du code de l'urbanisme).",
+    "Anticipez ! Le BET a besoin du plan masse, plans coupes et façades, étude de sol G2 (si disponible). Préparez ces documents avant la commande pour éviter les allers-retours.",
+    "L'attestation AT2 est aussi obligatoire à la fin du chantier dans les zones 4 et 5. Beaucoup l'oublient et bloquent la déclaration d'achèvement des travaux.",
   ],
 };
 
@@ -661,6 +672,28 @@ export const METIER_SEO_CONTENT: Record<
       },
     ],
   },
+  "bureau-etude": {
+    intro:
+      "Un bureau d'étude (BET) est obligatoire pour rédiger l'attestation sismique PCMI13 jointe à votre dossier de permis de construire en zone sismique 3, 4 ou 5. À {ville}, les BET inscrits sur Bativio sont qualifiés en calcul parasismique selon l'Eurocode 8 et les règles DHUP CPMI-EC8. Ils interviennent sur tous types de projets : maisons individuelles neuves, extensions, surélévations, rénovations lourdes. Les prestations couvrent l'attestation PCMI13 (avant chantier), l'attestation AT2 (après travaux, obligatoire en zones 4-5), les études de structure béton armé, l'analyse de vulnérabilité sismique, et le conseil parasismique. Bativio référence AZ TECH (monpcmi13), bureau d'étude basé en Savoie spécialisé dans les attestations sismiques en ligne livrées sous 24 à 72 heures par email. Tarif transparent : PCMI13 189€, AT2 397€, Pack complet 490€. Pas d'avance, paiement en ligne sécurisé. Service disponible dans toute la France pour les zones sismiques 2 à 5.",
+    faq: [
+      {
+        q: "Quand l'attestation sismique PCMI13 est-elle obligatoire à {ville} ?",
+        a: "L'attestation sismique PCMI13 (Cerfa) est obligatoire pour tout permis de construire d'une maison individuelle en zone sismique 3, 4 ou 5 (article R. 431-16-c du code de l'urbanisme). En Auvergne-Rhône-Alpes, la quasi-totalité des départements alpins (Savoie, Haute-Savoie, Isère) est classée en zone 3 ou 4 — l'attestation est donc systématiquement requise.",
+      },
+      {
+        q: "Combien coute une attestation PCMI13 à {ville} ?",
+        a: "Le tarif officiel pour une attestation PCMI13 commence à 189€ TTC (forfait, délai 48h, livraison par email). Pour l'attestation AT2 fin de chantier, comptez 397€. Le pack PCMI13 + AT2 est proposé à 490€ (économie de 96€). Une étude de structure complète par un BET (béton armé, charges descendantes) coûte généralement entre 1 200€ et 3 500€ selon la complexité du projet.",
+      },
+      {
+        q: "Combien de temps pour recevoir mon attestation sismique ?",
+        a: "Le délai standard est de 48h pour l'attestation PCMI13 et 72h pour l'AT2, à compter de la réception de votre dossier complet (plans, étude G2 si disponible). En cas d'urgence, certains BET proposent un service express sous 24h. Le document est livré au format PDF par email, prêt à joindre à votre dossier de permis de construire.",
+      },
+      {
+        q: "Quels documents fournir au bureau d'étude ?",
+        a: "Pour rédiger votre attestation, le BET a besoin du plan masse, des plans de coupes et façades, du plan de situation, et idéalement de l'étude de sol G2 si elle existe. Plus votre dossier est complet, plus le délai est court. AZ TECH (monpcmi13) propose un formulaire en ligne qui guide la collecte de ces informations.",
+      },
+    ],
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -698,6 +731,8 @@ export const METIER_SLUGS = new Set([
   "paysagiste-ext",
   "assainissement",
   "etancheite",
+  // BUREAU D'ETUDE (attestation sismique, parasismique, etc.)
+  "bureau-etude",
   // AUTRE
   "autre",
 ]);
