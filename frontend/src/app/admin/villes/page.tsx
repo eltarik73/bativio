@@ -36,7 +36,7 @@ export default function AdminVillesPage() {
     let active = true;
     (async () => {
       try {
-        const data = await authFetch<AdminStats>("/api/v1/admin/stats");
+        const data = await authFetch<AdminStats>("/admin/stats");
         if (!active) return;
         const map: Record<string, number> = {};
         for (const v of data.villes) map[v.slug] = v.count;

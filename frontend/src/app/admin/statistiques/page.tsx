@@ -70,7 +70,7 @@ export default function StatistiquesPage() {
     let active = true;
     (async () => {
       try {
-        const data = await authFetch<AdminStats>("/api/v1/admin/stats");
+        const data = await authFetch<AdminStats>("/admin/stats");
         if (active) setStats(data);
       } catch (e) {
         if (active) setError(e instanceof Error ? e.message : String(e));
