@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ExternalCtaButton from "@/components/ExternalCtaButton";
+import BureauxEtudeSection from "@/components/BureauxEtudeSection";
 import { safeJsonLd } from "@/lib/html-escape";
 import { VILLES } from "@/lib/constants";
 import { findPublishableZone, getAllPublishableZones, ZONES_SEO } from "@/lib/zones";
@@ -262,6 +263,9 @@ export default async function AttestationSismiqueVillePage({
             </ExternalCtaButton>
           </div>
         </section>
+
+        {/* Bureaux d'etude qualifies pour cette ville (fetch DB) */}
+        <BureauxEtudeSection villeNom={info.nom} />
 
         <section style={{ padding: "56px 24px", background: "var(--creme,#FAF8F5)" }}>
           <div style={{ maxWidth: 760, margin: "0 auto" }}>
