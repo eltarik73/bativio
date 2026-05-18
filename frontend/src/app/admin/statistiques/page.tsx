@@ -27,7 +27,7 @@ interface AdminStats {
   devisDeltaPct: number | null;
   artisansEnAttente: number;
   revenusEstimes: number;
-  plans: Array<{ plan: string; count: number }>;
+  plans: Record<string, number>;
   villes: Array<{ slug: string; count: number }>;
   generatedAt: string;
 }
@@ -99,7 +99,8 @@ export default function StatistiquesPage() {
     );
   }
 
-  const totalPlansCount = stats.plans.reduce((s, p) => s + p.count, 0) || 1;
+  const plansArray = Object.entries(stats.plans).map(([plan, count]) => ({ plan, count }));
+  const totalPlansCount = plansArray.reduce((s, p) => s + p.count, 0) || 1;
   const totalVillesCount = stats.villes.reduce((s, v) => s + v.count, 0) || 1;
 
   const kpis = [
@@ -168,9 +169,9 @@ export default function StatistiquesPage() {
             <span style={{ fontFamily: "'Fraunces',serif", fontSize: 17, fontWeight: 700, color: "var(--bois,#3D2E1F)" }}>Répartition par plan</span>
             <span style={{ fontSize: 12, color: "#9B9590", marginLeft: 8 }}>({totalPlansCount} actifs)</span>
           </div>
-          {stats.plans.length === 0 ? (
+          {plansArray.length === 0 ? (
             <div style={{ padding: 20, fontSize: 13, color: "#9B9590" }}>Aucun artisan actif.</div>
-          ) : stats.plans.map((p) => {
+          ) : plansArray.map((p) => {
             const pct = Math.round((p.count / totalPlansCount) * 100);
             const color = PLAN_COLORS[p.plan] || "#9B9590";
             return (
