@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * /admin/statistiques — refonte orientee LEADS (18/05/2026).
+ * /admin/statistiques — refonte orientee LEADS (18/05/2026, v2).
  *
  * Objectif : Tarik voit a qui Bativio genere le plus de leads, pour piloter
  * la promotion Pro/Business et reperer les artisans payants a risque.
