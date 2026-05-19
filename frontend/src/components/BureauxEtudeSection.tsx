@@ -19,33 +19,55 @@ interface Props {
   villeNom?: string | null;
 }
 
+type BureauRow = {
+  id: string;
+  slug: string;
+  nomAffichage: string;
+  description: string | null;
+  ville: string | null;
+  experienceAnnees: number | null;
+  noteMoyenne: number;
+  nombreAvis: number;
+  photos: { url: string }[];
+};
+
 export default async function BureauxEtudeSection({ villeNom }: Props) {
-  const bureaux = await prisma.artisan.findMany({
-    where: {
-      actif: true,
-      visible: true,
-      deletedAt: null,
-      metier: { slug: "bureau-etude" },
-      NOT: { slug: { startsWith: "test-" } },
-    },
-    select: {
-      id: true,
-      slug: true,
-      nomAffichage: true,
-      description: true,
-      ville: true,
-      experienceAnnees: true,
-      noteMoyenne: true,
-      nombreAvis: true,
-      photos: {
-        select: { url: true },
-        take: 1,
-        orderBy: { ordre: "asc" },
+  // Try/catch : ce composant est rendu en SSG/ISR (revalidate=3600). Si la
+  // DB est indisponible au build (CI sans DATABASE_URL, network blip, etc.),
+  // on retourne null plutot que de planter tout le build. La page reste
+  // valide, juste sans cette section bureau-etude.
+  let bureaux: BureauRow[] = [];
+  try {
+    bureaux = await prisma.artisan.findMany({
+      where: {
+        actif: true,
+        visible: true,
+        deletedAt: null,
+        metier: { slug: "bureau-etude" },
+        NOT: { slug: { startsWith: "test-" } },
       },
-    },
-    orderBy: { experienceAnnees: "desc" },
-    take: 6,
-  });
+      select: {
+        id: true,
+        slug: true,
+        nomAffichage: true,
+        description: true,
+        ville: true,
+        experienceAnnees: true,
+        noteMoyenne: true,
+        nombreAvis: true,
+        photos: {
+          select: { url: true },
+          take: 1,
+          orderBy: { ordre: "asc" },
+        },
+      },
+      orderBy: { experienceAnnees: "desc" },
+      take: 6,
+    });
+  } catch (e) {
+    console.warn("[BureauxEtudeSection] DB unavailable, skipping section:", e instanceof Error ? e.message : e);
+    return null;
+  }
 
   if (bureaux.length === 0) return null;
 
